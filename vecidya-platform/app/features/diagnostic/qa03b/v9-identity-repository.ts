@@ -82,3 +82,36 @@ export async function listOwnedDiagnosticRunsV9(
   }>();
   return result.results;
 }
+
+/** Creates a high-entropy anonymous recovery secret; return it only once to the caller. */
+export async function createAnonymousIdentityCredentialV9(
+  db: V9IdentityDb,
+  input: { identityId: string; createdAt: string },
+): Promise<{ identityId: string; recoveryCredential: string }> {
+  if (!input.identityId || !input.createdAt) throw new Error("v9_identity_invalid_input");
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const recoveryCredential = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(recoveryCredential));
+  const credentialHash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  await createAnonymousIdentityV9(db, {
+    identityId: input.identityId,
+    credentialHash,
+    createdAt: input.createdAt,
+  });
+  return { identityId: input.identityId, recoveryCredential };
+}
+
+/** Constant-time comparison of a presented credential against a stored digest. */
+export async function verifyAnonymousIdentityCredentialV9(
+  recoveryCredential: string,
+  storedCredentialHash: string,
+): Promise<boolean> {
+  if (!/^[a-f0-9]{64}$/.test(recoveryCredential) || !/^[a-f0-9]{64}$/.test(storedCredentialHash)) return false;
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(recoveryCredential));
+  const actual = new Uint8Array(digest);
+  const expected = new Uint8Array(storedCredentialHash.match(/../g)!.map((byte) => Number.parseInt(byte, 16)));
+  let difference = 0;
+  for (let index = 0; index < actual.length; index++) difference |= actual[index]! ^ expected[index]!;
+  return difference === 0;
+}
