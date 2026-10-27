@@ -31,6 +31,7 @@ export default [
   route("api/auth/*", "routes/api-auth.ts"),
   route("api/diagnostic/anonymous-summary", "routes/api-diagnostic-anonymous-summary.ts"),
   route("api/diagnostic/claim-anonymous", "routes/api-diagnostic-claim-anonymous.ts"),
+  route("api/diagnostic/anonymous-identity", "routes/api-diagnostic-anonymous-identity.ts"),
   route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
   route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
   route("api/diagnostic/email/verify", "routes/api-diagnostic-email-verify.ts"),
