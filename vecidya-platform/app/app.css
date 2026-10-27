@@ -6853,3 +6853,38 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .miniweb-standalone__navigation a,
   .miniweb-standalone__navigation span { min-height: 2.75rem; display: inline-flex; align-items: center; }
 }
+
+
+/* V9 personal diagnostic history: readable, responsive structured result data. */
+.diagnostic-json-list {
+  display: grid;
+  gap: .75rem;
+  margin: 0;
+}
+.diagnostic-json-list > div {
+  display: grid;
+  grid-template-columns: minmax(8rem, .32fr) minmax(0, 1fr);
+  gap: .75rem;
+  align-items: start;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid rgba(100, 116, 139, .22);
+}
+.diagnostic-json-list dt {
+  font-weight: 650;
+  text-transform: capitalize;
+}
+.diagnostic-json-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.diagnostic-json-list ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+@media (max-width: 640px) {
+  .diagnostic-json-list > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .25rem;
+  }
+}
