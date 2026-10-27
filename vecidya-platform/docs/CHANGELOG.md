@@ -1,14 +1,17 @@
 # Changelog
 
-## 0.8.4 — candidato local, APP-MINI-02D (2026-10-27)
+## 0.8.4 — publicado (2026-10-27, PR #175, `main@7eff191a`)
 
 - MiniWeb: los cinco pasos abren diálogos de edición, con resumen de publicación y orientación en la vista principal; las tarjetas, descripciones y campos usan menor densidad vertical y ancho de lectura controlado. En Contenido solo aparecen pestañas de módulos activos; los accesos contextuales desde Secciones siguen llevando al contenido correspondiente. «Mi negocio» también compacta tarjetas, campos y horarios, limita el ancho de lectura y conserva el formulario conjunto con guardado independiente de horarios. El sidebar de escritorio queda compacto y el drawer móvil mantiene ancho fluido.
 - Inspección visual manual con navegador in-app, D1 local temporal nueva y cuenta sintética `@vecidya.test`; escritorio 1366×768 y móvil 390×844. No se ejecutaron pruebas automatizadas por indicación del usuario. Typecheck, build y diff-check PASS.
-- Sin integración, publicación, petición a producción ni cambio de D1/R2 remota. La verificación de correo quedó limitada a la D1 temporal, sin Gmail.
-## ADMIN-ORG-PAGINATION-001 — integrado (2026-10-27, sin publicar)
+- Publicado en Worker `vecidya-platform`, Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. `GET https://vecidya.com/` anónimo respondió 200 con `0.8.4` y `© 2026 Vecidya` a las `2026-10-27T23:44:23Z`.
+- D1 producción confirmó `No migrations to apply`; el release no agrega esquema ni ejecuta escrituras de D1.
+- Incluye paginación de Organizaciones integrada por PR #173 y el paquete A Team ya preparado en el checkout. Sin pruebas automatizadas por indicación del usuario.
+
+## ADMIN-ORG-PAGINATION-001 — integrado y publicado con 0.8.4 (2026-10-27)
 
 - `/app/internal/organizations` mueve búsqueda y filtros de perfil al servidor, añade orden estable por nombre/fecha y paginación de 50 resultados. Búsqueda, filtro, orden y página se representan en query string; el E2E cubre 55 organizaciones sintéticas.
-- Integrado por PR #173 en `main@19653199`. Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check PASS. Sin cambio de versión, esquema, migración, D1 remota ni deploy.
+- Integrado por PR #173 y desplegado mediante PR #175 / release 0.8.4. Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check PASS para el PR original. Sin cambio de esquema ni migración.
 
 ## Checkpoint local — paginación de Auditoría (2026-10-26, sin publicar)
 
