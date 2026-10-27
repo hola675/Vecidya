@@ -180,3 +180,23 @@ test("classification replay validates sector question identity", () => {
   assert.equal(replayClassificationInteractionsV9(restaurantContext, [invalidEvent]), null);
   assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [applied.event]), applied.answers);
 });
+
+test("switching specialty within a sector clears stale specialist evidence", () => {
+  const existing: AnswersV2 = {
+    ...restaurantContext,
+    q2_sector: "food_hospitality",
+    q2_niche_food_hospitality: "restaurant",
+    q2_food_menu_visibility: "unclear",
+  };
+  const changed = applyClassificationInteractionV9(existing, {
+    sector: "food_hospitality",
+    niche: "other",
+  });
+  assert.equal(changed.ok, true);
+  if (!changed.ok) return;
+  assert.equal(changed.answers.q2_sector, "food_hospitality");
+  assert.equal(changed.answers.q2_niche_food_hospitality, "other");
+  assert.equal(changed.answers.q2_food_menu_visibility, undefined);
+  assert.equal(changed.answers.q2_goal, existing.q2_goal);
+  assert.equal(changed.answers.q2_has_customers, existing.q2_has_customers);
+});
