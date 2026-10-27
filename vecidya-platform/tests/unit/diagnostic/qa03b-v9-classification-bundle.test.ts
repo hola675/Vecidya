@@ -374,6 +374,7 @@ test("P2: escenarios sectoriales sustituyen elegibilidad genérica y respetan pr
       classified.answers, [classified.event],
     );
     const eligible = resolveEligibleQuestionsV2(classified.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+    console.log("DIAG_V9_P2_SCENARIO " + JSON.stringify({ name: scenario.name, answers: classified.answers, context: eligible.context, eligibleSpecialized: eligible.eligibleQuestionIds.includes(scenario.specialized), eligibleGeneric: eligible.eligibleQuestionIds.includes(scenario.generic) }));
     assert.ok(eligible.eligibleQuestionIds.includes(scenario.specialized),
       scenario.name + ": pregunta especializada no elegible");
     assert.ok(!eligible.eligibleQuestionIds.includes(scenario.generic),
