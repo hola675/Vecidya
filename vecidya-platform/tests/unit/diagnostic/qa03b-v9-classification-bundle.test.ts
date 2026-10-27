@@ -334,3 +334,49 @@ test("V9 planner respects historical interaction floor after a bundled classific
   assert.ok(withHistory.visibleInteractionCount >= withoutHistory.visibleInteractionCount);
   assert.ok(withHistory.plan.routeLength <= 24);
 });
+
+test("P2: escenarios sectoriales sustituyen elegibilidad genérica y respetan presupuesto", () => {
+  const scenarios = [
+    {
+      name: "odontología",
+      sector: "health_wellness",
+      niche: "dentist",
+      context: { q2_goal: "stop_losing", q2_friction: "follow_up", q2_delivery: ["onsite"] },
+      specialized: "q2_dental_care_continuation",
+      generic: "q2_appointments_rebooking",
+    },
+    {
+      name: "alimentación",
+      sector: "food_hospitality",
+      niche: "restaurant",
+      context: { q2_goal: "explain", q2_presence_digital_base: "reliable_presence" },
+      specialized: "q2_food_menu_visibility",
+      generic: "q2_presence_offer_clarity",
+    },
+    {
+      name: "agencia",
+      sector: "b2b_services",
+      niche: "marketing_agency",
+      context: { q2_goal: "explain", q2_customer_buyer: "b2b", q2_presence_digital_base: "reliable_presence" },
+      specialized: "q2_marketing_agency_scope_clarity",
+      generic: "q2_presence_offer_clarity",
+    },
+  ] as const;
+  for (const scenario of scenarios) {
+    const classified = applyClassificationInteractionV9(
+      { ...restaurantContext, ...scenario.context },
+      { sector: scenario.sector, niche: scenario.niche },
+    );
+    assert.equal(classified.ok, true, scenario.name);
+    if (!classified.ok) continue;
+    const { plan, visibleInteractionCount } = buildCandidateQuestionPlanV9Prototype(
+      classified.answers, [classified.event],
+    );
+    assert.ok(plan.eligibleQuestionIds.includes(scenario.specialized),
+      scenario.name + ": pregunta especializada no elegible");
+    assert.ok(!plan.eligibleQuestionIds.includes(scenario.generic),
+      scenario.name + ": pregunta genérica no sustituida");
+    assert.ok(plan.routeLength <= 24, scenario.name + ": presupuesto excedido");
+    assert.equal(visibleInteractionCount, Object.keys(classified.answers).length - 1);
+  }
+});
