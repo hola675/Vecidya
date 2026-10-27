@@ -1,3 +1,5 @@
+import type { V9RunVersions } from "./v9-audit-repository";
+
 /**
  * V9 identity/ownership persistence primitives.
  * Server-only module: derive userId and organization permissions from the
@@ -321,9 +323,7 @@ export async function assignDiagnosticRunToExistingAnonymousIdentityV9(
   return { identityId: input.identityId };
 }
 
-import type { V9RunVersions } from "./v9-audit-repository";
-
-/**
+ /**
  * Creates a V9 run and its personal ownership in one D1 batch. workspaceId and
  * version metadata must be selected by server code, not copied from request JSON.
  */
