@@ -22,10 +22,11 @@ const raw = JSON.stringify({
   terminalReason: null,
 });
 
-test("P1e: v1 saved menu response remains readable against v1 candidate", () => {
+test("P1e: v1 saved menu session parses but ineligible answer is reconciled away", () => {
   const restored = parseSessionV3(raw, now, { bank: [legacy] });
   assert.ok(restored);
-  assert.equal(restored.answers[legacy.id], "not_applicable");
+  assert.equal(restored.answers[legacy.id], undefined);
+  assert.deepEqual(restored.answeredQuestionIds, []);
 });
 
 test("P1e: swapping in v2 rejects the old option instead of silently remapping", () => {
