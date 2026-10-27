@@ -291,3 +291,24 @@ test("P1: las tres ramas especializadas tienen evidencia completa y estados neut
     }
   }
 });
+
+test("P1: las exclusiones neutrales no deben interpretarse como una capacidad establecida", () => {
+  const ids = [
+    "q2_dental_care_continuation",
+    "q2_food_menu_visibility",
+    "q2_marketing_agency_scope_clarity",
+  ];
+  for (const id of ids) {
+    const question = bank.find((item) => item.id === id);
+    assert.ok(question);
+    const neutral = question.options.filter((option) => option.kind === "not_applicable" || option.kind === "unknown");
+    assert.equal(neutral.length, 2);
+    for (const option of neutral) {
+      for (const dimension of question.evidenceV3?.dimensions ?? []) {
+        const state = dimension.answers[option.value];
+        assert.ok(state === "not_applicable" || state === "uncertainty",
+          id + ": " + option.value + " no puede interpretarse como fortaleza o debilidad");
+      }
+    }
+  }
+});
