@@ -41,7 +41,7 @@ El secreto de la cookie autoriza acciones de esa identidad. Nunca registrarlo en
 
 `POST /api/diagnostic/claim-anonymous` exige sesión autenticada y la cookie de identidad anónima. La reclamación se registra como pendiente y se finaliza con un lote D1 que marca la identidad y transfiere todas sus ejecuciones a la identidad de usuario. La cookie se elimina al completar la reclamación. Una reclamación repetida no debe volver a transferir la propiedad.
 
-Las migraciones `0031`, `0032` y `0033` establecen propiedad, unicidad de reclamaciones pendientes y guardas contra la carrera entre asignación y reclamación.
+Las migraciones `0031`–`0034` establecen propiedad, unicidad de reclamaciones pendientes, guardas contra la carrera entre asignación y reclamación y la inmutabilidad del estado de reclamación.
 
 ## Historial y organizaciones
 
@@ -53,7 +53,7 @@ Las migraciones `0031`, `0032` y `0033` establecen propiedad, unicidad de reclam
 ## Pendientes antes de producción
 
 1. Ejecutar CI focalizada y typecheck/build completos para el último conjunto de rutas y componentes.
-2. Aplicar las migraciones 0031–0033 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual.
+2. Aplicar las migraciones 0031–0033 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual, incluida la nueva migración `0034`.
 3. Integrar el motor V9 certificado con los endpoints de creación y eventos. El cuestionario público existente sigue en contrato V8; no se debe cambiar a V9 solo por tener estos endpoints.
 4. Añadir pruebas E2E para login posterior, reclamación, permisos, pérdida de cookie, conflictos de secuencia y vinculación organizacional.
 5. Certificar versiones de banco, motor, puntuación, recomendaciones y consentimiento; mantener la bandera desactivada hasta entonces.
