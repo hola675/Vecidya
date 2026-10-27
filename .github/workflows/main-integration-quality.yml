@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   verify:
+    # Keep the original broad regression for main and unrelated pull requests.
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
     name: Typecheck, build and unit regression
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -42,3 +44,33 @@ jobs:
         run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-flow-ui.test.ts tests/unit/learn/learn-curriculum.test.ts
       - name: Unit regression
         run: pnpm test:unit
+
+  diagnostic-v9-focused:
+    # Candidate V9 PRs: only the edited question contracts and editorial audit.
+    # No full build, Aprende tests, or unrelated unit suites.
+    if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
+    name: Diagnostic V9 focused contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: V9 editorial and versioned evidence contracts
+        run: >-
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
+          tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts
+          tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+          tests/unit/diagnostic/qa03b-v9-menu-v2-proposal.test.ts
+          tests/unit/diagnostic/qa03b-v9-menu-version-identity.test.ts
