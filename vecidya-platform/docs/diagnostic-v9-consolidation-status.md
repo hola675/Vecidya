@@ -84,3 +84,7 @@ El job V9 ejecutara `pnpm typecheck` antes de los tests focalizados (36c9702). S
 ### L3 P1 — alerta de neutralidad con evidencia (2026-10-27)
 
 Se incorporo `neutral_with_evidence` para señalar opciones `none`, `not_applicable` o `unknown` con lecturas de evidencia (`781fd19`). Se agrego una regresion sintetica que verifica la alerta y que el banco no se modifica (`225bad9`). La alerta requiere interpretacion editorial; no prueba que la lectura sea incorrecta. Pendiente ejecutar CI focalizada, no se declara PASS.
+
+### Verificacion CI focalizada V9 — 2026-10-27
+
+GitHub Actions `Main integration quality` run #345 (`40565448892`) finalizo con `success` para el commit `343a24a21d7a8da19cbb7b87d603f37512b05bd5`: instalacion, `pnpm typecheck` y contratos focalizados V9 correctos. El job de regresion general quedo `skipped` por diseño de la rama PR, por lo que no certifica build ni suite general. El run anterior #344 fallo por una asercion editorial desactualizada; se corrigio solo el test en `343a24a`. En P1 ya existen cola de alertas, prioridades y lotes por pregunta, sin aprobar automaticamente decisiones humanas. P2 y la autonomia integral V9 siguen abiertos.
