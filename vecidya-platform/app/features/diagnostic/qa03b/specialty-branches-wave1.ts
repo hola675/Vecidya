@@ -17,10 +17,21 @@ const activeHistory = andV2(
 const healthGenericGate = notEqV2("q2_niche_health_wellness", "dentist");
 
 // Generic clarity stays available until a known specialty can replace it.
-const offerGenericGate = andV2(
-  notV2(inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"])),
-  notEqV2("q2_niche_b2b_services", "marketing_agency"),
+const foodSpecialistEligible = andV2(
+  activeHistory,
+  inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"]),
+  eqV2("q2_goal", "explain"),
+  inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"]),
 );
+const agencySpecialistEligible = andV2(
+  activeHistory,
+  eqV2("q2_niche_b2b_services", "marketing_agency"),
+  eqV2("q2_goal", "explain"),
+  inV2("q2_customer_buyer", ["b2b", "mixed"]),
+  inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"]),
+);
+// Keep the generic question unless its specialized replacement is eligible.
+const offerGenericGate = andV2(notV2(foodSpecialistEligible), notV2(agencySpecialistEligible));
 
 export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[] = [
   {
