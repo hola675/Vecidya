@@ -23,7 +23,7 @@ const groups: NavGroup[] = [
   },
   { label: "ORGANIZACIÓN", links: [{ id: "organization", label: "Equipo", to: "/app/organization", icon: "team" }] },
   { label: "APRENDIZAJE", links: [{ id: "training", label: "Capacitación", to: "/app/training", icon: "spark" }] },
-  { label: "CUENTA", links: [{ id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
+  { label: "CUENTA", links: [{ id: "diagnostics", label: "Mis diagnósticos", to: "/app/diagnosticos", icon: "audit" }, { id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
 ];
 
 type WorkspaceUser = { name: string; email: string };
