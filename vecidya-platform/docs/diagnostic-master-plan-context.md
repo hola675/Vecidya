@@ -112,3 +112,7 @@ La matriz editorial V9 ahora marca `missing_evidence_mapping` cuando una opcion 
 ### L3 — cola editorial trazable (2026-10-27)
 
 Se implemento `buildEditorialReviewQueueV9` (`53e2683`) para convertir las alertas por opcion en una cola con `questionId`, `optionValue`, `flags`, decision editorial y proxima accion. Se agrego una prueba de trazabilidad y determinismo (`f0a0a36`). La cola no aprueba contenido, no cambia puntuaciones y no ordena por severidad todavia. Pendiente: ejecutar CI y clasificar las alertas para priorizar la revision humana.
+
+### L3 — priorizacion editorial automatica (2026-10-27)
+
+La cola editorial ahora expone prioridad `high`, `medium` o `low` por opcion (`975203f`): falta de mapeo de evidencia migrada = alta; lecturas neutrales o neutralidad pendiente = media; alertas de redaccion = baja. La regresion (`471e116`) verifica las reglas y la correspondencia con cada elemento de cola. La prioridad es operativa, no puntuacion ni aprobacion editorial. Pendiente ejecutar CI focalizada y revisar resultados antes de cerrar L3.
