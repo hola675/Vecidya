@@ -312,3 +312,17 @@ test("P1: las exclusiones neutrales no deben interpretarse como una capacidad es
     }
   }
 });
+
+test("P2: las preguntas genéricas conservan una exclusión condicional ante especialización", () => {
+  const byId = (id: string) => bank.find((question) => question.id === id);
+  const rebooking = byId("q2_appointments_rebooking");
+  const offer = byId("q2_presence_offer_clarity");
+  assert.ok(rebooking);
+  assert.ok(offer);
+  assert.ok(rebooking.appliesWhen || rebooking.materialAppliesWhen);
+  assert.ok(offer.appliesWhen || offer.materialAppliesWhen);
+  for (const id of ["q2_dental_care_continuation", "q2_food_menu_visibility", "q2_marketing_agency_scope_clarity"]) {
+    const specialized = byId(id);
+    assert.ok(specialized?.appliesWhen, "Rama especializada sin puerta de elegibilidad: " + id);
+  }
+});
