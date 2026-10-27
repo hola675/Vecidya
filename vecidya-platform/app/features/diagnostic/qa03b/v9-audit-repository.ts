@@ -94,7 +94,15 @@ export async function appendDiagnosticEventV9(
       input.expectedSeq >= Number.MAX_SAFE_INTEGER) {
     throw new Error("v9_invalid_event");
   }
-  const payload = JSON.stringify(input.payload);
+  if (!input.occurredAt || !["client", "system", "operator"].includes(input.actorType)) {
+    throw new Error("v9_invalid_event");
+  }
+  let payload: string | undefined;
+  try {
+    payload = JSON.stringify(input.payload);
+  } catch {
+    throw new Error("v9_invalid_payload");
+  }
   if (payload === undefined || payload.length > 16384) throw new Error("v9_invalid_payload");
   const existing = await db.prepare(
     "SELECT run_id,seq,kind,payload_json,occurred_at,actor_type,schema_version FROM diagnostic_v9_events WHERE workspace_id=? AND event_id=?",
