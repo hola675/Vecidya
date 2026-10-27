@@ -92,4 +92,5 @@ jobs:
           tests/unit/diagnostic/qa03b-v9-organization-link-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-identity-assignment-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-anonymous-cookie.test.ts
+          tests/unit/diagnostic/qa03b-v9-public-availability.test.ts
           tests/unit/diagnostic/qa03b-v9-owned-run-create-sqlite.test.ts
