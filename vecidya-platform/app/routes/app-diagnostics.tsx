@@ -168,6 +168,7 @@ export default function AppDiagnosticsPage() {
                     <p>Inicio: {formatDate(run.started_at)}</p>
                     <p>Estado: {statusLabels[run.status]} · {run.last_seq} eventos registrados</p>
                     <p>Organizaciones vinculadas: {run.organization_count}</p>
+                    <Link to={`/app/diagnosticos/${encodeURIComponent(run.workspace_id)}/${encodeURIComponent(run.run_id)}`}>Ver detalle del diagnóstico</Link>
                   </div>
                 </div>
                 {organizations.length > 0 ? (
