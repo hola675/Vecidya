@@ -110,6 +110,9 @@ export function countVisibleInteractionsV9(
   const latest = events[events.length - 1];
   if (!latest || latest.kind !== QA03B_V9_CLASSIFICATION_INTERACTION_ID || latest.sectorQuestionId !== "q2_sector" || latest.sector !== currentSector) return count;
   if (!latest.niche || !latest.nicheQuestionId) return count;
+  const selector = selectorBySector.get(latest.sector);
+  if (!selector || selector.id !== latest.nicheQuestionId) return count;
+  if (!selector.options.some((option) => option.value === latest.niche)) return count;
   if (activeAnswers[latest.nicheQuestionId] !== latest.niche) return count;
   return Math.max(0, count - 1);
 }
