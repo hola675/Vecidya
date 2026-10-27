@@ -1,3 +1,9 @@
+## DIAG-V9-LEX-GRAPH-P1B — segunda pasada editorial del candidato (2026-10-26; PR apilado en borrador)
+
+**CODE/GIT, pendiente RAN de HEAD:** a partir del inventario aprobado P0 (77 definiciones, 387 opciones, 15 variantes, cero bloqueos sintácticos), se añadió `qa03b/v9-editorial-review-matrix.ts`, generador no productivo de fichas **individuales** que enumeran enunciado, ayuda, ID/version, grada, todas las opciones con `value/kind/exclusive`, señales, lecturas por dimensión de evidencia, variantes, referencias de contexto/respuestas y alertas. Exportador opcional `scripts/diagnostic-v9-editorial-matrix.mjs` permite consultar el JSON completo sin cambiar el motor. **No equivale a 77 revisiones humanas**: cuatro enunciados tienen intervención editorial explícita, cuatro preguntas requieren análisis semántico específico y 69 conservan estado pendiente de revisión humana.
+
+**COPY-only:** `q2_monetization`, `q2_regularity`, `q2_buyer_recipient_relation` y `q2_reputation_flow` reciben formulaciones más legibles. Sin mutar etiquetas, `value`, `kind`, evidencia, rutas, señales, scores ni V8 público. Los expedientes `q2_demand_trend`, `q2_capacity_signal`, `q2_food_menu_visibility`, `q2_ecommerce_cart_followup` quedan etiquetados **semantics-review**, nunca autorreparados. El PR #157 de taxonomía permanece aislado; V9 sigue con IDs sectoriales históricos hasta cambio versionado. No fusionar ni desplegar en este checkpoint.
+
 # Estado de implementación
 
 ## DIAG-V9-LEX-GRAPH-P0P1 — inventario automatizado y primera pasada editorial (2026-10-26; PR en borrador)

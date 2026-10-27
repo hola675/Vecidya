@@ -1,3 +1,9 @@
+## DIAG-V9-LEX-GRAPH-P1B — acciones tras matriz de respuestas (2026-10-26)
+
+**Alcance en progreso:** ampliación P1 de inventario estructural a matriz completa 77 preguntas × 387 opciones × 15 variantes con estados explícitos. El generador y exportador preparan la lectura humana por ficha, no conceden automáticamente A/B/C. Cuatro copys acordados se reformulan sin romper contratos. Revisión semántica pendiente especialmente para `q2_demand_trend` (indicador variable), `q2_capacity_signal` (respuestas compuestas), `q2_food_menu_visibility` (posible confusión de not_applicable) y `q2_ecommerce_cart_followup` (contacto consentido).
+
+**Próximo bloque:** revisar individualmente las 69 restantes y las cuatro semánticas con ejemplos de usuario; identificar qué `pending` consume presupuesto sin evidencia, revisar opciones `unknown/none/not_applicable`, producir decisiones A/B/C con razones y pruebas cognitivas. En paralelo P2 debe vincular relaciones `requires/enables/excludes/replaces` con recorridos realmente alcanzables mediante fixtures de sector y etapa, no solo referencias sintácticas. Cualquier modificación de `value/kind/readsAs/appliesWhen` exige nueva identidad de banco/sesión/replay V9 y pruebas Worker; no modificar V8 público. No incorporar GHL/Aprende/ofertas durante preguntas.
+
 ## DIAG-V9-LEX-GRAPH-P0P1 — primer checkpoint en ejecución (2026-10-26)
 
 **P0 implementado como instrumentación, no certificado:** auditor reproducible para las 77 definiciones candidatas, toda opción/variante y referencias de regla a pregunta/contexto; clasificación G0–G6 descriptiva y reporte de alertas. **P1 iniciado:** cuatro enunciados de entrada corregidos editorialmente sin alterar contrato de respuestas, y regla de detectar ambigüedades potenciales antes de proponer más preguntas. PR de código apilado sobre el PR #156 para disponer del banco privado; PR #159 contiene el plan completo; PR #157 aporta los futuros sectores transversales.

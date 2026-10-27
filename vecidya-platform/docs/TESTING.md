@@ -1,3 +1,18 @@
+## DIAG-V9-LEX-GRAPH-P1B — matriz de revisión y paridad semántica (2026-10-26)
+
+**CODE/TEST, RAN pendiente:** `tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts` comprueba fichas 77/387/15, fidelidad de `readsAs` a cada respuesta de `evidenceV3`, preservación de IDs, orden y opciones, notas de ocho decisiones (cuatro textos revisados, cuatro casos semánticos retenidos) y ausencia de mutación del banco. `qa03b-editorial-copy.test.ts` añade regresión estricta de invariancia contractual para cuatro correcciones léxicas. No interpretar flag/ausencia de flag como aceptación humana. Ejecutar:
+
+```bash
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts tests/unit/diagnostic/qa03b-editorial-copy.test.ts
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs scripts/diagnostic-v9-editorial-matrix.mjs --summary
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs scripts/diagnostic-v9-editorial-matrix.mjs > audit-v9-p1.json
+pnpm typecheck
+pnpm build
+pnpm test:unit
+```
+
+El archivo exportado `audit-v9-p1.json` es una salida local bajo demanda y **NO** se versiona ni contiene datos de clientes. El CI contra `main` debe ejecutarse desde PR temporal; PR apilado contra #160 no activa automáticamente `Main integration quality`. Revisar la salida antes de declarar PASS. P2 requiere rutas y replays reales, no solo referencias de respuesta.
+
 # Pruebas
 
 ## DIAG-V9-LEX-GRAPH-P0P1 — certificación de inventario léxico/grafo (2026-10-26)
