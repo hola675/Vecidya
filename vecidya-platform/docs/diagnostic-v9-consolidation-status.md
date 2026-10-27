@@ -80,3 +80,7 @@ Se hizo explicita la presencia de las dos respuestas sector/especialidad para el
 ### Lote P2: control de calidad y presupuesto visible
 
 El job V9 ejecutara `pnpm typecheck` antes de los tests focalizados (36c9702). Se agrego regresion para asegurar que el piso historico de 24 interacciones no se reduzca por agrupar sector y especialidad (8355d72). El plan maestro ahora organiza el trabajo en lotes L1-L5 con puertas de salida (0535b37). Todo sigue pendiente de ejecucion CI verificable; no equivale a aprobacion de P2.
+
+### L3 P1 — alerta de neutralidad con evidencia (2026-10-27)
+
+Se incorporo `neutral_with_evidence` para señalar opciones `none`, `not_applicable` o `unknown` con lecturas de evidencia (`781fd19`). Se agrego una regresion sintetica que verifica la alerta y que el banco no se modifica (`225bad9`). La alerta requiere interpretacion editorial; no prueba que la lectura sea incorrecta. Pendiente ejecutar CI focalizada, no se declara PASS.
