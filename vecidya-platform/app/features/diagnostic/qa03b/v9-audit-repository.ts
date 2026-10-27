@@ -155,3 +155,45 @@ export async function loadDiagnosticEventHistoryV9(
   }
   return history;
 }
+
+/** Save an immutable checkpoint at the exact audited event boundary. */
+export async function saveDiagnosticSnapshotV9(
+  db: V9AuditDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    lastSeq: number;
+    stateJson: string;
+    stateHash: string;
+    createdAt: string;
+  },
+): Promise<"created" | "duplicate"> {
+  if (!input.workspaceId || !input.runId || !input.stateHash ||
+      !Number.isSafeInteger(input.lastSeq) || input.lastSeq < 0 ||
+      input.stateJson.length > 262144) throw new Error("v9_snapshot_invalid_input");
+  try {
+    JSON.parse(input.stateJson);
+  } catch {
+    throw new Error("v9_snapshot_invalid_json");
+  }
+  const run = await db.prepare(
+    "SELECT last_seq FROM diagnostic_v9_runs WHERE workspace_id=? AND run_id=?",
+  ).bind(input.workspaceId, input.runId).first<{ last_seq: number }>();
+  if (!run || input.lastSeq > run.last_seq) throw new Error("v9_snapshot_uncommitted_boundary");
+  const existing = await db.prepare(
+    "SELECT state_json,state_hash FROM diagnostic_v9_snapshots WHERE workspace_id=? AND run_id=? AND last_seq=?",
+  ).bind(input.workspaceId, input.runId, input.lastSeq).first<{
+    state_json: string; state_hash: string;
+  }>();
+  if (existing) {
+    if (existing.state_json !== input.stateJson || existing.state_hash !== input.stateHash) {
+      throw new Error("v9_snapshot_conflict");
+    }
+    return "duplicate";
+  }
+  await db.prepare(
+    "INSERT INTO diagnostic_v9_snapshots (workspace_id,run_id,last_seq,state_json,state_hash,created_at) VALUES (?,?,?,?,?,?)",
+  ).bind(input.workspaceId, input.runId, input.lastSeq,
+    input.stateJson, input.stateHash, input.createdAt).run();
+  return "created";
+}
