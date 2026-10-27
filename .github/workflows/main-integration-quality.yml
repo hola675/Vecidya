@@ -90,3 +90,4 @@ jobs:
           tests/unit/diagnostic/qa03b-v9-identity-claim.test.ts
           tests/unit/diagnostic/qa03b-v9-identity-claim-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-organization-link-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-assignment-sqlite.test.ts
