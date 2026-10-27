@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -151,4 +151,16 @@ test("P1: cola editorial conserva trazabilidad de preguntas, opciones y alertas"
     assert.equal(item.nextAction, row.nextAction);
   }
   assert.deepEqual(buildEditorialReviewQueueV9(matrix), queue);
+});
+
+test("P1: prioridades editoriales distinguen evidencia incompleta, neutralidad y redaccion", () => {
+  assert.equal(classifyEditorialReviewPriorityV9(["missing_evidence_mapping"]), "high");
+  assert.equal(classifyEditorialReviewPriorityV9(["neutral_with_evidence"]), "medium");
+  assert.equal(classifyEditorialReviewPriorityV9(["needs_neutral_check"]), "medium");
+  assert.equal(classifyEditorialReviewPriorityV9(["long_label"]), "low");
+  assert.equal(classifyEditorialReviewPriorityV9(["ambiguous_choice"]), "low");
+  assert.equal(classifyEditorialReviewPriorityV9(["long_label", "missing_evidence_mapping"]), "high");
+  for (const item of buildEditorialReviewQueueV9(buildCandidateEditorialMatrixV9())) {
+    assert.equal(item.priority, classifyEditorialReviewPriorityV9(item.flags));
+  }
 });
