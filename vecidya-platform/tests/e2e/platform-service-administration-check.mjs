@@ -275,6 +275,9 @@ for (const identityKey of ["normal", "inactive"]) {
 }
 const deniedGovernanceState = executeD1(`SELECT g.verification_status,g.platform_status,(SELECT count(*) FROM platform_audit_log a WHERE a.entity_id=${sqlLiteral(businessProfileId)}) AS audit_count FROM business_profile_governance g WHERE g.business_profile_id=${sqlLiteral(businessProfileId)};`)[0];
 assert(deniedGovernanceState?.verification_status === "unverified" && deniedGovernanceState.platform_status === "active" && Number(deniedGovernanceState.audit_count) === 0, `Una mutación denegada de gobierno alteró estado o auditoría: ${JSON.stringify(deniedGovernanceState)}`);
+const auditFixtureNow = Date.now();
+const auditPaginationRows = Array.from({ length: 55 }, (_, index) => `(${sqlLiteral(crypto.randomUUID())},${sqlLiteral(identities.platform.userId)},'test.audit.pagination','audit_test',${sqlLiteral(`audit-pagination-${index}`)},${sqlLiteral(identities["owner-a"].organizationId)},${sqlLiteral(`audit-pagination-fixture-${index}`)},'registro',NULL,${auditFixtureNow + index})`);
+executeD1(`INSERT INTO platform_audit_log (id,actor_user_id,action,entity_type,entity_id,organization_id,previous_value,new_value,metadata,created_at) VALUES ${auditPaginationRows.join(",")};`);
 const organizationsHtml = await (await assertStatus(identities.platform.client, "/app/internal/organizations", 200)).text();
 assert(organizationsHtml.includes('aria-label="Buscar negocios o clientes"') && organizationsHtml.includes("Publicado") && organizationsHtml.includes("Sin perfil"), "El listado no presentó búsqueda y estados de perfil del fixture.");
 const organizationDetailLink = `/app/internal/organizations/${identities["owner-a"].organizationId}`;
@@ -304,6 +307,21 @@ try {
   await page.getByRole("button", { name: "Abrir navegación administrativa" }).waitFor({ state: "visible" });
   assert(await page.getByRole("button", { name: "Abrir navegación administrativa" }).getAttribute("aria-expanded") === "false", "La navegación móvil no cerró el drawer tras cambiar de ruta.");
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Admin presenta overflow horizontal a 390 px.");
+  await page.getByRole("searchbox", { name: "Buscar en auditoría" }).fill("audit-pagination-fixture");
+  await page.getByLabel("Acción").selectOption("test.audit.pagination");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await page.waitForURL("**/app/internal/audit?q=audit-pagination-fixture&action=test.audit.pagination");
+  await page.waitForFunction(() => document.querySelector(".admin-result-count")?.textContent?.includes("Mostrando 1–50 de 55 registros"));
+  assert(await page.locator(".admin-audit-table tbody tr").count() === 50 && await page.getByText("Página 1 de 2").count() === 1, "La búsqueda auditada no paginó 55 coincidencias en páginas de 50.");
+  await page.getByRole("link", { name: "Siguiente" }).click();
+  await page.waitForURL((url) => url.pathname === "/app/internal/audit" && url.searchParams.get("q") === "audit-pagination-fixture" && url.searchParams.get("action") === "test.audit.pagination" && url.searchParams.get("page") === "2");
+  await page.waitForFunction(() => document.querySelector(".admin-result-count")?.textContent?.includes("Mostrando 51–55 de 55 registros"));
+  const secondAuditPageRows = await page.locator(".admin-audit-table tbody tr").count();
+  const secondAuditPageSummary = await page.locator(".admin-result-count").innerText();
+  assert(secondAuditPageRows === 5 && /Mostrando 51.?55 de 55 registros/.test(secondAuditPageSummary), `La segunda página perdió filtros o no mostró los cinco registros restantes: rows=${secondAuditPageRows}, summary=${secondAuditPageSummary}, URL=${page.url()}.`);
+  await page.getByRole("link", { name: "Anterior" }).click();
+  await page.waitForURL((url) => url.pathname === "/app/internal/audit" && url.searchParams.get("q") === "audit-pagination-fixture" && url.searchParams.get("action") === "test.audit.pagination" && url.searchParams.get("page") === "1");
+  await page.waitForFunction(() => document.querySelector(".admin-result-count")?.textContent?.includes("Mostrando 1–50 de 55 registros"));
 
   await page.setViewportSize({ width: 1366, height: 900 });
   let cancelNextGovernanceDialog = true;
@@ -413,6 +431,8 @@ try {
   await page.goto(`${baseUrl}/app/internal/audit`);
   const trainingAuditSearch = page.getByRole("searchbox", { name: "Buscar en auditoría" });
   await trainingAuditSearch.fill("capacitación");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await page.waitForURL((url) => url.pathname === "/app/internal/audit" && url.searchParams.get("q") === "capacitación");
   const trainingAuditRows = page.locator("tbody tr");
   await page.waitForFunction(() => {
     const rows = [...document.querySelectorAll("tbody tr")];
@@ -420,7 +440,8 @@ try {
     return rows.length === 2 && text.includes("Asignó capacitación a la organización") && text.includes("Corrigió el progreso de capacitación");
   });
   const trainingAuditText = (await trainingAuditRows.allInnerTexts()).join("\n");
-  assert(await trainingAuditRows.count() === 2 && trainingAuditText.includes("Asignó capacitación a la organización") && trainingAuditText.includes("Corrigió el progreso de capacitación"), `El historial de Admin no etiquetó ni filtró los eventos de capacitación: ${trainingAuditText}.`);
+  const trainingAuditSummary = await page.locator(".admin-result-count").innerText();
+  assert(await trainingAuditRows.count() === 2 && trainingAuditText.includes("Asignó capacitación a la organización") && trainingAuditText.includes("Corrigió el progreso de capacitación"), `El historial de Admin no etiquetó ni filtró los eventos de capacitación: summary=${trainingAuditSummary}; rows=${trainingAuditText}; url=${page.url()}.`);
 
   await page.goto(`${baseUrl}/app/internal/organizations/new`);
   await page.getByLabel("Nombre").fill(`Admin UI ${suffix}`);
@@ -478,7 +499,14 @@ try {
   await page.goto(`${baseUrl}/app/internal/audit`);
   const miniwebAuditSearch = page.getByRole("searchbox", { name: "Buscar en auditoría" });
   await miniwebAuditSearch.fill("MiniWeb");
+  await page.getByRole("button", { name: "Aplicar filtros" }).click();
+  await page.waitForURL((url) => url.pathname === "/app/internal/audit" && url.searchParams.get("q") === "MiniWeb");
   const miniwebAuditRows = page.locator("tbody tr");
+  await page.waitForFunction(() => {
+    const rows = [...document.querySelectorAll("tbody tr")];
+    const text = rows.map((row) => row.textContent ?? "").join(" ");
+    return rows.length === 2 && text.includes("Guardó el borrador de MiniWeb") && text.includes("Publicó la MiniWeb");
+  });
   const miniwebAuditText = (await miniwebAuditRows.allInnerTexts()).join("\n");
   assert(await miniwebAuditRows.count() === 2 && miniwebAuditText.includes("Guardó el borrador de MiniWeb") && miniwebAuditText.includes("Publicó la MiniWeb"), `El historial de Admin no etiquetó ni filtró las acciones MiniWeb: ${miniwebAuditText}.`);
   assert(pageErrors.length === 0, `El navegador reportó errores de página: ${pageErrors.join("; ")}`);

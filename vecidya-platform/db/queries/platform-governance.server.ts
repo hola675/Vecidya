@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, like, or } from "drizzle-orm";
 
 import type { Database } from "../client.server";
 import { businessProfileGovernance, businessProfile, organization, platformAuditLog, user } from "../schema";
@@ -115,4 +115,72 @@ export async function listPlatformAuditLog(database: Database, options: { limit?
     .where(options.entityId ? eq(platformAuditLog.entityId, options.entityId) : undefined)
     .orderBy(desc(platformAuditLog.createdAt))
     .limit(options.limit ?? 100);
+}
+
+export async function listPlatformAuditLogPage(database: Database, options: {
+  page: number;
+  pageSize: number;
+  action?: string;
+  search?: string;
+  actionLabels?: Record<string, string>;
+}) {
+  const query = options.search?.trim();
+  const searchPattern = query ? `%${query}%` : undefined;
+  const actions = await database.selectDistinct({ action: platformAuditLog.action }).from(platformAuditLog).orderBy(asc(platformAuditLog.action));
+  const matchingLabelActions = query
+    ? actions.map(({ action }) => action).filter((action) => options.actionLabels?.[action]?.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+    : [];
+  const where = and(
+    options.action ? eq(platformAuditLog.action, options.action) : undefined,
+    searchPattern ? or(
+      like(platformAuditLog.action, searchPattern),
+      like(platformAuditLog.entityType, searchPattern),
+      like(platformAuditLog.entityId, searchPattern),
+      like(platformAuditLog.previousValue, searchPattern),
+      like(platformAuditLog.newValue, searchPattern),
+      like(user.name, searchPattern),
+      like(user.email, searchPattern),
+      like(organization.name, searchPattern),
+      like(organization.slug, searchPattern),
+      like(businessProfile.displayName, searchPattern),
+      like(businessProfile.slug, searchPattern),
+      matchingLabelActions.length ? inArray(platformAuditLog.action, matchingLabelActions) : undefined,
+    ) : undefined,
+  );
+  const [countRows] = await Promise.all([
+    database.select({ total: count() }).from(platformAuditLog)
+      .leftJoin(user, eq(platformAuditLog.actorUserId, user.id))
+      .leftJoin(organization, eq(platformAuditLog.organizationId, organization.id))
+      .leftJoin(businessProfile, eq(platformAuditLog.entityId, businessProfile.id))
+      .where(where),
+  ]);
+  const total = countRows[0]?.total ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / options.pageSize));
+  const page = Math.min(Math.max(1, options.page), pageCount);
+  const activity = await database
+    .select({
+      id: platformAuditLog.id,
+      action: platformAuditLog.action,
+      entityType: platformAuditLog.entityType,
+      entityId: platformAuditLog.entityId,
+      previousValue: platformAuditLog.previousValue,
+      newValue: platformAuditLog.newValue,
+      createdAt: platformAuditLog.createdAt,
+      actorName: user.name,
+      actorEmail: user.email,
+      organizationName: organization.name,
+      organizationSlug: organization.slug,
+      businessProfileDisplayName: businessProfile.displayName,
+      businessProfileSlug: businessProfile.slug,
+    })
+    .from(platformAuditLog)
+    .leftJoin(user, eq(platformAuditLog.actorUserId, user.id))
+    .leftJoin(organization, eq(platformAuditLog.organizationId, organization.id))
+    .leftJoin(businessProfile, eq(platformAuditLog.entityId, businessProfile.id))
+    .where(where)
+    .orderBy(desc(platformAuditLog.createdAt), desc(platformAuditLog.id))
+    .limit(options.pageSize)
+    .offset((page - 1) * options.pageSize);
+
+  return { activity, actions: actions.map(({ action }) => action), page, pageCount, pageSize: options.pageSize, total };
 }
