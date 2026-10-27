@@ -247,3 +247,20 @@ test("visible interaction count rejects mismatched specialty selector in latest 
     Object.keys(applied.answers).length - 1,
   );
 });
+
+test("visible count rejects an invalid specialty value in a matching selector", () => {
+  const applied = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(applied.ok, true);
+  if (!applied.ok) return;
+  const forged: ClassificationInteractionEventV9 = {
+    ...applied.event,
+    niche: "not_a_specialty",
+  };
+  const answers: AnswersV2 = {
+    ...applied.answers,
+    q2_niche_food_hospitality: "not_a_specialty",
+  };
+  assert.equal(countVisibleInteractionsV9(answers, [forged]), Object.keys(answers).length);
+});
