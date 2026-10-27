@@ -270,3 +270,24 @@ test("P1: agrupación por dimensión preserva todos los huecos reales sin duplic
   assert.equal(new Set(grouped.map((item) => item.dimension)).size, grouped.length);
   assert.deepEqual(groupMissingEvidenceByDimensionV9([]), []);
 });
+
+test("P1: las tres ramas especializadas tienen evidencia completa y estados neutrales explícitos", () => {
+  const ids = [
+    "q2_dental_care_continuation",
+    "q2_food_menu_visibility",
+    "q2_marketing_agency_scope_clarity",
+  ];
+  const missing = auditMissingEvidenceDimensionsV9(bank);
+  for (const id of ids) {
+    const question = bank.find((item) => item.id === id);
+    assert.ok(question, "Pregunta especializada ausente: " + id);
+    assert.equal(question.evidenceMigration, "migrated");
+    assert.ok((question.evidenceV3?.dimensions.length ?? 0) > 0);
+    assert.ok(!missing.some((item) => item.questionId === id));
+    for (const dimension of question.evidenceV3!.dimensions) {
+      assert.equal(dimension.answers.not_applicable, "not_applicable");
+      assert.equal(dimension.answers.unknown, "uncertainty");
+      assert.equal(dimension.answers.clear === undefined || dimension.answers.clear === "established", true);
+    }
+  }
+});
