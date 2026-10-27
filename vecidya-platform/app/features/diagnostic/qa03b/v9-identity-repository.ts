@@ -272,3 +272,15 @@ export async function assignDiagnosticRunToAnonymousVisitorV9(
   }
   return { identityId: input.identityId, recoveryCredential };
 }
+
+/** Releases a pending claim after a failed finalization attempt; completed claims are immutable here. */
+export async function expirePendingDiagnosticIdentityClaimV9(
+  db: V9IdentityDb,
+  input: { claimId: string; expiredAt: string },
+): Promise<boolean> {
+  if (!input.claimId || !input.expiredAt) throw new Error("v9_claim_invalid_input");
+  const result = await db.prepare(
+    "UPDATE diagnostic_v9_identity_claims SET status='expired' WHERE claim_id=? AND status='pending' AND completed_at IS NULL",
+  ).bind(input.claimId).run();
+  return (result.meta?.changes ?? 0) === 1;
+}
