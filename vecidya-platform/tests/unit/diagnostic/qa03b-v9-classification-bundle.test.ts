@@ -295,3 +295,29 @@ test("classification replay rejects an event with a mismatched specialty value",
     applied.answers,
   );
 });
+
+test("classification replay remains deterministic after returning to a previous sector", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const second = applyClassificationInteractionV9(first.answers, {
+    sector: "b2b_services", niche: "marketing_agency",
+  });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+  const third = applyClassificationInteractionV9(second.answers, {
+    sector: "food_hospitality", niche: "other",
+  });
+  assert.equal(third.ok, true);
+  if (!third.ok) return;
+  const events = [first.event, second.event, third.event];
+  assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, events), third.answers);
+  assert.equal(third.answers.q2_niche_b2b_services, undefined);
+  assert.equal(third.answers.q2_niche_food_hospitality, "other");
+  assert.equal(
+    countVisibleInteractionsV9(third.answers, events),
+    Object.keys(third.answers).length - 1,
+  );
+});
