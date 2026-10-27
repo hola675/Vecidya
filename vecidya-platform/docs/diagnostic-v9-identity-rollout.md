@@ -23,7 +23,7 @@ No rellenar las versiones con etiquetas provisionales: deben corresponder a arte
 
 ## Identidad anónima
 
-La página pública solicita `POST /api/diagnostic/anonymous-identity` cuando no hay sesión autenticada. El endpoint requiere origen de mismo sitio, JSON, limitación de solicitudes y tablas V9 disponibles. Crea o reutiliza una identidad anónima y entrega la prueba de posesión mediante una cookie:
+La página pública solicita `POST /api/diagnostic/anonymous-identity` cuando no hay sesión autenticada y el runtime V9 está habilitado con todas las versiones configuradas. Un único helper de servidor comprueba la bandera y las cinco versiones antes de permitir el bootstrap, crear ejecuciones o guardar eventos. El endpoint requiere origen de mismo sitio, JSON, limitación de solicitudes y tablas V9 disponibles. Crea o reutiliza una identidad anónima y entrega la prueba de posesión mediante una cookie:
 
 - `HttpOnly`, `SameSite=Lax`, `Secure` en HTTPS.
 - Limitada a `/api/diagnostic`, con duración máxima de 30 días.
@@ -34,7 +34,7 @@ El secreto de la cookie autoriza acciones de esa identidad. Nunca registrarlo en
 ## Creación y eventos
 
 - `POST /api/diagnostic/v9/runs` crea una ejecución y su propiedad en una única operación D1 por lotes. El endpoint permanece desactivado si falta la bandera o alguna versión certificada.
-- `POST /api/diagnostic/v9/runs/:runId/events` valida el contrato del evento, el orden de secuencia y la propiedad antes de escribir. Las respuestas se limitan por tamaño y las fechas de evento tienen una ventana máxima de 15 minutos.
+- `POST /api/diagnostic/v9/runs/:runId/events` valida el contrato del evento, el orden de secuencia y la propiedad antes de escribir. Las solicitudes se limitan por tamaño; las fechas de evento no pueden estar más de 5 minutos en el futuro ni ser anteriores a 30 días, para permitir reintentos tras desconexiones.
 - Las escrituras de eventos no aceptan `workspaceId`, `userId` ni `identityId` desde el cuerpo de la petición.
 
 ## Reclamación de historial
@@ -53,7 +53,7 @@ Las migraciones `0031`–`0034` establecen propiedad, unicidad de reclamaciones 
 ## Pendientes antes de producción
 
 1. Ejecutar CI focalizada y typecheck/build completos para el último conjunto de rutas y componentes.
-2. Aplicar las migraciones 0031–0033 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual, incluida la nueva migración `0034`.
+2. Aplicar las migraciones 0031–0034 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual.
 3. Integrar el motor V9 certificado con los endpoints de creación y eventos. El cuestionario público existente sigue en contrato V8; no se debe cambiar a V9 solo por tener estos endpoints.
 4. Añadir pruebas E2E para login posterior, reclamación, permisos, pérdida de cookie, conflictos de secuencia y vinculación organizacional.
 5. Certificar versiones de banco, motor, puntuación, recomendaciones y consentimiento; mantener la bandera desactivada hasta entonces.
