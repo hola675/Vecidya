@@ -197,6 +197,28 @@ export function buildEditorialReviewQueueV9(matrix: EditorialMatrixResultV9): re
   );
 }
 
+export type EditorialReviewBatchV9 = {
+  readonly questionId: string;
+  readonly priority: EditorialReviewPriorityV9;
+  readonly items: readonly EditorialReviewItemV9[];
+  readonly nextAction: string;
+};
+
+/** Agrupa por pregunta y ordena por prioridad, manteniendo el orden del banco en empates. */
+export function buildEditorialReviewBatchesV9(matrix: EditorialMatrixResultV9): readonly EditorialReviewBatchV9[] {
+  const rank: Record<EditorialReviewPriorityV9, number> = { high: 0, medium: 1, low: 2 };
+  const queue = buildEditorialReviewQueueV9(matrix);
+  const batches = matrix.rows.flatMap((row) => {
+    const items = queue.filter((item) => item.questionId === row.id);
+    if (items.length === 0) return [];
+    const priority = items.reduce<EditorialReviewPriorityV9>(
+      (current, item) => rank[item.priority] < rank[current] ? item.priority : current, "low",
+    );
+    return [{ questionId: row.id, priority, items, nextAction: row.nextAction }];
+  });
+  return batches.sort((a, b) => rank[a.priority] - rank[b.priority]);
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
