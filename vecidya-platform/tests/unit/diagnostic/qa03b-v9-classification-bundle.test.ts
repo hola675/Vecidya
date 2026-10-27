@@ -200,3 +200,29 @@ test("switching specialty within a sector clears stale specialist evidence", () 
   assert.equal(changed.answers.q2_goal, existing.q2_goal);
   assert.equal(changed.answers.q2_has_customers, existing.q2_has_customers);
 });
+
+test("visible interaction count does not reuse an old matching sector event", () => {
+  const first = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(first.ok, true);
+  if (!first.ok) return;
+  const second = applyClassificationInteractionV9(first.answers, {
+    sector: "b2b_services", niche: "marketing_agency",
+  });
+  assert.equal(second.ok, true);
+  if (!second.ok) return;
+  const staleAnswers: AnswersV2 = {
+    ...second.answers,
+    q2_sector: "food_hospitality",
+    q2_niche_food_hospitality: "restaurant",
+  };
+  assert.equal(
+    countVisibleInteractionsV9(staleAnswers, [first.event, second.event]),
+    Object.keys(staleAnswers).length,
+  );
+  assert.equal(
+    countVisibleInteractionsV9(first.answers, [first.event]),
+    Object.keys(first.answers).length - 1,
+  );
+});
