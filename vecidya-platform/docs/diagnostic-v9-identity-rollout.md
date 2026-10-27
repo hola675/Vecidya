@@ -35,6 +35,7 @@ El secreto de la cookie autoriza acciones de esa identidad. Nunca registrarlo en
 
 - `POST /api/diagnostic/v9/runs` crea una ejecución y su propiedad en una única operación D1 por lotes. El endpoint permanece desactivado si falta la bandera o alguna versión certificada.
 - `POST /api/diagnostic/v9/runs/:runId/events` valida el contrato del evento, el orden de secuencia y la propiedad antes de escribir. Las solicitudes se limitan por tamaño; las fechas de evento no pueden estar más de 5 minutos en el futuro ni ser anteriores a 30 días, para permitir reintentos tras desconexiones.
+- `replayDiagnosticAuditEventsV9` reconstruye la sesión desde eventos D1, comprueba secuencias, actor, esquema, marcas de tiempo y respuestas canónicas, y vuelve a ejecutar la validación autoritativa del Worker.
 - Las escrituras de eventos no aceptan `workspaceId`, `userId` ni `identityId` desde el cuerpo de la petición.
 
 ## Reclamación de historial
