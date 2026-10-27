@@ -321,3 +321,16 @@ test("classification replay remains deterministic after returning to a previous 
     Object.keys(third.answers).length - 1,
   );
 });
+
+test("V9 planner respects historical interaction floor after a bundled classification", () => {
+  const result = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  const withoutHistory = buildCandidateQuestionPlanV9Prototype(result.answers, [result.event]);
+  const withHistory = buildCandidateQuestionPlanV9Prototype(result.answers, [result.event], 24);
+  assert.equal(withHistory.visibleInteractionCount, 24);
+  assert.ok(withHistory.visibleInteractionCount >= withoutHistory.visibleInteractionCount);
+  assert.ok(withHistory.plan.routeLength <= 24);
+});
