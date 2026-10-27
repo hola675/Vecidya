@@ -266,6 +266,25 @@ export function listMissingEvidenceOptionsV9(matrix: EditorialMatrixResultV9): r
     .map((item) => ({ questionId: item.questionId, optionValue: item.optionValue }));
 }
 
+/** Dimensiones realmente ausentes, calculadas desde el banco fuente, sin inferencias. */
+export function auditMissingEvidenceDimensionsV9(bank: readonly QuestionDefinitionV2[]): readonly {
+  questionId: string;
+  optionValue: string;
+  missingDimensions: readonly string[];
+}[] {
+  return bank.flatMap((question) => {
+    if (question.evidenceMigration !== "migrated") return [];
+    return question.options.flatMap((option) => {
+      const missingDimensions = (question.evidenceV3?.dimensions ?? [])
+        .filter((dimension) => dimension.answers[option.value] === undefined)
+        .map((dimension) => dimension.dimension);
+      return missingDimensions.length
+        ? [{ questionId: question.id, optionValue: option.value, missingDimensions }]
+        : [];
+    });
+  });
+}
+
 export function buildCandidateEditorialMatrixV9(): EditorialMatrixResultV9 {
   return buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
 }
