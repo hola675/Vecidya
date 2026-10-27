@@ -135,9 +135,11 @@ export function buildCandidateQuestionPlanV9Prototype(
   const activeAnswers = resolveEligibleQuestionsV2(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
   // Historical interactions are monotonic: removing stale answers cannot refund spent slots.
   // Ignore invalid/non-finite historical counts instead of contaminating the planner with NaN.
-  const historicalFloor = historicalInteractionCount !== undefined && Number.isFinite(historicalInteractionCount)
-    ? Math.max(0, Math.trunc(historicalInteractionCount))
-    : 0;
+  const historicalFloor = historicalInteractionCount !== undefined && Number.isSafeInteger(historicalInteractionCount)
+    ? Math.max(0, historicalInteractionCount)
+    : historicalInteractionCount !== undefined && Number.isFinite(historicalInteractionCount)
+      ? Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, Math.trunc(historicalInteractionCount)))
+      : 0;
   const visibleInteractionCount = Math.max(
     countVisibleInteractionsV9(activeAnswers, classificationEvents),
     historicalFloor,
