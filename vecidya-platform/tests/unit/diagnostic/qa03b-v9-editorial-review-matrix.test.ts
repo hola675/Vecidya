@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, listMissingEvidenceOptionsV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, listHighPriorityEditorialQuestionsV9, buildHighPriorityEditorialReportV9, listMissingEvidenceOptionsV9, auditMissingEvidenceDimensionsV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -240,4 +240,21 @@ test("P1: opciones con evidencia incompleta conservan identificadores verificabl
     .map((item) => ({ questionId: item.questionId, optionValue: item.optionValue }));
   assert.deepEqual(listMissingEvidenceOptionsV9(matrix), expected);
   assert.deepEqual(listMissingEvidenceOptionsV9(buildEditorialMatrixV9([])), []);
+});
+
+test("P1: dimensiones ausentes provienen del banco y coinciden con las alertas altas", () => {
+  const details = auditMissingEvidenceDimensionsV9(bank);
+  const expected = listMissingEvidenceOptionsV9(buildCandidateEditorialMatrixV9());
+  assert.deepEqual(details.map(({ questionId, optionValue }) => ({ questionId, optionValue })), expected);
+  for (const detail of details) {
+    const question = bank.find((item) => item.id === detail.questionId);
+    assert.ok(question);
+    assert.equal(question.evidenceMigration, "migrated");
+    for (const dimension of detail.missingDimensions) {
+      const source = question.evidenceV3?.dimensions.find((item) => item.dimension === dimension);
+      assert.ok(source);
+      assert.equal(source.answers[detail.optionValue], undefined);
+    }
+  }
+  assert.deepEqual(auditMissingEvidenceDimensionsV9([]), []);
 });
