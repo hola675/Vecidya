@@ -20,3 +20,17 @@ test("V9 verified snapshot refuses undefined state before accessing DB", async (
     /v9_snapshot_invalid_state/,
   );
 });
+
+test("V9 verified snapshot rejects circular and bigint states before DB access", async () => {
+  const circular: { self?: unknown } = {};
+  circular.self = circular;
+  for (const state of [circular, { value: BigInt(1) }]) {
+    await assert.rejects(
+      () => saveVerifiedDiagnosticSnapshotV9({} as never, {
+        workspaceId: "org-a", runId: "run-a", lastSeq: 0,
+        state, createdAt: "2026-10-27",
+      }),
+      /v9_snapshot_invalid_state/,
+    );
+  }
+});
