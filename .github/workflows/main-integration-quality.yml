@@ -75,6 +75,8 @@ jobs:
         run: >-
           node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
           tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts
+          tests/unit/diagnostic/qa03b-v9-session-prototype.test.ts
+          tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
           tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts
           tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts
           tests/unit/diagnostic/qa03b-specialty-candidate.test.ts
