@@ -14,6 +14,17 @@ import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-w
  */
 export const QA03B_V9_CLASSIFICATION_INTERACTION_ID = "qa03b-v9-sector-specialty-v1" as const;
 
+/** V9-owned answer shape. Legacy QBV2 remains a structural compatibility adapter only. */
+export type DiagnosticAnswersV9 = Readonly<Record<string, string | readonly string[]>>;
+
+/** V9-owned persisted classification state; events are replayable independently of V8 sessions. */
+export type DiagnosticClassificationStateV9 = {
+  readonly version: 9;
+  readonly answers: DiagnosticAnswersV9;
+  readonly events: readonly ClassificationInteractionEventV9[];
+  readonly historicalInteractionCount: number;
+};
+
 export type ClassificationSelectionV9 = {
   readonly sector: string;
   readonly niche?: string;
