@@ -63,7 +63,7 @@ export type EditorialAnswerMatrixV9 = {
   readonly kind: string;
   readonly exclusive: boolean;
   readonly produces: readonly string[];
-  readonly readsAs: readonly { readonly dimension: string; readonly directness: "direct" | "supporting"; readonly state: string }[];
+  readonly readsAs: readonly { readonly dimension: string; readonly directness: "direct" | "supporting" | "contextual"; readonly state: string }[];
   readonly reviewFlags: readonly ("long_label" | "ambiguous_choice" | "needs_neutral_check")[];
 };
 
