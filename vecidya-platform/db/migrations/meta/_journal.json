@@ -239,6 +239,13 @@
       "when": 1793135400000,
       "tag": "0033_diagnostic_v9_owner_assignment_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1793140000000,
+      "tag": "0034_diagnostic_v9_identity_claim_integrity",
+      "breakpoints": true
     }
   ]
 }
