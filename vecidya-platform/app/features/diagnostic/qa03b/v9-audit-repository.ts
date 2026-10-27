@@ -197,3 +197,34 @@ export async function saveDiagnosticSnapshotV9(
     input.stateJson, input.stateHash, input.createdAt).run();
   return "created";
 }
+
+/** Canonical SHA-256 digest for a stored JSON snapshot. */
+export async function hashDiagnosticSnapshotV9(stateJson: string): Promise<string> {
+  const bytes = new TextEncoder().encode(stateJson);
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+/** Fail closed on a missing or tampered checkpoint; caller replays later events. */
+export async function loadLatestDiagnosticSnapshotV9(
+  db: V9AuditDb,
+  workspaceId: string,
+  runId: string,
+): Promise<{ lastSeq: number; state: unknown } | null> {
+  if (!workspaceId || !runId) throw new Error("v9_snapshot_invalid_scope");
+  const snapshot = await db.prepare(
+    "SELECT last_seq,state_json,state_hash FROM diagnostic_v9_snapshots WHERE workspace_id=? AND run_id=? ORDER BY last_seq DESC LIMIT 1",
+  ).bind(workspaceId, runId).first<{
+    last_seq: number; state_json: string; state_hash: string;
+  }>();
+  if (!snapshot) return null;
+  if (!Number.isSafeInteger(snapshot.last_seq) || snapshot.last_seq < 0 ||
+      snapshot.state_hash !== await hashDiagnosticSnapshotV9(snapshot.state_json)) {
+    throw new Error("v9_snapshot_integrity_failure");
+  }
+  try {
+    return { lastSeq: snapshot.last_seq, state: JSON.parse(snapshot.state_json) as unknown };
+  } catch {
+    throw new Error("v9_snapshot_integrity_failure");
+  }
+}
