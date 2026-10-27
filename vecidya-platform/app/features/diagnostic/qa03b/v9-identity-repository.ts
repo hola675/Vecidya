@@ -320,3 +320,72 @@ export async function assignDiagnosticRunToExistingAnonymousIdentityV9(
   });
   return { identityId: input.identityId };
 }
+
+import type { V9RunVersions } from "./v9-audit-repository";
+
+/**
+ * Creates a V9 run and its personal ownership in one D1 batch. workspaceId and
+ * version metadata must be selected by server code, not copied from request JSON.
+ */
+export async function createOwnedDiagnosticRunV9(
+  db: V9IdentityDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    clientId?: string;
+    startedAt: string;
+    versions: V9RunVersions;
+    identityId: string;
+    userId?: string;
+    recoveryCredential?: string;
+  },
+): Promise<{ runId: string; identityId: string; ownerType: "user" | "anonymous" }> {
+  if (!input.workspaceId || !input.runId || !input.startedAt ||
+      Object.values(input.versions).some((version) => !version)) {
+    throw new Error("v9_run_invalid_identity_or_versions");
+  }
+  let identityId: string;
+  let ownerType: "user" | "anonymous";
+  let assignmentSource: V9AssignmentSource;
+  if (input.userId) {
+    identityId = await ensureUserIdentityV9(db, {
+      identityId: input.identityId,
+      userId: input.userId,
+      createdAt: input.startedAt,
+    });
+    ownerType = "user";
+    assignmentSource = "authenticated_session";
+  } else {
+    if (!input.identityId || !input.recoveryCredential) throw new Error("v9_anonymous_proof_required");
+    const identity = await db.prepare(
+      "SELECT identity_id,identity_type,credential_hash,claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id=?",
+    ).bind(input.identityId).first<{
+      identity_id: string; identity_type: string; credential_hash: string | null; claimed_by_user_id: string | null;
+    }>();
+    if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) {
+      throw new Error("v9_identity_not_claimable");
+    }
+    if (identity.claimed_by_user_id) throw new Error("v9_identity_already_claimed");
+    if (!await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash)) {
+      throw new Error("v9_identity_proof_invalid");
+    }
+    identityId = identity.identity_id;
+    ownerType = "anonymous";
+    assignmentSource = "anonymous_session";
+  }
+  const result = await db.batch([
+    db.prepare(
+      "INSERT INTO diagnostic_v9_runs (workspace_id,run_id,client_id,status,started_at,last_seq,bank_version,engine_version,scoring_version,recommendation_version,consent_version) VALUES (?,?,?,'active',?,0,?,?,?,?,?)",
+    ).bind(input.workspaceId, input.runId, input.clientId ?? null, input.startedAt,
+      input.versions.bank, input.versions.engine, input.versions.scoring,
+      input.versions.recommendations, input.versions.consent),
+    db.prepare(
+      "INSERT INTO diagnostic_v9_run_ownership (workspace_id,run_id,identity_id,assigned_at,assignment_source) VALUES (?,?,?,?,?)",
+    ).bind(input.workspaceId, input.runId, identityId, input.startedAt, assignmentSource),
+  ]);
+  if (result.length !== 2 || result.some((item) => !item.success) ||
+      (result[0]?.meta?.changes ?? 0) !== 1 || (result[1]?.meta?.changes ?? 0) !== 1) {
+    throw new Error("v9_run_owner_create_failed");
+  }
+  return { runId: input.runId, identityId, ownerType };
+}
