@@ -264,3 +264,17 @@ test("visible count rejects an invalid specialty value in a matching selector", 
   };
   assert.equal(countVisibleInteractionsV9(answers, [forged]), Object.keys(answers).length);
 });
+
+test("visible count does not discount a missing sector answer", () => {
+  const applied = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(applied.ok, true);
+  if (!applied.ok) return;
+  const incomplete: AnswersV2 = { ...applied.answers };
+  delete incomplete.q2_sector;
+  assert.equal(
+    countVisibleInteractionsV9(incomplete, [applied.event]),
+    Object.keys(incomplete).length,
+  );
+});
