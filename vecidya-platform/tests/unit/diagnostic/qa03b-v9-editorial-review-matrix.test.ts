@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 as publicBank } from "../../../app/features/diagnostic/qa03b/bank";
-import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
+import { buildCandidateEditorialMatrixV9, buildEditorialMatrixV9, buildEditorialReviewQueueV9, buildEditorialReviewBatchesV9, countEditorialReviewPrioritiesV9, classifyEditorialReviewPriorityV9, V9_P1_EDITORIAL_DECISIONS } from "../../../app/features/diagnostic/qa03b/v9-editorial-review-matrix";
 
 test("P1b: matriz completa de 77 preguntas / 387 opciones / 15 variantes, sin considerar pendientes aprobadas", () => {
   const matrix = buildCandidateEditorialMatrixV9();
@@ -181,4 +181,16 @@ test("P1: lotes editoriales agrupan alertas por pregunta y prioridad estable", (
     assert.equal(rank[batch.priority], Math.min(...batch.items.map((item) => rank[item.priority])));
   }
   assert.deepEqual(buildEditorialReviewBatchesV9(matrix), batches);
+});
+
+test("P1: los totales de prioridad cubren exactamente las opciones con alertas", () => {
+  const matrix = buildCandidateEditorialMatrixV9();
+  const queue = buildEditorialReviewQueueV9(matrix);
+  const totals = countEditorialReviewPrioritiesV9(matrix);
+  assert.equal(totals.high + totals.medium + totals.low, queue.length);
+  for (const priority of ["high", "medium", "low"] as const) {
+    assert.equal(totals[priority], queue.filter((item) => item.priority === priority).length);
+  }
+  assert.deepEqual(countEditorialReviewPrioritiesV9(matrix), totals);
+  assert.deepEqual(countEditorialReviewPrioritiesV9(buildEditorialMatrixV9([])), { high: 0, medium: 0, low: 0 });
 });
