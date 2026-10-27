@@ -83,8 +83,6 @@ export async function action({ context, request }: Route.ActionArgs) {
 
 function ClaimAnonymousHistory() {
   const { revalidate } = useRevalidator();
-  const [identityId, setIdentityId] = useState("");
-  const [recoveryCredential, setRecoveryCredential] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -95,19 +93,13 @@ function ClaimAnonymousHistory() {
     setError(null);
     setSubmitting(true);
     try {
-      const response = await fetch("/api/diagnostic/claim-anonymous", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ identityId: identityId.trim(), recoveryCredential: recoveryCredential.trim() }),
-      });
+      const response = await fetch("/api/diagnostic/claim-anonymous", { method: "POST" });
       const result = await response.json() as { ok?: boolean; transferredRuns?: number; error?: string };
       if (!response.ok || !result.ok) {
         setError(result.error ?? "No pudimos recuperar ese historial.");
         return;
       }
       setMessage(`Historial recuperado. Diagnósticos asociados: ${result.transferredRuns ?? 0}.`);
-      setIdentityId("");
-      setRecoveryCredential("");
       revalidate();
     } catch {
       setError("No pudimos conectar con Vecidya. Inténtalo de nuevo.");
@@ -118,16 +110,12 @@ function ClaimAnonymousHistory() {
 
   return (
     <Card>
-      <h2>Recuperar un diagnóstico anónimo</h2>
-      <p>Si guardaste el identificador y la credencial de recuperación de una sesión anónima, puedes asociar sus diagnósticos a tu cuenta. La credencial no se guarda en el historial de la página.</p>
+      <h2>Recuperar diagnósticos de esta visita</h2>
+      <p>Si realizaste un diagnóstico como visitante en este mismo navegador, puedes asociar ese historial a tu cuenta. La prueba de propiedad se conserva en una cookie HttpOnly y no se expone al código de la página.</p>
       <Form className="account-form" onSubmit={submit}>
-        <label htmlFor="claim-identity-id">Identificador anónimo</label>
-        <input id="claim-identity-id" autoComplete="off" value={identityId} onChange={(event) => setIdentityId(event.currentTarget.value)} required maxLength={128} />
-        <label htmlFor="claim-recovery-credential">Credencial de recuperación</label>
-        <input id="claim-recovery-credential" type="password" autoComplete="off" spellCheck={false} value={recoveryCredential} onChange={(event) => setRecoveryCredential(event.currentTarget.value)} required minLength={64} maxLength={64} pattern="[a-f0-9]{64}" />
         {error ? <Alert>{error}</Alert> : null}
         {message ? <Alert>{message}</Alert> : null}
-        <Button type="submit" disabled={submitting}>{submitting ? "Recuperando…" : "Recuperar historial"}</Button>
+        <Button type="submit" disabled={submitting}>{submitting ? "Recuperando…" : "Vincular historial de visitante"}</Button>
       </Form>
     </Card>
   );
