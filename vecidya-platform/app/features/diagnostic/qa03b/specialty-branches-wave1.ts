@@ -1,5 +1,5 @@
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
-import { andV2, archetypeIncludes, eqV2, inV2, notEqV2, notV2, orV2 } from "../qbv2-rules";
+import { andV2, archetypeIncludes, eqV2, inV2, notV2, orV2 } from "../qbv2-rules";
 import { QA03B_SPECIALTY_CANDIDATE_BANK_V1 } from "./specialty-candidate-bank";
 
 /**
@@ -14,7 +14,13 @@ const activeHistory = andV2(
 );
 
 // If niche is still unknown, keep the generic observation available.
-const healthGenericGate = notEqV2("q2_niche_health_wellness", "dentist");
+const dentalSpecialistEligible = andV2(
+  activeHistory,
+  eqV2("q2_niche_health_wellness", "dentist"),
+  archetypeIncludes("appointments"),
+  orV2(eqV2("q2_goal", "stop_losing"), eqV2("q2_friction", "follow_up")),
+);
+const healthGenericGate = notV2(dentalSpecialistEligible);
 
 // Generic clarity stays available until a known specialty can replace it.
 const foodSpecialistEligible = andV2(
@@ -45,12 +51,7 @@ export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[
     purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
-    appliesWhen: andV2(
-      activeHistory,
-      eqV2("q2_niche_health_wellness", "dentist"),
-      archetypeIncludes("appointments"),
-      orV2(eqV2("q2_goal", "stop_losing"), eqV2("q2_friction", "follow_up")),
-    ),
+    appliesWhen: dentalSpecialistEligible,
     options: [
       { value: "proactive", label: "Normalmente dejamos acordada la próxima cita con anticipación" },
       { value: "partial", label: "A veces queda acordada y otras veces se organiza después" },
@@ -85,9 +86,7 @@ export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[
     purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
-    appliesWhen: andV2(
-      foodSpecialistEligible,
-    ),
+    appliesWhen: foodSpecialistEligible,
     options: [
       { value: "clear", label: "Sí, se ve una selección suficientemente clara y actual" },
       { value: "partial", label: "Se ve parte de la oferta, pero falta información o está algo desactualizada" },
@@ -122,9 +121,7 @@ export const QA03B_SPECIALTY_BRANCH_QUESTIONS_V1: readonly QuestionDefinitionV2[
     purpose: ["diagnostic"],
     priority: "normal",
     evidenceMigration: "migrated",
-    appliesWhen: andV2(
-      agencySpecialistEligible,
-    ),
+    appliesWhen: agencySpecialistEligible,
     options: [
       { value: "clear", label: "Sí, normalmente se entiende qué incluye el servicio" },
       { value: "partial", label: "Se entiende en general, pero algunos alcances o entregables quedan poco claros" },
