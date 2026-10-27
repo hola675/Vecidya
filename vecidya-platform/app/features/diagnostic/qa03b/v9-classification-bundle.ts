@@ -105,8 +105,11 @@ export function countVisibleInteractionsV9(
 ): number {
   let count = Object.keys(activeAnswers).length;
   const currentSector = activeAnswers.q2_sector;
-  const latest = [...events].reverse().find((event) => event.sector === currentSector);
-  if (!latest?.niche || !latest.nicheQuestionId) return count;
+  // Only the final classification event can justify bundling the current answers.
+  // An older matching sector must not grant a discount after a later sector change.
+  const latest = events[events.length - 1];
+  if (!latest || latest.kind !== QA03B_V9_CLASSIFICATION_INTERACTION_ID || latest.sectorQuestionId !== "q2_sector" || latest.sector !== currentSector) return count;
+  if (!latest.niche || !latest.nicheQuestionId) return count;
   if (activeAnswers[latest.nicheQuestionId] !== latest.niche) return count;
   return Math.max(0, count - 1);
 }
