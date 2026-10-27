@@ -8,6 +8,7 @@ import {
 import { readV9AnonymousIdentityCookie } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
+import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 
 import type { Route } from "./+types/api-diagnostic-v9-runs";
 
@@ -32,23 +33,15 @@ export async function action({ context, request }: Route.ActionArgs) {
     return failure(415, "Formato no permitido.");
   }
   const { env } = context.get(cloudflareContext);
-  const runtime = env as typeof env & {
-    DIAGNOSTIC_V9_PUBLIC_ENABLED?: string;
-    DIAGNOSTIC_V9_BANK_VERSION?: string;
-    DIAGNOSTIC_V9_ENGINE_VERSION?: string;
-    DIAGNOSTIC_V9_SCORING_VERSION?: string;
-    DIAGNOSTIC_V9_RECOMMENDATION_VERSION?: string;
-    DIAGNOSTIC_V9_CONSENT_VERSION?: string;
-  };
-  if (runtime.DIAGNOSTIC_V9_PUBLIC_ENABLED !== "true") return failure(503, "El diagnóstico V9 aún no está habilitado para el público.");
+  const runtime = env as unknown as V9PublicRuntimeConfig;
+  if (!isV9PublicRuntimeAvailable(runtime)) return failure(503, "El diagnóstico V9 aún no está habilitado con versiones certificadas.");
   const versions = {
-    bank: runtime.DIAGNOSTIC_V9_BANK_VERSION ?? "",
-    engine: runtime.DIAGNOSTIC_V9_ENGINE_VERSION ?? "",
-    scoring: runtime.DIAGNOSTIC_V9_SCORING_VERSION ?? "",
-    recommendations: runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION ?? "",
-    consent: runtime.DIAGNOSTIC_V9_CONSENT_VERSION ?? "",
+    bank: runtime.DIAGNOSTIC_V9_BANK_VERSION!,
+    engine: runtime.DIAGNOSTIC_V9_ENGINE_VERSION!,
+    scoring: runtime.DIAGNOSTIC_V9_SCORING_VERSION!,
+    recommendations: runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION!,
+    consent: runtime.DIAGNOSTIC_V9_CONSENT_VERSION!,
   };
-  if (Object.values(versions).some((value) => !value)) return failure(503, "Falta configurar la versión certificada del motor V9.");
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "diagnostic-v9-create-run")) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");
