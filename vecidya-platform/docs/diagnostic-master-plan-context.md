@@ -90,3 +90,17 @@ Proximo cierre: obtener resultados de pruebas focalizadas, resolver fallos, revi
 ### Control P2: clasificacion incompleta — 2026-10-27
 
 El prototipo requiere sector y especialidad explicitos para descontar una interaccion conjunta. Se agrego una comprobacion de presencia del sector (c9a9c6a) y una prueba para respuestas incompletas (90590bb). El criterio de salida sigue siendo CI focalizada ejecutada y revisada, no solo tests registrados. No activar V9 ni modificar V8.
+
+## Lotes de implementación — seguimiento 2026-10-27
+
+| Lote | Objetivo | Evidencia y puerta de salida |
+|---|---|---|
+| L1 — P2 clasificación | Sector y especialidad como interacción única; replay y limpieza de respuestas al reclasificar | Correcciones y regresiones registradas; falta ejecución CI verificable |
+| L2 — P2 presupuesto | Conteo de interacciones, eventos antiguos o inválidos y piso histórico | Pruebas de valores, selectores y cambios sucesivos; añadida prueba de piso histórico en 24; falta ejecución |
+| L3 — P1 editorial | Revisar preguntas y opciones de clasificación, con decisiones explícitas por respuesta | 77 preguntas y 387 opciones inventariadas; no atribuir aprobación humana |
+| L4 — P2/P3 rutas | Comprobar sustituciones genéricas, elegibilidad y simplificación de recorridos | Escenarios por sector y límite visible; pendiente de certificar |
+| L5 — P5 autonomía | Separar contratos, banco, motor, sesión y evaluación de QBV2 | Bloqueado hasta completar contratos y evidencia; no activar V9 |
+
+**CI:** el job focalizado V9 ahora incluye el archivo de pruebas de clasificación y un paso de `pnpm typecheck` antes de los contratos. No se ha confirmado ejecución PASS. El plan requiere cerrar cada lote con código, pruebas ejecutadas, resultados y riesgos; commits por sí solos no cierran etapas.
+
+**Política de corte:** mantener PR #162 como draft, V8 intacto, sin merge ni despliegue hasta certificación y autorización.
