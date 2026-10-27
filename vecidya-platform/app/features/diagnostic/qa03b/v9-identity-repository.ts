@@ -440,3 +440,60 @@ export async function appendOwnedDiagnosticEventV9(
     actorType: "client",
   });
 }
+
+
+export type V9OwnedDiagnosticRun = {
+  run_id: string;
+  status: "active" | "completed" | "abandoned" | "failed";
+  started_at: string;
+  finished_at: string | null;
+  last_seq: number;
+  bank_version: string;
+  engine_version: string;
+  scoring_version: string;
+  recommendation_version: string;
+  consent_version: string;
+};
+
+export async function readOwnedDiagnosticRunV9(
+  db: V9IdentityDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    userId?: string;
+    identityId?: string;
+    recoveryCredential?: string;
+  },
+): Promise<V9OwnedDiagnosticRun> {
+  if (!input.workspaceId || !input.runId) throw new Error("v9_run_missing_scope");
+
+  let run: V9OwnedDiagnosticRun | null = null;
+  if (input.userId) {
+    run = await db.prepare(
+      "SELECT r.run_id,r.status,r.started_at,r.finished_at,r.last_seq,r.bank_version,r.engine_version,r.scoring_version,r.recommendation_version,r.consent_version FROM diagnostic_v9_runs r JOIN diagnostic_v9_run_ownership o ON o.workspace_id=r.workspace_id AND o.run_id=r.run_id JOIN diagnostic_v9_identities i ON i.identity_id=o.identity_id WHERE r.workspace_id=? AND r.run_id=? AND i.identity_type='user' AND i.user_id=?",
+    ).bind(input.workspaceId, input.runId, input.userId).first<V9OwnedDiagnosticRun>();
+  } else {
+    if (!input.identityId || !input.recoveryCredential) throw new Error("v9_anonymous_proof_required");
+    const identity = await db.prepare(
+      "SELECT identity_type,credential_hash,claimed_by_user_id FROM diagnostic_v9_identities WHERE identity_id=?",
+    ).bind(input.identityId).first<{
+      identity_type: string;
+      credential_hash: string | null;
+      claimed_by_user_id: string | null;
+    }>();
+    if (!identity || identity.identity_type !== "anonymous" || !identity.credential_hash) {
+      throw new Error("v9_identity_not_claimable");
+    }
+    if (identity.claimed_by_user_id) throw new Error("v9_identity_already_claimed");
+    if (!await verifyAnonymousIdentityCredentialV9(input.recoveryCredential, identity.credential_hash)) {
+      throw new Error("v9_identity_proof_invalid");
+    }
+    run = await db.prepare(
+      "SELECT r.run_id,r.status,r.started_at,r.finished_at,r.last_seq,r.bank_version,r.engine_version,r.scoring_version,r.recommendation_version,r.consent_version FROM diagnostic_v9_runs r JOIN diagnostic_v9_run_ownership o ON o.workspace_id=r.workspace_id AND o.run_id=r.run_id WHERE r.workspace_id=? AND r.run_id=? AND o.identity_id=? AND o.assignment_source='anonymous_session'",
+    ).bind(input.workspaceId, input.runId, input.identityId).first<V9OwnedDiagnosticRun>();
+  }
+
+  if (!run) throw new Error("v9_run_not_owned");
+  if (!Number.isSafeInteger(run.last_seq) || run.last_seq < 0) throw new Error("v9_history_invalid_sequence");
+  return run;
+}
