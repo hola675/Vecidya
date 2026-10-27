@@ -676,3 +676,16 @@ test("P2: replay rechaza propiedades extra no reconocidas en eventos", () => {
   assert.equal(replayClassificationInteractionsV9(restaurantContext, [forged]), null);
   assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
 });
+
+test("P2: un historial finito enorme se limita al máximo entero seguro", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "food_hospitality", niche: "restaurant",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+  const result = buildCandidateQuestionPlanV9Prototype(
+    classified.answers, [classified.event], Number.MAX_VALUE,
+  );
+  assert.equal(result.visibleInteractionCount, Number.MAX_SAFE_INTEGER);
+  assert.ok(result.plan.routeLength <= 24);
+});
