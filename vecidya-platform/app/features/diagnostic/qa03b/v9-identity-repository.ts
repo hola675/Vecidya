@@ -16,6 +16,8 @@ export type V9IdentityDb = {
   };
 };
 
+export const DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID = "public" as const;
+
 export type V9IdentityType = "user" | "anonymous";
 export type V9AssignmentSource =
   | "authenticated_session"
