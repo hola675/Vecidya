@@ -1,6 +1,6 @@
 # Pruebas
 
-## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (checkpoint local)
+## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
 
 `/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
 

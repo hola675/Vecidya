@@ -154,7 +154,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | --- | --- | --- | --- | --- | --- |
 | `/app/internal` | `internal.tsx` | tarjetas | — | `admin-shell` | sí |
 | `/app/internal/services` | `internal-services.tsx` | orgs, catálogo, asignaciones | asigna/actualiza estado, fechas y audit batch | `platform-service-administration-check.mjs` | sí (local comprobado) |
-| `/app/internal/organizations` | `internal-organizations.tsx` | espacios de trabajo; búsqueda/filtro de perfil/orden en URL y páginas de 50 | — | `platform-service-administration-check.mjs` | Worker/D1/Chrome local PASS; sin deploy |
+| `/app/internal/organizations` | `internal-organizations.tsx` | espacios de trabajo; búsqueda/filtro de perfil/orden en URL y páginas de 50 | — | `platform-service-administration-check.mjs` | PR #173 integrado; Worker/D1/Chrome local PASS; sin deploy |
 | `/app/internal/organizations/new` | `internal-organization-create.tsx` | alta con invitación owner | `organization:create` | crea org/lifecycle/invitación/audit y envía una vez | local |
 | `/app/internal/organizations/:organizationId` | `internal-organization-detail.tsx` | detalle | `requirePlatformReadAccess` | organizaciones para staff y admin | local |
 | `/app/internal/organizations/:organizationId/miniweb` | `internal-organization-miniweb.tsx` | configuración JSON MiniWeb | `miniweb:save` / `miniweb:publish` | guardar draft y publicación explícita auditados | local |
