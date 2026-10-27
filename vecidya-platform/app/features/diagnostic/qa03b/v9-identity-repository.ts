@@ -8,6 +8,7 @@ export type V9IdentityDb = {
     bind(...values: unknown[]): {
       run(): Promise<{ success: boolean; meta?: { changes?: number } }>;
       first<T>(): Promise<T | null>;
+      all<T>(): Promise<{ results: T[] }>;
     };
   };
 };
@@ -76,10 +77,8 @@ export async function listOwnedDiagnosticRunsV9(
   const limit = Number.isFinite(input.limit) ? Math.max(1, Math.min(100, Math.trunc(input.limit ?? 20))) : 20;
   const result = await db.prepare(
     "SELECT o.workspace_id,o.run_id,o.assigned_at,o.assignment_source FROM diagnostic_v9_run_ownership o JOIN diagnostic_v9_identities i ON i.identity_id=o.identity_id WHERE o.identity_id=? ORDER BY o.assigned_at DESC,o.run_id DESC LIMIT ?",
-  ).bind(input.identityId, limit).first<{
+  ).bind(input.identityId, limit).all<{
     workspace_id: string; run_id: string; assigned_at: string; assignment_source: string;
   }>();
-  // Use all() for list operations in the D1 adapter implementation.
-  if (result) return [result];
-  return [];
+  return result.results;
 }
