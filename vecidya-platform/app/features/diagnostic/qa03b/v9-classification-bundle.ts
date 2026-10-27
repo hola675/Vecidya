@@ -114,8 +114,9 @@ export function countVisibleInteractionsV9(
   if (!selector || selector.id !== latest.nicheQuestionId) return count;
   if (!selector.options.some((option) => option.value === latest.niche)) return count;
   if (activeAnswers[latest.nicheQuestionId] !== latest.niche) return count;
-  // A bundled interaction requires both explicit answers to be present.
+  // Only a genuine pair of explicit answers can be counted as one interaction.
   if (!Object.prototype.hasOwnProperty.call(activeAnswers, "q2_sector")) return count;
+  if (!Object.prototype.hasOwnProperty.call(activeAnswers, latest.nicheQuestionId)) return count;
   return Math.max(0, count - 1);
 }
 
