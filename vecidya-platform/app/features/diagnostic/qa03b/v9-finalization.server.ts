@@ -47,6 +47,22 @@ function parseSavedResult(row: {
   }
 }
 
+/** Canonicalize the exact JSON representation used by D1 so first-run and retry results agree. */
+function canonicalizePersistedJson<T>(value: T): T {
+  let serialized: string | undefined;
+  try {
+    serialized = JSON.stringify(value);
+  } catch {
+    throw new Error("v9_result_integrity_failure");
+  }
+  if (serialized === undefined) throw new Error("v9_result_integrity_failure");
+  try {
+    return JSON.parse(serialized) as T;
+  } catch {
+    throw new Error("v9_result_integrity_failure");
+  }
+}
+
 /**
  * Completes an owned V9 run from the append-only D1 event stream.
  * No score, evidence, or recommendation is accepted from the browser.
@@ -104,7 +120,7 @@ export async function finalizeOwnedDiagnosticRunV9(
     throw new Error("v9_finalize_scoring_parity_failure");
   }
 
-  const score = {
+  const score = canonicalizePersistedJson({
     identity: replay.core.identity,
     interactionCount: replay.core.interactionCount,
     terminalReason: replay.core.terminalReason,
@@ -113,13 +129,13 @@ export async function finalizeOwnedDiagnosticRunV9(
     insufficientContextDimensions: replay.core.insufficientContextDimensions,
     unresolvedApplicableDimensions: replay.core.unresolvedApplicableDimensions,
     overall: outcome.overall,
-  };
-  const evidence = outcome.scoring.dimensions;
-  const recommendations = {
+  });
+  const evidence = canonicalizePersistedJson(outcome.scoring.dimensions);
+  const recommendations = canonicalizePersistedJson({
     version: outcome.recommendations.version,
     items: outcome.recommendations.items,
     solutions: outcome.solutions,
-  };
+  });
   const finishedAt = new Date(now).toISOString();
   const finalized = await finalizeDiagnosticRunV9(db as V9FinalizationDb, {
     workspaceId: input.workspaceId,
