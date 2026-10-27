@@ -42,7 +42,7 @@ test("V9 classification state replays from independent audit events", async () =
       seq: 1,
       event_id: "event-a",
       kind: QA03B_V9_CLASSIFICATION_INTERACTION_ID,
-      payload_json: JSON.stringify({ sector: "servicios_profesionales" }),
+      payload_json: JSON.stringify({ sector: "other" }),
       schema_version: 1,
     }]),
     workspaceId,
@@ -52,7 +52,7 @@ test("V9 classification state replays from independent audit events", async () =
   assert.equal(result.state.version, 9);
   assert.equal(result.state.events.length, 1);
   assert.equal(result.state.historicalInteractionCount, 1);
-  assert.equal(result.state.answers.q2_sector, "servicios_profesionales");
+  assert.equal(result.state.answers.q2_sector, "other");
 });
 
 test("V9 rejects malformed classification snapshots", () => {
