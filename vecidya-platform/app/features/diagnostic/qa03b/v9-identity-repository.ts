@@ -38,14 +38,14 @@ export async function ensureUserIdentityV9(
   input: { identityId: string; userId: string; createdAt: string },
 ): Promise<string> {
   if (!input.identityId || !input.userId || !input.createdAt) throw new Error("v9_identity_invalid_input");
-  const existing = await db.prepare(
+  await db.prepare(
+    "INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?) ON CONFLICT(user_id) WHERE identity_type='user' DO NOTHING",
+  ).bind(input.identityId, input.userId, input.createdAt).run();
+  const identity = await db.prepare(
     "SELECT identity_id FROM diagnostic_v9_identities WHERE identity_type='user' AND user_id=?",
   ).bind(input.userId).first<{ identity_id: string }>();
-  if (existing) return existing.identity_id;
-  await db.prepare(
-    "INSERT INTO diagnostic_v9_identities (identity_id,identity_type,user_id,created_at) VALUES (?,'user',?,?)",
-  ).bind(input.identityId, input.userId, input.createdAt).run();
-  return input.identityId;
+  if (!identity) throw new Error("v9_user_identity_create_failed");
+  return identity.identity_id;
 }
 
 export async function assignDiagnosticOwnerV9(
