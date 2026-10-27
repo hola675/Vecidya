@@ -1,8 +1,12 @@
 # Pruebas
 
+## Release 0.8.4 — evidencia de publicación (2026-10-27)
+
+No se ejecutaron pruebas automatizadas por indicación del usuario. El build de producción terminó correctamente; D1 remota reportó `No migrations to apply`. La verificación anónima de `GET https://vecidya.com/` dio 200 y mostró 0.8.4 + © 2026 Vecidya a las 2026-10-27T23:44:23Z. No se verificaron rutas autenticadas en producción. Detalle del deploy y Version ID en `ENVIRONMENTS.md`.
+
 ## APP-MINI-02D — refinamiento de configuración (2026-10-27)
 
-No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. No se ejecutaron pruebas automatizadas, no se probaron datos remotos ni se hizo deploy.
+No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. Esta inspección fue local y previa al deploy; la evidencia HTTP del release posterior figura arriba.
 ## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
 
 `/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.

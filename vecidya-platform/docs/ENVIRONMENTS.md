@@ -1,8 +1,14 @@
-# Entornos y release de producción 0.8.3 (2026-10-26)
+# Entornos y release de producción 0.8.4 (2026-10-27)
 
-## Candidato de aplicación 0.8.4 — local (2026-10-26)
+## Release de producción 0.8.4 — publicado
 
-La rama `fix/miniweb-cover-sections` presenta una composición vertical que respeta el orden de secciones, usa la portada como imagen dentro del marco de identidad, elimina el icono duplicado bajo el nombre y mejora el peso/espaciado de encabezados. Versión `package.json`: `0.8.4`. MiniWeb E2E 138/138, typecheck, build y diff-check PASS localmente. Sin deploy, migraciones, uso de D1/R2 remotas ni solicitudes HTTP a producción. La última publicación confirmada continúa en 0.8.3, con Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`.
+PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; versión de aplicación `0.8.4`. Incluye refinamientos del editor MiniWeb y Mi negocio, paginación de organizaciones ya integrada en PR #173 y el paquete A Team que el usuario pidió incluir.
+
+**D1 RAN 2026-10-27:** `pnpm exec wrangler d1 migrations list DB --remote` contra `vecidya-prod` respondió `No migrations to apply`. Este release no incorpora archivos de migración ni cambios de esquema; no hubo escrituras de D1.
+
+**Deploy RAN 2026-10-27:** Wrangler 4.152.0 desplegó `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. Se mantuvieron rutas `vecidya.com/*`, `www.vecidya.com/*`, bindings productivos y Cron `17 3 * * *`.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-27T23:44:23Z:** `GET https://vecidya.com/` → 200; HTML con versión `0.8.4` y `© 2026 Vecidya`. Sin sesión ni acceso a datos privados. No se verificaron rutas autenticadas de la aplicación en producción.
 
 ## Release de producción 0.8.3 — publicado (2026-10-26)
 

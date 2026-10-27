@@ -1,10 +1,14 @@
+## Corte vigente — release 0.8.4 publicado (2026-10-27)
+
+PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; Worker `vecidya-platform` Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. Incluye la configuración compacta de MiniWeb y Mi negocio, la paginación de Organizaciones ya integrada por #173 y el paquete A Team. La D1 productiva respondió `No migrations to apply`; no se realizaron escrituras de esquema o datos. GET anónimo de `https://vecidya.com/` devolvió 200 con versión 0.8.4 y © 2026 Vecidya a las 2026-10-27T23:44:23Z. Sin pruebas automatizadas por petición del usuario.
+
 ## Código integrado y estado Admin (2026-10-27)
 
-`origin/main@19653199893cfcce1d276db9e1fab6f1bf0937e7` integra PR #173 sobre PR #158 y PR #155: Organizaciones pagina 50 filas con búsqueda/filtros server-side, orden estable y estado en URL; Auditoría filtra por texto/acción y pagina 50 filas; las licencias conservan cancelación manual inmediata, reactivación auditada de la misma fila y cronología por negocio, sin vencimiento ni renovación automática. PR #173 también incorpora la base de A Team y roster verificado. No hay migración ni deploy de estos cambios Admin; producción continúa en `0.8.3` (evidencia HTTP fechada en `ENVIRONMENTS.md`).
+`main@7eff191a` integra PR #173 sobre PR #158 y #155, y #175 publica el conjunto en 0.8.4: Organizaciones pagina 50 filas con búsqueda/filtros server-side, orden estable y estado en URL; Auditoría filtra por texto/acción y pagina 50 filas; las licencias conservan cancelación manual inmediata, reactivación auditada de la misma fila y cronología por negocio, sin vencimiento ni renovación automática. La base A Team y el roster verificado también forman parte del código integrado.
 
-PR #173 integró la búsqueda por nombre/slug/titular, filtro de perfil, orden y paginación de Organizaciones; Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check pasaron antes de integrar. Servicios e Integraciones conservan gaps de escala. Sin cambio de esquema ni deploy.
+PR #173 integró la búsqueda por nombre/slug/titular, filtro de perfil, orden y paginación de Organizaciones; Worker/D1/Chrome E2E, typecheck, build, `node --check` y diff-check pasaron antes de integrar. Servicios e Integraciones conservan gaps de escala. PR #175 publicó Organizaciones como parte de 0.8.4; no cambió el esquema.
 
-## Corte vigente — producción 0.8.3 y candidato 0.8.4 local (2026-10-26)
+## Corte histórico — producción 0.8.3 y candidato 0.8.4 local (2026-10-26; superado por el release actual)
 
 `origin/main@b8b255a4` integra PR #153/#154 y #155, con checkpoint de paginación Admin local documentado arriba. Producción `0.8.3`, Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`; GET anónimo fechado confirmó el footer y versión. Esta rama unifica el candidato de portada/secciones y refina el editor MiniWeb: pasos compactos, panel acotado, lateral con espacio vertical compacto y drawer móvil de ancho fluido, avisos persistentes y navegación pública en la misma pestaña. Inspección visual autenticada manual con D1 local temporal y capturas escritorio/móvil; sin automatizadas por petición del usuario. Typecheck/build/diff-check PASS. No está integrada ni publicada. Evidencia y límites: `TESTING.md`; estado remoto sin cambios: `ENVIRONMENTS.md`.
 
