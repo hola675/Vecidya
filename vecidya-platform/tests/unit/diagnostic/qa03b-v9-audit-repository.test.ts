@@ -64,3 +64,12 @@ test("V9 event retry rejects changed actor and timestamp", async () => {
   assert.deepEqual(await appendDiagnosticEventV9(db, { ...base, actorType: "operator" }), { status: "conflict" });
   assert.deepEqual(await appendDiagnosticEventV9(db, { ...base, occurredAt: "2026-10-27T00:01:00Z" }), { status: "conflict" });
 });
+
+test("V9 append normalizes circular and BigInt event payload failures", async () => {
+  const { db } = fakeDb();
+  const circular: { self?: unknown } = {};
+  circular.self = circular;
+  await assert.rejects(() => appendDiagnosticEventV9(db, { ...base, payload: circular }), /v9_invalid_payload/);
+  await assert.rejects(() => appendDiagnosticEventV9(db, { ...base, payload: { id: 1n } }), /v9_invalid_payload/);
+  await assert.rejects(() => appendDiagnosticEventV9(db, { ...base, occurredAt: "" }), /v9_invalid_event/);
+});
