@@ -7,6 +7,7 @@ import { getSession } from "../../server/auth/session.server";
 import { Link } from "react-router";
 import { useEffect } from "react";
 import { isIdentifiedReportJourneyAvailable } from "../features/diagnostic/identified-report-availability.server";
+import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 
 import type { Route } from "./+types/diagnostic";
 
@@ -34,8 +35,10 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   } catch {
     authStatus = "unavailable";
   }
+  const v9IdentityBootstrapEnabled = isV9PublicRuntimeAvailable(env as unknown as V9PublicRuntimeConfig);
   return {
     identifiedReportAvailable: isIdentifiedReportJourneyAvailable(env),
+    v9IdentityBootstrapEnabled,
     authenticatedUser,
     authStatus,
   };
@@ -43,14 +46,14 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 export default function Diagnostic({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
-    if (loaderData.authStatus !== "anonymous") return;
+    if (loaderData.authStatus !== "anonymous" || !loaderData.v9IdentityBootstrapEnabled) return;
     void fetch("/api/diagnostic/anonymous-identity", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: "{}",
       credentials: "same-origin",
     }).catch(() => undefined);
-  }, [loaderData.authStatus]);
+  }, [loaderData.authStatus, loaderData.v9IdentityBootstrapEnabled]);
 
   return (
     <PublicLayout>
