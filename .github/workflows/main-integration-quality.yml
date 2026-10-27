@@ -74,3 +74,4 @@ jobs:
           tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
           tests/unit/diagnostic/qa03b-v9-menu-v2-proposal.test.ts
           tests/unit/diagnostic/qa03b-v9-menu-version-identity.test.ts
+          tests/unit/diagnostic/qa03b-v9-session-restore-compat.test.ts
