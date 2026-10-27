@@ -79,3 +79,9 @@ jobs:
           tests/unit/diagnostic/qa03b-specialty-branches-wave1.test.ts
           tests/unit/diagnostic/qa03b-specialty-journey-certification.test.ts
           tests/unit/diagnostic/qa03b-v9-menu-v2-proposal.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-repository.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-history.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-recovery-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-snapshot-hash.test.ts
+          tests/unit/diagnostic/qa03b-v9-classification-audit-replay.test.ts
