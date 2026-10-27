@@ -102,3 +102,20 @@ test("V9 run creation rolls back the owner row if the run insert fails", async (
     sqlite.close();
   }
 });
+
+test("V9 database guard rejects anonymous ownership after identity has been claimed", () => {
+  const sqlite = new DatabaseSync(":memory:");
+  try {
+    sqlite.exec("PRAGMA foreign_keys=ON");
+    for (const migration of migrations) sqlite.exec(migration);
+    sqlite.prepare("INSERT INTO diagnostic_v9_runs (workspace_id,run_id,started_at,bank_version,engine_version,scoring_version,recommendation_version,consent_version) VALUES (?,?,?,?,?,?,?,?)")
+      .run("public", "race-run", "2026-10-27", "b1", "e1", "s1", "r1", "c1");
+    sqlite.prepare("INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at,claimed_by_user_id,claimed_at) VALUES (?,'anonymous',?,?,?,?)")
+      .run("anon-claimed", "a".repeat(64), "2026-10-27", "user-1", "2026-10-27");
+    assert.throws(() => sqlite.prepare("INSERT INTO diagnostic_v9_run_ownership (workspace_id,run_id,identity_id,assigned_at,assignment_source) VALUES (?,?,?,?,?)")
+      .run("public", "race-run", "anon-claimed", "2026-10-27", "anonymous_session"), /v9_owner_identity_state_invalid/);
+    assert.equal((sqlite.prepare("SELECT COUNT(*) AS n FROM diagnostic_v9_run_ownership WHERE run_id='race-run'").get() as {n:number}).n, 0);
+  } finally {
+    sqlite.close();
+  }
+});
