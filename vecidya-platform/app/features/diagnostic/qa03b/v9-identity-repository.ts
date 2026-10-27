@@ -194,3 +194,32 @@ export async function finalizeAnonymousIdentityClaimV9(
   }
   return { transferredRuns: batch[1]?.meta?.changes ?? 0 };
 }
+
+/** Link a run to an organization only when the authenticated user owns it. */
+export async function linkOwnedDiagnosticRunToOrganizationV9(
+  db: V9IdentityDb,
+  input: {
+    workspaceId: string;
+    runId: string;
+    organizationId: string;
+    linkedByUserId: string;
+    linkedAt: string;
+  },
+): Promise<"created" | "duplicate"> {
+  if (!input.workspaceId || !input.runId || !input.organizationId || !input.linkedByUserId || !input.linkedAt) {
+    throw new Error("v9_organization_link_invalid_input");
+  }
+  const ownership = await db.prepare(
+    "SELECT o.identity_id FROM diagnostic_v9_run_ownership o JOIN diagnostic_v9_identities i ON i.identity_id=o.identity_id WHERE o.workspace_id=? AND o.run_id=? AND i.identity_type='user' AND i.user_id=?",
+  ).bind(input.workspaceId, input.runId, input.linkedByUserId).first<{ identity_id: string }>();
+  if (!ownership) throw new Error("v9_run_not_owned");
+  const existing = await db.prepare(
+    "SELECT organization_id FROM diagnostic_v9_run_organizations WHERE workspace_id=? AND run_id=? AND organization_id=?",
+  ).bind(input.workspaceId, input.runId, input.organizationId).first<{ organization_id: string }>();
+  if (existing) return "duplicate";
+  const result = await db.prepare(
+    "INSERT INTO diagnostic_v9_run_organizations (workspace_id,run_id,organization_id,linked_by_user_id,linked_at,link_reason) SELECT ?,?,?,?,?,'owner_requested' WHERE EXISTS (SELECT 1 FROM diagnostic_v9_run_ownership o JOIN diagnostic_v9_identities i ON i.identity_id=o.identity_id WHERE o.workspace_id=? AND o.run_id=? AND i.identity_type='user' AND i.user_id=?)",
+  ).bind(input.workspaceId, input.runId, input.organizationId, input.linkedByUserId, input.linkedAt, input.workspaceId, input.runId, input.linkedByUserId).run();
+  if ((result.meta?.changes ?? 0) !== 1) throw new Error("v9_run_not_owned");
+  return "created";
+}
