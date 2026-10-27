@@ -69,6 +69,25 @@ test("specialty branch bank adds exactly three reviewed direct observations and 
   }
 });
 
+test("dental generic coverage remains when specialized question is ineligible", () => {
+  const cases: AnswersV2[] = [
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_goal: "explain", q2_friction: "conversion" },
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_delivery: ["remote_service"] },
+    { ...dentistBase, q2_niche_health_wellness: "dentist", q2_operational_status: "preparing" },
+  ];
+  for (const answers of cases) {
+    const baseline = resolveEligibleQuestionsV2(answers, bank74);
+    const candidate = resolveEligibleQuestionsV2(answers, bank77);
+    if (baseline.eligibleQuestionIds.includes("q2_appointments_rebooking")) {
+      assert.ok(
+        candidate.eligibleQuestionIds.includes("q2_appointments_rebooking") ||
+          candidate.eligibleQuestionIds.includes("q2_dental_care_continuation"),
+        "lost rebooking coverage: " + JSON.stringify(answers),
+      );
+    }
+  }
+});
+
 test("dentist niche substitutes dental continuation for generic rebooking", () => {
   const before = resolveEligibleQuestionsV2(dentistBase, bank77);
   assert.ok(before.eligibleQuestionIds.includes("q2_niche_health_wellness"));
