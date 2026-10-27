@@ -382,3 +382,36 @@ test("P2: escenarios sectoriales sustituyen elegibilidad genérica y respetan pr
     assert.equal(visibleInteractionCount, Object.keys(classified.answers).length - 1);
   }
 });
+
+test("P2: cambiar de odontología a restaurante elimina la evidencia anterior y activa la rama nueva", () => {
+  const dental = applyClassificationInteractionV9({
+    ...restaurantContext,
+    q2_monetization: "services",
+    q2_delivery: ["appointments"],
+    q2_goal: "stop_losing",
+  }, { sector: "health_wellness", niche: "dentist" });
+  assert.equal(dental.ok, true);
+  if (!dental.ok) return;
+
+  const withEvidence: AnswersV2 = {
+    ...dental.answers,
+    q2_dental_care_continuation: "proactive",
+  };
+  const switched = applyClassificationInteractionV9({
+    ...withEvidence,
+    q2_goal: "explain",
+    q2_monetization: "goods",
+    q2_delivery: ["onsite"],
+  }, { sector: "food_hospitality", niche: "restaurant" });
+  assert.equal(switched.ok, true);
+  if (!switched.ok) return;
+
+  assert.equal(switched.answers.q2_dental_care_continuation, undefined);
+  assert.equal(switched.answers.q2_niche_health_wellness, undefined);
+  assert.equal(switched.answers.q2_niche_food_hospitality, "restaurant");
+  const eligible = resolveEligibleQuestionsV2(switched.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+  assert.ok(eligible.eligibleQuestionIds.includes("q2_food_menu_visibility"));
+  assert.ok(!eligible.eligibleQuestionIds.includes("q2_presence_offer_clarity"));
+  const plan = buildCandidateQuestionPlanV9Prototype(switched.answers, [dental.event, switched.event]);
+  assert.ok(plan.plan.routeLength <= 24);
+});
