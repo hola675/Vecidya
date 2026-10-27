@@ -32,3 +32,11 @@ No se ha alterado V8 ni desplegado el candidato.
 El candidato de 77 preguntas conserva por ahora `q2_food_menu_visibility` v1. La propuesta v2 introduce `not_published` y lectura `weak`, manteniendo `unknown` como `uncertainty`. Es una mejora semántica plausible porque no publicar la oferta no equivale a «no aplica». No se integra sin comprobar todos los escenarios de restaurantes, cafeterías y food trucks. Se retiró de la documentación del prototipo la exigencia obsoleta de migración histórica: el motor V9 nuevo no dependerá de sesiones V8.
 
 La cobertura genérica/especializada fue corregida en `specialty-branches-wave1.ts` y se agregó una prueba de regresión focalizada. El resultado de CI sigue sin verificación; no se declara PASS.
+
+## Lote 01 — control de clasificación (continuación)
+
+Se añadieron pruebas focalizadas para `q2_entity`, `q2_operational_status` y `q2_has_customers`. Se verifica la lista explícita de opciones, el valor neutral `unknown`, etiquetas no vacías, unicidad de valores y la diferencia textual entre actividad en pausa e historial de clientes. Estas pruebas comprueban invariantes del banco candidato, no certifican comprensión humana ni cobertura de todos los recorridos.
+
+**Observación editorial:** `q2_has_customers` considera usuarios y beneficiarios reales, además de compradores. Mantener esta amplitud es importante para proyectos comunitarios y actividades gratuitas; no debe reinterpretarse `yes` como prueba de ventas. `q2_operational_status` admite `preparing`, `operating` y `paused` por separado. `q2_entity` diferencia `individual`, `business`, `organization` y `project`, sin inferir formalización legal.
+
+**Pendiente:** validar con casos narrativos la transición preparación → operación → pausa y la distinción entre usuario/beneficiario y comprador; revisar sectores y prioridades. Sin resultado CI confirmado.
