@@ -64,3 +64,36 @@ CREATE TABLE diagnostic_v9_feedback (
   FOREIGN KEY (workspace_id,run_id) REFERENCES diagnostic_v9_runs(workspace_id,run_id)
 );
 CREATE INDEX diagnostic_v9_feedback_run_idx ON diagnostic_v9_feedback(workspace_id,run_id,created_at);
+
+-- Append-only audit log and atomic sequence progression.
+CREATE TRIGGER diagnostic_v9_event_before_insert
+BEFORE INSERT ON diagnostic_v9_events
+BEGIN
+  SELECT CASE WHEN NOT EXISTS (
+    SELECT 1 FROM diagnostic_v9_runs
+    WHERE workspace_id = NEW.workspace_id
+      AND run_id = NEW.run_id
+      AND status = 'active'
+      AND last_seq = NEW.seq - 1
+  ) THEN RAISE(ABORT, 'v9_sequence_conflict') END;
+END;
+
+CREATE TRIGGER diagnostic_v9_event_after_insert
+AFTER INSERT ON diagnostic_v9_events
+BEGIN
+  UPDATE diagnostic_v9_runs
+  SET last_seq = NEW.seq
+  WHERE workspace_id = NEW.workspace_id AND run_id = NEW.run_id;
+END;
+
+CREATE TRIGGER diagnostic_v9_event_before_update
+BEFORE UPDATE ON diagnostic_v9_events
+BEGIN
+  SELECT RAISE(ABORT, 'v9_audit_immutable');
+END;
+
+CREATE TRIGGER diagnostic_v9_event_before_delete
+BEFORE DELETE ON diagnostic_v9_events
+BEGIN
+  SELECT RAISE(ABORT, 'v9_audit_immutable');
+END;
