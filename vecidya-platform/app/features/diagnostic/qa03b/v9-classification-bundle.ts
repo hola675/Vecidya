@@ -47,6 +47,15 @@ const selectorBySector = new Map(
   QA03B_SPECIALTY_SELECTORS_V1.map((question) => [question.id.replace("q2_niche_", ""), question] as const),
 );
 
+/**
+ * Isolated V9 eligibility boundary.
+ * The current implementation delegates to QBV2; replacing that engine must preserve
+ * this contract and the classification/plan parity tests.
+ */
+export function resolveActiveDiagnosticAnswersV9(answers: DiagnosticAnswersV9): DiagnosticAnswersV9 {
+  return resolveEligibleQuestionsV2(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
+}
+
 export function applyClassificationInteractionV9(
   currentAnswers: AnswersV2,
   selection: ClassificationSelectionV9,
@@ -73,7 +82,7 @@ export function applyClassificationInteractionV9(
   if (nicheQuestionId && selection.niche !== undefined) next[nicheQuestionId] = selection.niche;
 
   // R5 eligibility removes stale answers from a previous sector/specialty branch.
-  const answers = resolveEligibleQuestionsV2(next, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
+  const answers = resolveActiveDiagnosticAnswersV9(next);
   return {
     ok: true,
     answers,
@@ -157,7 +166,7 @@ export function buildCandidateQuestionPlanV9Prototype(
   classificationEvents: readonly ClassificationInteractionEventV9[],
   historicalInteractionCount?: number,
 ): { readonly plan: CandidateQuestionPlanV3; readonly visibleInteractionCount: number; readonly activeAnswers: AnswersV2 } {
-  const activeAnswers = resolveEligibleQuestionsV2(answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2).activeAnswers;
+  const activeAnswers = resolveActiveDiagnosticAnswersV9(answers);
   // Historical interactions are monotonic: removing stale answers cannot refund spent slots.
   // Ignore invalid/non-finite historical counts instead of contaminating the planner with NaN.
   const historicalFloor = historicalInteractionCount !== undefined && Number.isSafeInteger(historicalInteractionCount)
