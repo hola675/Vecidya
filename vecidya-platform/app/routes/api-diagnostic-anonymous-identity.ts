@@ -10,6 +10,7 @@ import {
 } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
+import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 
 import type { Route } from "./+types/api-diagnostic-anonymous-identity";
 
@@ -30,18 +31,7 @@ export async function action({ context, request }: Route.ActionArgs) {
     return failure(415, "Formato no permitido.");
   }
   const { env } = context.get(cloudflareContext);
-  const runtime = env as typeof env & {
-    DIAGNOSTIC_V9_PUBLIC_ENABLED?: string;
-    DIAGNOSTIC_V9_BANK_VERSION?: string;
-    DIAGNOSTIC_V9_ENGINE_VERSION?: string;
-    DIAGNOSTIC_V9_SCORING_VERSION?: string;
-    DIAGNOSTIC_V9_RECOMMENDATION_VERSION?: string;
-    DIAGNOSTIC_V9_CONSENT_VERSION?: string;
-  };
-  if (runtime.DIAGNOSTIC_V9_PUBLIC_ENABLED !== "true" ||
-      !runtime.DIAGNOSTIC_V9_BANK_VERSION || !runtime.DIAGNOSTIC_V9_ENGINE_VERSION ||
-      !runtime.DIAGNOSTIC_V9_SCORING_VERSION || !runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION ||
-      !runtime.DIAGNOSTIC_V9_CONSENT_VERSION) {
+  if (!isV9PublicRuntimeAvailable(env as unknown as V9PublicRuntimeConfig)) {
     return failure(503, "El historial V9 todavía no está habilitado.");
   }
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
