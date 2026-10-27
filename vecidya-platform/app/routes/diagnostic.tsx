@@ -24,10 +24,19 @@ export function meta(_: Route.MetaArgs) {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const session = await getSession(env, request);
+  let authenticatedUser: { name: string } | null = null;
+  let authStatus: "authenticated" | "anonymous" | "unavailable" = "anonymous";
+  try {
+    const session = await getSession(env, request);
+    authenticatedUser = session ? { name: session.user.name } : null;
+    authStatus = session ? "authenticated" : "anonymous";
+  } catch {
+    authStatus = "unavailable";
+  }
   return {
     identifiedReportAvailable: isIdentifiedReportJourneyAvailable(env),
-    authenticatedUser: session ? { name: session.user.name } : null,
+    authenticatedUser,
+    authStatus,
   };
 }
 
