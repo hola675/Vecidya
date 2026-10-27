@@ -4,6 +4,7 @@
  * authenticated server session; never pass browser-supplied identity claims here.
  */
 export type V9IdentityDb = {
+  batch<T = unknown>(statements: Array<{ bind(...values: unknown[]): unknown }>): Promise<Array<{ success: boolean; meta?: { changes?: number }; results?: T[] }>>;
   prepare(sql: string): {
     bind(...values: unknown[]): {
       run(): Promise<{ success: boolean; meta?: { changes?: number } }>;
@@ -155,4 +156,41 @@ export async function prepareAnonymousIdentityClaimV9(
     "INSERT INTO diagnostic_v9_identity_claims (claim_id,identity_id,target_user_id,proof_type,status,created_at) VALUES (?,?,?,'anonymous_credential','pending',?)",
   ).bind(input.claimId, input.identityId, input.targetUserId, input.createdAt).run();
   return "pending";
+}
+
+/**
+ * Atomically claims an anonymous identity and transfers its runs to the
+ * authenticated user's identity. Caller must have authenticated targetUserId.
+ */
+export async function finalizeAnonymousIdentityClaimV9(
+  db: V9IdentityDb,
+  input: { claimId: string; identityId: string; targetUserId: string; completedAt: string },
+): Promise<{ transferredRuns: number }> {
+  if (!input.claimId || !input.identityId || !input.targetUserId || !input.completedAt) {
+    throw new Error("v9_claim_invalid_input");
+  }
+  const claim = await db.prepare(
+    "SELECT claim_id FROM diagnostic_v9_identity_claims WHERE claim_id=? AND identity_id=? AND target_user_id=? AND status='pending'",
+  ).bind(input.claimId, input.identityId, input.targetUserId).first<{ claim_id: string }>();
+  if (!claim) throw new Error("v9_claim_not_pending");
+  const target = await db.prepare(
+    "SELECT identity_id FROM diagnostic_v9_identities WHERE identity_type='user' AND user_id=?",
+  ).bind(input.targetUserId).first<{ identity_id: string }>();
+  if (!target) throw new Error("v9_claim_user_identity_missing");
+  const batch = await db.batch([
+    db.prepare(
+      "UPDATE diagnostic_v9_identities SET claimed_by_user_id=?,claimed_at=? WHERE identity_id=? AND identity_type='anonymous' AND claimed_by_user_id IS NULL",
+    ).bind(input.targetUserId, input.completedAt, input.identityId),
+    db.prepare(
+      "UPDATE diagnostic_v9_run_ownership SET identity_id=?,assignment_source='verified_claim',assigned_at=? WHERE identity_id=? AND EXISTS (SELECT 1 FROM diagnostic_v9_identity_claims WHERE claim_id=? AND status='pending' AND target_user_id=?)",
+    ).bind(target.identity_id, input.completedAt, input.identityId, input.claimId, input.targetUserId),
+    db.prepare(
+      "UPDATE diagnostic_v9_identity_claims SET status='completed',completed_at=? WHERE claim_id=? AND status='pending' AND target_user_id=?",
+    ).bind(input.completedAt, input.claimId, input.targetUserId),
+  ]);
+  if (batch.length !== 3 || batch.some((item) => !item.success)) throw new Error("v9_claim_finalize_failed");
+  if ((batch[0]?.meta?.changes ?? 0) !== 1 || (batch[2]?.meta?.changes ?? 0) !== 1) {
+    throw new Error("v9_claim_already_finalized");
+  }
+  return { transferredRuns: batch[1]?.meta?.changes ?? 0 };
 }
