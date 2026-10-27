@@ -44,6 +44,7 @@ test("P1e: historical saved payload does not encode a per-answer question versio
 
 test("P1e: eligible historical restaurant response survives v1 and cannot be read as v2", () => {
   const context = {
+    q2_sector: "food_hospitality",
     q2_operational_status: "operating",
     q2_has_customers: "yes",
     q2_niche_food_hospitality: "restaurant",
