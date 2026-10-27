@@ -617,3 +617,17 @@ test("P2: el contador histórico inválido nunca contamina la planificación", (
   assert.equal(fractional.visibleInteractionCount, 19);
   assert.ok(fractional.plan.routeLength <= 24);
 });
+
+test("P2: replay rechaza especialidad inyectada en sector sin selector", () => {
+  const classified = applyClassificationInteractionV9(restaurantContext, {
+    sector: "ecommerce",
+  });
+  assert.equal(classified.ok, true);
+  if (!classified.ok) return;
+  const forged = {
+    ...classified.event,
+    niche: "restaurant",
+  } as ClassificationInteractionEventV9;
+  assert.equal(replayClassificationInteractionsV9(restaurantContext, [forged]), null);
+  assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
+});
