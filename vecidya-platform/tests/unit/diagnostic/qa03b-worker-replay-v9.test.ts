@@ -20,6 +20,7 @@ import {
   QA03B_V9_WORKER_TTL_MS,
   replayQa03bSessionV9Core,
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
+import { replayDiagnosticAuditEventsV9, type V9StoredAuditEvent } from "../../../app/features/diagnostic/qa03b/v9-audit-replay.server";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
@@ -183,4 +184,48 @@ test("V9 Worker core result deliberately contains no commercial, report or perso
   assert.doesNotMatch(serialized, /"email"|"businessName"|"responsibleName"/);
   assert.match(serialized, /q2_food_menu_visibility@v1/, "versioned evidence IDs are legitimate and are not personal data");
   assert.equal(replay.core.identity.resultScope, "diagnostic-core-only-v1");
+});
+
+
+test("V9 D1 audit replay reconstructs the same authoritative result as the session transcript", () => {
+  const session = completingV9();
+  const events: V9StoredAuditEvent[] = session.replayTranscript.map((event, index) => ({
+    seq: index + 1,
+    event_id: `event-${index + 1}`,
+    kind: event.kind === "classification" ? event.classification.kind : "answer",
+    payload_json: JSON.stringify(event.kind === "classification" ? { ...event.classification, mode: event.mode } : event),
+    occurred_at: new Date(NOW + index + 1).toISOString(),
+    schema_version: 1,
+    actor_type: "client",
+  }));
+  const replayed = replayDiagnosticAuditEventsV9({
+    runId: session.sessionId,
+    startedAt: session.startedAt,
+    events,
+    now: NOW + 100,
+  });
+  const direct = replayQa03bSessionV9Core(envelope(session), NOW + 100);
+  assert.equal(replayed.ok, true);
+  assert.equal(direct.ok, true);
+  if (!replayed.ok || !direct.ok) return;
+  assert.deepEqual(replayed.core, direct.core);
+  assert.deepEqual(replayed.session.answers, direct.session.answers);
+  assert.equal(replayed.session.interactionCount, direct.session.interactionCount);
+});
+
+test("V9 D1 audit replay fails closed on sequence gaps, actor changes and malformed payloads", () => {
+  const session = completingV9();
+  const events: V9StoredAuditEvent[] = session.replayTranscript.map((event, index) => ({
+    seq: index + 1,
+    event_id: `event-${index + 1}`,
+    kind: event.kind === "classification" ? event.classification.kind : "answer",
+    payload_json: JSON.stringify(event.kind === "classification" ? { ...event.classification, mode: event.mode } : event),
+    occurred_at: new Date(NOW + index + 1).toISOString(),
+    schema_version: 1,
+    actor_type: "client",
+  }));
+  const base = { runId: session.sessionId, startedAt: session.startedAt, now: NOW + 100 };
+  assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, seq: 2 } : event) }), { ok: false, reason: "route" });
+  assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, actor_type: "operator" } : event) }), { ok: false, reason: "route" });
+  assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, payload_json: "not-json" } : event) }), { ok: false, reason: "session" });
 });
