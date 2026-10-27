@@ -163,13 +163,23 @@ export function buildEditorialMatrixV9(bank: readonly QuestionDefinitionV2[]): E
   };
 }
 
+export type EditorialReviewPriorityV9 = "high" | "medium" | "low";
+
 export type EditorialReviewItemV9 = {
+  readonly priority: EditorialReviewPriorityV9;
   readonly questionId: string;
   readonly optionValue: string;
   readonly flags: EditorialAnswerMatrixV9["reviewFlags"];
   readonly decision: EditorialDecisionV9;
   readonly nextAction: string;
 };
+
+/** Prioridad de revisión, no severidad ni puntuación del diagnóstico. */
+export function classifyEditorialReviewPriorityV9(flags: EditorialAnswerMatrixV9["reviewFlags"]): EditorialReviewPriorityV9 {
+  if (flags.includes("missing_evidence_mapping")) return "high";
+  if (flags.includes("neutral_with_evidence") || flags.includes("needs_neutral_check")) return "medium";
+  return "low";
+}
 
 /** Cola editorial reproducible: solo opciones con alertas, sin alterar el banco. */
 export function buildEditorialReviewQueueV9(matrix: EditorialMatrixResultV9): readonly EditorialReviewItemV9[] {
@@ -178,6 +188,7 @@ export function buildEditorialReviewQueueV9(matrix: EditorialMatrixResultV9): re
       .filter((option) => option.reviewFlags.length > 0)
       .map((option) => ({
         questionId: row.id,
+        priority: classifyEditorialReviewPriorityV9(option.reviewFlags),
         optionValue: option.value,
         flags: option.reviewFlags,
         decision: row.decision,
