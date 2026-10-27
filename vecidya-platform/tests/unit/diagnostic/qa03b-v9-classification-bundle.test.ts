@@ -11,6 +11,7 @@ import {
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
 import { buildCandidateQuestionPlanV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
+import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { QUESTION_BANK_ID, SESSION_SCHEMA, SESSION_KEY } from "../../../app/features/diagnostic/qa03b/contract";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
@@ -372,9 +373,10 @@ test("P2: escenarios sectoriales sustituyen elegibilidad genérica y respetan pr
     const { plan, visibleInteractionCount } = buildCandidateQuestionPlanV9Prototype(
       classified.answers, [classified.event],
     );
-    assert.ok(plan.eligibleQuestionIds.includes(scenario.specialized),
+    const eligible = resolveEligibleQuestionsV2(classified.answers, QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2);
+    assert.ok(eligible.eligibleQuestionIds.includes(scenario.specialized),
       scenario.name + ": pregunta especializada no elegible");
-    assert.ok(!plan.eligibleQuestionIds.includes(scenario.generic),
+    assert.ok(!eligible.eligibleQuestionIds.includes(scenario.generic),
       scenario.name + ": pregunta genérica no sustituida");
     assert.ok(plan.routeLength <= 24, scenario.name + ": presupuesto excedido");
     assert.equal(visibleInteractionCount, Object.keys(classified.answers).length - 1);
