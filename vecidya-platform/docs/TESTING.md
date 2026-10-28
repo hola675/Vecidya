@@ -1,10 +1,10 @@
 # Pruebas
 
-## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
+## APP-PLATFORM-ADMIN-ORGS — release 0.9.0 (2026-10-28)
 
-`pnpm run typecheck` y `pnpm run build`: **PASS** tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` generada, sin aplicación de D1. La CI del commit inicial de acceso administrativo completó correctamente; la primera CI con los nuevos campos halló fallos de expectativas ya corregidos abajo, a la espera de repetición automática.
+`pnpm run typecheck` y `pnpm run build`: **PASS**. GitHub Actions en commit `03fc96bcba6f07fdd44f832bcffe922120d9dd80`: `quality`, `Playwright desktop/mobile + publication guard` y `Typecheck, build and unit regression` **PASS**. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión por falta de secreto Auth de desarrollo. Con una clave efímera local, Cloudflare Vite reportó timeout al construir `Request.cf`; el flujo autenticado quedó sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` aplicada a D1 de producción y release desplegado; evidencia HTTP fechada en `ENVIRONMENTS.md`. No se abrieron sesiones ni se verificaron rutas autenticadas en producción.
 
-La primera CI automática del commit `a916b32` terminó con 3 fallos unitarios: dos expectativas de snapshots públicos al elevar innecesariamente el schema y una allowlist MiniWeb que aún no incluía TikTok/YouTube. Se conserva el contrato snapshot v4, normalizando a `null` los campos en registros viejos, y se actualiza la expectativa existente de la allowlist. La suite no se ejecutó manualmente; CI debe repetirla para el commit correctivo.
+La primera CI automática del commit `a916b32` terminó con 3 fallos unitarios: dos expectativas de snapshots públicos al elevar innecesariamente el schema y una allowlist MiniWeb que aún no incluía TikTok/YouTube. Se conserva el contrato snapshot v4, normalizando a `null` los campos en registros viejos, y se actualiza la expectativa existente de la allowlist. La reejecución automática de CI en `03fc96b` terminó PASS; la suite no se ejecutó manualmente.
 
 ## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
 

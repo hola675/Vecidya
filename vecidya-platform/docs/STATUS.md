@@ -1,12 +1,12 @@
 # Estado de implementación
 
-## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
+## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
-`platform_admin` activo recibe el directorio global de organizaciones en el selector de `/app`; seleccionar una abre `/app/platform/organizations/:id` sin cambiar la organización activa de Better Auth. Las rutas `/app/platform/*` reutilizan las guardas, acciones allowlisted y auditorías de plataforma existentes para operar ciclo de vida, roles no-owner, servicios, licencia, capacitación y MiniWeb. El formulario Redes agrega TikTok y YouTube con persistencia y publicación; la migración aditiva `0030` está generada y pendiente de aplicarse. Typecheck/build del cambio base PASS; no se ejecutaron certificaciones manuales por instrucción del usuario. El Worker local no permitió comprobar runtime: GET sin secreto Auth respondió 500 y el intento con secreto efímero local quedó bloqueado por timeout al obtener `Request.cf`. No hay deploy ni HTTP publicada en este corte. Las acciones de owner-transfer/eliminación permanecen fuera de alcance.
+`platform_admin` activo recibe el directorio global de organizaciones en el selector de `/app`; seleccionar una abre `/app/platform/organizations/:id` sin cambiar la organización activa de Better Auth. Las rutas `/app/platform/*` reutilizan las guardas, acciones allowlisted y auditorías de plataforma existentes para operar ciclo de vida, roles no-owner, servicios, licencia, capacitación y MiniWeb. Mi negocio incluye TikTok y YouTube; la migración aditiva `0030` se aplicó a D1 de producción y el release `0.9.0` está desplegado. GitHub CI pasó en PR #180; no se ejecutaron certificaciones manuales por instrucción del usuario. El HTTP anónimo de `/` verificó versión y copyright; no se verificaron rutas autenticadas de producción. Las acciones de owner-transfer/eliminación permanecen fuera de alcance.
 
-## FIX-BUSINESS-PROFILE-SECTION-SCROLL — navegación por secciones (checkpoint local)
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — integrado y publicado en 0.9.0
 
-`/app/business-profile` adopta el espacio de edición de MiniWeb: navegación lateral persistente en escritorio y barra horizontal durante el desplazamiento en pantallas estrechas; el panel muestra Identidad, Presentación, Contacto, Redes, Atención u Horarios según el paso elegido. Se conservan el guardado conjunto del perfil, el guardado independiente de horarios, preview y guards. La comprobación E2E focal se amplió, pero queda pendiente de ejecutar junto con typecheck/build en este checkpoint. No hay migración, deploy ni HTTP pública.
+`/app/business-profile` adopta el espacio de edición de MiniWeb: navegación lateral persistente en escritorio y barra horizontal en pantallas estrechas; cada paso muestra Identidad, Presentación, Contacto, Redes, Atención u Horarios. El paso Redes ahora guarda TikTok y YouTube; cambio incluido en PR #180 y publicado en `0.9.0`. La migración `0030` está aplicada. No se ejecutaron certificaciones manuales.
 
 ## APP-MINI-02D / PROD-RELEASE-0.8.4 — publicado (2026-10-27)
 
@@ -646,7 +646,7 @@ Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organizac
 | Multi-org (experiencia) | sí | parcial | — | sí (RAN 2026-09-20) | sí | **PASS técnico local** | Login fija la primera organización válida y al retirar membresía se limpian sesiones activas |
 | Business Profile (núcleo) | sí | sí | sí | sí | sí | **PASS** | Creación, edición, slug único, publicación, aislamiento. Slug autogenerado en cliente (`bc93a31` + SLUG-005B, LIVE `0.5.1`; en producción el slug `vecidya` sigue intacto): se sugiere solo hasta el primer guardado exitoso y después queda estable; protegido por `slug-life` y `unit-bp` |
 | BP: contacto y presencia (`0007`) | sí | sí | sí | sí | sí | **PASS** | WhatsApp, Instagram, Facebook y LinkedIn |
-| BP: TikTok y YouTube (`0030`) | sí | sí | candidato local | sin certificación manual solicitada | no | **PARTIAL** | Formulario, validación, persistencia y superficies públicas implementados; migración pendiente de aplicar y de publicar |
+| BP: TikTok y YouTube (`0030`) | sí | sí | sí | CI automática PASS; sin prueba focal de guardado | sí (`0.9.0`) | **PARTIAL** | Formulario, validación, persistencia y superficies públicas publicados; falta una prueba focal de guardado |
 | BP: operaciones (`0008`) | sí | sí | sí | sí | **sí** | **PASS** | Modalidad, cobertura, horarios (`business_hours`) |
 | BP: gestión por API | sí | — | — | sí (RAN 2026-09-20) | sí | **PASS técnico local** | La capa server-side rechaza dejar incompleto un perfil publicado; no existe despublicar |
 | Servicios (cliente) | sí | sí | sí | sí | sí | **PASS** | Solo lectura para el cliente; catálogo de 3 servicios sembrado; `services-exp` vuelve a PASS (QA-005A, RAN 2026-09-24) con aserciones de tenant acotadas a las tarjetas de servicio (`SERVICES-EXP-TAGLINE-001` resuelta) |

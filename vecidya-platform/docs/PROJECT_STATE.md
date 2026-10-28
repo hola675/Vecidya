@@ -1,10 +1,10 @@
-## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0 (2026-10-28)
+## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
-El selector superior de `/app` expone a `platform_admin` activo el directorio de todas las organizaciones, con navegación a `/app/platform/organizations/:organizationId`. El contexto global es explícito y separado de `session.active_organization_id`: el actor conserva su identidad `platform_admin`, sin convertirse en miembro/owner ni cambiar de sesión tenant. Las rutas de gestión reutilizan permisos de plataforma y auditoría ya existentes para lifecycle, equipo (roles `admin|member`), servicios, licencias, integraciones, capacitación y MiniWeb; no agregan capacidades de transferencia/eliminación de owner ni edición del perfil comercial desde el editor cliente. Typecheck/build PASS; pruebas de certificación manuales omitidas por instrucción del usuario. El runtime local no permitió completar el smoke: un GET respondió HTTP 500 por secreto Auth de desarrollo ausente y el segundo intento quedó bloqueado por timeout de `Request.cf`. Para este candidato se agregan TikTok y YouTube al perfil de negocio mediante migración `0030`, generada pero aún no aplicada. Sin deploy o HTTP pública comprobada.
+El selector superior de `/app` expone a `platform_admin` activo el directorio de todas las organizaciones, con navegación a `/app/platform/organizations/:organizationId`. El contexto global es explícito y separado de `session.active_organization_id`: el actor conserva su identidad `platform_admin`, sin convertirse en miembro/owner ni cambiar de sesión tenant. Las rutas de gestión reutilizan permisos de plataforma y auditoría ya existentes para lifecycle, equipo (roles `admin|member`), servicios, licencias, integraciones, capacitación y MiniWeb; no agregan capacidades de transferencia/eliminación de owner ni edición del perfil comercial desde el editor cliente. TikTok/YouTube se añadieron al perfil, publicación y MiniWeb mediante migración `0030`. PR #180 quedó integrada en `main@1aa0a969`; Worker `vecidya-platform` desplegado con Version ID `0c997949-e1b8-4e92-b905-33b55d898842`. GET anónimo a `/` dio 200 con `0.9.0` y copyright el 2026-10-28T19:05:48Z. No se ejecutaron certificaciones manuales; no se verificaron rutas autenticadas de producción.
 
-## Corte vigente — release 0.8.4 publicado (2026-10-27)
+## Corte vigente — release 0.9.0 publicado (2026-10-28)
 
-PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; Worker `vecidya-platform` Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. Incluye la configuración compacta de MiniWeb y Mi negocio, la paginación de Organizaciones ya integrada por #173 y el paquete A Team. La D1 productiva respondió `No migrations to apply`; no se realizaron escrituras de esquema o datos. GET anónimo de `https://vecidya.com/` devolvió 200 con versión 0.8.4 y © 2026 Vecidya a las 2026-10-27T23:44:23Z. Sin pruebas automatizadas por petición del usuario.
+PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`; Worker `vecidya-platform` Version ID `0c997949-e1b8-4e92-b905-33b55d898842`. La migración D1 `0030_business-profile-tiktok-youtube.sql` se aplicó a `vecidya-prod`. GET anónimo de `https://vecidya.com/` devolvió 200 con versión `0.9.0` y © 2026 Vecidya a las `2026-10-28T19:05:48Z`. Los checks automáticos de CI de #180 pasaron; no se ejecutaron pruebas de certificación manuales.
 
 ## Código integrado y estado Admin (2026-10-27)
 
@@ -777,9 +777,9 @@ QA-03B usa calibración v4 en el código de `/diagnostico` y el replay del Worke
 ## Release de producción 0.8.2 (2026-10-26)
 
 PR #139 integrado y migración `0029` aplicada; versión `0.8.2` desplegada al 100 % con GET anónimo posterior al deploy. El release incorpora QA-03B integrado en `/diagnostico`, cuyo estado de publicación específico no se certifica por esta nota. Version ID, HTTP y estado de staging: `ENVIRONMENTS.md`.
-## FIX-BUSINESS-PROFILE-SECTION-SCROLL — checkpoint local
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — integrado en 0.9.0
 
-`/app/business-profile` comparte la composición de edición por secciones de MiniWeb: panel lateral persistente en escritorio, navegación horizontal en viewport estrecho y un grupo visible por vez. Se mantienen los contratos de perfil/horarios, preview, permisos y publicación explícita. Verificación pendiente; no se declara integrado, desplegado ni publicado.
+`/app/business-profile` comparte la composición de edición por secciones de MiniWeb: panel lateral persistente en escritorio, navegación horizontal en viewport estrecho y un grupo visible por vez. Se mantienen los contratos de perfil/horarios, preview, permisos y publicación explícita. PR #180 integra además TikTok y YouTube en el paso Redes; release `0.9.0` y migración `0030` están publicados/aplicados. Sin verificación manual de rutas autenticadas de producción.
 
 ## APP-MINI-02B — publicado en 0.8.3 (2026-10-26)
 
