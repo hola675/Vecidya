@@ -34,7 +34,7 @@ export const AUTHORED_JOURNEYS = [
   { id: "paused-no-history", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "paused" } },
   { id: "preparing", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "preparing", q2_entity: "project" } },
   { id: "unknown-state", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_operational_status: "unknown", q2_has_customers: "yes" } },
-  { id: "remote-physical-appointments", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_delivery: ["physical_location", "appointments", "remote_service", "other"], q2_has_customers: "yes", q2_regularity: "irregular_active", q2_customer_buyer: "b2c" } },
+  { id: "remote-physical-appointments", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_delivery: ["physical_location", "appointments", "remote_service"], q2_has_customers: "yes", q2_regularity: "irregular_active", q2_customer_buyer: "b2c" } },
   { id: "institutional-funding", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_entity: "organization", q2_monetization: "mission", q2_has_customers: "yes", q2_customer_buyer: "no_direct_purchase", q2_sector: "education_coaching" } },
   { id: "education-third-party", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_customer_buyer: "b2c", q2_sector: "education_coaching", q2_buyer_recipient_relation: "third_party", q2_delivery: ["appointments", "remote_service"] } },
   { id: "clinic-third-party", answers: { ...AUTHORED_UNKNOWN_CAPABILITIES, q2_customer_buyer: "mixed", q2_sector: "health_wellness", q2_buyer_recipient_relation: "third_party", q2_has_customers: "yes", q2_delivery: ["physical_location", "appointments"] } },
