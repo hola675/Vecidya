@@ -7018,3 +7018,31 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   margin: 0;
   min-width: 0;
 }
+
+
+.v9-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: .8rem;
+  padding: 1rem;
+  border-radius: .8rem;
+  margin: 1.25rem 0;
+  border: 1px solid rgba(100, 116, 139, .28);
+  line-height: 1.55;
+}
+.v9-consent input {
+  margin-top: .3rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: none;
+  accent-color: #16836a;
+}
+.v9-recommendations {
+  display: grid;
+  gap: 1.15rem;
+  margin: 1rem 0;
+  padding-left: 1.25rem;
+}
+.v9-recommendations li p {
+  margin: .35rem 0 0;
+}
