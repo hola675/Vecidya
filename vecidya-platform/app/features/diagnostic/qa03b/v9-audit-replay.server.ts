@@ -11,6 +11,8 @@ import {
   QA03B_V9_SESSION_SCHEMA,
   QA03B_V9_REPLAY_LIMIT,
   createCandidateSessionV9Prototype,
+  currentCandidateQuestionIdV9,
+  type CandidateSessionV9Prototype,
   editCandidateAnswerV9Prototype,
   editClassificationV9Prototype,
   submitCandidateAnswerV9Prototype,
@@ -59,12 +61,19 @@ function sameClassification(
  * Rebuild a V9 session exclusively from the append-only D1 audit stream,
  * then pass it through the authoritative worker replay and scoring contract.
  */
-export function replayDiagnosticAuditEventsV9(input: {
+export type V9AuditReplayInput = {
   readonly runId: string;
   readonly startedAt: number;
   readonly events: readonly V9StoredAuditEvent[];
   readonly now?: number;
-}): Qa03bWorkerReplayV9 {
+};
+
+export type V9AuditSessionReconstruction =
+  | { readonly ok: true; readonly session: CandidateSessionV9Prototype; readonly nextQuestionId: string | null }
+  | Extract<Qa03bWorkerReplayV9, { readonly ok: false }>;
+
+/** Validate and replay the entire committed stream, including incomplete runs. */
+export function recoverDiagnosticAuditSessionV9(input: V9AuditReplayInput): V9AuditSessionReconstruction {
   const now = input.now ?? Date.now();
   if (!input.runId || !Number.isFinite(input.startedAt) || input.startedAt <= 0 ||
       !Number.isFinite(now) || now < input.startedAt) {
@@ -155,8 +164,14 @@ export function replayDiagnosticAuditEventsV9(input: {
     expectedSeq += 1;
   }
 
-  // Use the last committed event time for the worker's TTL check.
   session = { ...session, updatedAt: previousTimestamp };
+  return { ok: true, session, nextQuestionId: currentCandidateQuestionIdV9(session) };
+}
+
+/** A finalized result still must pass authoritative Worker validation. */
+export function replayDiagnosticAuditEventsV9(input: V9AuditReplayInput): Qa03bWorkerReplayV9 {
+  const recovered = recoverDiagnosticAuditSessionV9(input);
+  if (!recovered.ok) return recovered;
   return replayQa03bSessionV9Core({
     replayVersion: QA03B_V9_REPLAY_VERSION,
     engineIdentity: QA03B_V9_ENGINE_ID,
@@ -164,6 +179,6 @@ export function replayDiagnosticAuditEventsV9(input: {
     questionBank: QA03B_V9_QUESTION_BANK_ID,
     sessionSchema: QA03B_V9_SESSION_SCHEMA,
     sessionKey: QA03B_V9_SESSION_KEY,
-    session,
-  }, now);
+    session: recovered.session,
+  }, input.now ?? Date.now());
 }
