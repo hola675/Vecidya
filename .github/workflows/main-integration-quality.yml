@@ -98,6 +98,7 @@ jobs:
           tests/unit/diagnostic/qa03b-v9-anonymous-cookie.test.ts
           tests/unit/diagnostic/qa03b-v9-public-availability.test.ts
           tests/unit/diagnostic/qa03b-v9-owned-run-create-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
       - name: Full unit regression
         run: pnpm test:unit
