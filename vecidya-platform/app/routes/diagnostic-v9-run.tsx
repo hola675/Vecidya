@@ -117,6 +117,26 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     setDraft({});
   }, [state?.nextQuestionId]);
 
+  useEffect(() => {
+    if (!enabled || state?.status !== "completed" || result) return;
+    const controller = new AbortController();
+    void fetch(`/api/diagnostic/v9/runs/${encodeURIComponent(runId)}/result`, {
+      cache: "no-store",
+      credentials: "same-origin",
+      signal: controller.signal,
+    }).then(async (response) => {
+      if (!response.ok) throw new Error(await readError(response));
+      const saved = await response.json() as { ok?: boolean } & CompletedResult;
+      if (!saved.ok || saved.status !== "completed") throw new Error("El resultado guardado no es válido.");
+      if (!controller.signal.aborted) setResult(saved);
+    }).catch((cause: unknown) => {
+      if (!controller.signal.aborted) {
+        setError(cause instanceof Error ? cause.message : "No pudimos mostrar el resultado guardado.");
+      }
+    });
+    return () => controller.abort();
+  }, [enabled, state?.status, result, runId]);
+
   const question = useMemo(
     () => state?.nextQuestionId ? questionById.get(state.nextQuestionId) : undefined,
     [state?.nextQuestionId],
