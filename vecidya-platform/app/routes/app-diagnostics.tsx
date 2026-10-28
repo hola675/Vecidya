@@ -5,6 +5,7 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { getActiveOrganization, requireMembership, requireSession } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { linkOwnedDiagnosticRunToOrganizationV9, type V9IdentityDb } from "../features/diagnostic/qa03b/v9-identity-repository";
+import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Alert, Button, Card } from "../components/ui";
 
@@ -50,7 +51,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   } catch {
     available = false;
   }
-  return { ...workspace, activeOrganization, runs, available };
+  const v9Enabled = isV9PublicRuntimeAvailable(env as unknown as V9PublicRuntimeConfig);
+  return { ...workspace, activeOrganization, runs, available, v9Enabled };
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
@@ -134,7 +136,7 @@ const statusLabels: Record<OwnedRun["status"], string> = {
 };
 
 export default function AppDiagnosticsPage() {
-  const { workspaceUser, organizations, isPlatformAdmin, activeOrganization, runs, available } = useLoaderData<typeof loader>();
+  const { workspaceUser, organizations, isPlatformAdmin, activeOrganization, runs, available, v9Enabled } = useLoaderData<typeof loader>();
   const [searchParams] = useSearchParams();
   const linked = searchParams.get("linked") === "1";
   return (
@@ -146,7 +148,7 @@ export default function AppDiagnosticsPage() {
             <h1>Mis diagnósticos</h1>
             <p>Los diagnósticos pertenecen a tu identidad personal. Puedes vincularlos a una organización en la que tengas acceso, sin transferir su propiedad.</p>
           </div>
-          <Link className="button button--primary" to="/diagnostico">Nuevo diagnóstico</Link>
+          <Link className="button button--primary" to={v9Enabled ? "/diagnostico/v9" : "/diagnostico"}>Nuevo diagnóstico</Link>
         </div>
         {linked ? <Alert>La organización quedó vinculada al diagnóstico.</Alert> : null}
         {available ? <ClaimAnonymousHistory /> : null}
@@ -156,7 +158,7 @@ export default function AppDiagnosticsPage() {
           <Card>
             <h2>Aún no hay diagnósticos en tu historial</h2>
             <p>Cuando un diagnóstico se guarde asociado a tu cuenta, aparecerá aquí. También podrás vincularlo a una de tus organizaciones.</p>
-            <Link className="button button--primary" to="/diagnostico">Comenzar diagnóstico</Link>
+            <Link className="button button--primary" to={v9Enabled ? "/diagnostico/v9" : "/diagnostico"}>Comenzar diagnóstico</Link>
           </Card>
         ) : (
           <div className="account-form-stack">
@@ -169,6 +171,9 @@ export default function AppDiagnosticsPage() {
                     <p>Estado: {statusLabels[run.status]} · {run.last_seq} eventos registrados</p>
                     <p>Organizaciones vinculadas: {run.organization_count}</p>
                     <Link to={`/app/diagnosticos/${encodeURIComponent(run.workspace_id)}/${encodeURIComponent(run.run_id)}`}>Ver detalle del diagnóstico</Link>
+                    {v9Enabled && run.status === "active" ? (
+                      <Link to={`/diagnostico/v9/${encodeURIComponent(run.run_id)}`}>Continuar diagnóstico</Link>
+                    ) : null}
                   </div>
                 </div>
                 {organizations.length > 0 ? (
