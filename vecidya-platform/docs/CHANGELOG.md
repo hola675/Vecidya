@@ -1,9 +1,11 @@
 # Changelog
 
-## 0.8.5 — candidato local
+## 0.8.5 — publicado (2026-10-28, PR #177, `main@d3a86cf6`)
 
 - «Mi negocio» ahora usa el flujo de secciones del editor MiniWeb: navegación fija al desplazarse en escritorio, barra horizontal en móvil y panel con una sección visible por vez. Se mantienen los campos, la vista previa y los guardados existentes.
-- El usuario pidió integración, incremento de versión y despliegue a producción, y especificó no ejecutar pruebas de certificación. Typecheck, build y diff-check pasan; E2E no certificado por falta de secretos Auth locales. Integración, deploy y HTTP pendiente.
+- Typecheck, build y diff-check PASS. No se ejecutaron pruebas locales de certificación por indicación del usuario; los checks automáticos del PR terminaron PASS.
+- Desplegado en Worker `vecidya-platform`, Version ID `00e651ac-44e0-4a9f-b8dd-d56fa19078ac`, al 100 %. Sin migraciones ni escrituras D1.
+- `GET https://vecidya.com/` anónimo respondió 200 con `0.8.5` y `© 2026 Vecidya` a las `2026-10-28T17:52:10Z`. Evidencia en `ENVIRONMENTS.md`.
 
 ## 0.8.4 — publicado (2026-10-27, PR #175, `main@7eff191a`)
 

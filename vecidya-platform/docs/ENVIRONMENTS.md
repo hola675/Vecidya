@@ -1,8 +1,16 @@
-# Entornos y release de producción 0.8.5 (pendiente de integrar y desplegar)
+# Entornos y release de producción 0.8.5 (2026-10-28)
 
-## Próximo release de producción 0.8.5 — pendiente
+## Release de producción 0.8.5 — publicado
 
-Checkpoint `fix/business-profile-section-scroll`: navegación por secciones sticky para Mi negocio, derivada del editor MiniWeb. `package.json` incrementa `0.8.4` → `0.8.5`. El E2E no se ejecutó a término por ausencia de secretos Auth locales; `typecheck`, `build` y `git diff --check` pasan. PR, integración, deploy y HTTP anónimo quedan pendientes. Sin migraciones previstas; D1 producción no se ha consultado ni modificado en este checkpoint.
+PR #177 integrado en `main@d3a86cf6b2aefa8c8aa3267636294df145bc2863`; versión de aplicación `0.8.5`. Mi negocio ahora edita por secciones con navegación sticky y panel de contenido enfocado.
+
+**Deploy RAN 2026-10-28T17:52:01Z:** Wrangler 4.152.0 desplegó el Worker `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), deployment `68c8ceb2-dbdd-4048-8adc-1a325cfff802`, Version ID `00e651ac-44e0-4a9f-b8dd-d56fa19078ac`, al 100 %. Se preservaron las rutas `vecidya.com/*` y `www.vecidya.com/*`, bindings productivos, flags y Cron `17 3 * * *`. El dry run confirmó `DB=vecidya-prod`, R2 productivo, `APP_ENV=production` y Gmail.
+
+**D1:** el cambio no tiene migraciones. No se ejecutaron migraciones ni escrituras en D1 remota durante este release.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-28T17:52:10Z:** `GET https://vecidya.com/` → 200; el HTML contiene `0.8.5` y `© 2026 Vecidya`. Sin sesión ni acceso a datos privados.
+
+**Validación del checkpoint:** typecheck, build y `git diff --check` PASS; no se ejecutaron pruebas locales de certificación por indicación del usuario. Los checks automáticos del PR terminaron PASS.
 
 # Entornos y release de producción 0.8.4 (2026-10-27)
 
