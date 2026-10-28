@@ -1,11 +1,11 @@
 import { readRequestBodyLimited, RequestBodyTooLargeError } from "../features/diagnostic/bounded-request-body.server";
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
 import {
-  appendOwnedDiagnosticEventV9,
   DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
   type V9IdentityDb,
 } from "../features/diagnostic/qa03b/v9-identity-repository";
 import { QA03B_V9_CLASSIFICATION_INTERACTION_ID } from "../features/diagnostic/qa03b/v9-classification-bundle";
+import { ingestOwnedDiagnosticEventV9 } from "../features/diagnostic/qa03b/v9-event-ingestion.server";
 import { readV9AnonymousIdentityCookie } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
@@ -108,7 +108,7 @@ export async function action({ context, request, params }: Route.ActionArgs) {
   if (!session && !anonymous) return failure(401, "No encontramos una identidad anónima válida.");
 
   try {
-    const result = await appendOwnedDiagnosticEventV9(env.DB as unknown as V9IdentityDb, {
+    const result = await ingestOwnedDiagnosticEventV9(env.DB as unknown as V9IdentityDb, {
       workspaceId: DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
       runId,
       ...(session ? { userId: session.user.id } : {
@@ -120,6 +120,13 @@ export async function action({ context, request, params }: Route.ActionArgs) {
       kind: normalized.kind,
       payload: normalized.payload,
       occurredAt: input.occurredAt,
+      expectedVersions: {
+        bank: (env as unknown as V9PublicRuntimeConfig).DIAGNOSTIC_V9_BANK_VERSION!,
+        engine: (env as unknown as V9PublicRuntimeConfig).DIAGNOSTIC_V9_ENGINE_VERSION!,
+        scoring: (env as unknown as V9PublicRuntimeConfig).DIAGNOSTIC_V9_SCORING_VERSION!,
+        recommendations: (env as unknown as V9PublicRuntimeConfig).DIAGNOSTIC_V9_RECOMMENDATION_VERSION!,
+        consent: (env as unknown as V9PublicRuntimeConfig).DIAGNOSTIC_V9_CONSENT_VERSION!,
+      },
     });
     if (result.status === "conflict") return failure(409, "El historial cambió. Recarga el diagnóstico antes de continuar.");
     return Response.json({ ok: true, status: result.status, seq: result.seq }, {
@@ -132,6 +139,10 @@ export async function action({ context, request, params }: Route.ActionArgs) {
     if (code === "v9_identity_proof_invalid") return failure(403, "No pudimos verificar la identidad anónima.");
     if (code === "v9_identity_already_claimed") return failure(409, "Esta identidad ya está asociada a una cuenta. Inicia sesión.");
     if (code === "v9_invalid_event" || code === "v9_invalid_payload") return failure(400, "El evento no cumple el contrato V9.");
+    if (code === "v9_event_not_eligible") return failure(422, "La respuesta no corresponde a la ruta activa del diagnóstico.");
+    if (code === "v9_run_version_mismatch") return failure(409, "La versión del diagnóstico es diferente. Inicia uno nuevo.");
+    if (code === "v9_run_not_active") return failure(409, "Este diagnóstico ya no acepta respuestas.");
+    if (code === "v9_history_incomplete" || code === "v9_history_sequence_gap") return failure(409, "El historial está incompleto.");
     return failure(503, "No pudimos guardar la respuesta. Inténtalo de nuevo.");
   }
 }
