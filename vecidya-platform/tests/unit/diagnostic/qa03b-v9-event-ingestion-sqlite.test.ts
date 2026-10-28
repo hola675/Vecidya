@@ -9,8 +9,11 @@ import { QA03B_V9_CLASSIFICATION_INTERACTION_ID } from "../../../app/features/di
 import {
   createCandidateSessionV9Prototype,
   currentCandidateQuestionIdV9,
+  submitCandidateAnswerV9Prototype,
+  submitClassificationV9Prototype,
 } from "../../../app/features/diagnostic/qa03b/v9-session-prototype";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
+import { finalizeOwnedDiagnosticRunV9 } from "../../../app/features/diagnostic/qa03b/v9-finalization.server";
 
 const migrations = [
   "0030_diagnostic_v9_audit.sql",
@@ -178,6 +181,78 @@ test("V9 ingestion requires anonymous credential proof before validating or stor
     assert.equal((sqlite.prepare("SELECT COUNT(*) AS n FROM diagnostic_v9_events").get() as { n: number }).n, 0);
     assert.deepEqual(await ingestOwnedDiagnosticEventV9(db, input), { status: "created", seq: 1 });
     assert.deepEqual(await ingestOwnedDiagnosticEventV9(db, input), { status: "duplicate", seq: 1 });
+  } finally {
+    sqlite.close();
+  }
+});
+
+test("V9 replays every ingested interaction before completing and persisting the scored result", async () => {
+  const { sqlite, db } = fixture();
+  try {
+    const now = Date.now();
+    const runId = "full-ingestion-finalization-run";
+    await createOwnedDiagnosticRunV9(db, {
+      workspaceId: "public", runId, identityId: "full-ingestion-identity",
+      userId: "user-a", startedAt: new Date(now).toISOString(), versions,
+    });
+
+    const explicit: Record<string, string | readonly string[]> = {
+      q2_entity: "business", q2_other_staff: "yes", q2_has_customers: "yes",
+      q2_operational_status: "operating", q2_monetization: "goods",
+      q2_delivery: ["onsite"], q2_customer_buyer: "b2c", q2_customer_reach: "local",
+      q2_goal: "explain", q2_friction: "conversion",
+      q2_presence_digital_base: "reliable_presence", q2_hospitality_flow_type: "reservation",
+    };
+    let session = createCandidateSessionV9Prototype({ sessionId: runId, writerId: "test", now });
+    const byId = new Map(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.map((question) => [question.id, question]));
+    for (let turn = 0; turn < 24 && session.status === "in_progress"; turn++) {
+      const questionId = currentCandidateQuestionIdV9(session);
+      assert.ok(questionId);
+      const timestamp = now + turn + 1;
+      if (questionId === "q2_sector") {
+        const chosen = submitClassificationV9Prototype(
+          session, { sector: "food_hospitality", niche: "restaurant" }, "test", timestamp,
+        );
+        assert.equal(chosen.ok, true);
+        if (!chosen.ok) return;
+        session = chosen.session;
+      } else {
+        const question = byId.get(questionId);
+        assert.ok(question);
+        let value = explicit[questionId];
+        if (value === undefined) {
+          const neutral = question.options.find((option) => option.kind === "unknown")
+            ?? question.options.find((option) => option.kind === "not_applicable");
+          assert.ok(neutral);
+          value = question.type === "multi" ? [neutral.value] : neutral.value;
+        }
+        const chosen = submitCandidateAnswerV9Prototype(session, questionId, value, "test", timestamp);
+        assert.equal(chosen.ok, true);
+        if (!chosen.ok) return;
+        session = chosen.session;
+      }
+      const event = session.replayTranscript.at(-1);
+      assert.ok(event);
+      const kind = event.kind === "classification" ? event.classification.kind : "answer";
+      const payload = event.kind === "classification"
+        ? { ...event.classification, mode: event.mode }
+        : { questionId: event.questionId, value: event.value, mode: event.mode };
+      assert.deepEqual(await ingestOwnedDiagnosticEventV9(db, {
+        workspaceId: "public", runId, userId: "user-a", expectedVersions: versions,
+        eventId: `full-event-${turn + 1}`, expectedSeq: turn,
+        occurredAt: new Date(timestamp).toISOString(), kind, payload,
+      }), { status: "created", seq: turn + 1 });
+    }
+
+    assert.equal(session.status, "completing");
+    assert.equal((sqlite.prepare("SELECT last_seq FROM diagnostic_v9_runs WHERE run_id=?").get(runId) as { last_seq: number }).last_seq, session.replayTranscript.length);
+    const finalized = await finalizeOwnedDiagnosticRunV9(db, {
+      workspaceId: "public", runId, userId: "user-a", expectedVersions: versions, now: now + 100,
+    });
+    assert.equal(finalized.status, "completed");
+    assert.equal(finalized.resultVersion, 1);
+    assert.ok(Array.isArray(finalized.evidence));
+    assert.equal((sqlite.prepare("SELECT status FROM diagnostic_v9_runs WHERE run_id=?").get(runId) as { status: string }).status, "completed");
   } finally {
     sqlite.close();
   }
