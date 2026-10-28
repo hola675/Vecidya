@@ -100,5 +100,6 @@ jobs:
           tests/unit/diagnostic/qa03b-v9-owned-run-create-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-run-state-sqlite.test.ts
       - name: Full unit regression
         run: pnpm test:unit
