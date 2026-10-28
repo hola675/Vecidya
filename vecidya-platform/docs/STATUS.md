@@ -1,8 +1,8 @@
 # Estado de implementación
 
-## FIX-BUSINESS-PROFILE-SECTION-SCROLL — navegación por secciones (checkpoint local)
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — publicado en 0.8.5 (2026-10-28)
 
-`/app/business-profile` adopta el espacio de edición de MiniWeb: navegación lateral persistente en escritorio y barra horizontal durante el desplazamiento en pantallas estrechas; el panel muestra Identidad, Presentación, Contacto, Redes, Atención u Horarios según el paso elegido. Se conservan el guardado conjunto del perfil, el guardado independiente de horarios, preview y guards. La comprobación E2E focal se amplió, pero queda pendiente de ejecutar junto con typecheck/build en este checkpoint. No hay migración, deploy ni HTTP pública.
+PR #177 integrado en `main@d3a86cf6`; versión `0.8.5`. `/app/business-profile` usa navegación por secciones persistente en escritorio y barra horizontal en móvil; solo muestra el paso seleccionado. Se conservan los campos, la vista previa y guardados existentes. Typecheck, build y diff-check PASS; sin certificación local por instrucción del usuario; checks automáticos del PR PASS. Worker `vecidya-platform` Version ID `00e651ac-44e0-4a9f-b8dd-d56fa19078ac`, al 100 %. GET anónimo 2026-10-28T17:52:10Z → 200 con 0.8.5 y © 2026 Vecidya. Sin migraciones ni escrituras D1. Evidencia detallada en `ENVIRONMENTS.md` y `CHANGELOG.md`.
 
 ## APP-MINI-02D / PROD-RELEASE-0.8.4 — publicado (2026-10-27)
 
