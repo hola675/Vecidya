@@ -4,7 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
 import { ingestOwnedDiagnosticEventV9 } from "../../../app/features/diagnostic/qa03b/v9-event-ingestion.server";
-import { createOwnedDiagnosticRunV9, type V9IdentityDb } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
+import { createAnonymousIdentityCredentialV9, createOwnedDiagnosticRunV9, type V9IdentityDb } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
 import { QA03B_V9_CLASSIFICATION_INTERACTION_ID } from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
 import {
   createCandidateSessionV9Prototype,
@@ -143,6 +143,41 @@ test("V9 ingestion rejects another user and a run with incompatible versions", a
       expectedVersions: { ...versions, engine: "different-engine" },
     }), /v9_run_version_mismatch/);
     assert.equal((sqlite.prepare("SELECT COUNT(*) AS n FROM diagnostic_v9_events").get() as { n: number }).n, 0);
+  } finally {
+    sqlite.close();
+  }
+});
+
+test("V9 ingestion requires anonymous credential proof before validating or storing events", async () => {
+  const { sqlite, db } = fixture();
+  try {
+    const now = Date.now();
+    const runId = "ingest-anonymous-run";
+    const anonymous = await createAnonymousIdentityCredentialV9(db, {
+      identityId: "ingest-anonymous-identity",
+      createdAt: new Date(now).toISOString(),
+    });
+    await createOwnedDiagnosticRunV9(db, {
+      workspaceId: "public", runId,
+      identityId: anonymous.identityId,
+      recoveryCredential: anonymous.recoveryCredential,
+      startedAt: new Date(now).toISOString(), versions,
+    });
+    const input = {
+      workspaceId: "public", runId,
+      identityId: anonymous.identityId,
+      recoveryCredential: anonymous.recoveryCredential,
+      eventId: "anon-event-1", expectedSeq: 0,
+      occurredAt: new Date(now + 10).toISOString(),
+      expectedVersions: versions,
+      ...firstCanonicalEvent(runId, now),
+    };
+    await assert.rejects(() => ingestOwnedDiagnosticEventV9(db, {
+      ...input, recoveryCredential: "0".repeat(64),
+    }), /v9_identity_proof_invalid/);
+    assert.equal((sqlite.prepare("SELECT COUNT(*) AS n FROM diagnostic_v9_events").get() as { n: number }).n, 0);
+    assert.deepEqual(await ingestOwnedDiagnosticEventV9(db, input), { status: "created", seq: 1 });
+    assert.deepEqual(await ingestOwnedDiagnosticEventV9(db, input), { status: "duplicate", seq: 1 });
   } finally {
     sqlite.close();
   }
