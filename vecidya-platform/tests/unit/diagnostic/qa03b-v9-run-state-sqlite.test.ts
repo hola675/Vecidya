@@ -88,13 +88,17 @@ test("V9 resumes only the authenticated owner's partial SQLite run", async () =>
     });
     const next = currentCandidateQuestionIdV9(initial);
     assert.ok(next);
+    const definition = QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.find((item) => item.id === next);
+    assert.ok(definition);
+    const selectedValue = next === "q2_entity"
+      ? "business"
+      : definition.options[0]!.value;
     const submitted = next === "q2_sector"
       ? submitClassificationV9Prototype(initial, { sector: "other" }, "test", NOW + 1)
-      : submitCandidateAnswerV9Prototype(initial, next, next === "q2_entity"
-        ? "business"
-        : QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.find((item) => item.id === next)!.options[0]!.value,
+      : submitCandidateAnswerV9Prototype(initial, next,
+        definition.type === "multi" ? [selectedValue] : selectedValue,
         "test", NOW + 1);
-    assert.equal(submitted.ok, true);
+    assert.equal(submitted.ok, true, `First V9 question ${next}: ${submitted.ok ? "valid" : submitted.reason}`);
     if (!submitted.ok) return;
 
     const event = submitted.session.replayTranscript.at(-1);
