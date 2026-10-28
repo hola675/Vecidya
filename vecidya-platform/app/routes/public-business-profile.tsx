@@ -60,7 +60,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export default function PublicBusinessProfilePage() {
   const { profile, hours, configuration, offerings, faqs, media, logoUrl, cover, visibleModuleTypes } = useLoaderData<typeof loader>();
-  const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].filter(
+  const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl, profile.tiktokUrl, profile.youtubeUrl].filter(
     (url): url is string => Boolean(url),
   );
   const openingHoursSpecification = hours

@@ -139,6 +139,8 @@ export const businessProfile = sqliteTable(
     instagramUrl: text("instagram_url"),
     facebookUrl: text("facebook_url"),
     linkedinUrl: text("linkedin_url"),
+    tiktokUrl: text("tiktok_url"),
+    youtubeUrl: text("youtube_url"),
     serviceMode: text("service_mode", { enum: ["in_person", "remote", "hybrid"] }),
     serviceArea: text("service_area"),
     status: text("status", { enum: ["draft", "published"] }).default("draft").notNull(),

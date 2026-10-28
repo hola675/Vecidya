@@ -174,6 +174,8 @@ function getProfilePreview(
     instagramUrl: previewText(formData, "instagramUrl", profile?.instagramUrl),
     facebookUrl: previewText(formData, "facebookUrl", profile?.facebookUrl),
     linkedinUrl: previewText(formData, "linkedinUrl", profile?.linkedinUrl),
+    tiktokUrl: previewText(formData, "tiktokUrl", profile?.tiktokUrl),
+    youtubeUrl: previewText(formData, "youtubeUrl", profile?.youtubeUrl),
     serviceMode: previewText(formData, "serviceMode", profile?.serviceMode),
     serviceArea: previewText(formData, "serviceArea", profile?.serviceArea),
     verificationStatus: governance?.verificationStatus ?? "unverified",
@@ -390,6 +392,8 @@ export default function BusinessProfilePage() {
                 <label>Instagram<input defaultValue={value(profile?.instagramUrl)} name="instagramUrl" placeholder="https://instagram.com/tu-negocio" type="url" maxLength={2048} /></label>
                 <label>Facebook<input defaultValue={value(profile?.facebookUrl)} name="facebookUrl" placeholder="https://facebook.com/tu-negocio" type="url" maxLength={2048} /></label>
                 <label>LinkedIn<input defaultValue={value(profile?.linkedinUrl)} name="linkedinUrl" placeholder="https://linkedin.com/company/tu-negocio" type="url" maxLength={2048} /></label>
+                <label>TikTok<input defaultValue={value(profile?.tiktokUrl)} name="tiktokUrl" placeholder="https://www.tiktok.com/@tu-negocio" type="url" maxLength={2048} /></label>
+                <label>YouTube<input defaultValue={value(profile?.youtubeUrl)} name="youtubeUrl" placeholder="https://www.youtube.com/@tu-negocio" type="url" maxLength={2048} /></label>
               </div>
               <p className="form-help">Todos estos campos son opcionales; déjalos vacíos si tu negocio no los usa.</p>
             </fieldset>

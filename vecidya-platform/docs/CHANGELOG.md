@@ -5,7 +5,8 @@
 - Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.
 - Se añade `/app/platform` con listado, búsqueda, detalle, ciclo de vida, equipo, servicios, licencias, integraciones, MiniWeb, capacitación y trazabilidad. Las mutaciones mantienen sus permisos de plataforma y auditoría existentes.
 - El cambio usa una ruta de gestión con organización objetivo explícita; no altera la membresía activa ni suplanta a un owner. Cambio de owner y transferencia/eliminación de propiedad siguen fuera de las acciones disponibles.
-- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nueva capacidad compatible). Typecheck y build PASS; no se ejecutaron pruebas de certificación por instrucción del usuario. Sin cambios de esquema ni migraciones.
+- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nuevas capacidades compatibles). Typecheck/build PASS tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario; CI automática de la PR debe validar este nuevo commit.
+- Se agregan campos opcionales de TikTok y YouTube al paso Redes de Mi negocio. Se validan contra los dominios de cada plataforma, se guardan en el perfil, se publican en los enlaces de Vecindario y MiniWeb y se incluyen en `sameAs`. Migración aditiva `0030_business-profile-tiktok-youtube.sql`; pendiente de aplicar en producción.
 
 ## 0.8.5 — candidato local
 

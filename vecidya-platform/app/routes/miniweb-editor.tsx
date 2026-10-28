@@ -833,6 +833,8 @@ function emptyPreviewProfile(): PublicBusinessProfile {
     instagramUrl: null,
     facebookUrl: null,
     linkedinUrl: null,
+    tiktokUrl: null,
+    youtubeUrl: null,
     serviceMode: null,
     serviceArea: null,
     verificationStatus: "unverified",

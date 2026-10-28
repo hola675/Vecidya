@@ -2,7 +2,7 @@
 
 ## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
 
-`pnpm run typecheck` y `pnpm run build`: **PASS**. No se ejecutaron pruebas de certificación por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Sin migración ni D1 remota.
+`pnpm run typecheck` y `pnpm run build`: **PASS** tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` generada, sin aplicación de D1. Los checks automáticos de la CI que corrieron antes de estos campos finalizaron correctamente; requieren una nueva ejecución con el commit actualizado.
 
 ## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
 

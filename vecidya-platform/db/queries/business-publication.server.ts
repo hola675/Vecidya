@@ -11,7 +11,7 @@ import { listBusinessMediaForOrganization, type BusinessMediaAsset } from "./bus
 import { ensureAvailableMiniWebModules, type MiniWebConfiguration } from "../../app/features/miniweb/registry";
 import { validateBusinessFaqItems, validateBusinessOfferings, type BusinessFaqItem, type BusinessOffering } from "../../app/features/miniweb/content";
 
-export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 4;
+export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 5;
 type BatchItem = ReturnType<Database["$client"]["prepare"]>;
 
 export type BusinessPublicationSnapshot = {
@@ -30,7 +30,7 @@ export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicati
 }
 
 export function parseBusinessPublicationSnapshot(value: string | null, schemaVersion: number | null): BusinessPublicationSnapshot | null {
-  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== 3 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
+  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
   try {
     const parsed: unknown = JSON.parse(value);
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
@@ -58,6 +58,11 @@ export function parseBusinessPublicationSnapshot(value: string | null, schemaVer
     return {
       ...snapshot,
       schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
+      profile: {
+        ...snapshot.profile,
+        tiktokUrl: snapshot.profile.tiktokUrl ?? null,
+        youtubeUrl: snapshot.profile.youtubeUrl ?? null,
+      },
       configuration: ensureAvailableMiniWebModules(snapshot.configuration),
       offerings: offerings.map((item) => ({
         ...item,
@@ -106,6 +111,8 @@ export function createBusinessPublicationSnapshot(
       instagramUrl: profile.instagramUrl,
       facebookUrl: profile.facebookUrl,
       linkedinUrl: profile.linkedinUrl,
+      tiktokUrl: profile.tiktokUrl,
+      youtubeUrl: profile.youtubeUrl,
       serviceMode: profile.serviceMode as BusinessProfileInput["serviceMode"],
       serviceArea: profile.serviceArea,
     },

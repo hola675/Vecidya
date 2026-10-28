@@ -284,6 +284,8 @@ export type MiniWebProfileSource = {
   instagramUrl: string | null;
   facebookUrl: string | null;
   linkedinUrl: string | null;
+  tiktokUrl: string | null;
+  youtubeUrl: string | null;
   category: string | null;
   city: string | null;
   country: string | null;
@@ -314,7 +316,7 @@ function hasUsefulContact(profile: MiniWebProfileSource) {
     || /^\d{8,15}$/.test(whatsapp)
     || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     || validWebUrl(profile.websiteUrl)
-    || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].some(validWebUrl);
+    || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl, profile.tiktokUrl, profile.youtubeUrl].some(validWebUrl);
 }
 
 export function buildVirtualMiniWebConfiguration(profile: MiniWebProfileSource, hours: MiniWebHoursSource): MiniWebConfiguration {

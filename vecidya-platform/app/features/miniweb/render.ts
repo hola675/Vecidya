@@ -34,7 +34,7 @@ function hasPublicContact(profile: MiniWebProfileSource) {
     || /^\d{8,15}$/.test(whatsapp)
     || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
     || isValidWebUrl(profile.websiteUrl)
-    || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl].some(isValidWebUrl);
+    || [profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl, profile.tiktokUrl, profile.youtubeUrl].some(isValidWebUrl);
 }
 
 export function hasMiniWebModuleContent(type: MiniWebModuleType, profile: MiniWebProfileSource, hours: MiniWebHoursSource, offerings: readonly BusinessOffering[], faqs: readonly BusinessFaqItem[], media: readonly MiniWebMediaAsset[]): boolean {

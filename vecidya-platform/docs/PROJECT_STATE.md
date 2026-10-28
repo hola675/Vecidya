@@ -1,6 +1,6 @@
 ## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0 (2026-10-28)
 
-El selector superior de `/app` expone a `platform_admin` activo el directorio de todas las organizaciones, con navegación a `/app/platform/organizations/:organizationId`. El contexto global es explícito y separado de `session.active_organization_id`: el actor conserva su identidad `platform_admin`, sin convertirse en miembro/owner ni cambiar de sesión tenant. Las rutas de gestión reutilizan permisos de plataforma y auditoría ya existentes para lifecycle, equipo (roles `admin|member`), servicios, licencias, integraciones, capacitación y MiniWeb; no agregan capacidades de transferencia/eliminación de owner ni edición del perfil comercial desde el editor cliente. Typecheck/build PASS; pruebas de certificación omitidas por instrucción del usuario. El runtime local no permitió completar el smoke: un GET respondió HTTP 500 por secreto Auth de desarrollo ausente y el segundo intento quedó bloqueado por timeout de `Request.cf`. Sin schema, migraciones, deploy o HTTP pública comprobada.
+El selector superior de `/app` expone a `platform_admin` activo el directorio de todas las organizaciones, con navegación a `/app/platform/organizations/:organizationId`. El contexto global es explícito y separado de `session.active_organization_id`: el actor conserva su identidad `platform_admin`, sin convertirse en miembro/owner ni cambiar de sesión tenant. Las rutas de gestión reutilizan permisos de plataforma y auditoría ya existentes para lifecycle, equipo (roles `admin|member`), servicios, licencias, integraciones, capacitación y MiniWeb; no agregan capacidades de transferencia/eliminación de owner ni edición del perfil comercial desde el editor cliente. Typecheck/build PASS para el cambio base; pruebas de certificación omitidas por instrucción del usuario. El runtime local no permitió completar el smoke: un GET respondió HTTP 500 por secreto Auth de desarrollo ausente y el segundo intento quedó bloqueado por timeout de `Request.cf`. Para este candidato se agregan TikTok y YouTube al perfil de negocio mediante migración `0030`, generada pero aún no aplicada. Sin deploy o HTTP pública comprobada.
 
 ## Corte vigente — release 0.8.4 publicado (2026-10-27)
 
@@ -660,6 +660,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | `logo_url` | `0003` | http/https | sí (URL) | sí | imagen | imagen | `image` | IMPL solo como **URL de texto** (sin subida ni R2) |
 | `whatsapp` | `0007` | `+` + 8–15 dígitos | sí | sí | CTA `wa.me` | no | (deliberado: no) | IMPL |
 | `instagram_url`, `facebook_url`, `linkedin_url` | `0007` | host esperado | sí | sí | enlaces | no | `sameAs` | IMPL |
+| `tiktok_url`, `youtube_url` | `0030` | host esperado | sí | sí | enlaces | no | `sameAs` | migración candidata; pendiente de aplicación y publicación |
 | `service_mode` | `0008` | enum `in_person/remote/hybrid` | sí | sí | «Cómo atiende» | no | — | IMPL |
 | `service_area` | `0008` | ≤280 texto libre | sí | sí | «Cobertura» | no | `areaServed` | IMPL |
 | horarios (`business_hours`) | `0008` | `HH:MM`, apertura<cierre, 1–7 | sí (sección propia) | sí | compactados | no | `openingHoursSpecification` | IMPL |
@@ -694,7 +695,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send, entrega real y password reset E2E confirmados; verificación/invitaciones separadas** |
 | GHL | **OPS-001 DOCUMENTAL** (capacidad/contrato definido; cuenta real NOT VERIFIED; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
-| WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |
+| WhatsApp/Instagram/Facebook/LinkedIn/TikTok/YouTube en perfil | Campos y enlaces (`wa.me`), no integración; TikTok/YouTube candidatos en 0.9.0 y pendientes de publicación |
 
 Vecidya es responsable de cuentas, organizaciones, membresías, permisos, perfiles, servicios, directorio, experiencia pública, portal y metadata de integraciones. GHL será el system of record de contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento. OPS-001 define un piloto mínimo de una location, pero no lo ejecuta. No se implementa un CRM paralelo.
 
