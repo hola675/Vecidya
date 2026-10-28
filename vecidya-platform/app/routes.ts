@@ -16,6 +16,8 @@ export default [
   route("vecindario", "routes/directory.tsx"),
   // ACT-04: cuestionario QA-03B y resumen anónimo reconstruido por el Worker.
   route("diagnostico", "routes/diagnostic.tsx"),
+  route("diagnostico/v9", "routes/diagnostic-v9.tsx"),
+  route("diagnostico/v9/:runId", "routes/diagnostic-v9-run.tsx"),
   route("diagnostico/metodologia", "routes/diagnostico-metodologia.tsx"),
   route("sobre-nosotros", "routes/about.tsx"),
   route("aprende", "routes/knowledge.tsx"),
