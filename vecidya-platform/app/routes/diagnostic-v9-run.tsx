@@ -53,6 +53,17 @@ type CompletedResult = {
 
 const questionById = new Map(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.map((item) => [item.id, item] as const));
 
+function recommendationItems(value: unknown): readonly { title: string; whatToImprove: string; expectedOutcome: string }[] {
+  if (!value || typeof value !== "object" || !("items" in value) || !Array.isArray(value.items)) return [];
+  return value.items.filter((item): item is { title: string; whatToImprove: string; expectedOutcome: string } =>
+    typeof item === "object" && item !== null &&
+    typeof item.title === "string" &&
+    typeof item.whatToImprove === "string" &&
+    typeof item.expectedOutcome === "string",
+  ).slice(0, 3);
+}
+
+
 async function readError(response: Response): Promise<string> {
   try {
     const data = await response.json() as { error?: unknown };
@@ -203,8 +214,24 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
                 <div className="df-screen__note">
                   <h2>Diagnóstico completado</h2>
                   <p>El resultado está guardado y asociado a tu identidad.</p>
-                  {result ? <p>Versión del resultado: {result.resultVersion}</p> : null}
-                  <Link to="/app/diagnosticos">Consultar mis diagnósticos</Link>
+                  {result ? (
+                    <>
+                      <p>Versión del resultado: {result.resultVersion}</p>
+                      <h3>Prioridades recomendadas</h3>
+                      {recommendationItems(result.recommendations).length ? (
+                        <ol className="v9-recommendations">
+                          {recommendationItems(result.recommendations).map((item, index) => (
+                            <li key={index}>
+                              <strong>{item.title}</strong>
+                              <p>{item.whatToImprove}</p>
+                              <p>{item.expectedOutcome}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : <p>El resultado está guardado. Puedes revisarlo en tu historial personal.</p>}
+                    </>
+                  ) : null}
+                  <p><Link to="/app/diagnosticos">Consultar mis diagnósticos</Link> o <Link to="/login?redirectTo=%2Fapp%2Fdiagnosticos">iniciar sesión para recuperar tu historial</Link>.</p>
                 </div>
               ) : state.readyToFinalize ? (
                 <div>
