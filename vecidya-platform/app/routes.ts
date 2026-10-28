@@ -34,6 +34,7 @@ export default [
   route("api/diagnostic/anonymous-identity", "routes/api-diagnostic-anonymous-identity.ts"),
   route("api/diagnostic/v9/runs", "routes/api-diagnostic-v9-runs.ts"),
   route("api/diagnostic/v9/runs/:runId/events", "routes/api-diagnostic-v9-run-events.ts"),
+  route("api/diagnostic/v9/runs/:runId", "routes/api-diagnostic-v9-run-state.ts"),
   route("api/diagnostic/v9/runs/:runId/finalize", "routes/api-diagnostic-v9-run-finalize.ts"),
   route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
   route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),
