@@ -7012,7 +7012,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   margin-top: .3rem;
   accent-color: #16836a;
 }
-.df-screen fieldset {
+.v9-diagnostic-screen fieldset {
   border: 0;
   padding: 0;
   margin: 0;
