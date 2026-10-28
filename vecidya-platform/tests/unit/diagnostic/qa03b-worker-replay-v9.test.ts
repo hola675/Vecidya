@@ -22,7 +22,7 @@ import {
   QA03B_V9_WORKER_TTL_MS,
   replayQa03bSessionV9Core,
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
-import { replayDiagnosticAuditEventsV9, type V9StoredAuditEvent } from "../../../app/features/diagnostic/qa03b/v9-audit-replay.server";
+import { recoverDiagnosticAuditSessionV9, replayDiagnosticAuditEventsV9, type V9StoredAuditEvent } from "../../../app/features/diagnostic/qa03b/v9-audit-replay.server";
 import { appendDiagnosticEventV9, createDiagnosticRunV9, loadDiagnosticEventHistoryV9, type V9AuditDb, type V9RunVersions } from "../../../app/features/diagnostic/qa03b/v9-audit-repository";
 import { appendOwnedDiagnosticEventV9, createOwnedDiagnosticRunV9, type V9IdentityDb } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
 import { finalizeOwnedDiagnosticRunV9 } from "../../../app/features/diagnostic/qa03b/v9-finalization.server";
@@ -441,4 +441,68 @@ test("V9 finalization verifies ownership, replays D1, persists one trusted resul
   } finally {
     sqlite.close();
   }
+});
+
+
+test("V9 restores a partial audit stream and identifies the next pending question", () => {
+  const completed = completingV9();
+  const first = completed.replayTranscript[0];
+  assert.ok(first);
+  const event: V9StoredAuditEvent = {
+    seq: 1,
+    event_id: "partial-event-1",
+    kind: first.kind === "classification" ? first.classification.kind : "answer",
+    payload_json: JSON.stringify(first.kind === "classification"
+      ? { ...first.classification, mode: first.mode }
+      : { questionId: first.questionId, value: first.value, mode: first.mode }),
+    occurred_at: new Date(NOW + 1).toISOString(),
+    schema_version: 1,
+    actor_type: "client",
+  };
+  const empty = recoverDiagnosticAuditSessionV9({
+    runId: completed.sessionId,
+    startedAt: NOW,
+    now: NOW + 10,
+    events: [],
+  });
+  assert.equal(empty.ok, true);
+  if (!empty.ok) return;
+  assert.equal(empty.session.interactionCount, 0);
+  assert.equal(empty.session.status, "in_progress");
+  assert.ok(empty.nextQuestionId);
+
+  const partial = recoverDiagnosticAuditSessionV9({
+    runId: completed.sessionId,
+    startedAt: NOW,
+    now: NOW + 10,
+    events: [event],
+  });
+  assert.equal(partial.ok, true);
+  if (!partial.ok) return;
+  assert.equal(partial.session.interactionCount, 1);
+  assert.equal(partial.session.replayTranscript.length, 1);
+  assert.equal(partial.session.status, "in_progress");
+  assert.deepEqual(partial.session.replayTranscript[0], first);
+  assert.notEqual(partial.nextQuestionId, empty.nextQuestionId);
+});
+
+test("V9 partial audit recovery fails closed on forged actor, sequence and payload", () => {
+  const completed = completingV9();
+  const first = completed.replayTranscript[0];
+  assert.ok(first);
+  const event: V9StoredAuditEvent = {
+    seq: 1,
+    event_id: "partial-event-1",
+    kind: first.kind === "classification" ? first.classification.kind : "answer",
+    payload_json: JSON.stringify(first.kind === "classification"
+      ? { ...first.classification, mode: first.mode }
+      : { questionId: first.questionId, value: first.value, mode: first.mode }),
+    occurred_at: new Date(NOW + 1).toISOString(),
+    schema_version: 1,
+    actor_type: "client",
+  };
+  const base = { runId: completed.sessionId, startedAt: NOW, now: NOW + 10 };
+  assert.deepEqual(recoverDiagnosticAuditSessionV9({ ...base, events: [{ ...event, seq: 3 }] }), { ok: false, reason: "route" });
+  assert.deepEqual(recoverDiagnosticAuditSessionV9({ ...base, events: [{ ...event, actor_type: "operator" }] }), { ok: false, reason: "route" });
+  assert.deepEqual(recoverDiagnosticAuditSessionV9({ ...base, events: [{ ...event, payload_json: "{broken" }] }), { ok: false, reason: "session" });
 });
