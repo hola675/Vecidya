@@ -2,7 +2,9 @@
 
 ## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
 
-`pnpm run typecheck` y `pnpm run build`: **PASS** tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` generada, sin aplicación de D1. Los checks automáticos de la CI que corrieron antes de estos campos finalizaron correctamente; requieren una nueva ejecución con el commit actualizado.
+`pnpm run typecheck` y `pnpm run build`: **PASS** tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` generada, sin aplicación de D1. La CI del commit inicial de acceso administrativo completó correctamente; la primera CI con los nuevos campos halló fallos de expectativas ya corregidos abajo, a la espera de repetición automática.
+
+La primera CI automática del commit `a916b32` terminó con 3 fallos unitarios: dos expectativas de snapshots públicos al elevar innecesariamente el schema y una allowlist MiniWeb que aún no incluía TikTok/YouTube. Se conserva el contrato snapshot v4, normalizando a `null` los campos en registros viejos, y se actualiza la expectativa existente de la allowlist. La suite no se ejecutó manualmente; CI debe repetirla para el commit correctivo.
 
 ## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
 

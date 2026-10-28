@@ -11,7 +11,7 @@ import { listBusinessMediaForOrganization, type BusinessMediaAsset } from "./bus
 import { ensureAvailableMiniWebModules, type MiniWebConfiguration } from "../../app/features/miniweb/registry";
 import { validateBusinessFaqItems, validateBusinessOfferings, type BusinessFaqItem, type BusinessOffering } from "../../app/features/miniweb/content";
 
-export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 5;
+export const BUSINESS_PUBLICATION_SCHEMA_VERSION = 4;
 type BatchItem = ReturnType<Database["$client"]["prepare"]>;
 
 export type BusinessPublicationSnapshot = {
@@ -30,14 +30,14 @@ export function serializeBusinessPublicationSnapshot(snapshot: BusinessPublicati
 }
 
 export function parseBusinessPublicationSnapshot(value: string | null, schemaVersion: number | null): BusinessPublicationSnapshot | null {
-  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== 3 && schemaVersion !== 4 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
+  if (!value || (schemaVersion !== 1 && schemaVersion !== 2 && schemaVersion !== 3 && schemaVersion !== BUSINESS_PUBLICATION_SCHEMA_VERSION)) return null;
   try {
     const parsed: unknown = JSON.parse(value);
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
     const isLegacySnapshot = Number(schemaVersion) === 1;
     const snapshotVersion = Number(schemaVersion);
     const hasMediaSnapshot = snapshotVersion >= 3;
-    const hasBrandingSnapshot = snapshotVersion >= BUSINESS_PUBLICATION_SCHEMA_VERSION;
+    const hasBrandingSnapshot = snapshotVersion >= 4;
     const snapshot = parsed as Partial<BusinessPublicationSnapshot>;
     if (snapshot.schemaVersion !== schemaVersion
       || !snapshot.profile || typeof snapshot.profile !== "object"
