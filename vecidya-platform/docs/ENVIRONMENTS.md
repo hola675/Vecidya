@@ -1,12 +1,18 @@
-# Entornos y release de producción 0.8.5 (pendiente de integrar y desplegar)
+# Entornos y release de producción 0.9.0 (2026-10-28)
 
-## Próximo release de producción 0.8.5 — pendiente
+## Release de producción 0.9.0 — publicado
 
-Checkpoint `fix/business-profile-section-scroll`: navegación por secciones sticky para Mi negocio, derivada del editor MiniWeb. `package.json` incrementa `0.8.4` → `0.8.5`. El E2E no se ejecutó a término por ausencia de secretos Auth locales; `typecheck`, `build` y `git diff --check` pasan. PR, integración, deploy y HTTP anónimo quedan pendientes. Sin migraciones previstas; D1 producción no se ha consultado ni modificado en este checkpoint.
+PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`; versión de aplicación `0.9.0`. Incluye acceso global `platform_admin` desde `/app`, navegación administrativa con organización objetivo explícita y enlaces opcionales TikTok/YouTube en Mi negocio, Vecindario y MiniWeb.
 
-# Entornos y release de producción 0.8.4 (2026-10-27)
+**D1 RAN 2026-10-28:** preflight de `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) encontró solo pendiente `0030_business-profile-tiktok-youtube.sql`; se aplicó correctamente con Wrangler remoto. Migración aditiva de dos columnas nullable; sin backfill ni cambios de datos existentes.
 
-## Release de producción 0.8.4 — publicado
+**Deploy RAN 2026-10-28:** Wrangler 4.152.0 desplegó `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), Worker Version ID `0c997949-e1b8-4e92-b905-33b55d898842`, rutas `vecidya.com/*` y `www.vecidya.com/*`, binding `DB=vecidya-prod`, R2 `vecidya-business-media-prod` y Cron `17 3 * * *`.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-28T19:05:48Z:** `GET https://vecidya.com/` → 200; HTML con versión `0.9.0` y `© 2026 Vecidya`. No se abrió sesión ni se verificaron rutas autenticadas de la aplicación en producción.
+
+Typecheck, build y los checks automáticos de CI de la PR #180 terminaron PASS. No se ejecutaron pruebas de certificación manuales, según instrucción del usuario.
+
+## Release de producción 0.8.4 — publicado (2026-10-27)
 
 PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; versión de aplicación `0.8.4`. Incluye refinamientos del editor MiniWeb y Mi negocio, paginación de organizaciones ya integrada en PR #173 y el paquete A Team que el usuario pidió incluir.
 

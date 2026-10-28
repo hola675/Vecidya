@@ -1,13 +1,16 @@
 # Changelog
 
-## 0.9.0 — candidato de release
+## 0.9.0 — producción (2026-10-28)
 
 - Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.
 - Se añade `/app/platform` con listado, búsqueda, detalle, ciclo de vida, equipo, servicios, licencias, integraciones, MiniWeb, capacitación y trazabilidad. Las mutaciones mantienen sus permisos de plataforma y auditoría existentes.
 - El cambio usa una ruta de gestión con organización objetivo explícita; no altera la membresía activa ni suplanta a un owner. Cambio de owner y transferencia/eliminación de propiedad siguen fuera de las acciones disponibles.
-- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nuevas capacidades compatibles). Typecheck/build PASS tras añadir las redes. CI automática del commit `a916b32` encontró expectativas unitarias desactualizadas, ya corregidas; la nueva ejecución debe validar el commit correctivo. No se ejecutaron pruebas de certificación manuales por instrucción del usuario.
-- Se agregan campos opcionales de TikTok y YouTube al paso Redes de Mi negocio. Se validan contra los dominios de cada plataforma, se guardan en el perfil, se publican en los enlaces de Vecindario y MiniWeb y se incluyen en `sameAs`. Migración aditiva `0030_business-profile-tiktok-youtube.sql`; pendiente de aplicar en producción.
+- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nuevas capacidades compatibles). PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`.
+- Se agrega acceso global de `platform_admin` a todas las organizaciones desde `/app`, manteniendo organización objetivo explícita, permisos de plataforma y auditoría; sin suplantación de owners.
+- Se agregan campos opcionales de TikTok y YouTube al paso Redes de Mi negocio. Se validan contra los dominios de cada plataforma, se guardan en el perfil, se publican en Vecindario y MiniWeb y se incluyen en `sameAs`. La migración aditiva `0030_business-profile-tiktok-youtube.sql` se aplicó a `vecidya-prod` el 2026-10-28.
 - Se mantiene el snapshot público en schema v4 y se rellena `null` para TikTok/YouTube en publicaciones previas, sin cambiar su contrato.
+- Wrangler 4.152.0 desplegó `vecidya-platform` en producción, Version ID `0c997949-e1b8-4e92-b905-33b55d898842`.
+- HTTP anónimo de `GET https://vecidya.com/` → 200 con `0.9.0` y © 2026 Vecidya, `2026-10-28T19:05:48Z`. GitHub CI de #180 PASS. No se ejecutaron pruebas de certificación manuales por instrucción del usuario; no se verificaron rutas autenticadas en producción.
 
 ## 0.8.5 — candidato local
 
