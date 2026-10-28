@@ -23,6 +23,17 @@ const raw = JSON.stringify({
   terminalReason: null,
 });
 
+test("P1e: candidate customer-history answers retain explicit activity signals", () => {
+  const question = QA03B_SPECIALTY_CANDIDATE_BANK_V1.find((entry) => entry.id === "q2_has_customers");
+  assert.ok(question);
+  assert.deepEqual(question.options.find((option) => option.value === "yes")?.produces, [
+    { kind: "hasRealCustomers", value: true, provenance: "explicit_declaration" },
+  ]);
+  assert.deepEqual(question.options.find((option) => option.value === "no")?.produces, [
+    { kind: "hasRealCustomers", value: false, provenance: "explicit_declaration" },
+  ]);
+});
+
 test("P1e: v1 saved menu session parses but ineligible answer is reconciled away", () => {
   const restored = parseSessionV3(raw, now, { bank: [legacy] });
   assert.ok(restored);

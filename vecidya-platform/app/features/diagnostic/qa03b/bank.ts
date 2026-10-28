@@ -37,8 +37,8 @@ const replacement: Readonly<Record<string, Partial<QuestionDefinitionV2>>> = {
     version: 3, prompt: "Hasta hoy, ¿tu actividad ya ha tenido clientes, compradores, usuarios o beneficiarios reales?",
     hint: "Cuenta experiencias reales, aunque tu actividad esté en pausa. El interés o los seguidores por sí solos no cuentan.", variants: [],
     options: [
-      { value: "yes", label: "Sí, ya hubo personas reales que compraron, contrataron, usaron o recibieron lo que ofrezco." },
-      { value: "no", label: "No, todavía no ha habido personas reales en esas situaciones." },
+      { value: "yes", label: "Sí, ya hubo personas reales que compraron, contrataron, usaron o recibieron lo que ofrezco.", produces: [{ kind: "hasRealCustomers", value: true, provenance: "explicit_declaration" }] },
+      { value: "no", label: "No, todavía no ha habido personas reales en esas situaciones.", produces: [{ kind: "hasRealCustomers", value: false, provenance: "explicit_declaration" }] },
       { value: "unknown", label: "No tengo información suficiente para responder.", kind: "unknown" },
     ],
   },
