@@ -55,7 +55,9 @@ export async function action({ context, request }: Route.ActionArgs) {
   }
   try {
     const body: unknown = JSON.parse(raw);
-    if (!isRecord(body) || Object.keys(body).length !== 0) return failure(400, "La solicitud no tiene un formato válido.");
+    if (!isRecord(body) || Object.keys(body).length !== 1 || body.consent !== true) {
+      return failure(400, "Debes aceptar expresamente el tratamiento de datos del diagnóstico.");
+    }
   } catch {
     return failure(400, "La solicitud no tiene un formato válido.");
   }
