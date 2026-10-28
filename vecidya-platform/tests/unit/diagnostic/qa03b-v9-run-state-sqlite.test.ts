@@ -156,3 +156,46 @@ test("V9 refuses to restore a committed but route-ineligible answer", async () =
     sqlite.close();
   }
 });
+
+
+test("V9 anonymous recovery requires the matching secret and cannot access another owner's run", async () => {
+  const { sqlite, db } = fixture();
+  try {
+    const credential = "b".repeat(64);
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(credential));
+    const credentialHash = Array.from(new Uint8Array(digest), (value) => value.toString(16).padStart(2, "0")).join("");
+    sqlite.prepare(
+      "INSERT INTO diagnostic_v9_identities (identity_id,identity_type,credential_hash,created_at) VALUES (?,'anonymous',?,?)",
+    ).run("anonymous-a", credentialHash, new Date(NOW).toISOString());
+    sqlite.prepare(
+      "INSERT INTO diagnostic_v9_runs (workspace_id,run_id,started_at,bank_version,engine_version,scoring_version,recommendation_version,consent_version) VALUES (?,?,?,?,?,?,?,?)",
+    ).run("public", "run-anon", new Date(NOW).toISOString(),
+      versions.bank, versions.engine, versions.scoring, versions.recommendations, versions.consent);
+    sqlite.prepare(
+      "INSERT INTO diagnostic_v9_run_ownership (workspace_id,run_id,identity_id,assigned_at,assignment_source) VALUES (?,?,?,?,'anonymous_session')",
+    ).run("public", "run-anon", "anonymous-a", new Date(NOW).toISOString());
+
+    const recovered = await readOwnedDiagnosticRunStateV9(db, {
+      workspaceId: "public", runId: "run-anon",
+      identityId: "anonymous-a", recoveryCredential: credential,
+      expectedVersions: versions, now: NOW + 100,
+    });
+    assert.equal(recovered.status, "active");
+    assert.equal(recovered.runId, "run-anon");
+    assert.equal(recovered.interactionCount, 0);
+
+    await assert.rejects(() => readOwnedDiagnosticRunStateV9(db, {
+      workspaceId: "public", runId: "run-anon",
+      identityId: "anonymous-a", recoveryCredential: "0".repeat(64),
+      expectedVersions: versions, now: NOW + 100,
+    }), /v9_identity_proof_invalid/);
+
+    await assert.rejects(() => readOwnedDiagnosticRunStateV9(db, {
+      workspaceId: "public", runId: "run-a",
+      identityId: "anonymous-a", recoveryCredential: credential,
+      expectedVersions: versions, now: NOW + 100,
+    }), /v9_run_not_owned/);
+  } finally {
+    sqlite.close();
+  }
+});
