@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   verify:
+    # Keep the original broad regression for main and unrelated pull requests.
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
     name: Typecheck, build and unit regression
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -41,4 +43,63 @@ jobs:
       - name: Diagnostic and Aprende regression
         run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-flow-ui.test.ts tests/unit/learn/learn-curriculum.test.ts
       - name: Unit regression
+        run: pnpm test:unit
+
+  diagnostic-v9-focused:
+    # Candidate V9 PRs: question/answer matrix, graph, sector journeys, persistence and runtime contracts.
+    # Run typecheck, full build, focused V9 contracts and the complete unit regression; V8 remains unchanged.
+    if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
+    name: Diagnostic V9 focused contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck V9 candidate and tests
+        run: pnpm typecheck
+      - name: Build V9 candidate routes and client bundles
+        run: pnpm build
+      - name: V9 question bank, graph and adaptive journey contracts
+        run: >-
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
+          tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts
+          tests/unit/diagnostic/qa03b-v9-session-prototype.test.ts
+          tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
+          tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts
+          tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts
+          tests/unit/diagnostic/qa03b-specialty-candidate.test.ts
+          tests/unit/diagnostic/qa03b-specialty-branches-wave1.test.ts
+          tests/unit/diagnostic/qa03b-specialty-journey-certification.test.ts
+          tests/unit/diagnostic/qa03b-v9-menu-v2-proposal.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-repository.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-history.test.ts
+          tests/unit/diagnostic/qa03b-v9-audit-recovery-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-snapshot-hash.test.ts
+          tests/unit/diagnostic/qa03b-v9-classification-audit-replay.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-ownership-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-credential.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-claim.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-claim-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-organization-link-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-identity-assignment-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-anonymous-cookie.test.ts
+          tests/unit/diagnostic/qa03b-v9-public-availability.test.ts
+          tests/unit/diagnostic/qa03b-v9-owned-run-create-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-run-state-sqlite.test.ts
+      - name: Full unit regression
         run: pnpm test:unit
