@@ -36,10 +36,11 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) {
   const navigate = useNavigate();
   const [starting, setStarting] = useState(false);
+  const [consented, setConsented] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function start() {
-    if (starting || !loaderData.enabled || loaderData.sessionError) return;
+    if (starting || !consented || !loaderData.enabled || loaderData.sessionError) return;
     setStarting(true);
     setError(null);
     try {
@@ -58,7 +59,7 @@ export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) 
       const response = await fetch("/api/diagnostic/v9/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: "{}",
+        body: JSON.stringify({ consent: true }),
         credentials: "same-origin",
       });
       const data = await response.json() as { ok?: boolean; runId?: string; error?: string };
@@ -98,8 +99,12 @@ export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) 
                   ? "Sesión iniciada: el diagnóstico se asociará a tu cuenta Vecidya."
                   : "Visita anónima: conservaremos una identidad de recuperación segura en este navegador."}
               </p>
+              <label className="v9-consent">
+                <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.currentTarget.checked)} />
+                <span>He leído la <Link to="/privacidad">Política de privacidad</Link> y acepto que mis respuestas se traten para elaborar y conservar el diagnóstico en Vecidya.</span>
+              </label>
               {error ? <p role="alert" className="df-screen__note">{error}</p> : null}
-              <button type="button" className="button button--primary" disabled={starting} onClick={() => void start()}>
+              <button type="button" className="button button--primary" disabled={starting || !consented} onClick={() => void start()}>
                 {starting ? "Preparando diagnóstico…" : "Comenzar diagnóstico"}
               </button>
               <p>Podrás asociar después los resultados a tus organizaciones desde <Link to="/app/diagnosticos">Mis diagnósticos</Link>.</p>
