@@ -1,5 +1,9 @@
 # Pruebas
 
+## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
+
+`pnpm run typecheck` y `pnpm run build`: **PASS**. No se ejecutaron pruebas de certificación por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Sin migración ni D1 remota.
+
 ## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
 
 `pnpm run typecheck` y `pnpm run build`: **PASS**. El E2E focal amplía `business-profile-experience-check.mjs` para recorrer Identidad, Redes y Horarios, comprobar que solo el paso activo expone sus campos y confirmar el guardado independiente de horarios. No pudo certificarse: con D1 local `0000–0029` y Worker local, el test falla al registrar el propietario (HTTP 500) porque faltan los secretos de Auth de desarrollo. La primera corrida sin migraciones falló durante la limpieza del fixture (`organization_license` inexistente); se aplicó la cadena solo a D1 local. Sin acceso remoto ni deploy.

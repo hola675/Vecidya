@@ -43,7 +43,7 @@ function formatDate(value: string) {
 }
 
 export default function AccountPage() {
-  const { session, user, workspaceUser, organizations, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
+  const { session, user, workspaceUser, organizations, platformOrganizationOptions, isPlatformAdmin, activeOrganization } = useLoaderData<typeof loader>();
   const { revalidate } = useRevalidator();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

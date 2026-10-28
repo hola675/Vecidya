@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0 — candidato de release
+
+- Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.
+- Se añade `/app/platform` con listado, búsqueda, detalle, ciclo de vida, equipo, servicios, licencias, integraciones, MiniWeb, capacitación y trazabilidad. Las mutaciones mantienen sus permisos de plataforma y auditoría existentes.
+- El cambio usa una ruta de gestión con organización objetivo explícita; no altera la membresía activa ni suplanta a un owner. Cambio de owner y transferencia/eliminación de propiedad siguen fuera de las acciones disponibles.
+- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nueva capacidad compatible). Typecheck y build PASS; no se ejecutaron pruebas de certificación por instrucción del usuario. Sin cambios de esquema ni migraciones.
+
 ## 0.8.5 — candidato local
 
 - «Mi negocio» ahora usa el flujo de secciones del editor MiniWeb: navegación fija al desplazarse en escritorio, barra horizontal en móvil y panel con una sección visible por vez. Se mantienen los campos, la vista previa y los guardados existentes.

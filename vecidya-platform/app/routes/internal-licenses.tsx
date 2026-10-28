@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Link, redirect, useActionData, useLoaderData } from "react-router";
+import { Form, Link, redirect, useActionData, useLoaderData, useLocation } from "react-router";
 import { eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
@@ -112,10 +112,13 @@ export async function action({ context, request }: Route.ActionArgs) {
     if (error instanceof LicensingError) return { error: error.message };
     throw error;
   }
-  return redirect("/app/internal/licenses?updated=1");
+  const routeBase = new URL(request.url).pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  return redirect(`${routeBase}/licenses?updated=1`);
 }
 
 export default function InternalLicenses() {
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
   const { rows, plans, users, billingAccounts, updated, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const [search, setSearch] = useState("");
@@ -138,7 +141,7 @@ export default function InternalLicenses() {
 
   return <AdminShell active="licenses" workspaceUser={workspaceUser}>
     <main className="admin-main">
-      <Link className="back-link" to="/app/internal">← Volver a administración</Link>
+      <Link className="back-link" to={routeBase}>← Volver a administración</Link>
       <div className="page-heading"><div><p className="eyebrow">CLIENTES Y NEGOCIOS</p><h1>Licencias de negocios</h1><p>Busca al cliente y administra la licencia de cada uno de sus negocios.</p></div><Badge tone="neutral">{rows.length} negocios</Badge></div>
 
       <section className="card admin-attention" aria-labelledby="admin-terms-title">
@@ -167,7 +170,7 @@ export default function InternalLicenses() {
             <p><strong>Perfil público:</strong> {organization.profile ? "Configurado" : "Todavía no creado"}</p>
             <details><summary>Referencia del espacio de trabajo</summary><p>{organization.name} · ID interno {organization.id}</p></details>
             <p><strong>Licencia:</strong> {license ? <><Badge tone={license.status === "active" ? "success" : license.status === "suspended" ? "danger" : "neutral"}>{statusNames[license.status] ?? license.status}</Badge> {planNames[license.planCode]} · {price ? `${price.currency} ${(price.amountCents / 100).toFixed(2)} / mes` : "precio histórico"}</> : "Sin asignar"}</p>
-            <Link className="text-link" to={`/app/internal/organizations/${organization.id}`}>Ver espacio de trabajo →</Link>
+            <Link className="text-link" to={`${routeBase}/organizations/${organization.id}`}>Ver espacio de trabajo →</Link>
 
             {license?.status === "cancelled" && row.canReactivate ? <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Reactivar esta licencia y restaurar el estado que tenía antes de cancelarla?")) event.preventDefault(); }} type="submit">Reactivar licencia anterior</button></Form> : null}
             {!license || license.status === "cancelled" ? (

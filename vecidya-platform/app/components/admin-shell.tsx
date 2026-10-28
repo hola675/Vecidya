@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { Form, Link, useNavigate } from "react-router";
+import { Form, Link, useLocation, useNavigate } from "react-router";
 
 import { authClient } from "../lib/auth-client";
 import { Button, Icon, type IconName } from "./ui";
@@ -25,10 +25,14 @@ type AdminShellProps = {
   children: ReactNode;
   workspaceUser?: { name: string; email: string };
   platformRole?: "staff" | "platform_admin";
+  organizationOptions?: { id: string; name: string; slug: string }[];
+  selectedOrganizationId?: string;
 };
 
-export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin" }: AdminShellProps) {
+export function AdminShell({ active, children, workspaceUser, platformRole = "platform_admin", organizationOptions = [], selectedOrganizationId = "" }: AdminShellProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
   const [submitting, setSubmitting] = useState(false);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
     useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#admin-navigation a" });
@@ -60,11 +64,11 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
         role={isMobileNavigation && navigationOpen ? "dialog" : undefined}
         tabIndex={isMobileNavigation && navigationOpen ? -1 : undefined}
       >
-        <Link className="admin-brand" to="/app/internal">
+        <Link className="admin-brand" to={routeBase}>
           <span className="brand-symbol-frame" aria-hidden="true">
             <img alt="" className="brand-symbol" height="512" src={publicAssets.brand.symbol3d} width="512" />
           </span>
-          <span><strong>Vecidya</strong><small>Operaciones de plataforma</small></span>
+          <span><strong>Vecidya</strong><small>Superadministración</small></span>
         </Link>
         <nav aria-label="Navegación administrativa" className="admin-navigation" id="admin-navigation">
           {["VISIÓN GENERAL", "GESTIÓN DE PLATAFORMA", "CONTROL Y TRAZABILIDAD"].map((group) => {
@@ -74,7 +78,7 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
               <div className="app-navigation__group" key={group}>
                 <p className="app-navigation__group-label">{group}</p>
                 {links.map((item) => (
-                  <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to} onClick={() => setNavigationOpen(false)}>
+                  <Link aria-current={active === item.active ? "page" : undefined} className={active === item.active ? "is-active" : ""} key={item.to} to={item.to.replace("/app/internal", routeBase)} onClick={() => setNavigationOpen(false)}>
                     <Icon name={item.icon} />
                     {item.label}
                   </Link>
@@ -114,6 +118,7 @@ export function AdminShell({ active, children, workspaceUser, platformRole = "pl
             <Icon name="menu" />
           </Button>
           <div><p className="eyebrow">ADMINISTRACIÓN DE VECIDYA</p><p className="admin-header__note">Estás administrando la plataforma, no una organización cliente.</p></div>
+          {organizationOptions.length ? <label className="organization-switcher"><span>Organización objetivo</span><select aria-label="Organización objetivo" onChange={(event) => { if (event.currentTarget.value) navigate(`${routeBase}/organizations/${encodeURIComponent(event.currentTarget.value)}`); }} value={selectedOrganizationId}><option value="">Selecciona una organización</option>{organizationOptions.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label> : null}
           <Link className="button button--secondary admin-header__back-link" to="/app">Volver a Mi Vecidya</Link>
         </header>
         <div id="internal-page-content" tabIndex={-1}>{children}</div>
