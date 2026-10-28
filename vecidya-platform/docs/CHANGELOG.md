@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.5 — candidato local
+
+- «Mi negocio» ahora usa el flujo de secciones del editor MiniWeb: navegación fija al desplazarse en escritorio, barra horizontal en móvil y panel con una sección visible por vez. Se mantienen los campos, la vista previa y los guardados existentes.
+- El usuario pidió integración, incremento de versión y despliegue a producción, y especificó no ejecutar pruebas de certificación. Typecheck, build y diff-check pasan; E2E no certificado por falta de secretos Auth locales. Integración, deploy y HTTP pendiente.
+
 ## 0.8.4 — publicado (2026-10-27, PR #175, `main@7eff191a`)
 
 - MiniWeb: los cinco pasos abren diálogos de edición, con resumen de publicación y orientación en la vista principal; las tarjetas, descripciones y campos usan menor densidad vertical y ancho de lectura controlado. En Contenido solo aparecen pestañas de módulos activos; los accesos contextuales desde Secciones siguen llevando al contenido correspondiente. «Mi negocio» también compacta tarjetas, campos y horarios, limita el ancho de lectura y conserva el formulario conjunto con guardado independiente de horarios. El sidebar de escritorio queda compacto y el drawer móvil mantiene ancho fluido.

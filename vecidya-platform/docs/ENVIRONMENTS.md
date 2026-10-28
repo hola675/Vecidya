@@ -1,3 +1,9 @@
+# Entornos y release de producción 0.8.5 (pendiente de integrar y desplegar)
+
+## Próximo release de producción 0.8.5 — pendiente
+
+Checkpoint `fix/business-profile-section-scroll`: navegación por secciones sticky para Mi negocio, derivada del editor MiniWeb. `package.json` incrementa `0.8.4` → `0.8.5`. El E2E no se ejecutó a término por ausencia de secretos Auth locales; `typecheck`, `build` y `git diff --check` pasan. PR, integración, deploy y HTTP anónimo quedan pendientes. Sin migraciones previstas; D1 producción no se ha consultado ni modificado en este checkpoint.
+
 # Entornos y release de producción 0.8.4 (2026-10-27)
 
 ## Release de producción 0.8.4 — publicado

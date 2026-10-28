@@ -253,6 +253,8 @@ export default function BusinessProfilePage() {
     target.focus({ preventScroll: true });
   }
 
+  const activeProfileStep = profileSteps[activeStep];
+
   function updateProfilePreview(event: React.FormEvent<HTMLFormElement>) {
     setPreviewProfile(getProfilePreview(profile, governance, new FormData(event.currentTarget)));
   }
@@ -328,40 +330,31 @@ export default function BusinessProfilePage() {
 
       <PublicBusinessProfilePreview hidden={!previewOpen} hours={previewHours} profile={previewProfile} />
 
-      <nav aria-label="Pasos para configurar tu negocio" className="miniweb-editor__steps">
+      <div className="miniweb-editor__workspace business-profile-workspace">
+      <nav aria-label="Pasos para configurar tu negocio" className="miniweb-editor__steps business-profile-steps">
         {profileSteps.map((step, index) => (
-          <a
+          <button
             aria-current={activeStep === index ? "step" : undefined}
-            href={`#${step.id}`}
+            className={activeStep === index ? "miniweb-editor__tab--active" : undefined}
             key={step.id}
-            onClick={() => setActiveStep(index)}
+            onClick={() => goToProfileStep(index)}
+            type="button"
           >
-            <span>{index + 1}</span> {step.label}
-          </a>
+            <span>{index + 1}</span><span className="miniweb-editor__step-copy"><strong>{step.label}</strong></span>
+          </button>
         ))}
+        <p className="miniweb-editor__step-note">Los cambios de perfil se guardan juntos. Los horarios tienen un guardado independiente.</p>
       </nav>
-      <div className="business-profile-actions" aria-label="Navegar entre pasos de configuración">
-        <Button
-          disabled={activeStep === 0}
-          onClick={() => goToProfileStep(activeStep - 1)}
-          tone="secondary"
-          type="button"
-        >Paso anterior</Button>
-        <p className="form-help" role="status">Paso {activeStep + 1} de {profileSteps.length}: {profileSteps[activeStep].label}</p>
-        <Button
-          disabled={activeStep === profileSteps.length - 1}
-          onClick={() => goToProfileStep(activeStep + 1)}
-          tone="secondary"
-          type="button"
-        >Siguiente paso</Button>
+      <div className="miniweb-editor__workspace-content business-profile-workspace__content">
+      <div className="business-profile-step-heading">
+        <p className="eyebrow">PASO {activeStep + 1} DE {profileSteps.length}</p>
+        <h2>{activeProfileStep.label}</h2>
       </div>
-      <p className="form-help">Los pasos son accesos a secciones del mismo formulario: tus campos permanecen disponibles y se guardan juntos. Los horarios tienen un guardado independiente.</p>
-
       <Card className="business-profile-card">
         {canEdit ? (
           <Form className="business-profile-form" method="post" onChange={updateProfilePreview} onSubmit={(event) => { if (hasDraftConflict) event.preventDefault(); }}>
             <input name="draftRevision" type="hidden" value={formDraftRevision} />
-            <fieldset disabled={isSaving} id="business-profile-identity">
+            <fieldset disabled={isSaving || activeStep !== 0} hidden={activeStep !== 0} id="business-profile-identity">
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
@@ -371,7 +364,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving} id="business-profile-description">
+            <fieldset disabled={isSaving || activeStep !== 1} hidden={activeStep !== 1} id="business-profile-description">
               <legend>Presentación</legend>
               <div className="form-grid">
                 <label className="form-grid__full">Descripción breve<textarea defaultValue={value(profile?.shortDescription)} name="shortDescription" maxLength={280} rows={3} /></label>
@@ -379,7 +372,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving} id="business-profile-contact">
+            <fieldset disabled={isSaving || activeStep !== 2} hidden={activeStep !== 2} id="business-profile-contact">
               <legend>Ubicación y contacto</legend>
               <div className="form-grid">
                 <label>Ciudad<input defaultValue={value(profile?.city)} name="city" maxLength={120} /></label>
@@ -390,7 +383,7 @@ export default function BusinessProfilePage() {
               </div>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__contact" id="business-profile-social">
+            <fieldset disabled={isSaving || activeStep !== 3} hidden={activeStep !== 3} className="business-profile-form__contact" id="business-profile-social">
               <legend>Redes y WhatsApp</legend>
               <div className="form-grid">
                 <label>WhatsApp<input defaultValue={value(profile?.whatsapp)} name="whatsapp" placeholder="+573244321864" maxLength={20} /></label>
@@ -401,7 +394,7 @@ export default function BusinessProfilePage() {
               <p className="form-help">Todos estos campos son opcionales; déjalos vacíos si tu negocio no los usa.</p>
             </fieldset>
 
-            <fieldset disabled={isSaving} className="business-profile-form__operations" id="business-profile-operations">
+            <fieldset disabled={isSaving || activeStep !== 4} hidden={activeStep !== 4} className="business-profile-form__operations" id="business-profile-operations">
               <legend>Cómo y dónde atiendes</legend>
               <div className="form-grid">
                 <label>Modalidad de atención
@@ -437,7 +430,7 @@ export default function BusinessProfilePage() {
       </Card>
 
       {canEdit ? (
-        <Card className="business-profile-card business-profile-hours" id="business-profile-hours">
+        <Card className="business-profile-card business-profile-hours" hidden={activeStep !== 5} id="business-profile-hours">
           <p className="eyebrow">HORARIOS</p>
           <h2>¿Cuándo atiendes?</h2>
           <p className="form-help">Marca "Cerrado" o deja ambas horas vacías para un día sin definir. Los horarios son los que tu negocio publica; Vecidya no verifica huso horario ni excepciones.</p>
@@ -475,6 +468,13 @@ export default function BusinessProfilePage() {
           </Form>
         </Card>
       ) : null}
+      <div className="business-profile-actions" aria-label="Navegar entre pasos de configuración">
+        <Button disabled={activeStep === 0} onClick={() => goToProfileStep(activeStep - 1)} tone="secondary" type="button">Paso anterior</Button>
+        <p className="form-help" role="status">Paso {activeStep + 1} de {profileSteps.length}: {activeProfileStep.label}</p>
+        <Button disabled={activeStep === profileSteps.length - 1} onClick={() => goToProfileStep(activeStep + 1)} tone="secondary" type="button">Siguiente paso</Button>
+      </div>
+      </div>
+      </div>
     </main>
     </ClientAreaShell>
   );

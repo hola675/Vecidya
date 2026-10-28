@@ -5732,6 +5732,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 /* APP-MINI-01: perfil comercial, vista privada y estados reales. */
 .app-state-tile__progress { width: 100%; margin: 0.3rem 0 0.15rem; }
 .business-profile-page { max-width: 68rem; }
+.business-profile-workspace { grid-template-columns: minmax(12rem, 14rem) minmax(0, 1fr); margin-top: .8rem; }
+.business-profile-steps { top: 4.7rem; }
+.business-profile-workspace__content { display: grid; align-content: start; gap: .5rem; }
+.business-profile-step-heading { margin: 0; }
+.business-profile-step-heading .eyebrow { margin: 0 0 .15rem; color: #52647b; font-size: .7rem; }
+.business-profile-step-heading h2 { margin: 0; font-size: 1.15rem; }
+.business-profile-page .business-profile-form fieldset[hidden],
+.business-profile-page .business-profile-hours[hidden] { display: none; }
+.business-profile-workspace__content > .business-profile-actions { justify-content: space-between; }
+.business-profile-workspace__content > .business-profile-actions [role="status"] { margin-inline: auto; }
 .business-profile-heading-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 0.75rem; }
 .business-profile-form fieldset:not(:last-of-type) { border-bottom: 1px solid var(--line); padding-bottom: 1.5rem; }
 .business-profile-form .form-grid input,
@@ -6977,6 +6987,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .business-profile-page .business-hours-row { gap: .55rem; padding: .5rem .7rem; }
 .business-profile-page .business-profile-actions { gap: .5rem; }
 @media (max-width: 700px) {
+  .business-profile-workspace { grid-template-columns: minmax(0, 1fr); }
+  .business-profile-steps { position: sticky; z-index: 4; top: 4.7rem; display: flex; overflow-x: auto; gap: .25rem; padding: .4rem; }
+  .business-profile-steps button { width: auto; min-width: max-content; min-height: 2.7rem; }
+  .business-profile-steps .miniweb-editor__step-note { display: none; }
+  .business-profile-workspace__content > .business-profile-actions { flex-wrap: wrap; }
   .business-profile-page .business-profile-card,
   .business-profile-page .business-profile-status,
   .business-profile-page .business-profile-hours { padding: .8rem; }

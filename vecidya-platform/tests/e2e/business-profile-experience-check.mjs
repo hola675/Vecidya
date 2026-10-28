@@ -235,6 +235,16 @@ try {
   })));
   const page = await context.newPage();
   await page.goto(new URL("/app/business-profile", baseUrl).toString(), { waitUntil: "networkidle" });
+  const profileSteps = page.getByRole("navigation", { name: "Pasos para configurar tu negocio" });
+  assert(await profileSteps.isVisible(), "La navegación por secciones del perfil no está visible.");
+  assert(await page.getByRole("heading", { name: "Identidad", exact: true }).isVisible(), "El editor no inicia en Identidad.");
+  await profileSteps.getByRole("button", { name: "Redes", exact: true }).click();
+  assert(await page.getByLabel("Instagram").isVisible(), "La sección Redes no se mostró al seleccionarla.");
+  assert(!(await page.getByLabel("Nombre visible").isVisible()), "Los campos de otras secciones siguen visibles en el panel.");
+  await profileSteps.getByRole("button", { name: "Horarios", exact: true }).click();
+  assert(await page.locator('input[name="hours_1_opens"]').isVisible(), "La sección Horarios no se mostró al seleccionarla.");
+  assert(await page.getByRole("button", { name: "Guardar horarios" }).isVisible(), "El guardado independiente de horarios desapareció.");
+  await profileSteps.getByRole("button", { name: "Identidad", exact: true }).click();
   const previewToggle = page.getByRole("button", { name: "Vista previa del minisitio" });
   assert(await previewToggle.isVisible(), "El editor no ofrece vista previa privada del minisitio.");
   await previewToggle.click();

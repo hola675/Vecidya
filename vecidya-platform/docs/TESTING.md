@@ -1,5 +1,9 @@
 # Pruebas
 
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
+
+`pnpm run typecheck` y `pnpm run build`: **PASS**. El E2E focal amplía `business-profile-experience-check.mjs` para recorrer Identidad, Redes y Horarios, comprobar que solo el paso activo expone sus campos y confirmar el guardado independiente de horarios. No pudo certificarse: con D1 local `0000–0029` y Worker local, el test falla al registrar el propietario (HTTP 500) porque faltan los secretos de Auth de desarrollo. La primera corrida sin migraciones falló durante la limpieza del fixture (`organization_license` inexistente); se aplicó la cadena solo a D1 local. Sin acceso remoto ni deploy.
+
 ## Release 0.8.4 — evidencia de publicación (2026-10-27)
 
 No se ejecutaron pruebas automatizadas por indicación del usuario. El build de producción terminó correctamente; D1 remota reportó `No migrations to apply`. La verificación anónima de `GET https://vecidya.com/` dio 200 y mostró 0.8.4 + © 2026 Vecidya a las 2026-10-27T23:44:23Z. No se verificaron rutas autenticadas en producción. Detalle del deploy y Version ID en `ENVIRONMENTS.md`.
