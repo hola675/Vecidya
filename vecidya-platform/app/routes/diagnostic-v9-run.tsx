@@ -194,7 +194,7 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
   return (
     <PublicLayout>
       <main className="df-page">
-        <section className="df-screen" aria-labelledby="v9-run-heading">
+        <section className="df-screen v9-diagnostic-screen" aria-labelledby="v9-run-heading">
           <div className="df-screen__header">
             <p className="df-screen__eyebrow">Vecidya · Diagnóstico V9</p>
             <h1 className="df-screen__title" id="v9-run-heading">Tu diagnóstico digital</h1>
