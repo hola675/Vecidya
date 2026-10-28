@@ -48,6 +48,48 @@ test("specialty bank is isolated from the public 45 and preserves their contract
   assert.deepEqual(validateQuestionCopyV2(candidate), []);
 });
 
+test("candidate editorial rewrites preserve context-producing signals and exclusive delivery fallbacks", () => {
+  const option = (questionId: string, value: string) => {
+    const question = candidate.find((item) => item.id === questionId);
+    assert.ok(question, questionId);
+    const selected = question.options.find((item) => item.value === value);
+    assert.ok(selected, `${questionId}/${value}`);
+    return selected;
+  };
+
+  for (const [value, entity] of [
+    ["individual", "individual"],
+    ["business", "business"],
+    ["organization", "organization"],
+    ["project", "project"],
+  ] as const) {
+    assert.deepEqual(option("q2_entity", value).produces, [
+      { kind: "entity", value: entity, provenance: "explicit_declaration" },
+    ]);
+  }
+
+  for (const value of ["physical_location", "appointments", "travels", "retail", "onsite", "online_checkout"] as const) {
+    assert.deepEqual(option("q2_delivery", value).produces, [
+      { kind: "deliveryMode", slot: "component", value, provenance: "explicit_declaration" },
+    ]);
+  }
+  assert.equal(option("q2_delivery", "remote_service").produces, undefined, "generic remote delivery must not invent an archetype");
+  assert.equal(option("q2_delivery", "other").exclusive, true);
+  assert.deepEqual(option("q2_delivery", "other").produces, [
+    { kind: "deliveryClassification", value: "other", provenance: "explicit_declaration" },
+  ]);
+  assert.equal(option("q2_delivery", "unsure").exclusive, true);
+  assert.deepEqual(option("q2_delivery", "unsure").produces, [
+    { kind: "deliveryClassification", value: "unsure", provenance: "explicit_declaration" },
+  ]);
+
+  for (const value of ["b2c", "b2b", "mixed"] as const) {
+    assert.deepEqual(option("q2_customer_buyer", value).produces, [
+      { kind: "customerBuyer", value, provenance: "explicit_declaration" },
+    ]);
+  }
+});
+
 test("existing answers keep their scored dimensions under candidate bank", () => {
   const cases = [
     active,
