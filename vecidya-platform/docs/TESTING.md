@@ -1,3 +1,9 @@
+# Pruebas
+
+## Release 0.8.4 — evidencia de publicación (2026-10-27)
+
+No se ejecutaron pruebas automatizadas por indicación del usuario. El build de producción terminó correctamente; D1 remota reportó `No migrations to apply`. La verificación anónima de `GET https://vecidya.com/` dio 200 y mostró 0.8.4 + © 2026 Vecidya a las 2026-10-27T23:44:23Z. No se verificaron rutas autenticadas en producción. Detalle del deploy y Version ID en `ENVIRONMENTS.md`.
+
 ## DIAG-V9-LEX-GRAPH-P1B — matriz de revisión y paridad semántica (2026-10-26)
 
 **CODE/TEST — pruebas incorporadas y PASS:** `tests/unit/diagnostic/qa03b-v9-editorial-review-matrix.test.ts` comprueba fichas 77/387/15, fidelidad de `readsAs` a cada respuesta de `evidenceV3`, preservación de IDs, orden y opciones, notas de ocho decisiones (cuatro textos revisados, cuatro casos semánticos retenidos) y ausencia de mutación del banco. `qa03b-editorial-copy.test.ts` añade regresión estricta de invariancia contractual para cuatro correcciones léxicas. No interpretar flag/ausencia de flag como aceptación humana. Ejecutar:
@@ -15,8 +21,6 @@ pnpm test:unit
 
 El archivo exportado `audit-v9-p1.json` es una salida local bajo demanda y **NO** se versiona ni contiene datos de clientes. El CI contra `main` debe ejecutarse desde PR temporal; PR apilado contra #160 no activa automáticamente `Main integration quality`. Revisar la salida antes de declarar PASS. P2 requiere rutas y replays reales, no solo referencias de respuesta.
 
-# Pruebas
-
 ## DIAG-V9-LEX-GRAPH-P0P1 — certificación de inventario léxico/grafo (2026-10-26)
 
 **CODE/TEST; RAN pendiente del CI de HEAD:** `tests/unit/diagnostic/qa03b-v9-editorial-graph-audit.test.ts` verifica inventario de 77 definiciones incluyendo variantes, opciones, respuestas no puntuables, dimensiones, aristas de dependencias y grafos sintéticos con ciclos, referencias faltantes, valores inexistentes y opciones duplicadas. Su salida `DIAG_V9_P0_INVENTORY`, `DIAG_V9_P0_REVIEW_IDS` y `DIAG_V9_P0_BLOCKERS` será la línea base observacional; los flags de revisión no prueban defectos cognitivos y los posibles bloqueos se deben inspeccionar antes de aprobar. `qa03b-editorial-copy.test.ts` agrega regresión de cuatro enunciados acordados sin mutación semántica. No se cambia el número de interacciones ni se promete mejora cuantitativa todavía.
@@ -33,31 +37,12 @@ git diff --check
 
 También revisar CI, comparar respuestas/rutas y ejecutar E2E de Diagnóstico/Worker y pruebas cognitivas humanas antes de certificar P1 y cualquier cambio semántico P2/P3. El test sintético de grafo no implica que todos los contextos derivados estén libres de ciclos. Sin deploy ni merge.
 
-## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
-
-`/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
-
 ## APP-MINI-02D — refinamiento de configuración (2026-10-27)
 
-No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. No se ejecutaron pruebas automatizadas, no se probaron datos remotos ni se hizo deploy.
+No se ejecutaron pruebas automatizadas por indicación del usuario. La inspección visual autenticada con D1 local temporal y capturas 1366×768/390×844 revisó el sidebar y el flujo del editor. La inspección interactiva revisó Diseño, Secciones, Contenido, la transición a Vista previa y los ejemplos de tarjetas aportados; se ajustaron ancho del diálogo, espaciado y tipografía. Las pestañas visibles dependen de los módulos activos. La cuenta sintética no contiene un perfil con datos para generar una MiniWeb previa real. Esta inspección fue local y previa al deploy; la evidencia HTTP del release posterior figura arriba.
 ## ADMIN-ORG-PAGINATION-001 — búsqueda, filtros, orden y páginas (PR #173 integrado)
 
 `/app/internal/organizations` carga el recuento y las filas filtradas en servidor; query string conserva búsqueda, estado de perfil, orden y página, con 50 organizaciones por página y orden estable por nombre/fecha + ID. El E2E agrega 55 organizaciones sintéticas, comprueba 50 + 5, orden ascendente/descendente, filtros `published`/`none` y enlaces que preservan el criterio. **RAN 2026-10-27:** `platform-service-administration-check.mjs` PASS con Worker Wrangler, D1 efímera y Chrome local; `pnpm run typecheck`, `pnpm run build`, `node --check` y `git diff --check` PASS. Sin cambio de esquema, migración ni acceso remoto.
-
-## DIAG-V9-RUN-FINALIZATION-001 — replay, propiedad y resultado atómico (2026-10-27)
-
-**CODE/TEST; CI pendiente en el HEAD actual:** `qa03b-worker-replay-v9.test.ts` añade el recorrido SQLite completo: ejecución propiedad de usuario, eventos persistidos, rechazo de otro propietario, replay desde D1, paridad del scoring con el banco V9 fijado, resultado inmutable y reintento idempotente. La ruta `POST /api/diagnostic/v9/runs/:runId/finalize` no acepta puntuación ni recomendaciones del navegador; valida identidad, versiones, secuencia y estado antes de guardar el resultado y completar la ejecución en una operación D1 atómica. El runtime público sigue sujeto a la bandera y las cinco versiones.
-
-Desde `vecidya-platform/`:
-
-```bash
-node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
-pnpm typecheck
-pnpm build
-pnpm test:unit
-```
-
-No declarar PASS hasta ver el workflow del HEAD exacto. Sin migraciones aplicadas ni despliegue público.
 
 ## ADMIN-AUDIT-PAGINATION-001 — filtros y paginación (2026-10-26)
 

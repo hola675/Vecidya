@@ -4,6 +4,10 @@
 
 **RAN:** antes de aplicar, D1 `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) tenía ledger `0000–0028`, 0 licencias `status <> 'cancelled'` y 0 grupos duplicados por organización. Bookmark Time Travel previo: `000005d6-00000000-00005110-e126be1931ae402266769c42a3897da5`. El 2026-10-26T17:24Z se aplicó mediante Wrangler remoto únicamente `0029_organization-license-single-current.sql`; consulta posterior confirma el ledger y el índice parcial `organization_license_one_current_unique`. Staging no se modificó. Rollback específico del índice: `DROP INDEX IF EXISTS organization_license_one_current_unique`. No restaurar el bookmark salvo emergencia evaluada, ya que reemplazaría escrituras posteriores.
 
+## PROD-RELEASE-0.8.4 — ledger remoto sin pendientes (2026-10-27)
+
+El release 0.8.4 no añade archivos de migración ni cambia el esquema. `pnpm exec wrangler d1 migrations list DB --remote` consultó el binding de producción `vecidya-prod` con la cuenta Soporte y respondió `No migrations to apply`. No se ejecutó una aplicación remota ni se escribieron datos.
+
 ## PROD-RELEASE-0.8.1 — sin cambios D1 (2026-10-26)
 
 El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escrituras remotas D1. La última verificación documentada de producción, `2026-10-25`, registró ledger `0000–0028`; este release no lo altera. No se infiere una nueva verificación del ledger a partir del deploy de Worker.
