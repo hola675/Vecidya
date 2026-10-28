@@ -1,6 +1,6 @@
 # Estructura del código
 
-**APP-MINI-02B (integrado en 0.8.3):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+**FIX-BUSINESS-PROFILE-SECTION-SCROLL (checkpoint local):** `app/routes/business-profile.tsx` organiza identidad, presentación, contacto, redes, atención y horarios en pasos; `app/app.css` reutiliza el workspace MiniWeb con navegación sticky en escritorio y barra horizontal en móvil. Se conserva el guardado conjunto del perfil y el guardado independiente de horarios. `app/routes/miniweb-editor.tsx` continúa administrando logo y portada. Sin rutas nuevas ni cambios a guardas; validación pendiente.
 
 **APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.
 
