@@ -1,13 +1,14 @@
 import { Form, Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
-import { listPlatformOrganizationsPage } from "../../db/queries/platform-organizations.server";
+import { listPlatformOrganizationsPage, listPlatformOrganizationOptions } from "../../db/queries/platform-organizations.server";
 import type { OrganizationProfileFilter, OrganizationSort } from "../../db/queries/platform-organizations.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
 import { publicAssets } from "../assets/public-assets";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformReadAccess } from "../../server/platform-authorization.server";
+import { useLocation } from "react-router";
 
 import type { Route } from "./+types/internal-organizations";
 
@@ -35,7 +36,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     page,
     pageSize: organizationPageSize,
   });
-  return { ...result, search, profileFilter, sort, workspaceUser: access.workspaceUser, platformRole: access.role };
+  const organizationOptions = await listPlatformOrganizationOptions(createDatabase(env.DB));
+  return { ...result, organizationOptions, search, profileFilter, sort, workspaceUser: access.workspaceUser, platformRole: access.role };
 }
 
 function profileLabel(profile: { status: string } | null) {
@@ -47,30 +49,32 @@ function profileTone(profile: { status: string } | null): "success" | "neutral" 
   return profile?.status === "published" ? "success" : "neutral";
 }
 
-function organizationPageHref(page: number, search: string, profile: OrganizationProfileFilter, sort: OrganizationSort) {
+function organizationPageHref(base: string, page: number, search: string, profile: OrganizationProfileFilter, sort: OrganizationSort) {
   const params = new URLSearchParams();
   if (search) params.set("q", search);
   if (profile !== "all") params.set("profile", profile);
   params.set("order", sort);
   params.set("page", String(page));
-  return `/app/internal/organizations?${params.toString()}#organizations-results`;
+  return `${base}/organizations?${params.toString()}#organizations-results`;
 }
 
 export default function InternalOrganizations() {
-  const { organizations, page, pageCount, pageSize, total, search, profileFilter, sort, workspaceUser, platformRole } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  const { organizations, organizationOptions, page, pageCount, pageSize, total, search, profileFilter, sort, workspaceUser, platformRole } = useLoaderData<typeof loader>();
   const hasFilters = Boolean(search || profileFilter !== "all");
   const firstResult = total ? (page - 1) * pageSize + 1 : 0;
   const lastResult = Math.min(page * pageSize, total);
 
   return (
-    <AdminShell active="organizations" workspaceUser={workspaceUser} platformRole={platformRole}>
+    <AdminShell active="organizations" workspaceUser={workspaceUser} platformRole={platformRole} organizationOptions={organizationOptions}>
       <main className="admin-main">
-        <Link className="back-link" to="/app/internal">← Volver a administración</Link>
-        <div className="page-heading"><div><p className="eyebrow">ESPACIOS DE TRABAJO</p><h1>Datos internos de los negocios</h1><p>Cada fila muestra el espacio donde se gestionan miembros, permisos y servicios de un negocio. Para administrar licencias, usa «Licencias de negocios».</p></div><Badge tone="neutral">{total} espacios</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to="/app/internal/organizations/new">Crear espacio de trabajo</Link> : null}</div>
+        <Link className="back-link" to={routeBase}>← Volver a administración</Link>
+        <div className="page-heading"><div><p className="eyebrow">ORGANIZACIONES DE VECIDYA</p><h1>Administrar organizaciones</h1><p>Selecciona un negocio para gestionar su ciclo, miembros, servicios, MiniWeb y capacitación con permisos de superadministrador.</p></div><Badge tone="neutral">{total} organizaciones</Badge>{platformRole === "platform_admin" ? <Link className="button button--primary" to={`${routeBase}/organizations/new`}>Crear organización</Link> : null}</div>
 
         {total || hasFilters ? (
           <>
-            <Form action="/app/internal/organizations" className="admin-toolbar" method="get">
+            <Form action={`${routeBase}/organizations`} className="admin-toolbar" method="get">
               <label className="admin-search">
                 <Icon name="eye" />
                 <input
@@ -101,7 +105,7 @@ export default function InternalOrganizations() {
                 </select>
               </label>
               <button className="button button--secondary" type="submit">Aplicar filtros</button>
-              {hasFilters || sort !== "name-asc" ? <Link className="button button--ghost" to="/app/internal/organizations">Limpiar</Link> : null}
+              {hasFilters || sort !== "name-asc" ? <Link className="button button--ghost" to={`${routeBase}/organizations`}>Limpiar</Link> : null}
             </Form>
 
             <p className="admin-result-count" aria-live="polite">Mostrando {firstResult}–{lastResult} de {total} espacios</p>
@@ -121,15 +125,15 @@ export default function InternalOrganizations() {
                         <td><Badge tone={profileTone(item.profile)}>{profileLabel(item.profile)}</Badge></td>
                         <td>{item.servicesCount}</td>
                         <td>{item.integrationsCount}</td>
-                        <td className="admin-table__action"><Link className="button button--secondary" to={`/app/internal/organizations/${item.id}`}>Ver</Link></td>
+                        <td className="admin-table__action"><Link className="button button--secondary" to={`${routeBase}/organizations/${item.id}`}>Gestionar</Link></td>
                       </tr>
                     ))}</tbody>
                   </table>
                 </div>
                 {pageCount > 1 ? <nav aria-label="Paginación de organizaciones" className="admin-pagination">
-                  {page > 1 ? <Link className="button button--secondary" to={organizationPageHref(page - 1, search, profileFilter, sort)}>Anterior</Link> : <span aria-disabled="true" className="button button--secondary">Anterior</span>}
+                  {page > 1 ? <Link className="button button--secondary" to={organizationPageHref(routeBase, page - 1, search, profileFilter, sort)}>Anterior</Link> : <span aria-disabled="true" className="button button--secondary">Anterior</span>}
                   <span aria-current="page">Página {page} de {pageCount}</span>
-                  {page < pageCount ? <Link className="button button--secondary" to={organizationPageHref(page + 1, search, profileFilter, sort)}>Siguiente</Link> : <span aria-disabled="true" className="button button--secondary">Siguiente</span>}
+                  {page < pageCount ? <Link className="button button--secondary" to={organizationPageHref(routeBase, page + 1, search, profileFilter, sort)}>Siguiente</Link> : <span aria-disabled="true" className="button button--secondary">Siguiente</span>}
                 </nav> : null}
               </>
             ) : (

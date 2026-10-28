@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useLocation } from "react-router";
 import { count, eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
@@ -58,6 +58,8 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 }
 
 export default function InternalHome() {
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
   const { workspaceUser, counts, attention, recentActivity } = useLoaderData<typeof loader>();
   const hasAttention = attention.draftCount > 0 || attention.suspendedCount > 0 || attention.pendingServicesCount > 0;
 
@@ -83,7 +85,7 @@ export default function InternalHome() {
           <p className="eyebrow">CLIENTE → NEGOCIO(S)</p>
           <h2 id="workspace-profile-title">Un cliente puede administrar varios negocios</h2>
           <p>El <strong>cliente</strong> es la cuenta responsable. Cada <strong>negocio</strong> tiene su propia licencia y su ficha pública. Por dentro, los datos de cada negocio viven en un espacio de trabajo con sus miembros, permisos y servicios; no necesitas separar esos conceptos para asignar licencias.</p>
-          <Link className="button button--primary" to="/app/internal/licenses">Administrar licencias por cliente y negocio</Link>
+          <Link className="button button--primary" to={`${routeBase}/licenses`}>Administrar licencias por cliente y negocio</Link>
         </section>
 
         <section aria-labelledby="admin-attention-title" className="card admin-attention">

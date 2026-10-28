@@ -28,14 +28,14 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const [{ workspaceUser, organizations, isPlatformAdmin }, activeOrganization] = await Promise.all([
+  const [{ workspaceUser, organizations, memberOrganizations, platformOrganizationOptions, isPlatformAdmin }, activeOrganization] = await Promise.all([
     getClientWorkspaceContext(env, request),
     getActiveOrganization(env, request),
   ]);
   const database = createDatabase(env.DB);
   const billing = await database.query.billingAccount.findFirst({ where: eq(billingAccount.ownerUserId, workspaceUser.id) });
   const activeLicense = billing ? await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.billingAccountId, billing.id), eq(organizationLicense.status, "active"), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, new Date()))) }) : null;
-  const canCreateOrganizations = Boolean(activeLicense) || !organizations.some((item) => item.role === "owner");
+  const canCreateOrganizations = Boolean(activeLicense) || !memberOrganizations.some((item) => item.role === "owner");
   const [businessProfile, services, memberCount] = activeOrganization
     ? await Promise.all([
       getBusinessProfileForOrganization(database, activeOrganization.id),
@@ -46,6 +46,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   return {
     workspaceUser,
     organizations,
+    platformOrganizationOptions,
     isPlatformAdmin,
     activeOrganization,
     businessProfile,
@@ -78,7 +79,7 @@ function getPrimaryAction(businessProfile: LoaderData["businessProfile"], comple
 }
 
 export default function AppPage() {
-  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, workspaceUser, isPlatformAdmin, services, memberCount, canCreateOrganizations } = useLoaderData<typeof loader>();
+  const { activeOrganization, businessProfile, businessProfileCompletion, organizations, platformOrganizationOptions, workspaceUser, isPlatformAdmin, services, memberCount, canCreateOrganizations } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -108,7 +109,7 @@ export default function AppPage() {
   const primaryAction = activeOrganization ? getPrimaryAction(businessProfile, businessProfileCompletion) : null;
 
   return (
-    <ClientAreaShell active="home" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
+    <ClientAreaShell active="home" workspaceUser={workspaceUser} organizations={organizations} platformOrganizationOptions={platformOrganizationOptions} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="app-main app-home" id="client-page-content">
       <div className="page-heading">
         <div>
@@ -122,6 +123,8 @@ export default function AppPage() {
       {activeOrganization ? <h2 className="sr-only">Organización activa: {activeOrganization.name}</h2> : null}
 
       {error ? <Alert>{error}</Alert> : null}
+
+      {isPlatformAdmin ? <Card className="app-primary-action"><div><p className="eyebrow">SUPERADMINISTRACIÓN</p><h2>Gestiona las organizaciones de Vecidya</h2><p>Accede a cualquier organización como administrador de plataforma. Las acciones quedan asociadas a tu identidad administrativa y auditadas.</p></div><Link className="button button--primary" to="/app/platform/organizations">Ver todas las organizaciones</Link></Card> : null}
 
       {!activeOrganization ? (
         <Card className="empty-state">

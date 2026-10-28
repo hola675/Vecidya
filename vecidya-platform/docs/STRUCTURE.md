@@ -15,7 +15,9 @@ Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/ro
 | `app/components/experience-system.tsx` | Guía, métrica, progreso, comparación por barras | Solo presentación; sin acceso a datos ni autorización |
 | `app/lib/experience-metrics.ts` | Escala relativa, porcentaje y recuento finito | Puro; no crea ni estima métricas |
 | `/` → `routes/home.tsx` | Guía pública Descubre → Comprende → Decide | Sin conversiones, testimonios ni cifras ficticias |
-| `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa | Guardas del loader y tenant intactos |
+| `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa; selector global para `platform_admin` | El selector global navega a gestión con target explícito; no cambia membership ni `activeOrganizationId` |
+| `/app/platform/organizations` y `/:organizationId` | Lista y gestión de organizaciones para `platform_admin` (alias de pantallas de control plane) | Mismas guardas y auditoría de `/app/internal`; sin suplantación del owner |
+| `/app/platform/organizations/:organizationId/{miniweb,training}` | Configuración MiniWeb, capacitación y progreso | `requirePlatformAdminAction`, target URL y auditoría vigentes |
 | `/app/internal` → `routes/internal.tsx` | Métricas actuales, comparación de pendientes y guía operativa | Guardia `requirePlatformAdmin` intacta |
 | `/app/internal/diagnostic-analytics` | Eventos agregados, barras y tendencia con cero real | No cohortes ni datos personales; mismo acceso protegido |
 | `public-layout.tsx`, `client-area-shell.tsx`, `admin-shell.tsx` | Símbolo y retornos visuales coherentes | Solo navegación entre zonas, sin elevación de privilegios |

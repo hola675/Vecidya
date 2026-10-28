@@ -1,5 +1,11 @@
 # Pruebas
 
+## APP-PLATFORM-ADMIN-ORGS — candidato local 0.9.0
+
+`pnpm run typecheck` y `pnpm run build`: **PASS** tras añadir las redes. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión porque no está configurado el secreto Auth de desarrollo. Con una clave efímera local, el proceso de Cloudflare Vite reportó timeout al construir `Request.cf` y el GET no concluyó; el flujo autenticado queda sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` generada, sin aplicación de D1. La CI del commit inicial de acceso administrativo completó correctamente; la primera CI con los nuevos campos halló fallos de expectativas ya corregidos abajo, a la espera de repetición automática.
+
+La primera CI automática del commit `a916b32` terminó con 3 fallos unitarios: dos expectativas de snapshots públicos al elevar innecesariamente el schema y una allowlist MiniWeb que aún no incluía TikTok/YouTube. Se conserva el contrato snapshot v4, normalizando a `null` los campos en registros viejos, y se actualiza la expectativa existente de la allowlist. La suite no se ejecutó manualmente; CI debe repetirla para el commit correctivo.
+
 ## FIX-BUSINESS-PROFILE-SECTION-SCROLL — verificación local
 
 `pnpm run typecheck` y `pnpm run build`: **PASS**. El E2E focal amplía `business-profile-experience-check.mjs` para recorrer Identidad, Redes y Horarios, comprobar que solo el paso activo expone sus campos y confirmar el guardado independiente de horarios. No pudo certificarse: con D1 local `0000–0029` y Worker local, el test falla al registrar el propietario (HTTP 500) porque faltan los secretos de Auth de desarrollo. La primera corrida sin migraciones falló durante la limpieza del fixture (`organization_license` inexistente); se aplicó la cadena solo a D1 local. Sin acceso remoto ni deploy.

@@ -37,7 +37,7 @@ export function parseBusinessPublicationSnapshot(value: string | null, schemaVer
     const isLegacySnapshot = Number(schemaVersion) === 1;
     const snapshotVersion = Number(schemaVersion);
     const hasMediaSnapshot = snapshotVersion >= 3;
-    const hasBrandingSnapshot = snapshotVersion >= BUSINESS_PUBLICATION_SCHEMA_VERSION;
+    const hasBrandingSnapshot = snapshotVersion >= 4;
     const snapshot = parsed as Partial<BusinessPublicationSnapshot>;
     if (snapshot.schemaVersion !== schemaVersion
       || !snapshot.profile || typeof snapshot.profile !== "object"
@@ -58,6 +58,11 @@ export function parseBusinessPublicationSnapshot(value: string | null, schemaVer
     return {
       ...snapshot,
       schemaVersion: BUSINESS_PUBLICATION_SCHEMA_VERSION,
+      profile: {
+        ...snapshot.profile,
+        tiktokUrl: snapshot.profile.tiktokUrl ?? null,
+        youtubeUrl: snapshot.profile.youtubeUrl ?? null,
+      },
       configuration: ensureAvailableMiniWebModules(snapshot.configuration),
       offerings: offerings.map((item) => ({
         ...item,
@@ -106,6 +111,8 @@ export function createBusinessPublicationSnapshot(
       instagramUrl: profile.instagramUrl,
       facebookUrl: profile.facebookUrl,
       linkedinUrl: profile.linkedinUrl,
+      tiktokUrl: profile.tiktokUrl,
+      youtubeUrl: profile.youtubeUrl,
       serviceMode: profile.serviceMode as BusinessProfileInput["serviceMode"],
       serviceArea: profile.serviceArea,
     },

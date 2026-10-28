@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.0 — candidato de release
+
+- Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.
+- Se añade `/app/platform` con listado, búsqueda, detalle, ciclo de vida, equipo, servicios, licencias, integraciones, MiniWeb, capacitación y trazabilidad. Las mutaciones mantienen sus permisos de plataforma y auditoría existentes.
+- El cambio usa una ruta de gestión con organización objetivo explícita; no altera la membresía activa ni suplanta a un owner. Cambio de owner y transferencia/eliminación de propiedad siguen fuera de las acciones disponibles.
+- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nuevas capacidades compatibles). Typecheck/build PASS tras añadir las redes. CI automática del commit `a916b32` encontró expectativas unitarias desactualizadas, ya corregidas; la nueva ejecución debe validar el commit correctivo. No se ejecutaron pruebas de certificación manuales por instrucción del usuario.
+- Se agregan campos opcionales de TikTok y YouTube al paso Redes de Mi negocio. Se validan contra los dominios de cada plataforma, se guardan en el perfil, se publican en los enlaces de Vecindario y MiniWeb y se incluyen en `sameAs`. Migración aditiva `0030_business-profile-tiktok-youtube.sql`; pendiente de aplicar en producción.
+- Se mantiene el snapshot público en schema v4 y se rellena `null` para TikTok/YouTube en publicaciones previas, sin cambiar su contrato.
+
 ## 0.8.5 — candidato local
 
 - «Mi negocio» ahora usa el flujo de secciones del editor MiniWeb: navegación fija al desplazarse en escritorio, barra horizontal en móvil y panel con una sección visible por vez. Se mantienen los campos, la vista previa y los guardados existentes.

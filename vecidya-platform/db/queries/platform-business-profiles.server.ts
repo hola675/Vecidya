@@ -64,6 +64,8 @@ export async function getPlatformBusinessProfileDetail(database: Database, busin
       instagramUrl: businessProfile.instagramUrl,
       facebookUrl: businessProfile.facebookUrl,
       linkedinUrl: businessProfile.linkedinUrl,
+      tiktokUrl: businessProfile.tiktokUrl,
+      youtubeUrl: businessProfile.youtubeUrl,
       serviceMode: businessProfile.serviceMode,
       serviceArea: businessProfile.serviceArea,
       status: businessProfile.status,
