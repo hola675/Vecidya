@@ -288,6 +288,54 @@
 
 **Bloqueos antes de implementar:** modelo comercial/operativo de compra de ampliaciones (sin checkout automático actual), tratamiento de sobrecupo por suspensión/expiración, y migración de organizaciones ya publicadas. **Evidencia CODE + propuesta**, sin pruebas ni migraciones.
 
+
+## 21. Plan ejecutable por fases — decisiones, entregables y criterios de salida (2026-10-29)
+
+**Objetivo:** pasar de auditoría a implementación sin bloquear todo el proyecto por decisiones secundarias. Cada fase entrega un PR acotado, pruebas focalizadas de archivos y contratos afectados, evidencia reproducible y revisión de compatibilidad con el HEAD actualizado. No lanzar suites generales ni editar áreas ajenas. No fusionar ni desplegar sin autorización.
+
+### F0 — Cierre de contratos y compatibilidad
+**Entregables:** matriz de decisiones DEC-01–08; inventario de endpoints, tablas, permisos y snapshots; contrato de cupos por cuenta; política de referencias de medios; matriz de riesgos y compatibilidad. **Salida:** ninguna ambigüedad impide implementar el núcleo. Las decisiones comerciales aún abiertas se aíslan detrás de reglas conservadoras y no se publican como hechos.
+
+### F1 — Mi Vecidya: navegación y experiencia
+**Entregables:** shell móvil/escritorio, selector de organización con contexto persistente, panel de estado, rutas de MiniWeb y negocio, vacíos/errores/carga accesibles. **Salida:** usuario cambia de organización sin fuga de datos y encuentra edición/publicación en máximo dos pasos de navegación. Pruebas focales de rutas, permisos y componentes.
+
+### F2A — Licencias y capacidad MiniWeb
+**Contrato aprobado:** bloque base único de 3 MiniWeb si existe al menos una licencia activa Cuadra/Barrio/Ciudad; Barrio y Ciudad no suman bloques; solo Cuadras de ampliación explícitas añaden 3 cada una. CRM Barrio/Ciudad exclusivo de la organización asignada.
+**Diseño propuesto:** conservar organization_license; añadir registro de ampliaciones ligado a billing_account, estado y fechas; resolver capacidad en servidor; registrar titular de cada publicación y ocupación; controlar concurrencia del último cupo; denegar nuevas publicaciones sin cupo sin borrar snapshots previos. **Salida:** matriz 0/3/6/9, aislamiento por cuenta, cambios de titular y carreras validados con tests focales. **Dependencia:** F0, no F1.
+
+### F2B — Modelo MiniWeb V2 y snapshots
+**Entregables:** versionado de configuración; módulos con instanceId estable para galerías repetidas; migración reversible de V1; tabla de versiones publicadas inmutables; restauración histórica a borrador; CAS por revisión y versión publicada. **Salida:** V1 sigue leyendo, V2 permite módulos repetidos y publicaciones anteriores no se sobrescriben. Pruebas de migración, concurrencia y restore.
+
+### F3 — Identidad visual
+**Entregables:** portada, logo e identidad como elementos independientes; recorte y encuadre responsivo; fallback accesible. **Salida:** cambiar portada no mueve ni altera logo; visual móvil/escritorio validado.
+
+### F4 — Medios, videos y galerías
+**Evidencia CODE:** DELETE marca is_active=0 con CAS, no borra R2; ruta pública entrega solo medios referenciados en snapshot actual, aun si están inactivos; cuota suma también inactivos; caché compartida hasta 86400 s.
+**Entregables:** galerías múltiples por instanceId; subida y validación de archivos; URLs de video externas con proveedores permitidos; orden independiente; referencias históricas; política de retención y GC seguro. **Salida:** borrar del borrador no rompe publicación; restore histórico detecta faltantes; ningún asset de otro tenant es accesible; cuota no se libera ficticiamente.
+
+### F5 — Horarios
+**Entregables:** editor semanal claro, días cerrados, validación de intervalos y presentación compacta en perfil público. **Salida:** misma interpretación entre formulario, snapshot y página publicada; casos límite cubiertos.
+
+### F6 — Plantillas y niveles
+**Entregables:** Cuadra esencial, Barrio avanzado, Ciudad completo, vista previa responsiva y enforcement en servidor. **Salida:** no se habilitan plantillas premium por modificar payload; downgrade mantiene snapshot publicado (DEC-07). **Decisión pendiente aislada:** organización sin CRM propio no hereda automáticamente plantillas Barrio/Ciudad; hasta resolverlo, solo catálogo esencial para nuevas publicaciones de esa organización como propuesta conservadora, sin afirmar aprobación comercial.
+
+### F7 — Editor simple/avanzado
+**Entregables:** ordenación de secciones, edición inline, ajustes progresivos, deshacer cambios de borrador y vista previa fiel. **Salida:** un usuario sin conocimientos técnicos completa un MiniWeb desde móvil; guardado y validaciones no alteran publicación.
+
+### F8 — Publicación, historial y restauración
+**Entregables:** revisión final, validación de licencia/cupo/plantilla, publicación atómica, historial de versiones, restore a borrador y republicación explícita. **Salida:** ningún cambio de borrador altera página pública; concurrencia de cupos y versiones rechaza operaciones conflictivas; rollback operativo documentado.
+
+### F9 — QA y preparación de entrega
+**Entregables:** pruebas focales acumuladas por contratos afectados, accesibilidad teclado/móvil, seguridad multi-tenant, migración y reversión, observabilidad y checklist de despliegue. **Salida:** evidencias ligadas a SHA y aprobación explícita antes de merge/deploy.
+
+### Reglas para evitar huecos
+- **Propietario de dato:** billing_account gobierna cupos; organization gobierna contenido; organization_license gobierna CRM; publicación conserva snapshot y referencias.
+- **Cambios de licencia:** expiración, suspensión, transferencia y exceso de cupos requieren una política expresa; mientras tanto, proteger lo ya publicado y bloquear nuevas publicaciones cuando no exista capacidad, sin borrados automáticos.
+- **Compatibilidad:** todo cambio de esquema debe tener estrategia de lectura V1, backfill, verificación y reversión.
+- **Carreras:** proteger en servidor publicación, asignación de cupos, cambios de licencia y restore; no confiar en UI.
+- **Concurrencia de agentes:** comprobar HEAD/PR antes de tocar archivos, commits pequeños y no modificar código fuera de fase.
+- **Criterio de avance:** si falta una decisión no esencial, documentar supuesto conservador reversible y continuar las fases independientes; si afecta facturación, permisos o borrado irreversible, no implementarla como regla definitiva sin aprobación.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
