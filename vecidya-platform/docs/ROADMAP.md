@@ -1,3 +1,7 @@
+## APP-MINI-V2C — política de permisos visuales (2026-10-29)
+
+Checkpoint aislado: cálculo puro de máximo tier activo por billing owner, aislamiento entre propietarios y rechazo cerrado sin licencia. Pendiente integrar fuente autoritativa de licencias, guardas server-side de publicación y contrato V2A tras revisión. No habilitar funciones premium por esta utilidad sola.
+
 ## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
 La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
