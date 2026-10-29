@@ -1342,6 +1342,29 @@ Se comprobó por lectura del código que la comparación anterior omitía una se
 
 **Plan de PRs focales:** V2-A registro/tipos; V2-B lector dual; V2-C autorización servidor; V2-D renderer e instancias repetibles; V2-E editor; V2-F QA visual. El contrato **no es implementación** y la prueba Playwright del prototipo sigue sin ejecutarse por bloqueo de transferencia del archivo al entorno de navegador. No declarar aprobación visual, tests PASS ni código de producción listo.
 
+
+## 52. F6/F7 — Reconciliación obligatoria con gobierno del repositorio (2026-10-29)
+
+**Fuentes inspeccionadas en GitHub:** `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md`, `STATUS.md`, `PROJECT_STATE.md`, `ROADMAP.md` y registro V1.
+
+### Hallazgo y corrección de rumbo
+
+El repositorio exige que **cada checkpoint de implementación** parta de `origin/main` actualizado, en rama/worktree independiente `feat/app-mini-<checkpoint>`, con validación focal, `typecheck`, `build`, `git diff --check`, reconciliación de documentos canónicos y PR propio. El PR #184 es documental y **no** debe utilizarse como base para cambios de aplicación ni para merge/deploy implícitos.
+
+El código vigente y la documentación canónica reportan producción 0.9.0 con MiniWeb/editor ya existente; la propuesta V2 no reemplaza ni desautoriza ese estado. Las decisiones de producto DEC-17/18 son objetivos de cambio futuro y no prueba de que la app móvil ya esté bloqueada o las variantes Premium activas.
+
+**Deuda documental identificada:** `AGENTS.md` y `GOVERNANCE.md` limitan a 20 los Markdown canónicos (16 en el corte documentado). Los documentos `plans/app-mini/PLAN-V1.md`, `SERVICIOS-PAGOS-PLAN-V1.md` y `CONTRATO-VARIANTES-V2.md` creados en la rama documental requieren conciliación con ese techo y con el índice canónico antes de integración. No añadir más Markdown sueltos ni presentar el PR #184 como listo para merge.
+
+### Gate de V2-A
+
+1. Resolver gobernanza documental de #184: consolidar material de planificación en el documento canónico que corresponda o solicitar excepción explícita; preservar decisiones aprobadas.
+2. Revisar `origin/main` actual y rama/worktree limpios, confirmar que `ROADMAP.md` autoriza el checkpoint concreto V2-A y que no colisiona con otro agente.
+3. Implementar únicamente registro/tipos puros de variantes en rama propia, sin habilitar plantillas, sin editar licencias/CRM ni modificar snapshots V1.
+4. Ejecutar pruebas focales + typecheck + build + diff-check antes de commit/PR; registrar resultados en `TESTING.md`, estado en `STATUS.md` y trabajo futuro en `ROADMAP.md` según corresponda.
+5. No fusionar ni desplegar sin autorización separada.
+
+**Estado real:** contrato de variantes propuesto y prototipo documental disponibles; **V2-A no iniciado**. La matriz visual Playwright sigue sin evidencia de ejecución.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
