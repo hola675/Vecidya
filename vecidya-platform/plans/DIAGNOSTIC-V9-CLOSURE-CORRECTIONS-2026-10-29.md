@@ -38,3 +38,14 @@ Inspección estática de fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba20110
 
 ### Changelog
 - 1.1.0 (2026-10-29): matriz focal C03/C05/C08 y contrato de cierre documental.
+
+## Inventario: procedencia del banco y límite de inspección (v1.2.0)
+
+En `qa03b/bank.ts` (blob `b4772d73e1d8b5044ba2011088db978c364097f0`) se identifican siete declaraciones literales `id: "q2_*"`: `q2_measurement_rate_estimate`, `q2_measurement_result_recording`, `q2_measurement_review_cycle`, `q2_operational_status`, `q2_buyer_recipient_relation`, `q2_digital_tools_in_use`, `q2_measurement_practice`. **Esto no equivale al inventario completo**, porque el banco compone preguntas importadas de lotes históricos y aplica transformaciones. Un conteo textual de IDs locales no valida ni refuta el total candidato de 77.
+
+**Protocolo de inventario sin ejecutar código:** enumerar los lotes fuente y sus IDs, versiones, opciones, neutralidad, reglas, dimensión/evidencia; registrar transformaciones de `bank.ts`, especializaciones y recuperaciones; deduplicar por `questionId+version` y distinguir preguntas reemplazadas de nuevas. Marcar por separado preguntas `pending`, `migrated`, y `routing` sin evidencia. Solo entonces comparar con la afirmación de 77 y calcular el catálogo editorial real. No inferir que el banco candidato está desplegado.
+
+**Puerta de aceptación TAX-G2:** tabla completa trazable a archivo y blob, conteo reproducible de IDs únicos y versiones, opciones ES/EN y banderas neutrales; diferencias explicadas. Hasta entonces `77` sigue como cifra declarada en fuente, no certificada mediante inventario.
+
+### Changelog
+- 1.2.0 (2026-10-29): procedimiento de inventario y advertencia sobre conteos parciales de `bank.ts`.
