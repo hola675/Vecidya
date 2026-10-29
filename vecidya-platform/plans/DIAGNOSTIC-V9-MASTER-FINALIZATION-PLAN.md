@@ -549,3 +549,59 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbri
 
 ## Changelog adicional
 - **1.9.0 / 2026-10-29:** D-V9-008 aprobada; neutralidad comercial, separación GHL, tareas PLAN-S01–S07, criterios de aceptación y próxima decisión. Exclusivamente documentación.
+
+
+## 17. Decisión D-V9-009 — objetivos opcionales, sugeridos y confirmados (aprobada 2026-10-29)
+**Aprobación expresa:** «selección inicial opcional de objetivos, sugerencias contextuales y confirmación antes de priorizar». Estado APPROVED para diseño de producto; NO autoriza código.
+
+### 17.1. Contrato de objetivos
+- **Declarado:** el usuario elige voluntariamente un objetivo al comenzar o durante la entrevista; puede editarlo o retirarlo.
+- **Sugerido:** V9 identifica una oportunidad a partir de evidencia pertinente y propone un objetivo con explicación; una sugerencia nunca equivale a voluntad del usuario.
+- **Confirmado:** el usuario acepta expresamente un objetivo declarado o sugerido para orientar el plan de acción. La confirmación debe preceder al uso del objetivo como criterio de prioridad.
+- **Rechazado o retirado:** no utilizar para alinear prioridades; conservar únicamente los datos mínimos necesarios para evitar reiteraciones, sujetos a privacidad y retención aprobadas.
+- **Sin objetivos confirmados:** diagnóstico y plan siguen disponibles, priorizando brechas digitales sustentadas y necesidades básicas; indicar que la personalización por objetivos es limitada.
+- **Cambio posterior:** recalcular únicamente la ordenación/explicación afectada y, si corresponde, la aplicabilidad de acciones; no alterar evidencia histórica ni madurez por el hecho de cambiar una preferencia.
+
+### 17.2. Neutralidad contextual y taxonomía pendiente
+La taxonomía debe contemplar negocios activos, preparación, pausa, profesionales independientes, organizaciones sin ventas y distintos canales. Ejemplos **ilustrativos no aprobados como catálogo**: aumentar visibilidad, facilitar contacto, generar confianza, ordenar presencia digital, mejorar seguimiento, medir resultados, informar a una comunidad o preparar un lanzamiento. No imponer ventas, captación, CRM, publicidad pagada o comercio electrónico a quien no corresponda. No inventar cantidad máxima de objetivos, prioridades relativas ni jerarquías sin aprobación.
+
+### 17.3. Integración con entrevista y resultados
+1. La captura inicial es opcional y no debe bloquear E0/E1.
+2. Sugerir solo cuando la evidencia sea suficiente y la sugerencia sea explicable; permitir aceptar, rechazar o posponer.
+3. Antes de ordenar acciones por objetivos, ofrecer revisión explícita de la selección final; no inferir confirmación por silencio o por avanzar.
+4. Si el usuario no confirma objetivos, la evaluación cualitativa/numérica (D-V9-003) permanece independiente.
+5. El criterio «alineación con objetivos» de D-V9-006 usa únicamente objetivos confirmados; la urgencia de una brecha crítica puede seguir justificando prioridad incluso si no hay objetivos.
+6. Una pregunta o sugerencia de objetivos cuenta en el presupuesto de D-V9-004 solo según la unidad de interacción aún pendiente de definir; no consumir presupuesto ficticio ni extender entrevista por interés comercial.
+7. Resumen anónimo e informe con cuenta (D-V9-005) proceden de una misma evaluación y prioridades; los permisos afectan el detalle, no las preferencias confirmadas.
+8. Aprende y servicios Vecidya pueden enriquecer acciones después del ranking; no sugerir objetivos para promover contenido o vender servicios.
+
+### 17.4. Tareas documentales para el futuro agente
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-G01 | Inventariar dónde se preguntan, almacenan o infieren objetivos en V9/QBV2 y otros flujos | Mapa de rutas, preguntas, tipos y dependencias con SHA | No suponer estado actual |
+| PLAN-G02 | Diseñar catálogo de objetivos por etapa/sector/organización | Taxonomía con definiciones, sinónimos, exclusiones y ejemplos | Aprobación editorial/producto |
+| PLAN-G03 | Definir máquina de estados declarado/sugerido/confirmado/rechazado/retirado | Contrato de transición y ejemplos | Sin consentimiento implícito |
+| PLAN-G04 | Especificar reglas de sugerencia, evidencia y prevención de repeticiones | Matriz evidencia→objetivo propuesto→explicación | Sin inventar intenciones |
+| PLAN-G05 | Diseñar revisión final, edición y falta de confirmación | Secuencias UX, microcopy y rutas de salida | Diagnóstico válido sin objetivos |
+| PLAN-G06 | Diseñar efecto de cambios sobre priorización y resultados históricos | Matriz de invariantes y versionado | Madurez independiente de objetivos |
+| PLAN-G07 | Definir persistencia mínima y privacidad de objetivos por run/identidad | Mapa de datos, ownership, borrado y permisos | Sin exposición entre cuentas |
+| PLAN-G08 | Especificar pruebas focalizadas futuras para C01–C10 | Matriz de entradas, estados y ranking esperado | Sin ejecución durante PLAN_ONLY |
+
+### 17.5. Casos de aceptación futuros
+1. El usuario omite objetivos iniciales: puede completar entrevista y recibir un plan útil.
+2. Objetivo sugerido sin confirmar: no influye en ranking.
+3. Objetivo sugerido rechazado: no se reintroduce como confirmado ni se insiste sin nueva justificación.
+4. Objetivo declarado modificado: la prioridad se actualiza de forma explicable, sin cambiar madurez.
+5. Organización sin venta directa: se ofrecen objetivos de alcance, servicio o comunidad pertinentes sin forzar ventas.
+6. Emprendimiento preoperativo: objetivos de preparación no implican bajo desempeño comercial.
+7. Dos runs con iguales respuestas y objetivos confirmados: mismas prioridades bajo las mismas reglas versionadas.
+8. Objetivos confirmados no habilitan automáticamente envío a GHL, marketing, perfil público ni contratación.
+
+### 17.6. Próxima decisión D-V9-010 — transparencia de evidencia e incertidumbre
+(A) mostrar únicamente conclusión y explicación breve; (B) permitir desplegar por dimensión qué respuestas sustentan la conclusión, qué falta y cómo corregir errores; (C) ofrecer trazabilidad completa de reglas y versiones al usuario final. Se recomienda estudiar B como equilibrio entre comprensión y legibilidad; ninguna opción está aprobada. Distinguir la vista anónima resumida de la autenticada detallada ya aprobadas.
+
+### 17.7. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbrido APPROVED; D-V9-004 adaptativo 24 APPROVED; D-V9-005 resumen anónimo/informe con cuenta APPROVED; D-V9-006 prioridades multicriterio APPROVED; D-V9-007 Aprende contextual+biblioteca opcional APPROVED; D-V9-008 servicios Vecidya contextuales+sección independiente APPROVED; D-V9-009 objetivos opcionales+sugerencias+confirmación APPROVED; D-V9-010 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.10.0 / 2026-10-29:** D-V9-009 aprobada; estados y reglas de objetivos, tareas PLAN-G01–G08, casos de aceptación y próxima decisión. Exclusivamente documentación.
