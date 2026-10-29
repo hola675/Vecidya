@@ -67,6 +67,10 @@ export default {
         "sectionId": "8e6b80f1-7a5f-487a-a295-8cd295f682fa"
       },
       {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "26312c03-bfc9-4998-8810-871234837b3d"
+      },
+      {
         "heading": "Fuentes y alcance",
         "sectionId": "9fa8ebe5-56ba-4407-a0aa-b427672a8338"
       }
@@ -176,7 +180,7 @@ export default {
         "sectionId": "709d92d6-9c1c-43d2-a765-f74072ab4182"
       },
       {
-        "heading": "Qué puedes hacer ahora",
+        "heading": "Preguntas frecuentes y qué puedes hacer ahora",
         "sectionId": "4dd0f025-4cd5-4f48-a95c-d087bef755e0"
       },
       {
@@ -252,6 +256,10 @@ export default {
       {
         "heading": "Cómo detener y revisar sin perder el trabajo",
         "sectionId": "8502c90f-5ffc-4aa4-84de-7a9758f11035"
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "f1aff2e5-9107-4678-b026-a16cd5c8abca"
       },
       {
         "heading": "Fuentes y alcance",
@@ -371,7 +379,7 @@ export default {
         "sectionId": "03130cc2-4ee9-4a10-900e-c605f53f51ed"
       },
       {
-        "heading": "Qué puedes hacer ahora",
+        "heading": "Preguntas frecuentes y qué puedes hacer ahora",
         "sectionId": "0d9addcd-dab5-4d0a-aa55-7660057f3232"
       },
       {
@@ -480,6 +488,10 @@ export default {
         "sectionId": "ed3144ba-9260-4ac9-a9e5-ec909e2feb04"
       },
       {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "8468c437-4a4e-4600-ba0f-7313a044f1e5"
+      },
+      {
         "heading": "Fuentes y alcance",
         "sectionId": "97d312b6-5760-43d8-a10c-b38cb615e0a1"
       }
@@ -554,7 +566,7 @@ export default {
         "sectionId": "53fdc937-1178-491f-a909-b82be6dcc020"
       },
       {
-        "heading": "Errores frecuentes y una rutina de mantenimiento",
+        "heading": "Preguntas frecuentes y rutina de mantenimiento",
         "sectionId": "9efc4e36-b550-4cd6-ac1b-43ecbc63097a"
       },
       {
@@ -601,7 +613,7 @@ export default {
         "sectionId": "1e8a6271-c170-4cfb-8d66-3fea2eddcad2"
       },
       {
-        "heading": "Qué puedes poner en marcha hoy",
+        "heading": "Preguntas frecuentes y qué puedes poner en marcha hoy",
         "sectionId": "0a22bf94-5c7b-4f60-9920-b58c7afd974d"
       }
     ],
@@ -636,7 +648,7 @@ export default {
         "sectionId": "b0679a2d-591f-43d2-852d-9624c711b41a"
       },
       {
-        "heading": "Errores frecuentes y límites de la IA",
+        "heading": "Preguntas frecuentes y límites de la IA",
         "sectionId": "b00ce1a3-91f4-46c9-bdd7-837f4b6cdc5b"
       },
       {

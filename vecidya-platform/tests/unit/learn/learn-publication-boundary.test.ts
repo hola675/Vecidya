@@ -45,7 +45,7 @@ test("el manifiesto editorial asigna IDs opacos únicos y clasifica exactamente 
   assert.equal(new Set(summaries.map((guide) => guide.guideId)).size, 48);
   assert(summaries.every((guide) => Number.isInteger(guide.contentRevision) && guide.contentRevision > 0));
   const sectionIds = learnArticles.flatMap((article) => getLearnEditorialIdentity(article).sections.map((section) => section.sectionId));
-  assert.equal(sectionIds.length, 387);
+  assert.equal(sectionIds.length, 390);
   assert.equal(new Set(sectionIds).size, sectionIds.length);
 });
 
