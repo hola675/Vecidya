@@ -1894,3 +1894,50 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 2. Resolver GAP-19–23 en PRs pequeños, preservando compatibilidad V1 y pruebas existentes afectadas.
 3. Reconciliar únicamente contenido nuevo en canónicos; no copiar los ~210 k caracteres del plan en ROADMAP.
 4. Registrar aceptación humana de CAT-01, GOV-01 y alcance REL-01 antes de modificar derechos o pagos.
+
+
+## 66. DEC-19 — MiniWeb V2 nuevo desde cero con migración selectiva de legado (2026-10-29; decisión del usuario)
+
+**Decisión aprobada:** MiniWeb V2 es un sistema completo nuevo: **todas las secciones, su estructura, UI, composición, configuración y contrato de publicación se diseñan de cero** conforme a las políticas vigentes y a las variantes visuales Cuadra (Base), Barrio (Pro) y Ciudad (Premium). Reutilizar V1 significa aprovechar capacidades, datos o infraestructura *solo cuando sean útiles y compatibles*, nunca trasladar fielmente las secciones ni conservar su estructura por inercia.
+
+### 66.1 Reutilización por frontera
+
+| Elemento V1 | Política V2 |
+| --- | --- |
+| Componentes visuales de secciones, layouts y templates | **No copiar como secciones V2**; reconstruir diseño y esquema |
+| Datos maestros del negocio, identidad, medios y ofertas | Candidatos a importación/mapeo explícito y validado, sin vinculación permanente obligatoria |
+| Autenticación, tenant guards, permisos, almacenamiento de medios, utilidades seguras y CAS | Reutilización interna selectiva, tras inspección CODE y pruebas focales |
+| Snapshots V1 y URLs públicas actuales | Mantener lectura/servicio legado; permitir edición/migración V2 sin alterar el snapshot histórico |
+| Familias antiguas | Fuente de contenido/mapeo para conversión, **no** plantilla V2 disfrazada |
+| **Horario V1: sección, datos, lógica y vínculo** | **EXCLUIDOS TOTALMENTE de la nueva sección Horario V2**: no importar, no leer como fallback, no sincronizar, no enlazar ni compartir modelo. Horario V2 se crea de cero, con datos nuevos introducidos explícitamente por el usuario |
+
+### 66.2 Adaptación posterior de publicaciones existentes
+
+**Flujo objetivo:** `sitio V1 publicado` → `Crear versión V2 desde publicación` → `seleccionar familia y tier visual autorizado` → `importación selectiva de contenido permitido` → `resolver campos incompatibles` → `editar nuevas secciones V2` → `previsualizar` → `publicar V2 de manera explícita`.
+
+- La conversión crea un **borrador V2 independiente**, con `sourcePublicationId`, `migrationVersion`, reporte de campos importados/omitidos y provenance para auditoría; **no** modifica la publicación V1 ni actualiza silenciosamente el sitio público.
+- Cada sección V2 posee identificadores y schema propios, sin dependencia de estructura DOM, IDs o clases CSS de V1. Un adaptador de una sola ejecución puede leer contenidos V1 **excepto horario** y producir datos V2 normalizados. El render V2 nunca depende del renderer V1.
+- La publicación explícita cambia la versión activa mediante control de revisión/CAS; conservar snapshots anteriores y capacidad de recuperación. Un downgrade o falta de licencia no provoca conversión ni despublicación automática.
+- La importación selectiva debe respetar titularidad tenant, permisos de medios, derechos de publicación, cupo y contenido publicado; registrar conflictos sin sobreescribir trabajo del usuario.
+- **Horario V2:** estado inicial vacío o pendiente de configuración, sin valores precargados, sin sugerencias provenientes del horario V1 y sin vínculo de sincronización; su guardado y validación son nuevos. V1 sigue mostrando sus propios horarios en publicaciones históricas mientras no se publique V2, pero esos horarios nunca alimentan V2.
+
+### 66.3 Plan técnico por checkpoints
+
+1. **V2-SCHEMA:** diseñar desde cero catálogo de secciones y campos V2, independientes de V1; definición de capacidades iguales en Base/Pro/Premium, solo composición visual distinta.
+2. **V2-HOURS:** nueva sección Horario con su propia persistencia, validación, editor y renderer; pruebas que demuestren ausencia de lectura/importación/vínculo con horarios V1.
+3. **V2-ADAPTER:** inventario campo por campo de datos V1 elegibles; conversor opt-in y reporte, con blacklist absoluta de horario.
+4. **V2-EDITOR:** nuevo editor de secciones V2, reutilizando únicamente shell, autenticación y servicios seguros pertinentes; no reutilizar formularios visuales de secciones V1.
+5. **V2-RENDER:** cinco familias nuevas, tres variantes visuales cada una, renderer aislado de V1; pruebas 3×3 por familia, paridad funcional y accesibilidad.
+6. **V2-PUBLISH:** publicación explícita, compatibilidad de snapshots y rollback lógico; pruebas focales de V1 sin regresión, CAS, ownership y cuota.
+7. **V2-MIGRATE-UI:** acción de convertir una publicación antigua desde su edición, con previsualización y confirmación; no migración masiva automática.
+
+### 66.4 Criterios de aceptación obligatorios
+
+- **AC-19A:** ningún componente de sección V1 se registra como sección V2 sin rediseño y nuevo contrato.
+- **AC-19B:** un sitio V1 permanece visual y funcionalmente intacto hasta que su titular confirme publicar V2.
+- **AC-19C:** el adaptador migra únicamente contenido permitido, con reporte y reversibilidad; no duplica contactos, CRM ni entidades de negocio.
+- **AC-19D:** horario V2 comienza sin datos heredados y funciona sin consultas al horario V1. Test de no importación incluso si V1 contiene horarios válidos.
+- **AC-19E:** Cuadra/Barrio/Ciudad ofrecen las mismas secciones y capacidades V2, diferenciadas únicamente por diseño visual y entitlements aprobados.
+- **AC-19F:** el usuario puede elegir una familia nueva al convertir V1, editar el resultado y publicar una nueva versión sin perder su historial.
+
+**Precedencia:** DEC-19 sustituye cualquier instrucción anterior de «reutilizar secciones V1», «extender el editor de secciones existente» o «preservar la sección Horarios V1 en V2». Mantener compatibilidad pública V1 no significa vincular su horario a V2. **GAP-19 cambia de OPEN a SPECIFIED por decisión; implementación y pruebas siguen pendientes.** GAP-21/22 permanecen abiertos hasta diseñar el adaptador y verificar el código.
