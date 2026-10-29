@@ -1850,3 +1850,47 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 **PASS** solo si cada DEC/GAP/Fase/B-checkpoint tiene destino trazable, no quedan contradicciones vigentes, el índice enlaza al destino, los canónicos cumplen política y la documentación de estado refleja los PR reales. **FAIL** si hay decisiones perdidas, doble política activa, rutas rotas o se atribuye implementación a documentación.
 
 **Estado:** mapeo especificado; conciliación material pendiente. GOV-01 no aprobado; GAP-14 sigue SPECIFIED. Se preserva el contenido íntegro de #184 para evitar pérdida irreversible.
+
+
+## 65. Auditoría cruzada con canónicos main: reutilización obligatoria y deuda real (2026-10-29)
+
+**Fuentes inspeccionadas en main:** `vecidya-platform/docs/STATUS.md`, `ARCHITECTURE.md`, `DATABASE.md`, `TESTING.md`, `business/VECIDYA_PRODUCT_CATALOG.md`. Evidencia **DOC**, no nueva ejecución de pruebas ni inspección exhaustiva de código. Estos documentos son voluminosos y describen varios releases; cualquier implementación debe contrastar su afirmación con fuente y SHA actuales.
+
+### 65.1 Capacidades V1 existentes que V2 debe preservar
+
+| Área | Evidencia documental main | Obligación V2 |
+| --- | --- | --- |
+| Editor guiado | ARCHITECTURE: /app/miniweb con cinco pasos, borrador y bloqueo de navegación por cambios sin guardar | Extender experiencia, no crear segundo editor paralelo |
+| Perfil de negocio | ARCHITECTURE/STATUS: /app/business-profile y datos maestros separados del borrador MiniWeb | Reutilizar entidad y guardas, no duplicar perfil |
+| Publicador | ARCHITECTURE: publicación explícita de snapshot, lectura pública separada del borrador | Extender versionado sin romper snapshots publicados |
+| Concurrencia | DATABASE: migración 0023 con token de revisión CAS | Reutilizar y ampliar CAS; no asumir que protege ya cupos globales |
+| Ofertas y FAQ | DATABASE: migración 0024 con business_offering/business_faq tenant-scoped | Renderizar contenido existente en todos los tiers |
+| Medios | ARCHITECTURE: gallery, cover, logo, icon y offering.imageAssetId; snapshot v4 y migración 0028 | Reutilizar ownership/validación; ampliar instancias y referencias históricas |
+| Cabecera pública | ARCHITECTURE: MiniWebSiteHeader/Footer y MiniWebRenderer | Integrar variantes sin duplicar cabecera ni enlaces de preview |
+| Administración | STATUS: /app/platform/* opera servicios, licencias y MiniWeb con guards y auditoría | Reutilizar roles platform_admin; no relajar permisos de cliente |
+| Pruebas existentes | TESTING: miniweb-core-check.mjs y pruebas de perfil, con evidencias de releases anteriores | Ejecutar solo subconjuntos focales pertinentes y añadir casos V2; no atribuir PASS histórico al nuevo SHA |
+
+### 65.2 Huecos nuevos de integración descubiertos
+
+| ID | Severidad | Riesgo | Gate de remediación |
+| --- | --- | --- | --- |
+| GAP-19 | Alto | Duplicar editor o modelos de negocio ya presentes | Mapa de componentes/rutas reales antes de F1/F7 |
+| GAP-20 | Alto | Confundir CAS del borrador (migración 0023) con reserva atómica de cupo por billing_account | Contrato separado de ocupación con prueba de última plaza |
+| GAP-21 | Alto | Introducir un nuevo snapshot V2 sin compatibilidad explícita con snapshot público v4 | Fixtures v4 y V2, lectura dual, publicación sin migración destructiva |
+| GAP-22 | Medio | Rediseñar medios sin considerar ownership y oferta imageAssetId existentes | Tests de referencias de logo/cover/gallery/offering, restauración histórica |
+| GAP-23 | Medio | Interpretar documentación histórica de pruebas como PASS de V2 | Matriz por SHA, comando, entorno y resultado nuevo |
+
+**Estado:** GAP-19 a GAP-23 = OPEN, pendientes de inspección CODE y pruebas focales. Se amplía el inventario total de huecos de **18 a 23**; no se alteran los estados de GAP-01 a GAP-18.
+
+### 65.3 Regla de implementación de V2 sobre V1
+
+**Extender, no duplicar:** usar contratos existentes de perfil, guardas, medias y snapshots como base; V2 introduce composición por `instanceId`, variantes visuales, cupos por titular y versionado compatible. No crear un CRM paralelo ni un segundo sistema de facturación. Antes de abrir PR de renderer/editor, producir tabla `ruta/archivo V1 → contrato a preservar → cambio V2 → test focal` a partir de CODE actual.
+
+**No deducir de esta auditoría:** que los 23 huecos sean bugs en producción, que la migración 0023 resuelva cupos, que el snapshot v4 ya soporte instancias repetidas, o que el frontend V2 esté publicado. Son riesgos y dependencias de integración, no fallos ejecutados.
+
+### 65.4 Próximo gate
+
+1. Contrastar componentes y rutas con CODE de main actualizado.
+2. Resolver GAP-19–23 en PRs pequeños, preservando compatibilidad V1 y pruebas existentes afectadas.
+3. Reconciliar únicamente contenido nuevo en canónicos; no copiar los ~210 k caracteres del plan en ROADMAP.
+4. Registrar aceptación humana de CAT-01, GOV-01 y alcance REL-01 antes de modificar derechos o pagos.
