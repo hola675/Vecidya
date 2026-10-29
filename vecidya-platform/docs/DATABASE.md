@@ -50,11 +50,13 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 
 ### Migración local — `0033_learn-sync-operations` (checkpoint F5)
 
-**Alcance:** conservar tombstones `unchecked` y `unfavorite` con versiones por target; agregar recibos idempotentes y cursor por dispositivo para `client_sequence`. Los recibos no guardan contenido editorial, solo operación/resultado/versión. La cola local expira a los 30 días. La política propuesta de 90 días para recibos todavía no está aplicada (hoy no hay purga automática); ambas propuestas requieren revisión legal/operativa antes de habilitar la sincronización en producción.
+**Alcance:** conservar tombstones `unchecked` y `unfavorite` con versiones por target; agregar recibos idempotentes y cursor por dispositivo para `client_sequence`. Los recibos no guardan contenido editorial, solo operación/resultado/versión. La cola local y el endpoint descartan operaciones con más de 30 días. El Worker implementa purga diaria por lotes de recibos con más de 90 días usando el índice `created_at`; no elimina progreso, favoritos ni cursores de dispositivo. El cursor acepta secuencias estrictamente crecientes con huecos para que descartar operaciones vencidas no bloquee cambios posteriores.
+
+La purga programada requiere que `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` sean ambos `true`. La configuración de producción mantiene ambos en `false` hasta completar la revisión legal, de privacidad y costo; la validación local puede habilitarlos explícitamente. La base operativa 90/30 fue aceptada por el usuario, pero no constituye aprobación legal ni habilita producción.
 
 **Riesgo y rollback:** aditivo, con defaults que interpretan checks/favoritos F4 existentes como activos. Revertir el Worker y conservar las columnas/tablas; no borrar progreso ni recibos. Wrangler local aplicó migraciones `0000–0033` y la certificación Worker/D1 F5 verificó sync, replay, dispositivos independientes y barrera de reset. Ningún D1 remoto se inspecciona o modifica.
 
-**Gate pendiente fuera del código:** revisión de privacidad, retención, aviso y exportación/borrado antes de activar sync/importación en producción. Si no se aprueba, mantener el servicio cerrado por despliegue/feature flag; no inferir consentimiento legal a partir de una acción de UI.
+**Gate pendiente fuera del código:** revisión de privacidad, retención, aviso y exportación/borrado antes de activar sync/importación en producción. La purga técnica local está implementada, pero no habilitada en producción; no inferir consentimiento legal a partir de una acción de UI.
 
 ### Plan de migración — `0032_learn-personal-progress`
 

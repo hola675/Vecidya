@@ -2,7 +2,13 @@
 
 - Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.
 - El usuario confirma que la prueba manual con NVDA y zoom 200 % fue ejecutada y aprobada. Se conserva como aceptación humana; no es certificación WCAG y los datos de navegador/lector/viewport no se registraron.
-- La retención 90/30 continúa como propuesta aceptada operativamente, pendiente de validación legal/privacidad/costo; no se implementó purga de recibos. Sin D1 remota ni deploy.
+- En el corte del PR #202, la retención 90/30 seguía pendiente de implementación y revisión legal/privacidad/costo. El checkpoint local siguiente implementa y prueba la purga; no se habilita en producción mientras la revisión legal siga abierta. Sin D1 remota ni deploy.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — retención técnica de recibos (checkpoint local)
+
+- El endpoint rechaza como `expired` los reintentos con más de 30 días; el cron diario purga en tandas los recibos de más de 90 días, conservando progreso y cursor del dispositivo. Ambos flags de purga siguen apagados en producción hasta revisión legal/privacidad/costo.
+- El cursor de dispositivo acepta secuencias estrictamente crecientes con huecos para que descartar operaciones vencidas no bloquee cambios nuevos; sigue rechazando secuencias repetidas o atrasadas.
+- Unitarias de flags, Worker/D1 E2E, typecheck, build y diff-check PASS. No hay migración nueva, cambio D1 remoto ni deploy.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — revisión local de seguridad y accesibilidad
 

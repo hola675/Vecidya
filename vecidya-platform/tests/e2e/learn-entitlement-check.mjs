@@ -149,7 +149,7 @@ try {
   assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(actorId)};`)[0]?.total), 0, "Al reiniciar la guía, sus checks se pueden retirar sin afectar favoritos.");
   assert.equal(Number(query(`SELECT count(*) AS total FROM learn_favorite WHERE user_id=${sqlLiteral(actorId)} AND guide_id=${sqlLiteral(guideId)};`)[0]?.total), 1, "El favorito persiste independientemente del progreso.");
 
-  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], {
+  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", "LEARN_OPERATION_RECEIPT_PURGE_ENABLED:true", "--var", "LEARN_OPERATION_RECEIPT_PURGE_APPROVED:true", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], {
     cwd: projectDirectory,
     env: { ...process.env, BETTER_AUTH_SECRET: secret },
     stdio: ["ignore", "pipe", "pipe"],
@@ -276,6 +276,32 @@ try {
   assert.equal(staleResponse.status, 200);
   assert.equal((await staleResponse.json()).results[0].status, "conflict", "Una operación de época anterior al reset no resucita progreso.");
   assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)} AND section_id=${sqlLiteral(guideIdentity.sections[3].sectionId)};`)[0]?.total), 0);
+  const expiredOperation = { ...staleEpoch, operationId: randomUUID(), clientSequence: 2, createdAt: Date.now() - 31 * 24 * 60 * 60 * 1000 };
+  const expiredResponse = await clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [expiredOperation] }));
+  assert.equal((await expiredResponse.json()).results[0].status, "expired", "El servidor descarta reintentos fuera de la ventana de 30 días.");
+  const freshAfterGap = { ...staleEpoch, operationId: randomUUID(), clientSequence: 3, baseVersion: Number(query(`SELECT version FROM learn_guide_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0].version), baseResetEpoch: 1, createdAt: Date.now(), sectionId: guideIdentity.sections[4].sectionId };
+  const gapResponse = await clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [freshAfterGap] }));
+  assert.equal((await gapResponse.json()).results[0].status, "applied", "Descartar una operación vencida no bloquea la siguiente secuencia fresca.");
+  const outOfOrder = { ...freshAfterGap, operationId: randomUUID(), clientSequence: 2, createdAt: Date.now(), sectionId: guideIdentity.sections[0].sectionId };
+  const outOfOrderResponse = await clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [outOfOrder] }));
+  assert.equal((await outOfOrderResponse.json()).results[0].status, "conflict", "La secuencia sigue rechazando operaciones atrasadas.");
+
+  const purgeDeviceId = randomUUID();
+  const staleReceiptId = randomUUID();
+  const currentReceiptId = randomUUID();
+  const receiptCutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
+  query(`
+    INSERT INTO learn_sync_device (user_id,device_id,last_sequence,last_operation_id,last_seen_at)
+      VALUES (${sqlLiteral(identities["owner-b"].id)},${sqlLiteral(purgeDeviceId)},2,${sqlLiteral(currentReceiptId)},${Date.now()});
+    INSERT INTO learn_operation_receipt (user_id,operation_id,device_id,client_sequence,guide_id,operation_type,base_version,base_reset_epoch,result_version,result_reset_epoch,outcome,created_at) VALUES
+      (${sqlLiteral(identities["owner-b"].id)},${sqlLiteral(staleReceiptId)},${sqlLiteral(purgeDeviceId)},1,${sqlLiteral(guideIdentity.guideId)},'check-section',0,0,1,0,'applied',${receiptCutoff - 1000}),
+      (${sqlLiteral(identities["owner-b"].id)},${sqlLiteral(currentReceiptId)},${sqlLiteral(purgeDeviceId)},2,${sqlLiteral(guideIdentity.guideId)},'check-section',1,0,2,0,'applied',${Date.now()});
+  `);
+  const scheduledResponse = await fetch(new URL("/cdn-cgi/local/scheduled", baseUrl));
+  assert.equal(scheduledResponse.status, 200, "Wrangler ejecuta la purga real del Worker en local.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_operation_receipt WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND operation_id=${sqlLiteral(staleReceiptId)};`)[0]?.total), 0, "La purga elimina recibos más antiguos que 90 días.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_operation_receipt WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND operation_id=${sqlLiteral(currentReceiptId)};`)[0]?.total), 1, "La purga conserva recibos dentro de retención.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_sync_device WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND device_id=${sqlLiteral(purgeDeviceId)} AND last_sequence=2;`)[0]?.total), 1, "La purga conserva el cursor del dispositivo.");
   const billingOwnerBody = await clients["billing-owner"].request(licensedUrl);
   assert.equal(billingOwnerBody.status, 200, "Ser billing_account.owner sin membresía solo recibe vista previa.");
   assertNoProtectedBody(await billingOwnerBody.text(), protectedFragments, "Preview billing owner sin membresía");
@@ -333,7 +359,7 @@ try {
     assertNoProtectedBody(await preview.text(), protectedFragments, `${label} sin entitlement`);
   }
 
-  console.log("PASS Aprende entitlement/sync: cuerpo autorizado/denegado, grants, licencia/lifecycle, CSRF, dos dispositivos, replay idempotente, reset epoch y cascada.");
+  console.log("PASS Aprende entitlement/sync/retención: guards, grants, CSRF, replay/reset, reintento 30d, secuencias con huecos y purga 90d con Worker/D1 locales.");
 } catch (error) {
   await new Promise((resolveWait) => setTimeout(resolveWait, 200));
   throw new Error(`${error instanceof Error ? error.message : String(error)}\nSalida Worker local:\n${workerOutput}`, { cause: error });
