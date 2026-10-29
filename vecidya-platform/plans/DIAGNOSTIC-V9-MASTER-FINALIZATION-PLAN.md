@@ -2198,3 +2198,9 @@ Empezar **CONSOL-01**: construir la matriz de las ocho dimensiones candidatas fr
 
 ## Changelog adicional
 - **1.34.0 / 2026-10-29:** consolidación documental de D-V9-001–033, nueve grupos de decisiones, diez tensiones y gates, nueve bloqueos priorizados, secuencia CONSOL-01–06 y registro explícito de pendientes. No modifica políticas aprobadas; sin código, pruebas, CI, merges ni despliegues.
+
+## 43. CONSOL-01 — Taxonomía preliminar (propuesta, no aprobada)
+La matriz conceptual 8×10 requiere inventario real del banco y contraste con C01–C10. Propuesta: conservar provisionalmente ocho dimensiones (claridad, presencia, descubrimiento, confianza, acceso, relación, aprendizaje, capacidad digital), sin pesos ni niveles. Gates pendientes: preguntas/opciones con SHA, solapamientos, rúbricas bilingües, aprobación explícita y versionado. PLAN_ONLY.
+
+## Changelog adicional
+- **1.35.0 / 2026-10-29:** apertura documental CONSOL-01; taxonomía NO aprobada.
