@@ -2450,3 +2450,73 @@ Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`
 **Cerrados a nivel de diseño:** mapa de fuentes de verdad, fronteras entre dominios, contratos propuestos de integración y grafo de dependencias. **Pendientes de validación técnica:** garantías transaccionales reales, modelo físico de cuotas, índices, esquema de eventos, límites, SLO y compatibilidad de integración GHL. **Pendientes humanos:** política de suspensión/visibilidad, responsables técnicos, aceptación visual, seguridad y release; pagos e impuestos permanecen aplazados.
 
 **Regla de salida:** no declarar `PLAN-READY` ni permitir implementación sin revisar ARC-01–04 y ARC-13 contra contratos existentes; el resto se convierte en tickets con dueño, evidencia y gate. Esta auditoría documental no acredita pruebas ni certificación de escalabilidad.
+
+
+## 80. Contratos verificables para riesgos críticos y conciliación de anexos
+
+**Alcance de esta auditoría:** lectura documental del maestro y de `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md`. No se han comprobado tablas D1, rutas activas, constraints, API de GHL ni ejecución. Los siguientes contratos son **criterios de diseño** y deben cotejarse con el repositorio antes de codificar.
+
+### 80.1 ARC-01 — un solo motor de derechos
+
+- **Propietario:** dominio comercial/licencias Vecidya. `billing_account` es titular económico; `organization` recibe el servicio; `license` es concesión versionada; `entitlement` es resultado derivado, no una segunda licencia.
+- **Contrato:** `resolveEntitlements(actorContext, billingAccountId, organizationId, at)` devuelve `decision: allow|deny`, `reason`, `license_revision`, `effective_at`, `slots_total`, `slots_used` y asignaciones; la identidad y pertenencia se resuelven en servidor.
+- **Invariante:** una asignación administrativa y una publicación no generan dos derechos distintos; no hay autorización basada en un `billing_account_id` recibido del navegador sin verificación.
+- **Aceptación futura:** tests de licencia duplicada, organización no vinculada, revocación, múltiples organizaciones del mismo titular y ampliación Cuadra +3. Los límites de tres publicaciones por propietario y +3 por Cuadra adicional son reglas del maestro, sujetas a verificación de implementación.
+
+### 80.2 ARC-02 — matriz de acceso multi-tenant
+
+| Actor | Perfil público | Editor de su organización | Publicar con cupo | Consolidado de facturación | Administrar licencia |
+|---|---|---|---|---|---|
+| Visitante | lectura publicada | no | no | no | no |
+| Miembro sin permiso de edición | lectura publicada | no | no | no por defecto | no |
+| Editor autorizado | lectura publicada | sí | solo con permiso explícito | no por defecto | no |
+| Owner/delegado de billing account | lectura publicada | solo si tiene permiso en organización | con permiso y cupo | sí según delegación | según rol autorizado |
+| Operador Vecidya | lectura publicada | solo con autorización administrativa auditada | solo con operación auditada | acceso mínimo por función | según privilegio administrativo |
+
+**Regla:** no confundir ownership comercial con rol de editor; la revocación de delegación de facturación no debe borrar contenido ni otorgar acceso cruzado. Matriz para validar en servidor, no asumir roles existentes con estos nombres.
+
+### 80.3 ARC-03/04 — reserva de slot, publicación y rollback
+
+- **Modelo lógico:** `publication_slot(owner, slot_id, assigned_organization, state, revision)`; `miniweb_snapshot(organization, version, immutable_payload_ref)`; `public_pointer(organization, active_snapshot, revision)`. Son entidades conceptuales, no afirmaciones sobre tablas actuales.
+- **Invariante de cuota:** `active_slots <= granted_slots` por propietario; una publicación nueva requiere reserva/ocupación exclusiva del slot, y el reemplazo de snapshot de una misma publicación **no consume un segundo slot**.
+- **Secuencia segura:** validar identidad/organización/licencia → reservar slot con constraint o transacción compatible → generar snapshot inmutable → verificar versión CAS → activar puntero público → registrar auditoría → invalidar caché. La versión previa continúa servible hasta que la nueva sea visible.
+- **Fallo entre reserva y activación:** liberar reserva temporal mediante compensación idempotente; no contar indefinidamente slots huérfanos. El borrador se conserva. Rollback activa un snapshot previo mediante nueva revisión de puntero y no borra historia.
+- **Aceptación futura:** dos publicaciones simultáneas sobre último slot, doble clic, caída tras reserva, caída tras snapshot, CAS obsoleto, rollback, cambio de owner, expiración de licencia y publicación de otra organización.
+
+### 80.4 ARC-05/06/07/09 — contratos de conexión y reconciliación
+
+**Eventos internos si se introducen:** envelope `event_id`, `event_type`, `schema_version`, `occurred_at`, `tenant_id`, `aggregate_id`, `aggregate_revision`, `correlation_id` y payload mínimo. El consumidor verifica autorización/contexto, deduplica por `event_id`, tolera reordenación y registra errores recuperables; outbox transaccional solo si el flujo realmente se vuelve asíncrono.
+
+**GHL:** mapeo uno-a-uno o regla explícita de multiplicidad entre `organization_id` y `ghl_location_id`, sin inferir por nombres. Alta/revinculación exige prueba de pertenencia, revocación de credenciales y auditoría. Si GHL falla, el MiniWeb publicado sigue disponible; la activación CRM pasa a `pending/failed` y se reconcilia, sin declarar activo un servicio no aprovisionado.
+
+**Consumo:** clave de deduplicación `provider + external_event_id` y, si no existe ID fiable, hash estable de campos de origen con procedimiento de conciliación manual. Estados `received → normalized → verified → reconciled` o `disputed`; cada importe conserva moneda, unidad, periodo, coste original y margen elegible. No generar deuda exigible a partir de evento no verificado.
+
+### 80.5 ARC-08/10/11/12/14/15 — gates restantes
+
+| Riesgo | Gate de cierre técnico o humano |
+|---|---|
+| Medios y crecimiento | presupuesto de bytes, objetos por tenant, variantes, retención, coste y medición real |
+| Horario y DST | fixtures de zonas IANA, madrugada, festivos, excepciones y no-importación V1 |
+| Editor resiliente | persistencia de borrador, errores recuperables y estados de medios/catálogo |
+| Escalabilidad | baseline p50/p95, tasa de error, cardinalidad, concurrencia, coste y umbrales aprobados |
+| Suspensión/visibilidad | COM-01 humana, no inferir política |
+| Ledger y UI comercial | distinguir estimación, registrado, conciliado, facturado y cobrado; no prometer exactitud sin fuente |
+
+### 80.6 Reconciliación de los dos anexos — observaciones concretas
+
+1. **`CONTRATO-VARIANTES-V2.md`, §5**, mantiene una «secuencia de PRs pequeños» como propuesta histórica. **No rige este trabajo documental**, que permanece en una sola rama y PR #184; los tickets IMP-01–12 son futuras unidades delegables y no autorizan crear PRs ahora.
+2. Ese anexo incluye diagnóstico de `registry.ts` V1 y tipos propuestos: **contexto histórico, no autorización para reutilizar editor, secciones, renderer ni horario V1**. Prevalecen §§66, 69–71.
+3. **`SERVICIOS-PAGOS-PLAN-V1.md`, §9/§11.3**, contiene decisiones de lanzamiento pendientes en el momento de redacción: **REL-01 ya fue aprobado para licencias administradas** (§71), mientras COM-01/PAY-01/BILL-02 permanecen pendientes. Cualquier gate del anexo que parezca exigir PSP para P6A se interpreta solo para P6B.
+4. El anexo comercial habla de `billing_account`, `organization_license` y ledger; MiniWeb debe **consumir los derechos canónicos**, no duplicar suscripciones o inventar una cuenta pagadora paralela.
+5. El diagnóstico técnico de ambos anexos es **evidencia documental fechada**, no comprobación del estado de `main` en este turno. Revalidar antes de implementar.
+
+### 80.7 Matriz de cierre real
+
+- **ARC-01/02/03/04:** contratos y criterios de aceptación **SPECIFIED**; pendientes comprobación de modelo físico, constraints y concurrencia.
+- **ARC-05/06/07/09:** conexiones y fallos **SPECIFIED**; pendientes verificación de proveedor y decisiones de integración.
+- **ARC-08/10/11/12:** criterios **SPECIFIED**; pendientes pruebas, límites y métricas reales.
+- **ARC-13:** precedencia documental **RESOLVED BY GOV-01**; aún falta comprobación automática/manual de enlaces y reglas de repositorio.
+- **ARC-14/15:** política comercial y exactitud económica **PENDING HUMAN/INTEGRATION**.
+- **PLAN-READY:** todavía **NO DECLARADO**; la revisión de diseño no equivale a prueba de software.
+
+**Siguiente comprobación documental:** inventario de enlaces entre los tres archivos, revisión de contradicciones normativas residuales y verificación del límite de documentos canónicos antes de solicitar aprobación de merge.
