@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
+
+**Fase 1 en progreso; no activa el modelo 6/42.** CODE: el loader del índice proyecta ahora cada guía publicada a un DTO allowlist sin secciones, y la búsqueda usa solo título, extracto y categoría. Esto evita que una consulta revele qué artículo contiene una frase del cuerpo. El detalle de artículo sigue con el comportamiento público vigente; no se ha incorporado aún guard de licencia ni permiso Aprende.
+
+**RAN local:** `learn-publication-boundary.test.ts` 6/6 PASS; `pnpm run test:e2e:aprende-public` PASS (48 rutas, 6 categorías, 9 itinerarios, 320/390/768/1366 px); `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. La revisión editorial final de las seis guías, el manifiesto de IDs/revisiones y las pruebas de filtración para el cuerpo completo siguen pendientes antes de continuar con la activación de acceso.
+
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
 `platform_admin` activo recibe el directorio global de organizaciones en el selector de `/app`; seleccionar una abre `/app/platform/organizations/:id` sin cambiar la organización activa de Better Auth. Las rutas `/app/platform/*` reutilizan las guardas, acciones allowlisted y auditorías de plataforma existentes para operar ciclo de vida, roles no-owner, servicios, licencia, capacitación y MiniWeb. Mi negocio incluye TikTok y YouTube; la migración aditiva `0030` se aplicó a D1 de producción y el release `0.9.0` está desplegado. GitHub CI pasó en PR #180; no se ejecutaron certificaciones manuales por instrucción del usuario. El HTTP anónimo de `/` verificó versión y copyright; no se verificaron rutas autenticadas de producción. Las acciones de owner-transfer/eliminación permanecen fuera de alcance.

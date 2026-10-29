@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { learnArticles, learnPathways } from "../../../app/content/learn";
-import { getPublicLearnArticle, getPublicLearnArticles, getPublicLearnPathways } from "../../../app/content/learn-publication";
+import { getPublicLearnArticle, getPublicLearnArticles, getPublicLearnGuideSummaries, getPublicLearnPathways, matchesPublicLearnGuideSummary } from "../../../app/content/learn-publication";
 
 test("el catálogo completo aprobado se expone y conserva el conteo", () => {
   const publicArticles = getPublicLearnArticles(learnArticles);
@@ -21,6 +21,21 @@ test("la frontera editorial sigue bloqueando un borrador aunque el catálogo est
   assert.equal(getPublicLearnArticle(articles, undefined), undefined);
   assert.equal(getPublicLearnArticle(articles, published.slug)?.slug, published.slug);
   assert.equal(getPublicLearnArticles(articles).some((article) => article.slug === draft.slug), false);
+});
+
+test("el DTO del catálogo público no incluye el cuerpo ni campos derivados de las secciones", () => {
+  const source = learnArticles[0];
+  const summary = getPublicLearnGuideSummaries([source])[0];
+  assert.deepEqual(Object.keys(summary).sort(), ["category", "editorialDraft", "excerpt", "image", "imageAlt", "slug", "title"]);
+  assert.equal(JSON.stringify(summary).includes(source.sections[0].paragraphs[0]), false);
+});
+
+test("la búsqueda pública del catálogo no devuelve guías por texto exclusivo del cuerpo", () => {
+  const article = learnArticles.find((candidate) => candidate.slug === "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo");
+  assert(article);
+  const summary = getPublicLearnGuideSummaries([article])[0];
+  assert.equal(matchesPublicLearnGuideSummary(summary, "customer relationship management"), false);
+  assert.equal(matchesPublicLearnGuideSummary(summary, "crm"), true);
 });
 
 test("los nueve itinerarios públicos contienen sus guías aprobadas", () => {

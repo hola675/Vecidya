@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-28 — APRENDE-PLAN-V1 — primer paso de catálogo
+
+- `/aprende` serializa tarjetas desde un DTO allowlist que excluye secciones y otros campos del cuerpo; la búsqueda usa título, extracto y categoría. Prueba focal 6/6, QA pública local, typecheck, build y diff-check PASS.
+- Sin IDs editoriales, clasificación 6/42, guard de licencia, migración, cambio en contenido ni publicación del modelo nuevo. La validación editorial de las seis candidatas sigue pendiente.
+
 ## 0.9.0 — producción (2026-10-28)
 
 - Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.

@@ -1,6 +1,6 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLANIFICACIÓN / NO IMPLEMENTADO · **Propietario de ejecución futura:** agente de código designado por el usuario.  
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN PARCIAL DE FASE 1 · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
 **Alcance de este checkpoint:** únicamente documentación en `plans/`; no modificar código, D1, contratos comerciales, licencias ni producción.
 
@@ -20,7 +20,7 @@
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
 | Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
-| Fase 1 — identidad editorial y DTOs seguros | [ ] Sin implementación | Pruebas de catálogo y no filtración |
+| Fase 1 — identidad editorial y DTOs seguros | [~] Parcial: DTO allowlist y búsqueda solo por metadatos | Faltan IDs/revisiones, cierre editorial y pruebas de filtración del cuerpo protegido |
 | Fase 2 — licencias y grants | [ ] Sin implementación | Tests de entitlement y revocación |
 | Fase 3 — catálogo, previews y retorno | [ ] Sin implementación | QA pública segura |
 | Fase 4 — progreso y favoritos D1 | [ ] Sin implementación | Tests de persistencia personal |
@@ -408,11 +408,13 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
+| 2026-10-28 | Fase 1: DTO allowlist del catálogo y búsqueda por metadatos | EN PROGRESO / PARCIAL | rama `feat/aprende-v1-content-access`; prueba focal 6/6, QA pública local, typecheck/build PASS; sin clasificación 6/42, IDs, guard ni publicación |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
-| 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |\n| — | Fases 1–7 | NO INICIADAS | sin pruebas ni código nuevo |
+| 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
+| — | Resto de Fase 1 y fases 2–7 | NO INICIADAS | validación editorial y gates de cada fase pendientes |
 
-**Próxima acción autorizable:** aprobar el inicio del primer PR de implementación; las verificaciones técnicas restantes son gates del PR correspondiente, no nuevas fases de planificación. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
+**Siguiente checkpoint:** completar Fase 1 con IDs y revisiones editoriales estables, cierre de la selección gratuita y pruebas de no filtración; conservar el acceso público vigente hasta que el guard de licencia esté implementado y certificado. Fases posteriores y cualquier despliegue mantienen sus gates independientes.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
