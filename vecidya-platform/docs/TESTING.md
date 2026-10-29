@@ -1,5 +1,32 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
+
+Revisión de código de `api-learn-sync`, `api-organization-learn-access`, entitlement, sesión, consultas y configuración de Better Auth. Se verificaron guardas de sesión/membresía/licencia/lifecycle/grant, organización explícita, permisos owner, auditoría, Origin same-site en mutaciones, límites de cuerpo/operaciones, validación de IDs/secciones/tiempos, protección no-store, revocación por solicitud, control de versión/reset y recibos de replay. La revisión de código no sustituye la certificación de runtime.
+
+**RAN:** `pnpm audit --prod --json` PASS, cero vulnerabilidades en 218 paquetes. Se actualizó `better-auth` de 1.7.5 a 1.7.14 tras advisories que afectaban rangos previos a 1.7.7. La configuración vigente no registra Magic Link, proveedores OAuth/social ni OAuth Proxy; por ello las precondiciones publicadas para dos avisos de severidad alta/crítica no coinciden con la configuración observada. No se halló evidencia de explotación.
+
+**RAN:** unitarias focales Aprende/catálogo **68/68 PASS**, bundle protegido **114 assets / 2.119 fragmentos PASS**, typecheck y build PASS. `test:e2e:learn-entitlement` inició Worker local pero terminó con `fetch failed (ECONNRESET)` sin salida de Worker, por lo que la matriz runtime completa no se considera PASS en este checkpoint. Un corte previo de la rama certificó matriz equivalente, pero no sustituye reejecución en este corte.
+
+**Hallazgo abierto:** los recibos idempotentes carecen de expiración/purga automática; 90 días aceptados es solo propuesta hasta validación legal, de privacidad y costo. **No lanzamiento** hasta resolver retención y repetir la certificación Worker estable.
+
+## APRENDE-PLAN-V1 — pauta manual de accesibilidad (Fase 7; pendiente ejecución humana)
+
+Ejecutar sobre una guía `always_free` en el Worker local, en Windows, con NVDA y Firefox (Edge también es válido si se registra). Repetir con zoom del navegador al 200 % y viewport de 640–780 px físicos (320–390 CSS px). No marcar esta pauta como aprobada hasta registrar resultados reales.
+
+**Lector de pantalla y teclado:**
+1. Recargar sin ratón. Navegar por encabezados y landmarks; confirmar que el título de la guía es el encabezado principal y que el índice se anuncia como navegación «Índice del artículo».
+2. Tabular hasta el control «Índice, NN%». Confirmar nombre y estado contraído/expandido; abrir y cerrar con Enter y Espacio, y verificar que el foco se conserva en el control.
+3. Tabular por los enlaces del índice en orden visual. Activar uno y confirmar que el panel se cierra, el foco/lectura llega al encabezado elegido y este no queda cubierto por elementos fijos.
+4. Marcar y desmarcar una sección con teclado. Confirmar que el anuncio describe la acción y que el porcentaje/avance anunciado se actualiza correctamente.
+
+**Zoom y reflujo:**
+1. Al 200 %, recorrer encabezado, avance, índice, texto, listas, referencias y controles interactivos.
+2. Abrir/cerrar el índice y seguir enlaces de sección. Confirmar que el foco siempre es visible y que paneles o cabeceras fijas no tapan el destino.
+3. Aprobar solo si no hay desplazamiento horizontal de página, texto recortado, solapamiento, control inaccesible, estado de expansión incorrecto ni pérdida de foco. Registrar cualquier excepción con pasos para reproducirla.
+
+**Registro obligatorio:** fecha, ruta, navegador/versión, lector/versión, zoom, viewport CSS, resultado por paso (PASS/FAIL), defecto y evidencia/captura opcional. Estado inicial: **no ejecutada; no equivale a certificación de conformidad**.
+
 ## APRENDE-PLAN-V1 — índice de artículo móvil (Fase 7; 2026-10-29)
 
 **RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` **PASS**, 48 guías/9 itinerarios en 320, 390, 768 y 1366 px. La regresión valida que el índice compacto `Índice · NN%` se muestra hasta 820 px, el TOC de escritorio se oculta, Enter abre/cierra el `<details>` nativo, el foco permanece en el resumen, Tab llega al primer enlace, seleccionar una sección cierra el índice sin tapar el destino y el porcentaje cambia al marcar progreso. Typecheck y build **PASS**. Esta prueba de teclado y árbol DOM no reemplaza lector de pantalla real, zoom 200 %, auditoría de contraste ni aceptación manual. No se ejecutó AccessLint. Sin deploy.

@@ -1,3 +1,7 @@
+## 2026-10-29 — APRENDE-PLAN-V1 — revisión local de seguridad y accesibilidad
+
+- Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; pnpm audit --prod --json quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché; el E2E Worker terminó con ECONNRESET y debe repetirse. La propuesta de retención 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purge implementado. Se añadió pauta manual NVDA/zoom 200 %, aún no ejecutada. Sin deploy ni D1 remota.
+
 # Changelog
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — índice compacto móvil (Fase 7; local)
