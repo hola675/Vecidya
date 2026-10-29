@@ -253,22 +253,24 @@
 - `api-platform-licensing.ts`: `getOrganizationLicense(database, organizationId)` ofrece un punto de lectura para la licencia de la organización; los cambios requieren `organization:license:update` de plataforma y comparan `currentLicenseId` en operaciones. Revisar implementación/estados/fechas antes de decidir entitlement; **no importar directamente una ruta de administración como dependencia del editor**.
 - `app/content/commercial-detail.ts` no es una fuente técnica de permisos.
 
-**Corrección aprobada (DEC-08):** la propuesta anterior de publicaciones secundarias amparadas sin cupos queda sustituida. Cada licencia activa Cuadra, Barrio o Ciudad aporta 3 cupos MiniWeb acumulables al titular. Barrio/Ciudad incluyen una sola vez el beneficio Cuadra y conceden CRM exclusivamente a su organización asignada. El catálogo histórico requiere conciliación. La atribución de plantillas avanzadas a otras organizaciones y la suspensión/expiración siguen pendientes.
+**Corrección aprobada (DEC-08):** la propuesta anterior de publicaciones secundarias amparadas sin cupos queda sustituida. Una o varias licencias activas Cuadra/Barrio/Ciudad conceden un único bloque base de 3 MiniWeb; solo Cuadras adicionales de ampliación suman otros bloques de 3. Barrio/Ciudad incluyen una sola vez el beneficio Cuadra y conceden CRM exclusivamente a su organización asignada. El catálogo histórico requiere conciliación. La atribución de plantillas avanzadas a otras organizaciones y la suspensión/expiración siguen pendientes.
 
 **Cierre parcial:** el inventario de rutas ya está localizado. Pendientes inspeccionar `getOrganizationLicense`, estados efectivos, acceso público a medios, baja de activos, y transacciones; no afirmar implementación ni tests.
 
-## 18. DEC-08 — Capacidad MiniWeb y CRM (APROBADO, 2026-10-29)
+## 18. DEC-08 — Cupos base únicos y ampliación exclusiva mediante Cuadra (CORREGIDO Y APROBADO, 2026-10-29)
 
-- Publicar exige licencia activa y cupo: 3 MiniWeb por licencia Cuadra, Barrio o Ciudad, acumulables.
-- Barrio y Ciudad incluyen los 3 cupos base de Cuadra, sin exigir otra Cuadra ni duplicar cupos.
-- CRM Barrio/Ciudad se asigna a una única organización y no se hereda por otras que consuman cupos.
-- Ejemplos: 1 Cuadra = 3; 1 Barrio = 3; 1 Ciudad = 3; Cuadra + Barrio = 6; 2 Barrio = 6; Barrio + Ciudad = 6.
-- Cuarto MiniWeb con una sola licencia requiere otra licencia elegible; Cuadra es suficiente.
-- Pendiente: reglas de plantillas premium en organizaciones sin CRM propio, suspensión/expiración y reducción de cupos.
-- Implementar control de cupos agregado por titular y control CRM por organización, con pruebas de concurrencia y aislamiento. No implementado aún.
+- Publicar requiere licencia activa y cupo. El titular obtiene **un único bloque base de 3 MiniWeb** al disponer de al menos una licencia activa Cuadra, Barrio o Ciudad.
+- **Barrio y Ciudad NO acumulan cupos:** tener ambas mantiene el bloque base de 3. Cada una habilita CRM solo para su organización asignada.
+- **Solo las licencias Cuadra adicionales adquiridas para ampliar capacidad** añaden bloques de 3 MiniWeb. No sumar automáticamente una Cuadra ya utilizada como licencia base ni convertir Barrio/Ciudad en bloques adicionales.
+- Ejemplos inequívocos: 1 Cuadra = 3; 1 Barrio = 3; 1 Ciudad = 3; Barrio + Ciudad = 3; Barrio + Ciudad + 1 Cuadra adicional = 6; Barrio + Ciudad + 2 Cuadra adicionales = 9. Más de 6 requiere otra Cuadra adicional.
+- El control técnico debe distinguir **bloque base ya concedido** de **Cuadras de ampliación**, para impedir doble cómputo. CRM y cupos se resuelven separadamente; ninguna organización hereda CRM ajeno.
+- Pendientes de diseño: cómo registrar y clasificar una Cuadra base frente a Cuadra de ampliación cuando cambian licencias; plantillas premium en organizaciones sin CRM propio; suspensión/expiración, exceso de cupos y transferencias.
+- Pruebas focales: Barrio + Ciudad = 3; Barrio + Ciudad + Cuadra adicional = 6; no duplicación al cambiar licencias; publicación concurrente sobre último cupo; aislamiento por titular.
+- **Estado:** decisión aprobada; sin implementación ni tests.
 
 ## 12. Registro de avance
 
+- **2026-10-29 — [x] DEC-08 corregida:** Barrio/Ciudad no acumulan cupos; bloque base único de 3 y ampliaciones exclusivamente por Cuadras adicionales. Sin código, tests, merge ni deploy.
 - **2026-10-29 — [x] F0 rutas CODE:** identificadas rutas reales y permisos save/publish, punto de lectura de licencia y tensión multi-organización del catálogo; pendiente decidir nivel de plantillas de organizaciones secundarias. Sin ejecución.
 - **2026-10-29 — [x] F0 publicación y cuotas CODE:** snapshot schema 4, CAS por revisión/token, sobrescritura de publicación, cuotas técnicas 32 MiB/100 MiB; pendiente inventario de rutas y licencia efectiva. Sin ejecución.
 - **2026-10-28 — [x] F0 contratos CODE:** inspección de oferta comercial, loader del editor, configuración v1 y schema D1; identificada incompatibilidad del índice único por tipo con galerías múltiples. Sin ejecución ni migraciones.
