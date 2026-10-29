@@ -2204,3 +2204,28 @@ La matriz conceptual 8×10 requiere inventario real del banco y contraste con C0
 
 ## Changelog adicional
 - **1.35.0 / 2026-10-29:** apertura documental CONSOL-01; taxonomía NO aprobada.
+
+## 44. CONSOL-01 — auditoría focal de mapeos de evidencia (2026-10-29)
+**Solo documentación.** Fuente leída directamente: `app/features/diagnostic/qbv2-coverage.ts`, blob `16cae5010bf2584fe89e906d85733f9a56b5c8e2` en rama maestra V9. Es un mapeo legacy; NO acredita scoring autónomo V9 ni revisión editorial.
+
+| Pregunta | Dimensiones según mapeo | Distinción importante |
+| --- | --- | --- |
+| q2_local_presence_consistency | digital_foundation + discovery | discovery marcado supporting |
+| q2_local_discovery | discovery + measurement_optimization | measurement supporting |
+| q2_ecommerce_traffic_sources | discovery + measurement_optimization | ambas supporting |
+| q2_retail_product_visibility | clarity_positioning + conversion_access | conversion supporting |
+| q2_ecommerce_product_discovery | digital_foundation + clarity_positioning + conversion_access | clarity y conversion supporting |
+| q2_nonprofit_donation_clarity | clarity_positioning + conversion_access | clarity supporting |
+| q2_startup_problem_clarity | clarity_positioning + conversion_access | conversion supporting |
+| q2_followup_general_process | relationship_recurrence + digital_readiness | readiness supporting |
+| q2_operations_process_ownership | digital_readiness | supporting |
+| q2_startup_validation_evidence | clarity_positioning | supporting |
+| q2_nonprofit_support_type | ninguna | contextual |
+| q2_hospitality_flow_type | ninguna | contextual |
+
+**Hallazgo:** el código contiene `EVIDENCE_DIRECTNESS` con excepciones direct/supporting y preguntas exclusivamente contextuales. La existencia de dos dimensiones por pregunta **no prueba doble puntuación**; se debe verificar el consumidor real de estos metadatos. El mapeo es parcialmente declarativo y contiene excepciones manuales; no asumir que cada evidencia es válida o aplicable en todos los escenarios.
+
+**Acción TAX-G2:** contrastar estas relaciones con el banco candidato, cada opción, `evidenceV3`, variantes y semántica `unknown/none/not_applicable/not_published/unanswered`; producir tabla exhaustiva con ID, versión, SHA y decisión editorial humana. **Acción TAX-G3:** demostrar alcanzabilidad de evidencia crítica por C01–C10 dentro de 24+5. TAX-G2/TAX-G3 siguen PENDIENTES; la taxonomía definitiva sigue NO APROBADA.
+
+## Changelog adicional
+- **1.36.0 / 2026-10-29:** auditoría focal documental de mapeos de evidencia y roles direct/supporting/contextual; no código, tests, CI ni despliegue.
