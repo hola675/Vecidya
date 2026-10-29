@@ -756,11 +756,11 @@ type MiniWebConfigV2 = {
 5. **Tras despliegue:** comprobaciones en URL DEV/staging/producción según fase; nunca declarar éxito basándose solo en comando de deploy. No ejecutar merge/deploy en este checkpoint.
 
 ### Riesgos y decisiones que bloquean acciones específicas
-- **Comercial:** tier mínimo de cuatro plantillas `planned` aún propuesto (§28); confirmar antes de activar catálogo premium.
+- **Comercial:** tier de cuatro plantillas `planned` aprobado en DEC-12 (§34); sigue pendiente su implementación y habilitación real.
 - **Coste/almacenamiento:** cuota de videos, transcodificación, retención y GC aún sin valores aprobados; no habilitar subida sin límites operativos.
 - **Historial:** número/tiempo de versiones y medios asociados aún no aprobado; evitar borrado físico y cobros automáticos.
-- **Capacidad excedida:** transferencias y reducciones requieren política comercial para republicación de excedidos.
-- **SEO/visibilidad:** definir respuesta pública para `admin_deactivated` y señales a buscadores sin revelar datos privados.
+- **Capacidad excedida:** DEC-13 (§34) aprueba conservar páginas y bloquear nuevas ocupaciones; republicación de excedidos no queda automáticamente autorizada.
+- **SEO/visibilidad:** DEC-14 (§34) fija HTTP 404 neutro y exclusión del sitemap para `admin_deactivated`.
 
 **Criterio de cierre del plan:** contratos y decisiones bloqueantes aprobados, matriz de rutas/tablas/servicios trazable al repo, PRs de implementación ordenados, criterios de aceptación verificables. No equivale a software terminado. **Estado:** F8/F9 especificados; implementación y pruebas aún pendientes.
 
@@ -777,7 +777,7 @@ type MiniWebConfigV2 = {
 | DEC-15 | Retención de versiones y media | Historial sin borrado físico automático durante V2 inicial; introducir cuotas y retención solo tras medir coste y aprobar política de recuperación. | Append-only; sin GC de activos referenciados |
 | DEC-16 | Video subido y externo | Activar solo tras medir capacidad/coste, seguridad y política de proveedores; videos externos inicialmente restringidos a allowlist explícita aprobada. | No habilitar fuentes no verificadas ni cuotas inventadas |
 
-**DEC-12–16 son PROPUESTAS, no decisiones aprobadas.** La propuesta de no borrar físicamente es un guardarraíl técnico, no una promesa contractual de conservación indefinida. Ninguna política provisional autoriza cobros, nuevos límites comerciales, despublicación automática ni exposición de datos.
+**Estado histórico:** estas propuestas fueron aprobadas posteriormente por el usuario; ver §34 (DEC-12–16). La propuesta de no borrar físicamente es un guardarraíl técnico, no una promesa contractual de conservación indefinida. Ninguna política provisional autoriza cobros, nuevos límites comerciales, despublicación automática ni exposición de datos.
 
 ### Secuencia de implementación sin bloquear por decisiones pendientes
 1. **PR-M1:** shell Mi Vecidya F1, selector de organización, estados solo lectura y permisos; sin cambiar publicación ni facturación.
@@ -795,6 +795,47 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 - Migraciones de lectura dual, backfill y rollback con estrategia segura.
 - Matriz de pruebas focales de F9 y responsables de datos definidos.
 - No confundir **plan maestro funcional documentado** con **implementación terminada**.
+
+
+## 34. DEC-12–16 — Aprobaciones finales de producto (APROBADAS, 2026-10-29)
+
+**Aprobación explícita del titular:** se aprueban **únicamente** DEC-12, DEC-13, DEC-14, DEC-15 y DEC-16 según el registro del §33. Cualquier otra decisión abierta sigue pendiente; no interpretar silencio como aprobación.
+
+### DEC-12 — Plantillas por licencia (APROBADA)
+- **Cuadra:** Esencial (`vecidya-default`) y Servicios (`services-studio`).
+- **Barrio:** incluye Cuadra, más Catálogo (`catalog-store`) y Gastronomía (`gastronomy-table`).
+- **Ciudad:** incluye Barrio y Profesional (`professional-profile`).
+- Esta matriz define **derechos objetivo**, no disponibilidad inmediata: en el código inspeccionado solo Esencial está `available`; las otras cuatro están `planned` hasta que se implementen, validen y habiliten. DEC-10 comparte el nivel visual máximo entre organizaciones del mismo titular, sin compartir CRM.
+- No inventar variantes adicionales, precios ni cupos por la aprobación.
+
+### DEC-13 — Sobrecupo y conciliación (APROBADA)
+- Si una reducción/transferencia deja más publicaciones existentes que capacidad efectiva, **conservar los snapshots públicos** y no despublicar automáticamente.
+- **Bloquear nuevas ocupaciones** mientras no exista capacidad libre. Resolver el exceso por conciliación administrativa explícita, auditada, con comprobación de titularidad y concurrencia; no borrar medios ni versiones.
+- Esta decisión no concede por sí sola derecho ilimitado a republicar sitios excedidos: operaciones ambiguas deben denegarse hasta contar con reglas y autorización aplicables. La expiración total congela edición/publicación según DEC-09.
+
+### DEC-14 — Página desactivada (APROBADA)
+- Cuando `platform_admin` desactive expresamente por no renovación (DEC-09), responder **HTTP 404** con una página neutra de no disponibilidad, sin contenido del negocio ni explicación privada.
+- Retirar URL del sitemap; la respuesta HTML puede incluir `noindex` como defensa adicional. No redirigir a otro negocio, no filtrar datos de cuenta, no confundir con caída de infraestructura.
+- Reactivación requiere acción administrativa separada y auditada; la renovación no reactiva automáticamente.
+
+### DEC-15 — Retención inicial (APROBADA)
+- Durante la primera etapa de V2, **no borrar automáticamente versiones históricas ni archivos referenciados** por snapshots publicados o versiones retenidas.
+- Medir volumen y costes antes de proponer límites de retención. Esta política no implica retención contractual indefinida, subida ilimitada, ni exención de restricciones legales de eliminación de datos.
+- Registrar referencias de medios y bloquear GC destructivo hasta contar con un mecanismo de retención verificable y una política posterior aprobada.
+
+### DEC-16 — Activación controlada de videos (APROBADA)
+- Las **subidas de video** y las **fuentes externas** se habilitarán solo tras verificar capacidad, costes, límites de tamaño/duración, validación y seguridad, y proveedores explícitamente permitidos.
+- No interpretar YouTube/Vimeo como aprobados por defecto; permanecen candidatos hasta decisión técnica documentada.
+- Hasta pasar ese gate, el editor no prometerá una función de video disponible ni aceptará URL/proveedor arbitrario.
+
+### Checklist de coherencia
+- F2A: DEC-08/10/13 → cupos compartidos, tier visual compartido y exceso sin borrado.
+- F2B/F8: DEC-09/14/15 → congelación, desactivación 404 y versiones retenidas.
+- F4: DEC-16 → videos detrás de gate de coste/seguridad.
+- F6: DEC-06/10/12 → catálogo progresivo aprobado, habilitación según estado real.
+- F9: pruebas focales para los cinco contratos, sin suites generales ni cambios de CI ajenos.
+
+**Estado de cierre:** DEC-01–16 aprobadas según sus respectivos alcances. La aprobación de estas decisiones **no** implica que el plan completo esté implementado ni que se hayan verificado límites de infraestructura o datos actuales. Próxima fase: inventario de rutas, servicios, esquemas y pruebas existentes para PR-M1, luego implementación focal sin merge/deploy no autorizado.
 
 ## 12. Registro de avance
 
