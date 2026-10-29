@@ -1331,6 +1331,17 @@ Se comprobó por lectura del código que la comparación anterior omitía una se
 
 **Siguiente paso concreto:** facilitar la transferencia autorizada del archivo exacto a la carpeta local del test (o ejecutar el test desde un checkout de la rama en un equipo con acceso al repositorio). Ejecutar `CHROMIUM_PATH=/usr/bin/chromium node test-miniweb-tiers.mjs` donde corresponda, revisar nueve capturas y corregir únicamente fallos reproducibles. No tocar CI, producto, CRM ni despliegue.
 
+
+## 51. F6/F7 — Contrato tipado V2 y secuencia de implementación (2026-10-29)
+
+**Artefacto creado:** `plans/app-mini/CONTRATO-VARIANTES-V2.md` (commit `6a9f2f3e541a27fd5a18d73ece940b4ea92c610f`). Se revisaron nuevamente `app/features/miniweb/registry.ts` y `app/components/miniweb/templates/default.tsx` antes de redactarlo.
+
+**Hallazgos verificados:** el V1 valida `layoutVariant:standard`, configura un solo módulo por tipo y usa `settings:null`; solo `vecidya-default` está disponible; el renderer asigna IDs DOM por tipo, incompatibles con galerías repetidas. El contrato propone `version:2`, `variantKey`, `instanceId` estable y composición visual tipada.
+
+**Reglas innegociables:** licencia visual del propietario compartida entre organizaciones (DEC-10); Cuadra sin limitación de secciones (DEC-18); downgrade conserva publicación premium y bloquea republish incompatible (DEC-07); capacidad y CRM independientes; lector dual V1/V2 y snapshots no destructivos.
+
+**Plan de PRs focales:** V2-A registro/tipos; V2-B lector dual; V2-C autorización servidor; V2-D renderer e instancias repetibles; V2-E editor; V2-F QA visual. El contrato **no es implementación** y la prueba Playwright del prototipo sigue sin ejecutarse por bloqueo de transferencia del archivo al entorno de navegador. No declarar aprobación visual, tests PASS ni código de producción listo.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
