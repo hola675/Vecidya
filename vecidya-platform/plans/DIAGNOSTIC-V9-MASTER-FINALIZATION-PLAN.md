@@ -2128,3 +2128,73 @@ D-V9-001 a D-V9-032 APPROVED. D-V9-033 APPROVED **solo** para arquitectura simpl
 
 ## Changelog adicional
 - **1.33.0 / 2026-10-29:** D-V9-033 aprobada para arquitectura simple de continuidad local 7 días y analítica agregada anónima en D1, con exclusión estricta de datos personales y de dispositivo; retirada la propuesta homónima previa de repreguntas. Ocho tareas PLAN-ANA01–08, dieciocho criterios y foco en consolidación del Plan Maestro. Solo documentación.
+
+
+## 42. Consolidación integral D-V9-001–033 — matriz de cierre y bloqueos (revisión documental 2026-10-29)
+**Naturaleza:** revisión del Plan Maestro existente, sin aprobar políticas nuevas ni alterar decisiones previas. Estado PLAN_ONLY. La línea base técnica del apartado 1 es una fotografía documental, **no una inspección renovada del código ni del HEAD de implementación**. Este apartado prevalece como índice de interpretación cuando haya formulaciones antiguas en tensión, pero no sustituye la aprobación del propietario para cambiar contratos.
+
+### 42.1. Matriz consolidada de decisiones
+| Grupo | Decisiones aprobadas | Contrato consolidado | Estado de cierre |
+| --- | --- | --- | --- |
+| Alcance y cobertura | D001–002 | Diagnóstico de madurez DIGITAL; cobertura C01–C10, sin presuponer ventas, web o CRM | Producto APROBADO; banco y escenarios sin certificar |
+| Evaluación y evidencia | D003–004, D016–020 | Madurez cualitativa, numérico solo calibrado; 24 turnos, extensión excepcional consentida de hasta 5; abstenerse ante evidencia crítica insuficiente; taxonomía 8 dimensiones aún candidata | Política APROBADA; taxonomía/calibración PENDIENTES |
+| Resultados y valor | D005–013 | Resumen anónimo, detalle con cuenta, recomendaciones explicables, Aprende y servicios opcionales, objetivos confirmados, roadmap y seguimiento/reevaluación | Producto APROBADO; contratos de datos y reglas por certificar |
+| Idiomas y editorial | D014–015 | Español/inglés certificados; núcleo editorial completo y lotes progresivos, sin aprobación implícita del legado | Política APROBADA; contenido editorial PENDIENTE |
+| Experiencia | D021–026 | Progreso por hitos, acompañamiento premium accesible, una pregunta principal, avance contextual reversible y control manual | Política APROBADA; diseño detallado y pruebas PENDIENTES |
+| Borrador anónimo | D027–032 | Solo navegador, 7 días desde guardado válido, datos mínimos, texto libre opcional con consentimiento global reversible y exclusión individual, avisos honestos | Política APROBADA; implementación y seguridad PENDIENTES |
+| Analítica | D033 | D1 únicamente para **analítica anónima agregada del uso de V9**; sin respuestas, IDs de dispositivo, IP, sesiones individuales ni datos personales | Producto APROBADO; esquema y evaluación de anonimato PENDIENTES |
+
+### 42.2. Tensiones identificadas y resolución documental provisional
+**C-01 — D1 analítico frente a D1 de identidad, resultados e historial.** Los apartados originales F07 y arquitectura V9 describen runs, claim, sesiones y tablas D1. D033 restringe **la analítica anónima** a agregados sin identificadores ni respuestas. No se debe inferir que esta decisión elimina el almacenamiento necesario para informes de usuarios autenticados, ni que autoriza guardarlo en las mismas tablas de analítica. **Gate:** elaborar mapa de flujos/almacenes por finalidad (borrador anónimo local / procesamiento de evaluación / resultado reclamado con cuenta / analítica agregada). Cualquier almacenamiento persistente de resultados con cuenta y su retención requieren contrato y revisión de privacidad explícitos. No afirmar que D1 es exclusivamente analítica para toda la plataforma sin resolver este alcance.
+
+**C-02 — Medición de incompletos sin seguimiento individual.** D033 prohíbe IDs de sesión y trayectorias individuales. Los eventos agregados pueden medir inicios, progresiones y finalizaciones, pero **no identifican con exactitud personas únicas, abandonos definitivos ni reanudaciones deduplicadas**. **Gate:** especificar indicadores con nombres honestos, agregación y sesgos; evitar métricas de abandono por persona que requieran identificadores.
+
+**C-03 — Texto libre no persistido y suficiencia de evidencia.** D030–032 permiten no conservar texto libre. D017 exige evidencia crítica suficiente y abstención en caso contrario. La propuesta anterior «D033 recuperar evidencia crítica» fue **retirada y no aprobada**. **Gate:** aplicar la regla existente de suficiencia y contador sin imponer repreguntas automáticas universales; diseñar recuperación mínima como cuestión editorial/técnica futura solo si se necesita.
+
+**C-04 — Plazo de siete días y garantía real de borrado.** D028 fija TTL móvil desde guardado confirmado, D029 limita el soporte al navegador. No es técnicamente honesto prometer borrado físico instantáneo mientras el navegador esté cerrado ni resistencia absoluta a manipulación de reloj. **Gate:** caducidad lógica obligatoria antes de reanudar, limpieza al siguiente acceso y comunicación de límites.
+
+**C-05 — «24 + 5» frente a presentación híbrida.** D020 cuenta turnos de pregunta/aclaración presentados; D024 impide agrupar decisiones independientes para reducir artificialmente el contador. **Gate:** matriz editorial de turnos, sin trucos de empaquetado, consentimiento previo a turno 25 y abstención si faltan pruebas.
+
+**C-06 — Editorial progresiva frente a cobertura total desde lanzamiento.** D002 exige C01–C10 desde V9; D015 permite lotes editoriales progresivos. **Gate:** certificar un núcleo suficiente que cubra todos los escenarios **antes** de lanzar; los lotes posteriores amplían, no sustituyen cobertura inicial.
+
+**C-07 — Taxonomía y puntuación.** D016 aprueba auditar ocho dimensiones candidatas, **no** aprueba ocho dimensiones definitivas, pesos, niveles ni calibraciones. **Gate:** aprobación explícita de taxonomía final y reglas de suficiencia antes de certificar scoring o informe.
+
+**C-08 — Autonomía V9 y legacy.** F01–F04/F09 exigen ausencia de imports QBV2 en el núcleo, mientras la línea base documental reporta acoplamientos. **Gate:** verificar archivos y SHA reales, planificar sustitución y pruebas focalizadas; no confundir la existencia de rutas o tests con certificación.
+
+**C-09 — Anonimato y observabilidad.** La ausencia de columnas personales en D1 no garantiza anonimato en registros de red, Workers, proveedores o telemetría. **Gate:** auditar el flujo extremo a extremo, minimizar registros, impedir reidentificación y documentar límites antes de certificar «anónimo».
+
+**C-10 — Estado documental y cabecera histórica.** La cabecera original aún indica «Versión 1.0.0» y «PLAN / NO CERTIFICADO», mientras el historial append-only llega a v1.33.0. **Gate:** conservar historial; actualizar índice/cabecera mediante una edición documental acotada futura para mostrar versión efectiva y fecha de revisión, sin reescribir decisiones. Hasta entonces, el changelog y este apartado indican la versión documental efectiva.
+
+### 42.3. Bloqueos priorizados para cerrar V9
+| Orden | Bloqueo | Qué falta exactamente | Entregable documental antes de implementación |
+| --- | --- | --- | --- |
+| P0-1 | Taxonomía final C01–C10 | Validar/ajustar 8 dimensiones candidatas, N/A, evidencia y aplicabilidad | Matriz 8×10, propuesta final para aprobación explícita |
+| P0-2 | Banco editorial certificado | Resolver 77 preguntas/387 opciones históricas como inventario no aprobado, completar núcleo bilingüe C01–C10 | Banco canónico con decisiones KEEP/REWRITE/REMOVE/ADD, revisión humana |
+| P0-3 | Evidencia y evaluación | Definir criterios de suficiencia, abstención, reglas por dimensión y calibración válida | Contrato de evaluación trazable sin números inventados |
+| P0-4 | Grafo y presupuesto | Comprobar alcanzabilidad, sustituciones y 24+5 sin ciclos ni preguntas irrelevantes | Matriz de rutas y presupuesto por C01–C10 |
+| P0-5 | Desacoplamiento QBV2 | Verificar dependencias reales y plan de sustitución | Inventario de imports/consumidores con SHA, clasificación y pruebas focales futuras |
+| P0-6 | Flujos y privacidad | Diferenciar borrador local, evaluación, informe con cuenta y analítica D1 agregada | Diagrama de datos y contrato de retención/propiedad por finalidad |
+| P1-1 | Recomendaciones y Aprende | Evidencia, ranking, neutralidad, catálogos y contratos independientes | Reglas explicables y enlaces certificados |
+| P1-2 | UX bilingüe y accesible | Integrar decisiones D021–032 sin microdecisiones adicionales | Especificación UX compacta y checklist |
+| P1-3 | Integración, historial y lanzamiento | Reconciliar PR #162 con main, gates F00–F10, plan de corte/rollback | Plan de ejecución para agente futuro y certificación por SHA |
+
+### 42.4. Secuencia de cierre documental sin nuevas ramificaciones
+1. **CONSOL-01 — Taxonomía:** producir matriz 8×10 con propuestas, no declarar aprobada la versión final sin decisión explícita.
+2. **CONSOL-02 — Editorial:** inventariar y certificar el núcleo mínimo es/en con cobertura C01–C10; los conteos históricos son línea base, no certificación actual.
+3. **CONSOL-03 — Evaluación:** especificar evidencia crítica, abstención, calibración y resultados interpretables.
+4. **CONSOL-04 — Grafo:** presupuestar 24+5 turnos por escenario y verificar rutas/adaptación.
+5. **CONSOL-05 — Fronteras:** trazar separación V9/QBV2, borrador local, D1 analítico, resultados con cuenta, Aprende y GHL.
+6. **CONSOL-06 — Handoff:** integrar tareas y gates F00–F10, criterios de aceptación y pruebas **focalizadas futuras**; no ejecutar.
+Cada paso genera un entregable documental verificable y solo escala al propietario las decisiones de producto realmente bloqueantes.
+
+### 42.5. Registro de aprobaciones y pendientes
+- **APROBADO:** D-V9-001–033 en el alcance preciso de sus secciones; D-V9-033 significa analítica agregada en D1, no la propuesta anterior de repregunta.
+- **NO APROBADO:** taxonomía definitiva, calibración numérica, banco editorial concreto, repregunta automática de todo texto ausente, persistencia de resultados con cuenta y retención exacta, tecnología concreta de almacenamiento local, esquema D1, umbrales de anonimato, política de logs.
+- **NO CERTIFICADO:** implementación actual de V9, cobertura editorial, desacoplamiento QBV2, pruebas, CI, seguridad, producción.
+- **REGLA DE CIERRE:** ninguna aprobación de producto implica código implementado; ninguna línea base documental sustituye auditoría del HEAD real.
+
+### 42.6. Próximo trabajo documental
+Empezar **CONSOL-01**: construir la matriz de las ocho dimensiones candidatas frente a los diez escenarios y señalar cuáles requieren renombrarse, fusionarse, redefinirse o marcarse no aplicables. Presentar propuesta concreta de taxonomía para aprobación posterior, **sin asumir que ya está aprobada**.
+
+## Changelog adicional
+- **1.34.0 / 2026-10-29:** consolidación documental de D-V9-001–033, nueve grupos de decisiones, diez tensiones y gates, nueve bloqueos priorizados, secuencia CONSOL-01–06 y registro explícito de pendientes. No modifica políticas aprobadas; sin código, pruebas, CI, merges ni despliegues.
