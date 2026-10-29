@@ -1825,3 +1825,80 @@ D-V9-001 a D-V9-029 APPROVED en sus alcances respectivos; D-V9-030 PENDING. Tecn
 
 ## Changelog adicional
 - **1.29.0 / 2026-10-29:** D-V9-029 aprobada; arquitectura de borrador local sin respaldo servidor, límites de seguridad, nueve tareas PLAN-LOCAL01–09, veinte criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 38. Decisión D-V9-030 — persistencia mínima y texto libre opcional (aprobada 2026-10-29)
+**Aprobación expresa:** «guardar respuestas estructuradas y estado mínimo, con guardado opcional de texto libre mediante aviso específico y posibilidad de excluirlo». Estado APPROVED; exclusivamente PLAN_ONLY.
+
+### 38.1. Política de datos del borrador
+1. Guardar localmente respuestas **estructuradas** y el **estado mínimo indispensable** para reanudar la evaluación anónima, de acuerdo con D-V9-027–029.
+2. El **texto libre no se conserva por defecto** en el borrador. Su guardado requiere una decisión afirmativa, informada, específica y reversible del usuario, tras un aviso claro y comprensible en es/en.
+3. Ofrecer una opción explícita para **excluir el texto libre del guardado** sin impedir que la persona conteste o complete la entrevista. No emplear casillas premarcadas ni consentimiento implícito.
+4. Si el usuario excluye el texto libre, podrá usarse **en la entrevista activa** cuando sea necesario para responder, pero no se incluirá en el borrador local persistente. Al reanudar, explicar que esos campos no se recuperarán; no inventar respuestas.
+5. La opción de conservar texto libre no autoriza almacenar **contraseñas, credenciales, secretos, tokens ni datos personales sensibles innecesarios**. Aplicar minimización, límites editoriales y exclusiones independientemente de la preferencia.
+6. La decisión sobre texto libre debe ser **reversible**: al desactivarla, eliminar del borrador los textos libres previamente guardados en la medida técnicamente verificable y explicar las limitaciones del navegador; no borrar inadvertidamente la respuesta activa sin aviso.
+7. Evitar que texto libre excluido termine persistido por rutas indirectas: cachés de aplicación, telemetría, analytics, registros de error, snapshots, almacenamiento de estado, backups o servicios de terceros. Auditar las rutas reales antes de implementar.
+8. Separar el uso temporal de respuestas para calcular el diagnóstico de su **persistencia para reanudación**; documentar cualquier transmisión estrictamente necesaria para evaluación o informe, sin presentarla como respaldo del borrador.
+9. Restaurar solo los datos efectivamente guardados; preservar ruta adaptativa, contador de 24+5, hitos y preferencia de avance sin atribuir evidencia a campos de texto libre ausentes.
+10. Si una pregunta requiere evidencia crítica que se perdió al reanudar, aplicar D-V9-017–019: solicitar aclaración dentro del presupuesto y con consentimiento excepcional si corresponde, o declarar evidencia insuficiente; no asignar madurez inventada.
+11. El borrador local caduca **7 días desde el último guardado válido** y no se replica como copia de recuperación en servidor; los cambios de preferencia confirmados que modifican el borrador siguen el contrato D-V9-028.
+12. El aviso debe explicar la diferencia entre «usar mi respuesta ahora» y «guardar mi texto para continuar después», el riesgo de dispositivo compartido y la posibilidad de eliminar el borrador.
+13. No exigir cuenta, GHL ni consentimiento comercial para guardar respuestas estructuradas o decidir sobre texto libre; la reclamación de informe detallado D-V9-005 es independiente.
+14. La ubicación exacta del control, la granularidad de autorización (global o por campo), el comportamiento ante cierre inesperado y el tratamiento de texto libre sensible requieren especificación y validación editorial/privacidad antes de implementación; **no se presumen aprobados**.
+
+### 38.2. Matriz de persistencia conceptual
+| Categoría | Borrador local | Condición |
+| --- | --- | --- |
+| Respuestas estructuradas necesarias | Sí | Minimización y TTL 7 días |
+| Estado mínimo de entrevista | Sí | Solo campos imprescindibles |
+| Texto libre ordinario | Opcional | Aceptación afirmativa tras aviso específico |
+| Texto libre con exclusión elegida | No | Uso en entrevista activa, sin restauración |
+| Credenciales, secretos, tokens | No | Exclusión independientemente de consentimiento |
+| Datos sensibles innecesarios | No | Minimización y revisión de riesgos |
+| Eventos visuales/animaciones | No | No son datos necesarios para reanudar |
+| Copia de recuperación en servidor | No | D-V9-029 |
+| Información para marketing/GHL | No | Sin consentimiento ni vinculación comercial |
+
+### 38.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-DATA01 | Inventariar campos reales C01–C10 y fuentes V9/QBV2 | Matriz pregunta×tipo×sensibilidad×necesidad y SHA | No asumir preguntas aprobadas |
+| PLAN-DATA02 | Definir esquema mínimo de borrador y exclusiones | Contrato conceptual de campos y ciclo de vida | Minimización |
+| PLAN-DATA03 | Diseñar consentimiento específico y revocable para texto libre | Flujos UX es/en y estados de preferencia | Sin casillas premarcadas |
+| PLAN-DATA04 | Especificar revocación y limpieza de texto libre guardado | Tabla de transiciones, errores y límites | Sin falsas garantías de borrado |
+| PLAN-DATA05 | Auditar persistencia indirecta y telemetría | Modelo de amenazas y rutas de datos | Sin respaldo encubierto |
+| PLAN-DATA06 | Definir reanudación con campos excluidos y evidencia insuficiente | Matriz de restauración y adaptación 24+5 | D-V9-017–020 |
+| PLAN-DATA07 | Separar procesamiento activo, borrador y reclamación de informe | Diagrama de flujos y responsabilidades | D-V9-005, Vecidya/GHL |
+| PLAN-DATA08 | Preparar pruebas focalizadas futuras de consentimiento, caducidad y fallos | Casos es/en, C01–C10 y reversibilidad | No ejecutar en PLAN_ONLY |
+| PLAN-DATA09 | Revisar microcopy de privacidad y accesibilidad | Checklist editorial bilingüe | Revisión humana antes de lanzar |
+
+### 38.4. Criterios de aceptación futuros
+1. Respuestas estructuradas necesarias se guardan en borrador local con TTL aprobado.
+2. Estado mínimo permite reanudar sin duplicar turnos.
+3. Texto libre no se guarda sin aceptación afirmativa.
+4. El aviso específico es visible y comprensible antes de activar el guardado de texto libre.
+5. El usuario puede excluir texto libre sin abandonar la entrevista.
+6. Una respuesta libre excluida no reaparece como si hubiera sido guardada tras reanudar.
+7. La interfaz informa de la pérdida esperable de texto excluido al cerrar.
+8. El usuario puede revocar la autorización de guardado de texto libre.
+9. La revocación solicita eliminar textos guardados y comunica límites verificables.
+10. Credenciales, secretos y tokens nunca se incluyen en el borrador.
+11. Datos sensibles innecesarios quedan excluidos aun con autorización.
+12. Telemetría y registros no crean copia indirecta de textos excluidos.
+13. El guardado de borrador no envía una copia de recuperación al servidor.
+14. La caducidad se rige por siete días desde el último guardado válido.
+15. Reanudación conserva contador 24+5 y preferencia de avance.
+16. Evidencia perdida no se sustituye por inferencias ficticias.
+17. Evidencia crítica faltante sigue reglas de aclaración y suficiencia D-V9-017–019.
+18. El consentimiento de texto libre no habilita marketing ni vinculación a GHL.
+19. El flujo de informe detallado con cuenta permanece separado.
+20. Las instrucciones y controles funcionan en español e inglés con accesibilidad.
+
+### 38.5. Próxima decisión D-V9-031 — granularidad del permiso de texto libre
+Opciones pendientes: **A** una preferencia global para toda la entrevista (simple, pero menos control por campo); **B** decisión independiente por cada respuesta libre (máximo control, más fricción); **C** preferencia global explícita y reversible con opción de excluir respuestas libres individuales (recomendado por equilibrio entre control y experiencia). Ninguna opción aprobada; debe diseñarse sin consumir turnos del diagnóstico por controles de privacidad y sin permitir almacenamiento de secretos.
+
+### 38.6. Estado
+D-V9-001 a D-V9-030 APPROVED en sus alcances respectivos. D-V9-031 PENDING; granularidad y microcopy final PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.30.0 / 2026-10-29:** D-V9-030 aprobada; persistencia estructurada mínima, guardado opcional de texto libre con aviso específico y exclusión, nueve tareas PLAN-DATA01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
