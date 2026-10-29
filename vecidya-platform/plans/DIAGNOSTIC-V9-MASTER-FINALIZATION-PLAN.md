@@ -2355,3 +2355,30 @@ Estas son condiciones leídas en código; **no** se ha probado alcanzabilidad, p
 
 ## Changelog adicional
 - **1.40.0 / 2026-10-29:** fichas de ocho preguntas críticas con estados de opción, cuatro rutas condicionadas y decisiones editoriales bloqueadas. Solo documentación.
+
+## 49. CONSOL-01 / TAX-G3 — preauditoría de escenarios genéricos (2026-10-29)
+**PLAN_ONLY.** Revisión estática del banco; no se ejecutaron rutas ni pruebas. Fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`.
+
+### Anclas comprobadas
+- `q2_has_customers` distingue clientes/usuarios/beneficiarios reales (`yes/no/unknown`), incluso en pausa.
+- `q2_operational_status` se habilita tras respuesta a `q2_has_customers`; opciones `preparing/operating/paused/unknown`. Estado actual e historial son variables separadas.
+- `q2_sector` se expande en el candidato a v4; los selectores sectoriales solo se activan con sector explícito, incluyen `other` y `unknown`.
+- `q2_digital_tools_in_use` se habilita para `operating` con metas/fricciones concretas; `none`, `not_needed` y `unknown` son opciones exclusivas distintas.
+
+### Escenarios prioritarios y límites de evidencia
+| Escenario | Preguntas/rutas respaldadas por fuente | Bloqueo antes de certificar |
+| --- | --- | --- |
+| C02 preparación sin clientes | `operational_status=preparing` habilita piloto `q2_startup_problem_clarity` (clarity/direct), `q2_startup_offer_readiness` (clarity/direct), `q2_startup_validation_evidence` (clarity/supporting); `q2_startup_demand_signal` sigue pending | No afirmar cobertura de otras siete dimensiones; no inferir ventas |
+| C03 pausa con historial | `has_customers=yes` y `operational_status=paused` son representables por anclas | Ramas condicionadas a `operating` quedan fuera; auditar evidencia alternativa sin tratar pausa como fallo |
+| C05 organización sin venta directa | `entity=organization` o `monetization=mission` activa contexto sin fines de lucro; `q2_nonprofit_support_type` solo en `operating` y sigue pending; donación se pregunta solo con soporte `donations/mixed` | Comprobar rutas de participación/aportes sin donaciones; no exigir venta o CRM |
+| C10 nicho desconocido/cambiado | Selectores tienen `other/unknown` y no deben inferir especialidad; pregunta genérica se conserva salvo condiciones especializadas | Verificar fallback real y cambios de respuestas sin pérdida de evidencia |
+| C07 ecommerce activo | `ecommerceOperating` requiere `operating` + historial + arquetipo ecommerce; `q2_ecommerce_checkout_friction` mide `conversion_access` direct | No extrapolar a ecommerce sin ventas o en preparación |
+
+### Riesgo transversal
+El filtrado por `operating` y objetivos declarados puede dejar sin observación suficiente a C02/C03/C05; la ausencia de evidencia **no equivale a bajo nivel**. Aplicar abstención D017. Estas filas representan **posibilidades inferidas de condiciones**, NO trazas ejecutadas ni cobertura 8×10 certificada. Falta auditar semántica de `answeredV2` con `unknown`, compatibilidad de versiones y rutas de regreso.
+
+### Próximo gate
+Construir matriz por dimensión y escenario con `direct/supporting/contextual/missing`, identificar rutas candidatas y declarar `no demostrado` hasta validar alcanzabilidad, límites 24+5 y revisión bilingüe. No implementar ni ejecutar pruebas en PLAN_ONLY.
+
+## Changelog adicional
+- **1.41.0 / 2026-10-29:** preauditoría documental C02/C03/C05/C10/C07 y distinción entre estado, historial, aplicabilidad y evidencia. Sin código ni pruebas.
