@@ -160,3 +160,31 @@ Un mapeo a una dimensión es necesario, pero no suficiente: comprobar guardias, 
 ### Changelog
 
 - v1.5.0: cotejo focal de candidatos de `clarity_positioning` y `conversion_access`, descartando sustituciones no justificadas.
+
+
+## Descarte de sustitutos por semántica — v1.6.0
+
+Inspección estática de `qbv2-reviewed-commerce.ts`, `qbv2-reviewed-local-appointments-professional.ts` y `qbv2-reviewed-evidence.ts`. Esta decisión se refiere al significado de las preguntas; no prueba selección del banco candidato.
+
+| ID | Guardia/objeto original | Evidencia V3 | Decisión para casos críticos |
+|---|---|---|---|
+| `q2_retail_product_visibility` | `activeRetail` y objetivo `explain`; pregunta qué productos vende el comercio en internet | `clarity_positioning/direct` | **NO reutilizar automáticamente para C08**: restaurante hospitality sin presencia digital no equivale a retail y el texto presupone búsqueda en internet. |
+| `q2_professional_intake_flow` | `activeProfessional`; pregunta claridad del siguiente paso al contratar a un profesional | `clarity_positioning/direct` | **NO sustituto para C08**: siguiente paso profesional no es claridad de menú/oferta gastronómica. Tampoco demuestra participación comunitaria C05. |
+| `q2_service_response_speed` | `activeLocalService`; pregunta respuesta oportuna a nuevos contactos | `conversion_access/direct` | **NO sustituto universal para C05**: responder contactos de servicios no demuestra vía de participación de una organización sin cuotas/donaciones. |
+
+### Resultado editorial
+
+- **C08:** ninguna de las tres alternativas examinadas cierra el vacío de claridad de oferta para restaurante sin presencia digital. Mantener `HOLD`; preparar una **propuesta condicionada** de pregunta independiente de canal solo si la traza final confirma insuficiencia.
+- **C05:** ninguna de estas alternativas prueba acceso a participación comunitaria. Mantener `HOLD`; preparar propuesta condicionada de participación/consulta sin cuotas ni donaciones solo tras verificar el resto del banco.
+- **C03:** sin cambio; requiere revisión específica de comunicación durante pausa.
+- **No crear ni activar nuevas preguntas en PLAN_ONLY.** Las propuestas no constituyen aprobación editorial, de evidencia ni de versión.
+
+### Próxima puerta de cierre
+
+1. Revisar la elegibilidad final y la evidencia restante de las 77 preguntas, no solo las coincidencias por nombre/dimensión.
+2. Emitir un dictamen por C03/C05/C08: `EXISTING` (cobertura real), `ABSTAIN` (insuficiencia honesta) o `PROPOSE` (nueva pregunta con semántica propia).
+3. Autorizar por separado cualquier cambio de banco y su batería focal.
+
+### Changelog
+
+- v1.6.0: descartes semánticos de tres falsos sustitutos; conserva HOLD y delimita propuestas.
