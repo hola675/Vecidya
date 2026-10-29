@@ -2604,3 +2604,32 @@ Resolver los IDs de la base histórica importada, todas las opciones derivadas d
 
 ## Changelog adicional
 - **1.46.0 / 2026-10-29:** inventario verificable de procedencia, cinco familias de IDs, fórmula de ensamblaje y brechas explícitas para completar 77 preguntas. Solo documentación.
+
+## 55. TAX-G2 / EDIT-G1 — política de ampliación controlada del banco V9 (2026-10-29)
+**Nueva directriz del propietario:** considerar **añadir preguntas nuevas** al banco candidato para cerrar huecos de evidencia y elevar la calidad diagnóstica. Esto autoriza **planificación y diseño editorial**, NO incorporación automática a código, publicación ni aumento del límite de entrevista. El total histórico de 77 deja de ser un techo de catálogo: se conserva como **baseline versionada**, pendiente de recuento independiente; cualquier nuevo ID lleva versión, procedencia y changelog.
+
+### Principio de decisión: evidencia útil, no volumen
+Para cada hueco C01–C10 × dimensión, seguir este orden: (1) reutilizar una pregunta existente con respuesta pertinente; (2) mejorar opción, texto, neutralidad o condición sin alterar significado de respuestas anteriores; (3) sustituir una pregunta débil por otra más discriminativa; (4) **añadir pregunta nueva** cuando ninguna anterior obtiene evidencia suficiente. Una pregunta nueva no debe aumentar el número de interacciones en todos los recorridos: competir por prioridad y sustituir preguntas de menor valor, excepto extensión crítica con consentimiento D017–D020.
+
+### Ficha obligatoria de cada propuesta `NEW-V9-###`
+Escenario(s); dimensión/subcriterio; vacío probado y fuente SHA; hipótesis de evidencia; texto ES y EN; tipo; opciones completas con `unknown` y `not_applicable` cuando procedan; `appliesWhen` y exclusiones; relación con preguntas existentes (complementa/sustituye); `direct/supporting/contextual` y condiciones de abstención; riesgo de inferencia; coste de interacción y prioridad; accesibilidad; privacidad; migración/versionado; estado `propuesta → revisión humana → aprobada → implementable`. Ninguna propuesta sin evidencia directa se marcará `aprobada`.
+
+### Candidatos de investigación, NO preguntas aprobadas
+| ID provisional | Vacío a investigar | Posible observación | Precaución |
+| --- | --- | --- | --- |
+| NEW-V9-001 | C03 pausado, continuidad digital | ¿Qué canal sigue permitiendo que personas encuentren información vigente durante la pausa? | No penalizar suspensión temporal |
+| NEW-V9-002 | C05 organización sin donaciones | ¿Cómo puede alguien participar o contactar para actividades de la organización? | No suponer venta, captación ni donaciones |
+| NEW-V9-003 | C02 prelaunch, acceso y siguiente paso | ¿Qué acción verificable puede realizar hoy alguien interesado en el proyecto? | No confundir lista de espera con conversión |
+| NEW-V9-004 | C10 nicho no definido, claridad | ¿Puede explicar a quién sirve y qué necesidad aborda sin escoger sector? | No inferir especialidad por texto libre |
+| NEW-V9-005 | C04 independiente, confianza | ¿Qué prueba de experiencia puede comprobar una persona sin requerir reseñas públicas? | No exigir web ni volumen de clientes |
+| NEW-V9-006 | C09 multicanal, coherencia | ¿La información crítica coincide entre canales activos? | No exigir omnicanalidad ni CRM |
+| NEW-V9-007 | C01/C06 seguimiento, permiso | ¿Existe un modo autorizado de retomar una solicitud pendiente? | Contactabilidad y consentimiento son distintos |
+| NEW-V9-008 | C02/C03/C05 medición contextual | ¿Qué señal no comercial se registra para aprender y decidir? | No forzar métricas de ventas ni cifras inventadas |
+
+**No duplicar** `q2_presence_offer_clarity`, `q2_startup_problem_clarity`, `q2_nonprofit_donation_clarity`, `q2_followup_status_visibility` ni preguntas de medición sin verificar su alcance actual y elegibilidad. Estas ocho fichas son hipótesis para la auditoría, no ocho preguntas definitivas.
+
+### Gate de aceptación
+Antes de aprobar una adición: demostrar hueco con ruta/escenario, comprobar que el banco actual no lo cubre, probar valor discriminativo de opciones y ausencia de sesgo, documentar sustitución/prioridad, preservar ≤24 interacciones normales y ≤29 solo con consentimiento, revisar ES/EN y confirmar no dependencia GHL. Mantener `NO DEMOSTRADO` hasta revisión humana y validación posterior autorizada.
+
+## Changelog adicional
+- **1.47.0 / 2026-10-29:** directriz para ampliar el banco candidato sin techo artificial de 77; ocho hipótesis de preguntas, ficha editorial y gate de evidencia/presupuesto. Solo documentación.
