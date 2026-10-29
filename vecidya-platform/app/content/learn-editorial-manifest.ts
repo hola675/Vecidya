@@ -1,7 +1,7 @@
 export default {
   "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo": {
     "guideId": "5d3c5d91-79af-44ff-9d5e-5cb8faafcf8f",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa CRM en el trabajo diario",
@@ -40,7 +40,7 @@ export default {
   },
   "como-probar-un-asistente-de-ia-con-supervision-humana": {
     "guideId": "9c755b4b-1641-4ec7-afe4-6c48e24974ec",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Empieza por una tarea pequeña",
@@ -75,7 +75,7 @@ export default {
   },
   "que-puede-hacer-una-inteligencia-artificial-por-un-negocio": {
     "guideId": "cfd22264-e86a-461a-b723-664ec8c6cf44",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa usar IA en un negocio",
@@ -227,7 +227,7 @@ export default {
   },
   "como-probar-y-supervisar-automatizaciones-sin-perder-datos": {
     "guideId": "c031c503-15ad-4049-bbea-a1c941a0526a",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Primero prueba la regla, no la confianza",
@@ -262,7 +262,7 @@ export default {
   },
   "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio": {
     "guideId": "c02764b0-bcd2-4056-bef4-6cd0d8049d23",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa automatizar",
@@ -453,7 +453,7 @@ export default {
   },
   "analitica-web-que-medir-en-tu-negocio": {
     "guideId": "4ca7ef53-39fc-4a4c-a291-dcd3d1020af5",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Empieza por una pregunta, no por un tablero",
@@ -570,7 +570,7 @@ export default {
   },
   "organizar-consultas-mensajes-llamadas-formularios": {
     "guideId": "cb0b397f-f72e-439f-aa87-dd5fe8d746b8",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -1077,7 +1077,7 @@ export default {
   },
   "datos-de-clientes-que-puedes-pedir-y-como-protegerlos": {
     "guideId": "3f7d5162-b722-41a7-856b-e16533ba07cc",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Tu objetivo: pedir solo los datos necesarios",

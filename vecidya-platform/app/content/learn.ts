@@ -175,7 +175,7 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "ICO — Advice for small and medium organisations", url: "https://ico.org.uk/for-organisations/advice-for-small-organisations/", scope: "Orientación para organizaciones pequeñas en el contexto regulatorio del Reino Unido." },
           ],
         }, {
@@ -317,9 +317,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos durante el diseño, uso y evaluación de sistemas de IA." },
+            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos de IA; NIST indica que la versión 1.0 está en revisión." },
             { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Describe riesgos de IA generativa como confabulación, privacidad y relación entre personas y sistemas." },
-            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; comprueba las reglas aplicables en tu jurisdicción." },
+            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; el ICO indica que está en revisión tras cambios legales. Comprueba las reglas vigentes de tu jurisdicción." },
           ],
         }],
       },
@@ -426,7 +426,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿La IA puede responder a clientes sin revisión?", answer: "Depende del riesgo y del alcance. Empieza con límites estrictos y una fuente autorizada; una persona debe revisar las decisiones o compromisos importantes." },
             { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con datos anonimizados o sintéticos cuando sea posible." },
             { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
-            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens (unidades de texto procesado) y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
+            { question: "¿Cómo se cobra el consumo de IA?", answer: "Depende de la modalidad acordada. Puede incluir una tarifa de la función y costos variables de IA, canales o telefonía; confirma en la cotización si tokens o minutos generan cargos aparte y cuáles son los límites. No presupongas una tarifa única." },
           ],
         }],
       },
@@ -436,9 +436,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos durante diseño, uso y evaluación de sistemas de IA." },
+            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos de IA; NIST indica que la versión 1.0 está en revisión." },
             { label: "NIST AI 600-1 — Generative AI Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Perfil sobre riesgos de IA generativa como confabulación, privacidad y relación entre personas y sistemas." },
-            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; verifica las reglas de tu jurisdicción." },
+            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; el ICO indica que está en revisión tras cambios legales. Comprueba las reglas vigentes de tu jurisdicción." },
           ],
         }, {
           type: "summary",
@@ -985,9 +985,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad en organizaciones." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "NIST Cybersecurity Framework 2.0", url: "https://www.nist.gov/cyberframework", scope: "Marco para gestionar riesgos de ciberseguridad, responsabilidades y controles de forma proporcional." },
-            { label: "ICO — Electronic mail marketing", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre comunicaciones electrónicas y preferencias; verifica las reglas de tu jurisdicción." },
+            { label: "ICO — Electronic mail marketing", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo; el ICO indica que está en revisión tras cambios legales. Verifica las reglas vigentes de tu jurisdicción." },
           ],
         }],
       },
@@ -1122,9 +1122,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "NIST Cybersecurity Framework (CSF) 2.0", url: "https://www.nist.gov/cyberframework", scope: "Marco para gestionar riesgos de ciberseguridad y definir controles proporcionales." },
-            { label: "Electronic mail marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo electrónico; verifica las reglas de tu jurisdicción." },
+            { label: "Electronic mail marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo; el ICO indica que está en revisión tras cambios legales. Verifica las reglas vigentes de tu jurisdicción." },
           ],
         }, {
           type: "summary",
@@ -1858,7 +1858,7 @@ export const learnArticles: LearnArticle[] = [
             { label: "About events — Google Analytics Help", url: "https://support.google.com/analytics/answer/9322688", scope: "Explica eventos e interacciones en Google Analytics; la configuración determina qué se registra." },
             { label: "Conversions vs. key events — Google Analytics Help", url: "https://support.google.com/analytics/answer/13965727", scope: "Distingue los eventos clave usados para analizar acciones importantes de las conversiones utilizadas para medir campañas publicitarias." },
             { label: "Google Analytics policies", url: "https://support.google.com/analytics/answer/6004245", scope: "Políticas publicadas por Google Analytics, incluidas restricciones sobre información de identificación personal." },
-            { label: "ICO — Cookies and similar technologies", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación británica sobre cookies; comprueba las reglas aplicables a tu ubicación y actividad." },
+            { label: "ICO — Cookies and similar technologies", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación británica sobre cookies; el ICO indica que la guía PECR está en revisión tras cambios legales. Comprueba las reglas vigentes de tu ubicación y actividad." },
           ],
         }],
       },
@@ -2145,8 +2145,8 @@ export const learnArticles: LearnArticle[] = [
         heading: "Qué puedes poner en marcha hoy",
         paragraphs: [],
         blocks: [{ type: "sources", items: [
-          { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad; no es una ley universal." },
-          { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido que distingue comunicaciones de servicio de marketing directo y describe las reglas PECR; los requisitos varían según jurisdicción." },
+          { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
+          { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido sobre marketing directo; el ICO indica que su guía PECR está en revisión tras cambios legales. Los requisitos dependen de la jurisdicción." },
         ] }, { type: "summary", items: [
           "Reúne consultas en un registro autorizado y limita los datos.",
           "Asigna responsable, estado y próxima acción a cada pendiente.",

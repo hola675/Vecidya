@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — paquete local de revisión humana y auditoría
+
+- Define perfiles hipotéticos de cobertura y roles humanos con criterios, evidencia y decisiones separadas para contenido y clasificación de acceso. No representa entrevistas, personas reales ni aprobaciones.
+- Auditoría estructural local del catálogo: 48 guías, 6 categorías, 9 itinerarios, 387 IDs de sección, fuentes HTTPS y seis candidatas 6/42; ocho guías carecen de FAQ. Ajusta estado de vigencia de referencias NIST/ICO y precisión de la descripción de costos IA en ocho guías, que pasan a revisión 2.
+- Sin cambios de publicación, deploy, D1 remota o firma editorial. Los gates humanos permanecen abiertos.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 7 (certificación local parcial)
 
 - PR #193 integrada en `main@3fdc17cc`. Worker/D1 `0000–0033`, FK, autorización/revocación, bundle privacy, unitarias focales 81/81, QA 48 guías/9 rutas/4 viewports y consulta manual de licencias, typecheck, build, Drizzle y los workflows del PR pasan. Se actualizó la expectativa de CTA obsoleta en el E2E de licencias. Sin deploy/D1 remota.

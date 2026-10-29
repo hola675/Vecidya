@@ -407,6 +407,7 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
+| 2026-10-29 | Preparación de perfiles de aprendizaje y protocolo de revisión humana; auditoría local de contenido | EN CURSO / NO ES APROBACIÓN | Perfiles hipotéticos de cobertura, matriz de roles y auditoría inicial de seis guías gratuitas; `docs/TESTING.md` |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / aceptación editorial pendiente | PR #183 integrada; 48 guideId, 387 sectionId, revisión 1, clasificación 6/42; tests de catálogo y privacidad ejecutados; gratuidad aún provisional |
 | 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
@@ -419,6 +420,23 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
 | — | Fase 7 | EN CURSO — CERTIFICACIÓN LOCAL PARCIAL | Cierre requiere revisión de seguridad independiente, aceptación editorial de 6/42, política legal/operativa de retención, lector de pantalla y zoom 200 %; cualquier despliegue y migración remota conserva autorización específica |
+
+### Preparación local para revisión humana y auditoría editorial (2026-10-29)
+
+**Perfiles hipotéticos para probar cobertura, no personas entrevistadas ni evidencia de investigación:**
+
+- **Dueño/a de un negocio de una o dos personas:** trabaja desde el teléfono, tiene poco tiempo y no quiere comprar herramientas sin entender la tarea. Revisar lenguaje llano, costo/tiempo implícito y si el primer paso es realizable.
+- **Persona generalista que atiende operación digital:** actualiza perfiles, correo, formularios o mensajes además de su trabajo principal. Revisar límites, datos requeridos, mantenimiento y pasos de recuperación.
+- **Coordinador/a de un equipo pequeño:** asigna tareas y revisa el trabajo de varias personas. Revisar responsabilidades, permisos, transferencia y que una herramienta no se presente como solución al proceso.
+- **Responsable de varias sedes o entidades:** necesita consistencia sin mezclar datos ni asumir que todas las unidades tienen las mismas reglas. Revisar escalado, comparabilidad y límites de generalización.
+
+Estos perfiles son lentes de lectura redactados para representar la audiencia declarada en `docs/ROADMAP.md`; no sustituyen entrevistas ni representan identidades, tamaños de empresa o resultados observados. Accesibilidad se evalúa transversalmente y con participantes reales que usen las tecnologías asistivas relevantes.
+
+**Roles humanos a asignar por una persona autorizada:** (1) responsable editorial que toma la decisión final y no aprueba su propio texto; (2) especialista del tema para validar afirmaciones y acciones; (3) verificador/a de fuentes que confirma que cada referencia respalda la frase y sigue vigente; (4) revisión profesional de privacidad/legal cuando haya obligaciones o jurisdicción; (5) revisión de lectura/accesibilidad y, cuando se requiera aceptación, lector/a con experiencia de uso relevante. Un solo perfil no prueba competencia legal ni de accesibilidad. Se registran persona y función reales, competencia pertinente, guía y `contentRevision`, fecha, fuentes consultadas, hallazgos y resultado `ACEPTAR`, `REVISAR`, `RETENER` o `RECLASIFICAR`.
+
+**Límites de estado:** `editorialDraft` controla exposición de borradores; no registra por sí mismo identidad, fecha o alcance de una revisión. La aprobación editorial histórica del catálogo (PR #147) y el estado público del artículo no aprueban la selección de acceso 6/42. Toda modificación incrementa la revisión afectada; vuelve a requerir lectura humana antes de cerrar el gate. El acceso gratuito se confirma aparte por la persona responsable del producto.
+
+**Auditoría local RAN:** el catálogo contiene 48 guías, 6 categorías, 9 itinerarios, 387 secciones identificadas y 6 candidatas `always_free` (una por categoría). Los 48 artículos tienen resumen y referencias HTTPS (2–6 fuentes; sin URL vacía o esquema no HTTPS), y los ejemplos presentes están marcados hipotéticos. Ocho guías no tienen FAQ pese al criterio editorial vigente; sus slugs y revisión humana requerida se anotan en `docs/TESTING.md`. La auditoría focal de las seis candidatas encontró fuentes oficiales pertinentes, con tres grupos que necesitan nota de vigencia/jurisdicción: NIST Privacy Framework (1.1 todavía borrador), NIST AI RMF 1.0 (en revisión) e ICO (orientaciones de IA y PECR bajo revisión tras cambios legislativos). Se ajustaron localmente los alcances de esas referencias y la respuesta comercial de costos de IA para no prometer un fee mensual separado universal; ocho guías incrementan a `contentRevision: 2`. No se firma aprobación humana ni se cambia la clasificación 6/42. Las fuentes, límites y pendientes se registran en `docs/TESTING.md`.
 
 **Siguiente checkpoint:** resolver los gates abiertos de la Fase 7. Antes de producción deben aceptarse editorialmente las seis guías gratuitas y la clasificación 6/42, aprobarse retención/borrado de recibos y completarse las revisiones independientes de seguridad y accesibilidad. La validación de esta rama no implica despliegue ni migración D1 remota.
 
