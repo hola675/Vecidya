@@ -2574,3 +2574,33 @@ Estas decisiones no pueden darse por resueltas con documentación técnica.
 
 ## Changelog adicional
 - **1.45.0 / 2026-10-29:** ruta crítica consolidada de ocho entregables, política P0–P2, decisiones humanas abiertas y definición verificable de cierre documental. Sin implementación.
+
+## 54. TAX-G2 — inventario de procedencia del banco candidato (2026-10-29)
+**PLAN_ONLY. Inventario parcial verificado por lectura de fuentes, NO inventario exhaustivo de 77.** Fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`; `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`.
+
+### Fórmula de ensamblaje observada
+`REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` → `map(applyQA03BEditorialCopy)` → sustituir `q2_sector` por v4 → agregar 8 selectores `q2_niche_*` → agregar 6 preguntas del piloto → agregar 15 definiciones de recuperación wave2 → sustituir puertas genéricas y agregar 3 preguntas especializadas. **Las cifras 6/15/3 corresponden a elementos identificados en estos arreglos fuente, no al total final independientemente contado.** La fuente declara 77 preguntas únicas mediante aserciones; estas no se ejecutaron.
+
+### IDs identificados por familia
+| Familia | IDs identificados |
+| --- | --- |
+| Selectores generados (8) | `q2_niche_health_wellness`, `q2_niche_beauty_personal_care`, `q2_niche_financial_tax_insurance`, `q2_niche_home_services`, `q2_niche_automotive`, `q2_niche_food_hospitality`, `q2_niche_technology_software`, `q2_niche_b2b_services` |
+| Piloto (6) | `q2_startup_problem_clarity`, `q2_startup_validation_evidence`, `q2_startup_offer_readiness`, `q2_ecommerce_checkout_friction`, `q2_nonprofit_support_type`, `q2_nonprofit_donation_clarity` |
+| Recuperación wave2 (15) | `q2_startup_demand_signal`, `q2_ecommerce_cart_visibility`, `q2_ecommerce_cart_followup`, `q2_ecommerce_repeat_purchase`, `q2_hospitality_flow_type`, `q2_hospitality_reservation_noshow`, `q2_hospitality_peak_capacity`, `q2_b2b_qualification`, `q2_creator_channel_concentration`, `q2_nonprofit_membership_lifecycle`, `q2_local_repeat_customers`, `q2_service_area_clarity`, `q2_operations_process_ownership`, `q2_followup_status_visibility`, `q2_measurement_source_confidence` |
+| Especialización sustitutiva (3) | `q2_dental_care_continuation`, `q2_food_menu_visibility`, `q2_marketing_agency_scope_clarity` |
+| Definiciones nuevas observadas en bank.ts (7) | `q2_measurement_rate_estimate`, `q2_measurement_result_recording`, `q2_measurement_review_cycle`, `q2_operational_status`, `q2_buyer_recipient_relation`, `q2_digital_tools_in_use`, `q2_measurement_practice` |
+
+**Advertencia de conteo:** los siete IDs de `bank.ts` son parte de la base heredada en el ensamblaje; no sumarlos nuevamente al banco. Las familias anteriores pueden solaparse con reemplazos históricos; no inferir 39 preguntas distintas finales ni 77−39 pendientes sin resolver el ensamblaje.
+
+### Diferencias estructurales relevantes
+- Los selectores se construyen desde `NICHE_REGISTRY`; su número de opciones varía por sector. Por ello no se puede inventar un total de opciones desde el texto del ensamblaje.
+- Cada selector incluye `other` y `unknown`, y declara `evidenceMigration=pending`: clasificación, no evidencia de madurez.
+- `q2_sector` v4 añade `ecommerce`, `creator`, `b2b_services`, `nonprofit_community`; preserva las opciones `other` y `unknown`.
+- El banco candidato se declara aislado del flujo público y scorer; activar V9 exige contrato de banco/sesión/replay nuevo.
+- Las sustituciones especializadas modifican puertas de preguntas genéricas y agregan nuevas definiciones; no se puede certificar exclusividad dinámica solo por la estructura.
+
+### Trabajo que falta para declarar TAX-G2 completo
+Resolver los IDs de la base histórica importada, todas las opciones derivadas de `NICHE_REGISTRY` y lotes C/D/F, y todas las versiones finales tras spreads/reemplazos; producir tabla única de 77 filas y detalle por opción con SHA, migración, dimensión, estado y texto es/en. Auditar conteos independientemente y marcar ausencia de traducciones. Sin ello, **TAX-G2 permanece PARCIAL**.
+
+## Changelog adicional
+- **1.46.0 / 2026-10-29:** inventario verificable de procedencia, cinco familias de IDs, fórmula de ensamblaje y brechas explícitas para completar 77 preguntas. Solo documentación.
