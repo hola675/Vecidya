@@ -821,6 +821,60 @@ La política global de 20 documentos canónicos **no aplica a estos planes de de
 
 ---
 
+## 85. Contrato final de interpretación para agentes — control de ambigüedades
+
+**Finalidad:** convertir la reorganización temática en instrucciones inequívocas de implementación futura. Esta sección es de planificación; no habilita ejecución, merge ni deploy.
+
+### 85.1 Diccionario de términos y fronteras
+
+| Término | Significado único en este plan | No confundir con |
+|---|---|---|
+| `billing_account` | titular económico y agrupador de derechos/cargos | organización que recibe el servicio |
+| `organization` | negocio/tenant consumidor y propietario de contenido | cuenta de pago o subcuenta GHL |
+| `GHL location` | identificador externo vinculado explícitamente a organización | tenant Vecidya o fuente de permisos |
+| `license` | concesión contractual administrada por dominio comercial | snapshot publicado |
+| `entitlement` | decisión derivada y comprobable de derechos | segunda tabla de licencias autónoma |
+| `slot` | capacidad asignable de publicación del titular | número de revisiones o snapshots |
+| `draft` | revisión editable no pública | publicación activa |
+| `snapshot` | versión pública inmutable de MiniWeb | configuración mutable del editor |
+| `active pointer` | referencia versionada a snapshot servido públicamente | URL o contenido V1 |
+| `plan tier` | Cuadra/Barrio/Ciudad; presentación visual | permiso para más funcionalidades |
+| `template family` | una de cinco composiciones visuales V2 | módulo o sección V1 |
+| `P6A` | licencias manuales auditadas | pagos automáticos P6B |
+
+### 85.2 Matriz de dependencias con bloqueos reales
+
+| Hito | Depende de | Bloqueo previo a ejecutar | Evidencia para aceptar |
+|---|---|---|---|
+| Esquemas V2 | identidad, tenant y catálogo S01–S12 | revisar contrato de identidad actual | esquema versionado y casos inválidos |
+| Persistencia | esquema V2 | verificar D1/constraints/CAS | aislamiento, carrera y rollback focales |
+| Editor | persistencia | contratos de borrador y permisos | no publicación accidental |
+| Renderer | snapshots | política de sanitización y URL | solo contenido publicado, V1 intacto |
+| Horario V2 | esquema/renderer | semántica DST y excepciones | pruebas de calendario, cero V1 |
+| Variantes | editor/renderer | componentes nuevos y paridad | 45 capturas + VIS-01 |
+| Cupos/publicación | entitlements/persistencia | atomicidad y owner cross-org | carreras, revocación y compensación |
+| P6A | derechos/publicación | COM-01 solo para reglas comerciales que afecten lanzamiento | operaciones manuales y auditoría |
+| GHL CRM | mapeo de organización/licencia | credenciales, consentimiento y contrato externo | aprovisionamiento/reintento/conciliación |
+| P6B | ledger + PSP | PAY-01/BILL-02 y políticas legales | fuera del lanzamiento manual |
+
+**Orden de interpretación:** `aprobado` autoriza una decisión de diseño; `especificado` describe un contrato; `verificado` identifica una evidencia concreta; `implementado` exige código; `certificado` exige pruebas y gates; `publicado` exige comprobación HTTP fechada. Ninguno implica automáticamente el siguiente.
+
+### 85.3 Resolución de conflictos en el historial
+
+- **No seguir por número de sección**: la Parte A concentra contratos vigentes §§66–85; la Parte B conserva §§0–65 como trazabilidad histórica. La ausencia del identificador **§20** en la numeración histórica es una discontinuidad preexistente, no una fase omitida que deba inventarse.
+- **Propuestas antiguas vs decisiones nuevas:** prevalece la aprobación explícita más reciente para la misma cuestión. Si dos decisiones aprobadas parecen incompatibles, detener solo el ticket afectado y solicitar aclaración; no reinterpretar silenciosamente.
+- **§24 DEC-09 vs COM-01:** las reglas de suspensión anteriores no sustituyen las políticas comerciales aún pendientes de gracia/visibilidad; separar estados técnicos de decisiones comerciales.
+- **Anexos vs maestro:** anexos aportan detalle, no pueden reactivar V1, pagos P6B ni limitaciones funcionales por tier. Cualquier discrepancia se registra en el ticket y se decide contra las actas aprobadas.
+- **Planes vs gobernanza:** `plans/` no es catálogo de documentos rectores; los futuros agentes sí deben obedecer `AGENTS.md` y `GOVERNANCE.md` durante ejecución.
+
+### 85.4 Plantilla de instrucción a agentes
+
+`Implementa únicamente IMP-XX de §78, en su rama/worktree y PR de implementación según AGENTS.md; lee primero guía, §§66–85 y el anexo aplicable; coteja el código vigente; no reutilices V1 prohibido; presenta lista de archivos, contratos y pruebas focales antes de editar; no cambies decisiones pendientes; conserva compatibilidad y rollback; entrega diff, SHA, pruebas realmente ejecutadas, riesgos y gates humanos pendientes. No merges ni deploy sin autorización.`
+
+**Cierre de reestructuración:** orden temático, terminología, dependencias y reglas de precedencia quedan **DOCUMENTADOS**. La aptitud de handoff es documental; no equivale a autorización para iniciar IMP-01 ni a aceptación de VIS-01/SEC-QA/RELEASE.
+
+---
+
 # PARTE B — FUNDAMENTOS, DECISIONES PREVIAS Y TRAZABILIDAD
 
 Las secciones 0–65 conservan íntegramente su texto y numeración. Contienen decisiones aprobadas, diagnósticos y propuestas de etapas anteriores; antes de usar cualquier instrucción, cotejar con Parte A. El §67, incluido en Parte A por continuidad del registro, describe un checkpoint de código histórico retirado del alcance documental actual.
