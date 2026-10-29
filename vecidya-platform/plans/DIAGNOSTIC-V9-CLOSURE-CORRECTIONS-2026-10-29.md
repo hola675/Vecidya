@@ -49,3 +49,14 @@ En `qa03b/bank.ts` (blob `b4772d73e1d8b5044ba2011088db978c364097f0`) se identifi
 
 ### Changelog
 - 1.2.0 (2026-10-29): procedimiento de inventario y advertencia sobre conteos parciales de `bank.ts`.
+
+## Rectificación de referencia canónica del banco — v1.3.0
+
+**Corrección:** el objetivo editorial NO es reconstruir el banco histórico V8. La fuente unificada candidata V9 ya existe: `QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2` en `app/features/diagnostic/qa03b/specialty-branches-wave1.ts` (blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`). Su ensamblaje parte de `QA03B_SPECIALTY_CANDIDATE_BANK_V1` (blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`), aplica exclusiones de genéricas y añade tres preguntas especializadas. El archivo declara aserciones runtime de longitud 77 y 77 IDs únicos. Estas aserciones fueron inspeccionadas, NO ejecutadas.
+
+**Regla de auditoría desde ahora:** usar los 77 IDs de este candidato V9 como universo de referencia para revisión editorial, identidad, elegibilidad y evidencia; usar V8/lotes anteriores solo como procedencia histórica y para compatibilidad, nunca como sustituto del banco V9. No inferir que el banco candidato ya está desplegado, que toda pregunta fue aprobada, o que todas las rutas están certificadas. La expansión de preguntas continúa permitida si se demuestra hueco y se conserva el límite 24+5.
+
+**Corrección de TAX-G2:** el trabajo pendiente es materializar la ficha trazable de los 77 IDs del banco candidato V9 y validar sus rutas, no redescubrir si existe un banco unificado. La afirmación anterior de que no existía un banco unificado verificado era imprecisa.
+
+### Changelog
+- 1.3.0 (2026-10-29): referencia canónica al banco unificado candidato V9 y separación explícita respecto a V8.
