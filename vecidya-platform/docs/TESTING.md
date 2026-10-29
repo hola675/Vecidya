@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — entitlement y privacidad del cuerpo (2026-10-29)
+
+Checkpoint local de Fase 2. **RAN 2026-10-29:** `learn-entitlement.test.ts` **6/6 PASS**; `pnpm run test:e2e:learn-entitlement` **PASS** contra Worker Wrangler + D1 aislada, cadena desde migraciones limpias hasta `0031`, preview sin cuerpo, owner/admin, licencia/lifecycle, acceso multiorganización, CSRF, grants/revocación idempotentes, auditoría, cascada y `PRAGMA foreign_key_check` vacío. `pnpm run test:e2e:aprende-public` **PASS** con Worker de desarrollo sin `BETTER_AUTH_SECRET`: 48 guías/48 respuestas, canonical, catálogo, 6 categorías, 9 itinerarios, preview sin encabezados protegidos y viewports 320/390/768/1366. `pnpm run test:aprende-bundle` **PASS** (110 assets, 2,074 fragmentos protegidos); `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El build reporta secretos locales requeridos ausentes y avisos preexistentes de imports dinámicos/sourcemap; no se leyeron secretos. D1 temporal eliminada y verificada al terminar. Sin consulta/escritura D1 remota ni deploy.
+
 ## APRENDE-PLAN-V1 — identidad editorial y catálogo público (2026-10-28)
 
 `learn-publication-boundary.test.ts`: **7/7 PASS**; verifica la distribución provisional 6/42, unicidad de 48 guideId y 387 sectionId, revisiones positivas y DTO sin cuerpo. `pnpm run test:e2e:aprende-public` **PASS** con 48 guías, 6 categorías, 9 itinerarios y viewports 320/390/768/1366. `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El runner requirió `BASE_URL=http://127.0.0.1:5173` porque `localhost` resolvió a IPv6 mientras el servidor estaba enlazado a loopback IPv4. No se certifica acceso protegido: el loader de artículo conserva su comportamiento vigente y la clasificación aún es metadata editorial.

@@ -48,6 +48,8 @@ export default [
     "api/organizations/:organizationId/invitations",
     "routes/api-organization-invitations.ts",
   ),
+  route("api/organizations/:organizationId/learn-access", "routes/api-organization-learn-access.ts"),
+  route("api/organizations/:organizationId/learn-access/grants/:memberId", "routes/api-organization-learn-access.ts", { id: "api-organization-learn-access-grant" }),
   route(
     "api/organizations/:organizationId/business-profile",
     "routes/api-business-profile.ts",

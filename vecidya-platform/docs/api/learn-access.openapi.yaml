@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: API de permisos Aprende
+  version: 1.0.0
+  description: >-
+    Contrato para que un owner gestione los grants de acceso Aprende de miembros
+    de su organización. La licencia y el lifecycle se vuelven a comprobar en
+    cada solicitud de contenido protegido; un grant por sí solo no concede acceso.
+    El contrato describe el checkpoint local y no acredita que esté publicado.
+servers:
+  - url: /
+    description: Origen de la aplicación cuando este contrato se publique.
+paths:
+  /api/organizations/{organizationId}/learn-access:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+    get:
+      operationId: listOrganizationLearnAccessGrants
+      summary: Listar grants Aprende de la organización
+      description: Requiere sesión y membresía owner en la organización indicada. No expone miembros ni grants de otras organizaciones.
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Lista de grants activos. No incluye datos de usuario ni de otras organizaciones.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [grants]
+                properties:
+                  grants:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LearnAccessGrant'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+  /api/organizations/{organizationId}/learn-access/grants/{memberId}:
+    parameters:
+      - $ref: '#/components/parameters/OrganizationId'
+      - name: memberId
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 128 }
+    put:
+      operationId: grantOrganizationLearnAccess
+      summary: Conceder acceso Aprende a un miembro
+      description: >-
+        Solo el owner de la organización puede concederlo. La mutación requiere
+        Origin igual al origen del servidor. El destinatario debe
+        ser miembro actual no-owner de la misma organización y esta debe tener
+        lifecycle active. La operación es idempotente y queda auditada.
+      security:
+        - sessionCookie: []
+      responses:
+        '204': { description: Grant creado o ya vigente. }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+    delete:
+      operationId: revokeOrganizationLearnAccess
+      summary: Revocar acceso Aprende de un miembro
+      description: >-
+        Solo el owner de la organización puede revocarlo. La mutación requiere
+        Origin igual al origen del servidor. La revocación es idempotente, queda
+        auditada y se aplica en la siguiente solicitud de contenido.
+      security:
+        - sessionCookie: []
+      responses:
+        '204': { description: Grant eliminado o ya ausente. }
+        '400': { $ref: '#/components/responses/InvalidRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '500': { $ref: '#/components/responses/ServerError' }
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: better-auth.session_token
+  parameters:
+    OrganizationId:
+      name: organizationId
+      in: path
+      required: true
+      schema: { type: string, minLength: 1, maxLength: 128 }
+  schemas:
+    LearnAccessGrant:
+      type: object
+      required: [memberId, grantedAt]
+      properties:
+        memberId: { type: string }
+        grantedAt: { type: string, format: date-time }
+  responses:
+    InvalidRequest:
+      description: Identificador de miembro inválido.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Se requiere una sesión vigente.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Origin no permitido, actor sin rol owner, destino de otra organización o destino no elegible.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ServerError:
+      description: No se pudo completar la operación.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }

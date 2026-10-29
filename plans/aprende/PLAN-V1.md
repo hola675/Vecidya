@@ -1,8 +1,8 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN PARCIAL DE FASE 1 · **Propietario de ejecución:** agente designado por el usuario.
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN DE FASES 1–2 EN CURSO · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
-**Alcance de este checkpoint:** únicamente documentación en `plans/`; no modificar código, D1, contratos comerciales, licencias ni producción.
+**Alcance original de planificación:** únicamente documentación en `plans/`. La implementación posterior fue autorizada por el usuario y se ejecuta en checkpoints de aplicación aislados; no implica autorización de deploy ni cambios D1 remotos.
 
 > **Fuente y niveles de certeza.** `APROBADO`: decisiones del usuario en la conversación de diseño. `CODE`: archivos inspeccionados en la rama predeterminada el 2026-10-28. `DOC`: estado descrito en documentos del repositorio, no revalidado por ejecución. `PROPUESTA`: diseño técnico por validar antes de implementarse. No confundir propuesta con función disponible.
 
@@ -10,9 +10,9 @@
 
 **Cómo interpretar las marcas:** `[x]` = completado con evidencia del alcance indicado; `[~]` = documentado, pero pendiente de validación o decisión; `[ ]` = no iniciado; `[!]` = bloqueo que impide activar el siguiente paso. **Documentado no significa implementado, probado ni desplegado.**
 
-**Fuentes de certeza:** `APROBADO` = decisión del usuario; `CODE` = inspección estática de archivos; `DOC` = documentación no revalidada; `PROPUESTA` = criterio por aprobar o comprobar; `TEST` = resultado de prueba ejecutada (no hay resultados TEST nuevos en este plan).
+**Fuentes de certeza:** `APROBADO` = decisión del usuario; `CODE` = inspección estática de archivos; `DOC` = documentación no revalidada; `PROPUESTA` = criterio por aprobar o comprobar; `TEST` = resultado ejecutado y fechado en §17 o en `docs/TESTING.md`.
 
-**Resumen de avance por alcance, a 2026-10-28:**
+**Resumen de avance por alcance, a 2026-10-29:**
 
 | Tramo | Estado | Criterio de cierre |
 | --- | --- | --- |
@@ -20,9 +20,9 @@
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
 | Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
-| Fase 1 — identidad editorial y DTOs seguros | [~] Parcial: DTO allowlist y búsqueda solo por metadatos | Faltan IDs/revisiones, cierre editorial y pruebas de filtración del cuerpo protegido |
-| Fase 2 — licencias y grants | [ ] Sin implementación | Tests de entitlement y revocación |
-| Fase 3 — catálogo, previews y retorno | [ ] Sin implementación | QA pública segura |
+| Fase 1 — identidad editorial y DTOs seguros | [~] Implementación integrada; validación editorial pendiente | PR #183 aporta manifest/DTOs; cierre editorial 6/42 pendiente |
+| Fase 2 — licencias y grants | [~] Implementado localmente, PR en preparación | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; no integrado/publicado |
+| Fase 3 — catálogo, previews y retorno | [~] Preview mínima de cuerpo licenciado en el checkpoint F2 | Falta el flujo UX completo de catálogo y retorno seguro |
 | Fase 4 — progreso y favoritos D1 | [ ] Sin implementación | Tests de persistencia personal |
 | Fase 5 — sincronización y anonimato | [ ] Sin implementación | Tests de concurrencia e importación |
 | Fase 6 — itinerarios y UX | [ ] Sin implementación | QA accesible móvil |
@@ -408,13 +408,14 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
-| 2026-10-28 | Fase 1: DTO allowlist, clasificación provisional e identidad editorial | EN PROGRESO / PARCIAL | PR #183 y checkpoint en curso; manifiesto CODE de 48 guideId, 387 sectionId, revisión 1 y clasificación 6/42; prueba focal 7/7 y QA público, typecheck/build PASS; sin guard ni publicación |
+| 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / aceptación editorial pendiente | PR #183 integrada; 48 guideId, 387 sectionId, revisión 1, clasificación 6/42; tests de catálogo y privacidad ejecutados; gratuidad aún provisional |
+| 2026-10-29 | Fase 2: entitlement y grants owner-only | IMPLEMENTADA LOCALMENTE / no integrada | Migración `0031`, OpenAPI, APIs de grants y guard de artículo; unit 6/6, Worker+D1, bundle, typecheck/build/diff-check PASS; sin D1 remota ni deploy |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Resto de Fase 1 y fases 2–7 | NO INICIADAS | validación editorial y gates de cada fase pendientes |
+| — | Fases 3–7 | NO INICIADAS | el preview inicial de F2 no sustituye el catálogo UX, progreso, sync, itinerarios ni certificación final |
 
-**Siguiente checkpoint:** validar el manifiesto con pruebas, completar pruebas de no filtración del cuerpo y resolver el cierre editorial de gratuidad antes de considerar Fase 1 terminada. Conservar el acceso público vigente hasta que el guard de licencia esté implementado y certificado. Fases posteriores y cualquier despliegue mantienen sus gates independientes.
+**Siguiente checkpoint:** revisar y enviar el PR F2; después implementar F3, incluyendo retorno seguro tras login/activación y QA pública. La selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha publicado ni aplicado la migración de forma remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
