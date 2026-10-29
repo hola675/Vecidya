@@ -43,4 +43,27 @@ describe("MiniWeb V2 independent hours and opt-in import", () => {
     expect(() => importPublishedV1ToV2({ publicationId: " " }, "vecidya-default", "base"))
       .toThrow("source_publication_required");
   });
+  it("rejects unsorted overlaps and invalid timezones", () => {
+    const days = Array.from({ length: 7 }, (_, day) => ({
+      day: day as 0 | 1 | 2 | 3 | 4 | 5 | 6,
+      closed: day !== 1,
+      intervals: day === 1 ? [
+        { opens: "11:00", closes: "14:00" },
+        { opens: "09:00", closes: "12:00" },
+      ] : [],
+    }));
+    const errors = validateV2Hours({ timezone: "Invalid/Zone", note: "", days });
+    expect(errors).toContain("overlapping_intervals");
+    expect(errors).toContain("invalid_timezone");
+  });
+
+  it("requires seven explicit days and an interval for an open day", () => {
+    const errors = validateV2Hours({
+      timezone: "America/Bogota", note: "",
+      days: [{ day: 1, closed: false, intervals: [] }],
+    });
+    expect(errors).toContain("seven_days_required");
+    expect(errors).toContain("open_day_requires_interval");
+  });
+
 });
