@@ -73,3 +73,16 @@ El ensamblaje de `QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2` es: (1) `QA03B_EDITO
 
 ### Changelog
 - 1.4.0 (2026-10-29): composición del banco V9 fijada como contrato de auditoría e identidad.
+
+## TAX-G2 — matriz editorial ya existente: contrato de utilización (v1.5.0)
+
+Fuente: `qa03b/v9-editorial-review-matrix.ts`, blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`.
+
+**Hallazgo:** ya existe `buildCandidateEditorialMatrixV9()`, que construye `buildEditorialMatrixV9(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2)`. Por tanto, la auditoría de 77 preguntas debe **aprovechar esta matriz**, no crear otra paralela ni volver al banco V8. El archivo también expone `buildEditorialReviewBatchesV9`, `listHighPriorityEditorialQuestionsV9`, `buildHighPriorityEditorialReportV9`, `auditMissingEvidenceDimensionsV9` y `groupMissingEvidenceByDimensionV9`.
+
+Las notas editoriales explícitas son cuatro `copy_revised` (`q2_monetization`, `q2_regularity`, `q2_buyer_recipient_relation`, `q2_reputation_flow`) y cuatro `needs_semantic_review` (`q2_demand_trend`, `q2_capacity_signal`, `q2_food_menu_visibility`, `q2_ecommerce_cart_followup`). **El resto no debe considerarse aprobado**: el tipo por defecto es `pending_human_review` y el archivo advierte que no tener alertas no equivale a revisión cognitiva humana.
+
+**Cierre TAX-G2 pendiente:** producir un artefacto legible con las 77 filas, todas sus opciones y flags usando la matriz existente; verificar contra banco unificado y registrar evidencia de salida. La mera existencia de la función no acredita ejecución ni resultados. Después resolver los ocho casos señalados, priorizar faltantes reales de evidencia y contrastar C01–C10, con aprobación humana antes de activar.
+
+### Changelog
+- 1.5.0 (2026-10-29): reutilización de la matriz editorial V9 ya implementada; clasificación de ocho notas explícitas sin atribuir aprobación a las restantes.
