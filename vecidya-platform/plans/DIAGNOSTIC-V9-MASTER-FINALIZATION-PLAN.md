@@ -1674,3 +1674,76 @@ D-V9-001 a D-V9-027 APPROVED en sus alcances respectivos. D-V9-028 PENDING; plaz
 
 ## Changelog adicional
 - **1.27.0 / 2026-10-29:** D-V9-027 aprobada; continuidad anónima en mismo dispositivo, privacidad, caducidad pendiente, ocho tareas PLAN-RES01–08, dieciséis criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 36. Decisión D-V9-028 — retención de siete días desde el último guardado válido (aprobada 2026-10-29)
+**Aprobación expresa:** «conservación temporal del diagnóstico anónimo incompleto durante 7 días desde el último guardado válido, con caducidad y eliminación según política de privacidad». Estado APPROVED como política de producto; exclusivamente PLAN_ONLY.
+
+### 36.1. Contrato de retención y caducidad
+1. El borrador de una entrevista anónima **incompleta** podrá reanudarse en el mismo dispositivo compatible durante **7 días desde el último guardado válido**.
+2. «Guardado válido» deberá definirse como una persistencia **confirmada** de cambios sustantivos del estado de la entrevista (por ejemplo, respuesta, omisión o preferencia de avance modificada); no basta una animación, lectura, navegación, recarga, apertura de página o intento de guardado fallido.
+3. Cada nuevo guardado válido **renueva el vencimiento** a siete días desde ese evento confirmado; no existe renovación silenciosa por mera visita.
+4. El plazo debe medirse mediante marcas temporales verificables, con tratamiento explícito de relojes alterados, husos horarios, suspensión del dispositivo y estado offline. El método exacto de comprobación depende de la arquitectura por aprobar.
+5. Vencido el plazo, el borrador **no debe poder reanudarse**. La limpieza de datos deberá ejecutarse según la arquitectura y política de privacidad, diferenciando eliminación lógica, física y posibles copias de respaldo; no prometer borrado inmediato universal sin garantía.
+6. Permitir **eliminación voluntaria** del borrador antes de los siete días, con aviso claro de alcance y confirmación proporcionada.
+7. Informar al usuario de que el guardado es temporal, de su duración, del dispositivo compartido y de cómo descartar el progreso; ofrecer mensajes es/en accesibles.
+8. Una reanudación válida restaura respuestas, hitos, ruta, preferencias, contador 24+5 y consentimiento aplicable, sin duplicar preguntas ni prolongar el plazo por la mera reanudación.
+9. El guardado y la expiración **no exigen cuenta**, no habilitan seguimiento comercial ni vinculan automáticamente el borrador a GHL.
+10. Una evaluación **finalizada** y su resumen/informe se rigen por la política de resultados y reclamación D-V9-005; no extender automáticamente la retención de borradores incompletos a datos de resultados.
+11. Si la persistencia falla, no declarar «guardado» ni reiniciar el vencimiento. Si el estado es corrupto o incompatible, explicar la limitación y ofrecer salida segura sin inventar respuestas.
+12. La implementación futura deberá aprobar antes almacenamiento, seguridad, minimización, jurisdicción, política de privacidad y mecanismo de limpieza; esta decisión **no certifica** una arquitectura concreta.
+
+### 36.2. Ejemplos de comportamiento esperados
+| Evento | ¿Renueva 7 días? | Condición |
+| --- | --- | --- |
+| Respuesta guardada y confirmada | Sí | Persistencia válida |
+| Omisión registrada y guardada | Sí | Cambio sustantivo confirmado |
+| Preferencia manual/contextual modificada y guardada | Sí | Estado realmente persistido |
+| Abrir página o reanudar sin cambios | No | No es nuevo guardado |
+| Cambiar idioma sin guardar estado nuevo | No | Solo presentación |
+| Animación, progreso visual o lectura | No | No son cambios de borrador |
+| Guardado fallido | No | No hay confirmación |
+| Borrador vencido | No | No se reactiva por abrirlo |
+| Descartar voluntariamente | No | Revoca continuidad y solicita limpieza |
+La clasificación de eventos requiere contrato técnico verificable antes de implementar.
+
+### 36.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-TTL01 | Auditar persistencia y limpieza de borradores actuales V9/QBV2 | Inventario de archivos, eventos y SHA | No asumir almacenamiento |
+| PLAN-TTL02 | Definir evento de guardado válido y confirmación | Tabla de eventos, errores e idempotencia | Sin renovación silenciosa |
+| PLAN-TTL03 | Especificar vencimiento móvil de siete días y tratamiento de reloj/offline | Contrato temporal y casos límite | Seguridad y privacidad |
+| PLAN-TTL04 | Comparar alternativas de almacenamiento y eliminación | Matriz de riesgo, cifrado, backups y límites | Aprobación técnica pendiente |
+| PLAN-TTL05 | Diseñar avisos, descarte, vencimiento y reanudación es/en | Flujos UX y microcopy certificado | Accesibilidad |
+| PLAN-TTL06 | Separar borrador incompleto de resultados/reclamo D-V9-005 | Matriz de ciclos de vida y permisos | Sin vinculación comercial |
+| PLAN-TTL07 | Definir restauración idempotente de 24+5, hitos y preferencia | Contrato conceptual de estado | Sin doble conteo |
+| PLAN-TTL08 | Preparar pruebas focalizadas futuras de caducidad y borrado | Matriz tiempo×evento×estado×resultado | No ejecutar en PLAN_ONLY |
+
+### 36.4. Criterios de aceptación futuros
+1. Guardado confirmado establece vencimiento siete días después.
+2. Nuevo guardado válido actualiza el vencimiento a siete días desde ese evento.
+3. Abrir o reanudar sin cambios no renueva la caducidad.
+4. Una animación o cambio meramente visual no renueva el plazo.
+5. Guardado fallido no se presenta como éxito ni cambia vencimiento.
+6. Un borrador vigente se reanuda en el mismo dispositivo compatible sin cuenta.
+7. Al vencerse, el borrador no se puede recuperar como sesión activa.
+8. Abrir un borrador vencido no lo reactiva.
+9. El usuario puede descartarlo antes del vencimiento.
+10. Los mensajes distinguen eliminación del dispositivo de eliminación remota cuando corresponda.
+11. Reloj alterado o estado offline no habilita retención indefinida.
+12. Reanudación conserva contador 24+5, hitos y preferencia de avance.
+13. Consentimiento de extensión no se presume al recuperar un estado inválido.
+14. Cambio de idioma mantiene la semántica y no genera guardado ficticio.
+15. Dispositivo compartido recibe advertencia clara y controles de descarte.
+16. El ciclo de vida del borrador no determina automáticamente la retención del informe final.
+17. No se exige GHL, CRM ni cuenta para reanudar.
+18. La arquitectura concreta y las garantías de borrado se validan antes de prometerlas.
+
+### 36.5. Próxima decisión D-V9-029 — dónde persistir el borrador anónimo
+Alternativas por aprobar: **A** almacenamiento local en el navegador, sin respaldo de servidor para borradores (simplicidad, riesgo en dispositivos compartidos y limpieza de navegador); **B** borrador cifrado del lado del servidor con identificador temporal en el dispositivo (más control de expiración, mayores obligaciones de seguridad); **C** enfoque híbrido con estado mínimo local y borrador remoto protegido (más complejidad). **Recomendación provisional: A**, condicionada a minimizar datos sensibles y a una evaluación de seguridad/privacidad. Ninguna alternativa está aprobada; no asumir cifrado ni borrado remoto hasta especificarlo.
+
+### 36.6. Estado
+D-V9-001 a D-V9-028 APPROVED en sus alcances respectivos. D-V9-029 PENDING; arquitectura de almacenamiento y limpieza PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.28.0 / 2026-10-29:** D-V9-028 aprobada; retención móvil de siete días desde guardado válido, tabla de eventos, ocho tareas PLAN-TTL01–08, dieciocho criterios de aceptación y siguiente decisión. Solo documentación.
