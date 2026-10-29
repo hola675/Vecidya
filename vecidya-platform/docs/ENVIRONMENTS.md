@@ -1,3 +1,7 @@
+# Entornos y versión candidata 0.9.1 (2026-10-29; no publicada)
+
+La rama principal integrada fija `package.json` en `0.9.1` para el siguiente release correctivo de seguridad/accesibilidad. PR #201 (`407f1cf3268798214bc8c20ef99887f57a1ea914`) está integrada. CI: typecheck/build/unitarias, bundle, regresión Aprende/Diagnóstico y Worker local PASS. El usuario confirma prueba/aprobación con NVDA y zoom 200 %; faltan los metadatos de navegador, lector y viewport, y esto no declara conformidad WCAG. No se desplegó esta candidata, no se aplicaron migraciones ni se modificó D1 remota. No existe comprobación HTTP que la califique como publicada.
+
 # Entornos y release de producción 0.9.0 (2026-10-28)
 
 ## Release de producción 0.9.0 — publicado

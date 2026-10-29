@@ -1,6 +1,12 @@
+## 0.9.1 — candidata local (2026-10-29; no publicada)
+
+- Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.
+- El usuario confirma que la prueba manual con NVDA y zoom 200 % fue ejecutada y aprobada. Se conserva como aceptación humana; no es certificación WCAG y los datos de navegador/lector/viewport no se registraron.
+- La retención 90/30 continúa como propuesta aceptada operativamente, pendiente de validación legal/privacidad/costo; no se implementó purga de recibos. Sin D1 remota ni deploy.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — revisión local de seguridad y accesibilidad
 
-- Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; pnpm audit --prod --json quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché; el E2E Worker terminó con ECONNRESET y debe repetirse. La propuesta de retención 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purge implementado. Se añadió pauta manual NVDA/zoom 200 %, aún no ejecutada. Sin deploy ni D1 remota.
+- Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; `pnpm audit --prod --json` quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché. La CI final del PR #201 pasó la certificación del Worker. La propuesta 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purga implementada. El usuario confirma que la pauta NVDA/zoom 200 % fue ejecutada y aprobada. Sin deploy ni D1 remota.
 
 # Changelog
 
