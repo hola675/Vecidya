@@ -1,3 +1,7 @@
+## APP-MINI-V2C — política visual aislada (2026-10-29)
+
+**CODE/GIT:** rama `feat/app-mini-v2c-visual-entitlements`, basada en main `67c2d1f`. Política pura de acceso Base/Pro/Premium por propietario de facturación con máximo tier activo. No consulta ni modifica facturación, GHL, D1, editor o publicación. **TEST:** cinco pruebas focales añadidas, pendientes de ejecución/certificación. V2A/V2B siguen en PR independientes.
+
 # Estado de implementación
 
 ## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
