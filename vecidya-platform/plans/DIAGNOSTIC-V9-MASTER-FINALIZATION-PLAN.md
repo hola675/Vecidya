@@ -605,3 +605,47 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbri
 
 ## Changelog adicional
 - **1.10.0 / 2026-10-29:** D-V9-009 aprobada; estados y reglas de objetivos, tareas PLAN-G01–G08, casos de aceptación y próxima decisión. Exclusivamente documentación.
+
+
+## 18. Decisión D-V9-010 — conclusiones con explicación breve (aprobada 2026-10-29)
+**Aprobación expresa:** «conclusiones con explicación breve». Estado APPROVED para presentación del producto; NO autoriza código ni implica aprobar la opción B o C de la consulta.
+
+### 18.1. Contrato de transparencia para el usuario
+- Cada conclusión visible debe incluir una explicación breve, concreta y comprensible de por qué importa para la madurez digital del negocio, con lenguaje apropiado al contexto y etapa.
+- Si una conclusión carece de sustento suficiente, comunicar el límite de evidencia; no inventar una causa, una puntuación ni un nivel de certeza.
+- El resumen anónimo (D-V9-005) mantiene un alcance resumido. El informe autenticado puede ofrecer más dimensiones, prioridades y acciones, pero sus **conclusiones siguen acompañadas de explicaciones breves**, no de un explorador de evidencias o de fórmulas técnicas.
+- Las prioridades de acciones (D-V9-006) requieren explicación legible del motivo de su orden; no es necesario mostrar pesos ni cálculos al usuario.
+- Evitar lenguaje categórico, juicios sobre el negocio o promesas de resultados; distinguir hecho observado de interpretación en la redacción.
+- No agregar por defecto paneles de evidencia desplegable, trazabilidad técnica completa, visualización de reglas o edición de respuestas desde el informe. Ninguna de esas funciones quedó aprobada por D-V9-010.
+
+### 18.2. Trazabilidad interna sin exposición pública
+Para auditoría y certificación futuras, mantener especificación de correspondencia entre conclusión, evidencia aplicable, estado de incertidumbre, reglas, versión de banco y versión de evaluación. Es un requisito interno de verificabilidad, no una autorización para mostrar datos privados ni para persistir información adicional sin contrato de privacidad aprobado. Cualquier mecanismo de rectificación de respuestas o nueva evaluación debe especificarse como flujo separado y someterse a aprobación, sin inferirlo de D-V9-010.
+
+### 18.3. Tareas documentales para el futuro agente
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-T01 | Definir plantilla editorial de conclusión y explicación breve | Guía de microcopy con ejemplos por nivel, etapa y sector | Claridad sin causalidad inventada |
+| PLAN-T02 | Definir representación concisa de incertidumbre y no aplicabilidad | Diccionario de mensajes y casos límite | No convertir desconocido en negativo |
+| PLAN-T03 | Mapear conclusiones a evidencias y reglas internamente | Contrato de trazabilidad versionado y minimización de datos | No exponer datos sensibles |
+| PLAN-T04 | Diseñar diferencias entre resumen anónimo e informe con cuenta | Dos ejemplos completos basados en un mismo resultado | Consistencia con D-V9-005 |
+| PLAN-T05 | Revisar accesibilidad, longitud y legibilidad de explicaciones | Criterios editoriales y casos C01–C10 | Comprensible sin jerga |
+| PLAN-T06 | Especificar pruebas focalizadas futuras de consistencia, incertidumbre y privacidad | Matriz entrada→conclusión→explicación esperada | Sin ejecutar pruebas en PLAN_ONLY |
+
+### 18.4. Criterios de aceptación futuros
+1. Cada conclusión mostrada posee una explicación breve pertinente.
+2. Una conclusión con evidencia parcial expresa incertidumbre sin puntuación injustificada.
+3. Dos resultados equivalentes bajo las mismas reglas no reciben explicaciones contradictorias.
+4. Negocio preoperativo: no se describe falta de ventas como fracaso digital.
+5. Organización sin ventas: no se usan justificaciones comerciales inaplicables.
+6. Resumen anónimo: no filtra evidencias reservadas del informe autenticado.
+7. Informe autenticado: no expone reglas técnicas ni respuestas completas como interfaz predeterminada.
+8. La trazabilidad interna permite investigar una conclusión sin cambiarla por motivos comerciales.
+
+### 18.5. Próxima decisión D-V9-011 — estructura del plan de acción
+Determinar cómo agrupar recomendaciones: (A) lista única ordenada por prioridad; (B) etapas temporales orientativas (ahora, después, más adelante) con dependencias y sin plazos inventados; (C) hoja de ruta por objetivos con prioridades dentro de cada objetivo y acciones transversales. La recomendación de diseño será B, pero no está aprobada. La elección no sustituye el ranking multicriterio D-V9-006.
+
+### 18.6. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbrido APPROVED; D-V9-004 adaptativo 24 APPROVED; D-V9-005 resumen anónimo/informe con cuenta APPROVED; D-V9-006 prioridades multicriterio APPROVED; D-V9-007 Aprende contextual+biblioteca opcional APPROVED; D-V9-008 servicios Vecidya contextuales+sección independiente APPROVED; D-V9-009 objetivos opcionales+sugerencias+confirmación APPROVED; D-V9-010 explicaciones breves APPROVED; D-V9-011 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.11.0 / 2026-10-29:** D-V9-010 aprobada según opción A; presentación breve, trazabilidad interna no pública, tareas PLAN-T01–T06, criterios de aceptación y siguiente decisión. Solo documentación.
