@@ -88,3 +88,16 @@ Los tipos anteriores son contrato conceptual, no firmas listas para importar. El
 | V2-F | QA visual focal 3×3 y accesibilidad | Sin overflow, CTA, teclado, capturas comparadas |
 
 **Puerta de entrada:** aprobar visualmente prototipo HTML y ejecutar su test focal. **No incluir** CI global, cambios de precios, integración GHL, pagos ni despliegue en estos PRs.
+
+
+## 6. Adenda de precedencia y checkpoints vigentes (2026-10-29)
+
+Esta adenda corrige la secuencia de la §5 **sin reescribir el registro histórico**: los PR reales son V2-A (#188), V2-B (#189), V2-C (#191), V2-D (#194, lector de licencias D1). El **renderer de composición** se denomina desde ahora **V2-E**, el selector/editor **V2-F** y la certificación visual **V2-G**. Los cuatro PR están certificados individualmente y listos para revisión, **no fusionados ni integrados**.
+
+**DEC-17 prevalece:** Mi Vecidya, /internal y el editor se operan en tableta/escritorio; MiniWeb pública es responsive móvil/tableta/escritorio. Las menciones antiguas a edición móvil no autorizan implementarla.
+
+**DEC-18 prevalece:** todos los módulos técnicamente soportados deben poder usarse con Cuadra; Base/Pro/Premium solo diferencian composición visual. **CAT-01 sigue pendiente:** extender Base a todas las familias para Cuadra requiere resolver expresamente la distribución de claves de DEC-12. No alterar el registro de licencias por suposición.
+
+**DEC-15 prevalece:** snapshots y medios históricos referenciados no se eliminan automáticamente en la primera versión. La política de GC futuro necesita aprobación independiente.
+
+**Integración segura:** el lector D1 solo devuelve licencias de un billing_account; el llamador debe resolver y autorizar la identidad y la organización en servidor antes de usarlo. Nunca confiar en el ID suministrado por el navegador. La política pura de entitlements y el reader son piezas separadas hasta integración con rutas reales y pruebas cross-tenant.
