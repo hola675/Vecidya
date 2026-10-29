@@ -1062,3 +1062,66 @@ D-V9-001 a D-V9-017: APPROVED en sus alcances respectivos. D-V9-018 PENDING. Tax
 
 ## Changelog adicional
 - **1.18.0 / 2026-10-29:** D-V9-017 aprobada; repreguntas solo por evidencia crítica, abstención de nivel, nueve tareas PLAN-EV01–09, catorce criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 26. Decisión D-V9-018 — objetivo 24 interacciones y extensión excepcional consentida (aprobada 2026-10-29)
+**Aprobación expresa:** «objetivo de 24 interacciones y extensión excepcional acotada solo con consentimiento explícito del usuario». Estado APPROVED como política de producto; exclusivamente PLAN_ONLY. No se ha aprobado un número concreto de preguntas adicionales.
+
+### 26.1. Reglas de experiencia y consentimiento
+1. La entrevista adaptativa apunta a completarse en **hasta 24 interacciones** en condiciones ordinarias, sin rellenar ese objetivo artificialmente ni sacrificar suficiencia de evidencia.
+2. Al llegar al objetivo, si falta evidencia crítica resoluble, el sistema debe **detener la continuación automática**, explicar brevemente el vacío y pedir consentimiento explícito antes de realizar preguntas adicionales.
+3. El consentimiento debe ser una acción afirmativa inequívoca, específica para la extensión de entrevista; silencio, cierre, navegación o consentimiento general de cuenta no lo sustituyen.
+4. La extensión será **excepcional y acotada**; el número máximo, la unidad exacta de interacción, el alcance de un consentimiento y las condiciones de una segunda solicitud quedan **PENDING** de decisión y diseño. No inferir autorización ilimitada.
+5. Si el usuario rechaza, retira consentimiento o abandona, terminar o suspender conforme al flujo definido sin asignar nivel a dimensiones con evidencia insuficiente (D-V9-017). Las conclusiones de dimensiones con evidencia suficiente permanecen válidas.
+6. Solo preguntar por evidencia crítica pendiente, con preguntas certificadas y no redundantes; nunca extender por motivos comerciales, curiosidad editorial, objetivos no confirmados o para llenar una cuota.
+7. Mostrar de manera comprensible la razón de la extensión y la opción de finalizar con la información disponible, sin presión, culpa ni promesa de mejor puntuación.
+8. El registro interno debe poder demostrar cuándo se alcanzó el umbral, qué vacío crítico motivó la solicitud, qué opción eligió el usuario y qué preguntas se formularon, con minimización y retención sujetas a política de privacidad.
+9. Mantener equivalencia semántica y accesibilidad en español e inglés, y consistencia para C01–C10.
+10. La definición de interacciones y límites no puede alterarse silenciosamente al añadir nuevos lotes editoriales D-V9-015 ni al revisar dimensiones D-V9-016.
+
+### 26.2. Modelo conceptual de estados (pendiente de especificación final)
+`normal_interview` → `critical_gap_at_target` → `consent_requested` → (`extension_authorized` / `extension_declined`) → `finished` o `insufficient_evidence`. Considerar también `consent_withdrawn`, `session_interrupted` y `extension_budget_exhausted`. Estas etiquetas describen el contrato a diseñar, **no** una máquina implementada ni aprobada al nivel de esquema.
+
+### 26.3. Decisiones técnicas/editoriales aún abiertas
+- Qué constituye una «interacción»: pregunta mostrada, respuesta enviada, turno de aclaración, pantalla de consentimiento, reintento o cambio de idioma.
+- Presupuesto máximo adicional y si se mide globalmente o por dimensión; criterios para evitar fatiga y bucles.
+- Persistencia de consentimiento durante pausas/reanudaciones y política de revocación.
+- Criterio verificable de «evidencia crítica» por dimensión, sujeto a taxonomía definitiva.
+- Cómo presentar progreso sin prometer un total fijo de preguntas ni revelar datos privados.
+
+### 26.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-FAT01 | Inventariar conteos de preguntas, saltos, repreguntas y progreso en V9/QBV2 | Mapa de reglas, archivos, contratos y SHA | No asumir que 24 ya se cumple |
+| PLAN-FAT02 | Definir unidad de interacción y eventos contables/no contables | Tabla de eventos y ejemplos bilingües | Aprobación de producto |
+| PLAN-FAT03 | Proponer presupuesto adicional máximo y condiciones de parada | Alternativas cuantificadas con riesgos de fatiga | Requiere aprobación expresa |
+| PLAN-FAT04 | Diseñar consentimiento explícito y retirada | Flujo UX, copy es/en, accesibilidad y estados | Sin continuación por defecto |
+| PLAN-FAT05 | Diseñar selección de preguntas críticas y deduplicación | Contrato con D-V9-017 y banco editorial | Sin extensiones comerciales |
+| PLAN-FAT06 | Especificar abandono, rechazo, agotamiento y reanudación | Matriz de salidas seguras y resultados parciales | No asignar niveles sin evidencia |
+| PLAN-FAT07 | Diseñar trazabilidad mínima de consentimientos | Modelo conceptual de registro, permisos y retención pendiente | Privacidad por diseño |
+| PLAN-FAT08 | Preparar pruebas focalizadas futuras de umbral, consentimiento y fatiga | Matriz entradas→estados→preguntas→salida es/en | No ejecutar durante PLAN_ONLY |
+
+### 26.5. Criterios de aceptación futuros
+1. Entrevista suficiente antes de 24 interacciones: finaliza sin extensión.
+2. Umbral 24 con evidencia crítica faltante: solicita consentimiento antes de continuar.
+3. Umbral 24 sin evidencia crítica: no solicita extensión.
+4. Consentimiento rechazado: no formula preguntas adicionales y conserva conclusiones válidas.
+5. Consentimiento afirmativo: solo formula aclaraciones críticas dentro de un límite aprobado.
+6. Retirada de consentimiento: no continúa preguntando sin nueva autorización válida.
+7. Presupuesto excepcional agotado: detiene entrevista y abstiene niveles insuficientes.
+8. Cambio es↔en: no reinicia conteo ni invalida consentimiento aplicable.
+9. Pregunta ya respondida: no se repite para consumir presupuesto.
+10. Ausencia de CRM, anuncios o ventas: no se convierte por sí sola en motivo de extensión.
+11. Abandono/reanudación: no duplica preguntas ni presume consentimiento nuevo.
+12. Se puede finalizar con dimensiones suficientes y otras sin nivel, sin score global ficticio.
+13. Cada extensión cuenta con motivo auditable, sin guardar más datos personales de los necesarios.
+14. Ninguna pantalla induce a aceptar por miedo a una calificación peor.
+
+### 26.6. Próxima decisión D-V9-019 — límite de extensión excepcional
+Solicitar aprobación del **máximo adicional** tras 24 interacciones: **A** hasta 3 interacciones extra; **B** hasta 5; **C** hasta 8, siempre con consentimiento y solo por evidencia crítica. Son **opciones para deliberar, no umbrales validados ni aprobados**. Antes de codificar deberá definirse qué cuenta como interacción y validarse fatiga con recorridos C01–C10; no suponer que un límite por sí solo garantiza calidad.
+
+### 26.7. Estado
+D-V9-001 a D-V9-018: APPROVED en sus alcances. D-V9-019 PENDING; máximo adicional y unidad de conteo PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.19.0 / 2026-10-29:** D-V9-018 aprobada; consentimiento explícito, límites pendientes, ocho tareas PLAN-FAT01–08, catorce criterios de aceptación y próxima decisión. Solo documentación.
