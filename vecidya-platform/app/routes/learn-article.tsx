@@ -233,6 +233,15 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
             <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
           </div>
           <div className="learn-article-layout">
+            <div className="learn-article-toc-mobile">
+              <details>
+                <summary>Índice · {progressPercent}%</summary>
+                <nav className="learn-article-toc-mobile__nav" aria-label="Índice del artículo">
+                  <strong>En esta guía</strong>
+                  <ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`}>{section.heading}</a></li>)}</ol>
+                </nav>
+              </details>
+            </div>
             <div className="learn-article-rail">
               <nav className="learn-article-toc" aria-label="Índice del artículo">
                 <strong>En esta guía</strong>
