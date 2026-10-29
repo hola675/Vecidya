@@ -1,3 +1,7 @@
+## APP-MINI-V2B — prueba focal (pendiente ejecución)
+
+Ejecutar `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-configuration-reader-v2.test.ts`, `pnpm run typecheck`, `pnpm run build` y `git diff --check`. Pruebas cubren lectura V1, galerías repetidas con ids únicos, rechazo de duplicados/hero inválido/campos extra y límite de módulos. **Sin resultados PASS todavía.**
+
 # Pruebas
 
 ## APRENDE-PLAN-V1 — progreso personal (Fase 4; en curso)
