@@ -113,3 +113,47 @@ Mostrar cada concepto con organización, producto, periodo, cantidad, precio uni
 5. B7: cambio coordinado de catálogo público **solo** tras aprobar precios y evidencia; no publicar tarifas sin verificación.
 
 **Estado:** B0 inventario estructural completado por inspección estática; validación de precios unitarios oficiales, pruebas y ejecución de B1 pendientes.
+
+
+## 11. B1–B7 — Desglose ejecutable, fronteras y criterios de aceptación (2026-10-29)
+
+**Estado:** especificación, no implementación. El sistema actual de licencias D1 no demuestra existencia de checkout, pasarela, facturas, libro mayor o consumos conciliados.
+
+| Fase | Alcance | Dependencia | Gate focal y evidencia |
+| --- | --- | --- | --- |
+| B1 Tarifas y catálogo | SKU estable, tarifas GHL versionadas por región/moneda/unidad, recargo fijo 2000 bps, aprobación de publicación | B0 y fuente oficial verificable | Decimales subcentavo, vigencia, tarifa faltante, no cobro sin aprobación |
+| B2 Derechos comerciales | Owner y delegados de billing_account, permisos de lectura y administración por organización | Modelo de cuenta D1 | Aislamiento multi-org, revocación, miembro no hereda facturación |
+| B3 Contratación y asignación | Solicitud, presupuesto, aceptación, activación manual/auditada, estado de proveedor | B1/B2 | Doble clic idempotente, no activar proveedor por visualizar producto |
+| B4 Panel comercial | Consolidado por titular, detalle de organización, suscripciones, estados, importes estimados y reales diferenciados | B1–B3 | Sin datos ficticios presentados como reales, conciliación multi-org |
+| B5 Medición y libro económico | Ingesta verificable de consumos, ajustes, impuestos y facturas versionadas | Proveedor y contrato de uso | Reintentos idempotentes, exactitud monetaria, reconciliación y auditoría |
+| B6 Pagos | PSP elegido y aprobado, tokenización, webhooks firmados, estados y reembolsos | B5, legal/fiscal | Nunca almacenar PAN/CVV, reintentos, webhook duplicado, pago fallido |
+| B7 Lanzamiento comercial | Catálogo público sincronizado, condiciones, precios aprobados, soporte y observabilidad | B1–B6 según alcance del release | No precios contradictorios, rollback y aprobación de producción |
+
+### 11.1 Contrato mínimo de importes y conciliación
+
+- **Precio de proveedor:** moneda, país, producto, unidad, fuente oficial, vigencia, importe decimal exacto y aprobación.
+- **Precio de venta:** derivado con 2000 bps de recargo GHL, versión inmutable, impuestos y comisiones explícitos, redondeo al nivel de línea y contrato aceptado.
+- **Consumo:** idempotency key del proveedor, intervalo, unidad, cantidad, organización y billing_account, evidencia de origen, timestamp y estado de conciliación.
+- **Factura/pago:** referencia estable, líneas versionadas, total por moneda, ajustes y estado; nunca deducir pago exitoso de una solicitud o pantalla.
+- **Datos simulados:** solo en prototipos con etiqueta visible; no insertarlos como transacciones de clientes.
+
+### 11.2 Matriz de errores obligatoria
+
+| Fallo | Comportamiento seguro |
+| --- | --- |
+| Tarifa GHL sin verificar o caducada | No cotizar precio firme ni generar cargo automático |
+| Usuario sin permiso económico | 403 y ninguna información de otra cuenta |
+| Proveedor GHL no disponible | Estado pendiente, reintento controlado, sin activación ficticia |
+| Webhook repetido | No duplicar consumo, factura ni pago |
+| Diferencia de moneda o unidad | Rechazar cálculo hasta conversión explícita aprobada |
+| Transferencia de organización | Conservar trazabilidad de titular y periodos; no mover deuda automáticamente |
+| Cobro fallido | Estado real pendiente/fallido; no marcar pagado ni desactivar MiniWeb sin política autorizada |
+
+### 11.3 Decisiones de lanzamiento pendientes
+
+- **REL-01:** pagos automáticos en primer lanzamiento o segunda entrega. Propuesta técnica: segunda entrega; pendiente de aprobación.
+- **COM-01:** fuente oficial, fecha, región, moneda, impuestos, coste y términos comerciales verificables antes de ofrecer cada SKU.
+- **PAY-01:** proveedor de pagos, jurisdicción fiscal, métodos, moneda de liquidación, disputas y devoluciones. No seleccionar PSP por suposición.
+- **BILL-02:** política de prorrateo, fechas de corte, impago, suspensión comercial y tratamiento de saldo en transferencias. No inferirla de estados de licencias actuales.
+
+**Criterio de cierre de diseño B0–B7:** los contratos anteriores quedan aprobados y las decisiones REL-01, COM-01, PAY-01 y BILL-02 registradas con responsable y evidencia. El desarrollo, las migraciones y los cobros reales requieren gates independientes.
