@@ -62,3 +62,25 @@ La siguiente matriz especifica resultados **esperados para futura comprobación*
 ### Changelog
 
 - v1.1.0: matriz de aceptación C03/C05/C07/C08 y estados PASS/FAIL/ND/HOLD. Solo documentación.
+
+
+## Decisiones editoriales condicionadas — v1.2.0
+
+Estas decisiones son de **planificación**, no modificaciones aprobadas del banco ni certificación de cobertura.
+
+| Caso | Decisión | Motivo y fuente | Condición para desbloquear |
+|---|---|---|---|
+| C03 | HOLD: no introducir pregunta de pausa todavía | `qa03b/bank.ts` restringe preguntas de proceso a `operating` y varias de historial a `operating+has_customers`. No hay prueba de que otras preguntas no cubran comunicación de pausa. | Traza del escenario y auditoría de evidencia alternativa; si falta, redactar propuesta neutral de información/consulta durante pausa. |
+| C05 | KEEP guardias; HOLD cobertura de participación | `qa03b/specialty-candidate-bank.ts` condiciona `q2_nonprofit_donation_clarity` a `donations/mixed`; `qa03b/recovery-wave2.ts` condiciona `q2_nonprofit_membership_lifecycle` a `membership_dues/mixed`. | Verificar preguntas de acceso/participación que no dependan de cuotas o donaciones; proponer extensión solo ante vacío probado. |
+| C08 | KEEP semántica de menú para presencia existente; HOLD caso sin presencia | `qa03b/specialty-branches-wave1.ts` exige presencia fiable/parcial para `q2_food_menu_visibility`; `qa03b/bank.ts` también exige presencia para la pregunta genérica de claridad de oferta. | Rastrear otras preguntas de claridad independientes del canal; si no bastan, propuesta sobre claridad de oferta sin asumir web o menú publicado. |
+
+### Salvaguardas editoriales
+
+- La respuesta `not_applicable` de `q2_food_menu_visibility` no debe convertirse automáticamente en debilidad: su etiqueta actual puede confundirse con ausencia de presencia digital, aunque la pregunta requiere esa presencia.
+- Las respuestas `unknown` y `not_applicable` se mantienen diferenciadas de `weak`; la abstención es preferible a una puntuación ficticia.
+- Ninguna de estas decisiones autoriza añadir IDs, cambiar versiones, editar opciones o activar el banco candidato.
+- El cierre técnico exige una traza ejecutada con el selector real y `evaluateRuleV2Trace`; bajo PLAN_ONLY solo se definen criterios.
+
+### Changelog
+
+- v1.2.0: decisiones condicionadas C03/C05/C08 y puertas explícitas para evitar ampliaciones innecesarias.
