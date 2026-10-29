@@ -85,7 +85,7 @@
 
 ## 7. Contratos backend y seguridad (diseño, no código)
 
-**PROPUESTA:** configuración `MiniWebConfigurationV2` versionada con `schemaVersion`, `templateId/version`, `themeTokens`, `pages` (solo si se aprueba multipágina), `sections` con `instanceId`, `type`, `variant`, `contentRef`, `layout`, `styleOverrides`, `responsiveOverrides`, `visibility`; JSON validado en servidor con límites de tamaño, profundidad, cantidad de bloques y valores allowlist. No extender el límite de 4096 bytes sin medir D1, snapshot y API.
+**PROPUESTA:** configuración `MiniWebConfigurationV2` versionada con `schemaVersion`, `templateId/version`, `themeTokens`, `page` (una única página con secciones; sin multipágina en V2), `sections` con `instanceId`, `type`, `variant`, `contentRef`, `layout`, `styleOverrides`, `responsiveOverrides`, `visibility`; JSON validado en servidor con límites de tamaño, profundidad, cantidad de bloques y valores allowlist. No extender el límite de 4096 bytes sin medir D1, snapshot y API.
 
 **PROPUESTA:** datos de contenido estructurados y medios con IDs y permisos; separación entre contenido reutilizable y apariencia; borrador y snapshot público inmutable/versionado; guardado optimista con revisión y conflictos explícitos; autorización por organización y rol en cada endpoint; auditoría de publicación; migración de v1 a v2 compatible, lectura dual temporal y rollback. No ejecutar D1 remota ni romper contratos publicados.
 
@@ -103,7 +103,7 @@
 | F5 Horarios V2 | [ ] | Retiro de UI antigua, nuevo modelo y editor semanal/excepciones | Casos de solape, TZ, DST, compatibilidad |
 | F6 Diseño y composición | [ ] | Tokens, variantes, grid, posicionamiento y temas | Render SSR, contraste, responsive, persistencia |
 | F7 Editor Fácil/Avanzado | [ ] | Inspector, ayudas, asistente, deshacer, estados y previews | Flujo principiante, accesibilidad y guardado |
-| F8 Publicación y mantenimiento | [ ] | Revisión, snapshots, historial/rollback si aprobado, actualización periódica | No filtrar borradores, concurrencia y autorización |
+| F8 Publicación y mantenimiento | [ ] | Revisión, snapshots, historial de versiones y restauración aprobados, actualización periódica | No filtrar borradores, concurrencia y autorización |
 | F9 Certificación y release | [ ] | Evidencia focal por superficie, QA de regresión relevante y handoff | Typecheck, build, diff-check, aprobación merge/deploy |
 
 **Dependencias:** F0 → F2; F1 puede avanzar tras F0 con PR aislado; F2 → F3/F4/F5/F6; F3–F6 → F7 → F8 → F9. Evitar migración D1 y frontend incompatible en un mismo corte sin feature gate/rollback.
@@ -114,15 +114,28 @@
 
 **Rendimiento:** presupuesto a definir con mediciones: LCP, CLS, INP, peso de imagen/video, carga diferida y tamaño del bundle. **Accesibilidad:** objetivo WCAG 2.2 AA, evaluación automatizada + revisión manual de flujos críticos. No afirmar conformidad sin auditoría.
 
-## 10. Preguntas abiertas y decisiones bloqueantes
+## 10. Decisiones confirmadas y cuestiones técnicas pendientes
 
-1. **[~]** ¿MiniWeb V2 seguirá siendo una sola página con secciones, o admitirá varias páginas y navegación propia? Propuesta: una página en V2, multipágina como extensión posterior.
-2. **[~]** ¿Se permitirán videos subidos directamente, enlaces YouTube/Vimeo, o ambos? Propuesta: ambos con límites y proveedores autorizados; verificar costes/infraestructura.
-3. **[~]** ¿Se permite que un usuario cree varias galerías de cada tipo en una página? Propuesta: sí, mediante `instanceId` y límites razonables.
-4. **[~]** ¿El editor de horarios debe admitir turnos nocturnos y excepciones por festivos desde el primer release? Propuesta: sí, con zona horaria obligatoria.
-5. **[~]** ¿Plantillas premium incluidas en toda licencia Vecidya o restringidas por plan? Propuesta: no introducir bloqueo comercial sin decisión explícita.
-6. **[~]** ¿El usuario desea historial/restauración de versiones públicas desde V2 inicial? Propuesta: mantener al menos versión publicada anterior y rollback administrado.
-7. **[~]** ¿Cuál es el límite operativo de archivos y almacenamiento por negocio? No fijar números sin costes y límites R2 verificados.
+**Confirmación explícita del usuario — 2026-10-28 (APROBADO):**
+
+| ID | Decisión vinculante | Implicación para implementación |
+| --- | --- | --- |
+| DEC-01 | **MiniWeb V2 será de una sola página**, compuesta por secciones | Un único documento público por negocio; no crear rutas multipágina, menús de páginas ni contratos `pages[]` en V2 |
+| DEC-02 | **Videos subidos a Vecidya y enlaces externos** | Dos orígenes de medios con validación, autorización, reproductor y tratamiento de privacidad diferenciados; evaluar YouTube/Vimeo como proveedores permitidos, no aprobados individualmente aún |
+| DEC-03 | **Múltiples galerías de imágenes y de videos** en una misma página | Secciones con `instanceId` estable; no indexar solo por tipo; orden, contenido y diseño independientes |
+| DEC-04 | **Plantillas premium diferenciadas según licencia** | Resolver entitlement en servidor por organización/licencia; el editor solo ofrece plantillas autorizadas; conservar render seguro y apariencia de páginas publicadas al cambiar o vencer licencia, política pendiente de definición |
+| DEC-05 | **Historial de versiones y restauración** | Snapshot inmutable por publicación, metadatos autor/fecha/revisión, restauración como **nuevo borrador** y publicación posterior explícita; autorización, retención y cuota por definir |
+
+**Reglas obligatorias derivadas:** nunca autorizar plantillas únicamente desde el frontend; no exponer borradores ni archivos privados en snapshots públicos; la restauración no sobrescribe automáticamente una publicación ni permite acceso entre organizaciones; los enlaces externos deben usar allowlist y protección frente a URLs maliciosas; las subidas deben validar tipo/tamaño y permisos en servidor.
+
+**[~] Cuestiones de diseño pendientes de evidencia y/o decisión:**
+1. Horarios V2: confirmar alcance inicial de turnos nocturnos, excepciones y zona horaria; propuesta: incluirlos.
+2. Videos: definir límites por licencia, tamaño, duración, almacenamiento/transcodificación y proveedores externos concretos tras revisar infraestructura/costes.
+3. Plantillas: definir **matriz de acceso por licencia real** (Cuadra/Barrio/Ciudad según catálogo vigente), comportamiento al bajar de licencia y si hay plantillas base universales; no inventar restricciones comerciales.
+4. Historial: definir cantidad/retención de versiones y permisos de restauración, con costes y auditoría.
+5. Medios: definir cuota operativa por negocio y política de borrado/retención según R2 y licencias.
+
+**No bloquean la documentación:** estas cuestiones se resolverán en F0 y antes de las migraciones o controles comerciales afectados; no inferir respuestas del silencio del usuario.
 
 ## 11. Gobernanza y handoff
 
@@ -133,4 +146,4 @@
 
 ## 12. Registro de avance
 
-- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
+- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
