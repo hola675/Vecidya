@@ -96,7 +96,9 @@ class Client {
     return JSON.parse(body).user;
   }
   request(path, method = "GET", origin = this.baseUrl, body) {
-    return fetch(new URL(path, this.baseUrl), { method, headers: this.#headers(origin), body, redirect: "manual" });
+    const headers = this.#headers(origin);
+    if (typeof body === "string") headers.set("content-type", "application/json");
+    return fetch(new URL(path, this.baseUrl), { method, headers, body, redirect: "manual" });
   }
 }
 
@@ -122,6 +124,7 @@ try {
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
   assert.equal(Number(query("SELECT count(*) AS total FROM sqlite_master WHERE type='table' AND name='organization_learn_access_grant';")[0]?.total), 1, "La migración 0031 crea la tabla de grants en D1 local limpia.");
   assert.equal(Number(query("SELECT count(*) AS total FROM sqlite_master WHERE type='table' AND name IN ('learn_guide_progress','learn_section_progress','learn_favorite');")[0]?.total), 3, "La migración 0032 crea el progreso personal y favoritos.");
+  assert.equal(Number(query("SELECT count(*) AS total FROM sqlite_master WHERE type='table' AND name IN ('learn_sync_device','learn_operation_receipt');")[0]?.total), 2, "La migración 0033 crea cursores por dispositivo y recibos idempotentes.");
   query(`
     INSERT INTO user (id,name,email,email_verified,created_at,updated_at)
       VALUES (${sqlLiteral(actorId)},'Learn fixture actor',${sqlLiteral(`learn-actor-${suffix}@vecidya.test`)},1,${now},${now});
@@ -229,12 +232,33 @@ try {
   uncheckForm.set("sectionId", guideIdentity.sections[0].sectionId);
   uncheckForm.set("intent", "uncheck");
   assert.equal((await clients["owner-b"].request(licensedUrl, "POST", baseUrl, uncheckForm)).status, 200);
-  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 0, "Desmarcar elimina únicamente el check personal.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)} AND is_checked=1;`)[0]?.total), 0, "Desmarcar registra el estado unchecked sin marcarlo completado.");
   const resetForm = new FormData();
   resetForm.set("guideId", guideIdentity.guideId);
   resetForm.set("intent", "reset");
   assert.equal((await clients["owner-b"].request(licensedUrl, "POST", baseUrl, resetForm)).status, 200);
   assert.equal(Number(query(`SELECT reset_epoch AS value FROM learn_guide_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.value), 1, "Reiniciar incrementa reset_epoch para invalidar operaciones anteriores.");
+  const syncPath = "/api/learn/sync";
+  const syncState = query(`SELECT version, reset_epoch FROM learn_guide_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0];
+  const syncOperation = { operationId: randomUUID(), deviceId: randomUUID(), clientSequence: 1, guideId: guideIdentity.guideId, type: "check-section", sectionId: guideIdentity.sections[1].sectionId, baseVersion: Number(syncState.version), baseResetEpoch: Number(syncState.reset_epoch), createdAt: Date.now() };
+  const syncRequest = () => clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [syncOperation] }));
+  const syncResponse = await syncRequest();
+  assert.equal(syncResponse.status, 200, `Sync autenticado aplica operación: ${await syncResponse.clone().text()}`);
+  assert.equal((await (await syncResponse.json()).results)[0].status, "applied");
+  const replayResponse = await syncRequest();
+  assert.equal(replayResponse.status, 200);
+  assert.equal((await replayResponse.json()).results[0].status, "duplicate", "Repetir operation_id reproduce el recibo sin aplicar el cambio dos veces.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_operation_receipt WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND operation_id=${sqlLiteral(syncOperation.operationId)};`)[0]?.total), 1);
+  const secondDeviceOperation = { ...syncOperation, operationId: randomUUID(), deviceId: randomUUID(), sectionId: guideIdentity.sections[2].sectionId };
+  const secondDeviceResponse = await clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [secondDeviceOperation] }));
+  assert.equal(secondDeviceResponse.status, 200);
+  assert.equal((await secondDeviceResponse.json()).results[0].status, "applied", "Un check independiente de otro dispositivo converge aunque su baseVersion sea anterior.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)} AND is_checked=1;`)[0]?.total), 2);
+  const staleEpoch = { ...syncOperation, operationId: randomUUID(), clientSequence: 2, baseVersion: Number(syncState.version) + 1, baseResetEpoch: 0, createdAt: Date.now(), sectionId: guideIdentity.sections[3].sectionId };
+  const staleResponse = await clients["owner-b"].request(syncPath, "POST", baseUrl, JSON.stringify({ operations: [staleEpoch] }));
+  assert.equal(staleResponse.status, 200);
+  assert.equal((await staleResponse.json()).results[0].status, "conflict", "Una operación de época anterior al reset no resucita progreso.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)} AND section_id=${sqlLiteral(guideIdentity.sections[3].sectionId)};`)[0]?.total), 0);
   const billingOwnerBody = await clients["billing-owner"].request(licensedUrl);
   assert.equal(billingOwnerBody.status, 200, "Ser billing_account.owner sin membresía solo recibe vista previa.");
   assertNoProtectedBody(await billingOwnerBody.text(), protectedFragments, "Preview billing owner sin membresía");
@@ -292,7 +316,7 @@ try {
     assertNoProtectedBody(await preview.text(), protectedFragments, `${label} sin entitlement`);
   }
 
-  console.log("PASS Aprende entitlement: cuerpo autorizado/denegado, owner/admin, multi-organización, licencia/lifecycle, grant/revocación, CSRF, auditoría y cascada.");
+  console.log("PASS Aprende entitlement/sync: cuerpo autorizado/denegado, grants, licencia/lifecycle, CSRF, dos dispositivos, replay idempotente, reset epoch y cascada.");
 } catch (error) {
   await new Promise((resolveWait) => setTimeout(resolveWait, 200));
   throw new Error(`${error instanceof Error ? error.message : String(error)}\nSalida Worker local:\n${workerOutput}`, { cause: error });

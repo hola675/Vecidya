@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 5 (checkpoint local)
+
+- Cola local con vencimiento, aislamiento por cuenta, reintento online, importación anónima con consentimiento, controles para conflictos/reinicios y limpieza al cerrar sesión salvo retención opt-in. API D1 transaccional con recibos idempotentes, secuencia de dispositivo, límites de payload, validación editorial, entitlement y `reset_epoch`.
+- Migración `0033` local. Worker/D1 valida dos dispositivos, replay idempotente y barrera de reset. No desplegado ni aplicado a D1 remota; la política de purga de recibos y los workflows CI aún condicionan el cierre de F5.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 4 integrada (PR #187)
+
+- `main@67c2d1fa` contiene progreso personal y favoritos en D1 local, checks manuales, biblioteca `/app/aprende`, reset epoch y guardas de entitlement. CI y certificación local PASS. Sin deploy ni migración remota.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — progreso personal (Fase 4, checkpoint local)
 
 - PR #186 integró Fases 1–3 en `main@9b39ffde`. Fase 4 agrega esquema personal D1 `0032`, marcación explícita de secciones, último punto, favoritos y biblioteca privada `/app/aprende`; reiniciar conserva favoritos y hace avanzar `reset_epoch`.

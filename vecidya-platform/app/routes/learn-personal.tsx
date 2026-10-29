@@ -7,6 +7,7 @@ import { getClientWorkspaceContext } from "../../server/auth/client-workspace.se
 import { getActiveOrganization } from "../../server/auth/session.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { ClientAreaShell } from "../components/client-area-shell";
+import { LearnSyncInbox } from "../components/learn-sync-inbox";
 import type { Route } from "./+types/learn-personal";
 
 export function meta() { return [{ title: "Mi aprendizaje | Vecidya" }]; }
@@ -19,7 +20,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const state = await getLearnPersonalState(createDatabase(env.DB), workspaceUser.id);
   const guides = new Map(learnArticles.filter((item) => !item.editorialDraft).map((article) => { const identity = getLearnEditorialIdentity(article); return [identity.guideId, { article: identity, access: getLearnGuideAccess(identity.slug)! }]; }));
   const sectionMap = new Map<string, string[]>();
-  for (const row of state.sections) sectionMap.set(row.guideId, [...(sectionMap.get(row.guideId) ?? []), row.sectionId]);
+  for (const row of state.sections) if (row.isChecked) sectionMap.set(row.guideId, [...(sectionMap.get(row.guideId) ?? []), row.sectionId]);
   const progress = state.guides.flatMap((row) => {
     const item = guides.get(row.guideId); if (!item) return [];
     const sectionIds = new Set(item.article.sections.map((section) => section.sectionId));
@@ -50,6 +51,7 @@ export default function LearnPersonal({ loaderData }: Route.ComponentProps) {
   const { workspaceUser, organizations, activeOrganization, isPlatformAdmin, progress, favorites } = loaderData;
   return <ClientAreaShell active="learn" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
     <main className="app-main" id="client-page-content"><div className="page-heading"><div><p className="eyebrow">APRENDIZAJE PERSONAL</p><h1>Mi aprendizaje</h1><p>Tu avance es privado y pertenece a tu cuenta. Solo se completa una sección cuando tú la marcas.</p></div><Link className="button button--secondary" to="/aprende">Explorar guías</Link></div>
+      <LearnSyncInbox userId={workspaceUser.id} />
       <section className="card"><h2>Seguir aprendiendo</h2>{progress.filter((item) => !item.hidden && item.checkedCount > 0).sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).map((item) => <article className="learn-personal-item" key={item.guideId}><div><h3>{item.title}</h3><p>Mi avance: {item.percent}% · {item.checkedCount === item.sectionCount ? "Completada" : "En curso"} · {item.access === "licensed" ? "requiere acceso vigente para continuar" : "guía abierta"}</p>{item.lastSectionId && <Link to={`/aprende/${item.slug}#${item.lastSectionId}`}>Continuar leyendo →</Link>}</div><Form method="post"><input type="hidden" name="guideId" value={item.guideId}/><button className="text-link" name="intent" value="hide">Ocultar de recientes</button><button className="text-link" name="intent" value="reset">Reiniciar progreso</button></Form></article>)}{!progress.some((item) => !item.hidden && item.checkedCount > 0) && <p>Aún no tienes progreso guardado. Abre una guía y marca manualmente las secciones que completes.</p>}</section>
       <section className="card"><h2>Favoritos</h2>{favorites.length ? favorites.map((item) => <article className="learn-personal-item" key={item.guideId}><div><h3>{item.title}</h3><p>{item.access === "licensed" ? "El favorito no concede acceso al contenido." : "Guía abierta"}</p><Link to={`/aprende/${item.slug}`}>Abrir guía →</Link></div><Form method="post"><input type="hidden" name="guideId" value={item.guideId}/><button className="text-link" name="intent" value="unfavorite">Quitar de favoritos</button></Form></article>) : <p>Guarda guías para encontrarlas aquí, incluso cuando estén protegidas por licencia.</p>}</section>
     </main>

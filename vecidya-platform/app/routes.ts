@@ -29,6 +29,7 @@ export default [
   route("robots.txt", "routes/robots.ts"),
   route("sitemap.xml", "routes/sitemap.ts"),
   route("api/auth/*", "routes/api-auth.ts"),
+  route("api/learn/sync", "routes/api-learn-sync.ts"),
   route("api/diagnostic/anonymous-summary", "routes/api-diagnostic-anonymous-summary.ts"),
   route("api/diagnostic/report-requests", "routes/api-diagnostic-report-requests.ts"),
   route("api/diagnostic/report-requests/:requestId/resend", "routes/api-diagnostic-report-request-resend.ts"),

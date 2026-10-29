@@ -2,6 +2,7 @@ import { type ReactNode, useState } from "react";
 import { Form, Link, useNavigate, useRevalidator } from "react-router";
 
 import { authClient } from "../lib/auth-client";
+import { LearnOfflineQueue } from "../features/learn/learn-offline";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
@@ -26,7 +27,7 @@ const groups: NavGroup[] = [
   { label: "CUENTA", links: [{ id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
 ];
 
-type WorkspaceUser = { name: string; email: string };
+type WorkspaceUser = { id?: string; name: string; email: string };
 type WorkspaceOrganization = { id: string; name: string; slug: string; role?: string };
 
 type ClientAreaShellProps = {
@@ -78,6 +79,10 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
     event.preventDefault();
     setSubmitting(true);
     await authClient.signOut();
+    if (workspaceUser.id) {
+      const queue = new LearnOfflineQueue(window.localStorage);
+      if (!queue.retainAfterSignOut(workspaceUser.id)) queue.clear(workspaceUser.id);
+    }
     navigate("/login");
   }
 

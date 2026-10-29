@@ -1,4 +1,4 @@
-**Actualización APRENDE-PLAN-V1 (2026-10-29):** Fases 1–3 están integradas en `main@9b39ffde`; el cuerpo `licensed` requiere sesión y entitlement vigente por membresía, lifecycle, licencia y owner/grant. Fase 4 en rama local implementa progreso por usuario, checks manuales, reanudación, favoritos y reinicio por epoch; migración aditiva `0032`. Worker/D1 E2E, 1.756 unitarias, QA pública, typecheck, build y diff-check PASS. No desplegado ni migrado remotamente. La distribución 6/42 sigue provisional; fases 5–7 pendientes.
+**Actualización APRENDE-PLAN-V1 (2026-10-29):** Fases 1–4 integradas en `main@67c2d1fa`. El cuerpo `licensed` requiere sesión y entitlement vigente por membresía, lifecycle, licencia y owner/grant. La Fase 4 agrega progreso personal, checks manuales, reanudación, favoritos y reset epoch con migración `0032`; Worker/D1 E2E, 1.756 unitarias, QA pública, typecheck/build y CI PASS. Fase 5 está en implementación local sobre `origin/main@67c2d1fa`: sync idempotente, offline temporal y consentimiento de importación. Sin deploy ni migración remota. La selección 6/42 sigue provisional.
 
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
