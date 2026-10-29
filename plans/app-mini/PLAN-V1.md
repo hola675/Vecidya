@@ -155,6 +155,33 @@
 - Cada PR: alcance pequeño, tests focalizados, typecheck/build si hay código, documentación canónica reconciliada, commit y revisión. Sin merge ni deploy sin aprobación explícita.
 - Actualizar el avance **en este documento**, sin crear informes de fase dispersos. No confundir `DOC` con `TEST`.
 
+## 13. F0 — contraste comercial y registro de plantillas (CODE / DOC / PROPUESTA)
+
+**CODE (inspección estática 2026-10-28):**
+- `app/routes/licenses.tsx`: la tabla comparativa declara «MiniWeb y Vecindario» **incluidos en Cuadra, Barrio y Ciudad**; no distingue plantillas. La activación se coordina por contacto, sin checkout automático.
+- `app/features/miniweb/registry.ts`: `vecidya-default` («Esencial») está `available`; `services-studio`, `catalog-store`, `gastronomy-table` y `professional-profile` están `planned`. Sus `layoutVariants` son `standard`; el registro no contiene `minimumLicenseTier`.
+- `docs/PROJECT_STATE.md` (DOC): informa de un release 0.9.0 y cambios de plataforma recientes; antes de implementar, actualizar el baseline de `main` y revisar la migración `0030` y permisos de `platform_admin`. Este plan no acredita una nueva prueba HTTP ni validación de producción.
+
+**Conclusión:** DEC-06 es una decisión **nueva de producto**, no una prestación existente. La comunicación comercial debe seguir siendo veraz: MiniWeb sigue incluido en las tres licencias, mientras la **amplitud del catálogo de plantillas** será progresiva cuando se implemente y publique la diferenciación. No alterar por inferencia el alcance CRM de las licencias.
+
+**PROPUESTA — contrato del catálogo:**
+- `TemplateTier = "cuadra" | "barrio" | "ciudad"`; relación de inclusión acumulativa, validada contra licencias reales del backend, sin confiar en claims del navegador.
+- Cada plantilla tiene ID estable, versión, categoría, miniatura, variantes, requisitos de módulos, estado `planned|available|retired` y nivel mínimo; solo `available` se puede seleccionar/publicar.
+- La plantilla Esencial existente permanece como base de compatibilidad de Cuadra; **no** asignar las cuatro familias planificadas a niveles específicos sin una decisión editorial y pruebas visuales.
+- Resolver entitlement para selección, guardado, preview privado y publicación; preservar el snapshot público anterior ante downgrade y solicitar selección de plantilla permitida antes de nueva publicación **solo si** esa política se aprueba.
+- Sin catálogo comercial actualizado y pruebas de autorización, no habilitar restricciones nuevas en producción. Las páginas existentes no se migran ni degradan silenciosamente.
+
+**[!] Gate comercial F0:** reconciliar `app/content/commercial-detail.ts`, `docs/business/VECIDYA_PRODUCT_CATALOG.md`, páginas de licencias y texto de la interfaz con el catálogo real, sin cambiar precios ni promesas CRM. Solicitar aprobación explícita de la redacción comercial antes de publicar.
+
+**[~] Gate técnico F0:** inspeccionar cómo se resuelve hoy la licencia efectiva, expiración y cambio de nivel, así como snapshot, API y cache; después definir pruebas de permisos para Cuadra/Barrio/Ciudad, sin suponer jerarquía implementada.
+
+## 14. Handoff de siguiente checkpoint
+
+1. Auditar licencias/entitlements, media R2 y snapshots actuales en el HEAD de implementación; listar contratos, rutas y pruebas focales.
+2. Proponer matriz concreta de plantillas y política de downgrade para aprobación.
+3. Aislar PR de contrato/registro antes de introducir UI de plantillas bloqueadas.
+4. No iniciar cambios de producción, D1 remota, merge o deploy sin autorización.
+
 ## 12. Registro de avance
 
-- **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.\n- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
+- **2026-10-28 — [x] F0 documental parcial:** contraste CODE de `licenses.tsx` y `registry.ts`; identificada deuda de alineación comercial, sin pruebas ni implementación.\n- **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.\n- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
