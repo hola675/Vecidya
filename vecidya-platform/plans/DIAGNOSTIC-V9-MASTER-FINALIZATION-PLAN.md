@@ -2505,3 +2505,36 @@ El futuro agente debe distinguir **registro de respuesta**, **elegibilidad**, **
 
 ## Changelog adicional
 - **1.43.0 / 2026-10-29:** contrato de `answered/eq/in/and/or/not`, seis casos neutrales y gate de separación respuesta-elegibilidad-aplicabilidad-evidencia. Solo documentación.
+
+## 52. CONSOL-04 / TAX-G3 — contrato de corrección de respuestas y replanificación (2026-10-29)
+**PLAN_ONLY. Especificación para futuro agente, NO comportamiento V9 verificado.** Fuentes estáticas: `qbv2-rules.ts` blob `ffca84ac10af29983a2ed82c3e6395e8302e794f`; `qa03b/v9-editorial-graph-audit.ts` blob `89bce38ab69d1b5c12d5a339fb8de923894da1c9`; `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`. El auditor detecta dependencias explícitas y ciclos; no prueba invalidación, replay, persistencia ni elegibilidad dinámica. No se encontró evidencia suficiente en los archivos inspeccionados para certificar esas funciones.
+
+### Invariantes requeridas (propuesta, no aprobadas como implementación)
+1. **Fuente única:** conservar respuesta explícita más reciente por ID y versión; distinguir `unknown`, `not_applicable`, `none` y omisión.
+2. **Recalcular contexto:** tras editar una ancla, reevaluar reglas dependientes y contexto resuelto antes de presentar la siguiente pregunta.
+3. **No arrastrar evidencia obsoleta:** respuesta de pregunta ahora inelegible no puede influir en dimensiones, recomendaciones ni progreso; definir explícitamente si se conserva como borrador reversible, sin exposición ni evaluación.
+4. **Sustitución exclusiva:** al activarse rama especializada, la genérica desplazada no debe aportar segunda evidencia; al desaparecer especialidad, debe poder recuperarse ruta genérica sin reutilizar respuesta incompatible.
+5. **Contador estable:** editar una respuesta ya contabilizada no incrementa interacciones; una nueva pregunta/clarificación que requiere decisión sí cuenta, conforme D020. No ocultar preguntas por replanificación.
+6. **Privacidad:** no registrar respuestas crudas ni identificadores persistentes en analítica D1; borrador anónimo solo local según D027–D033.
+7. **Reevaluación explícita:** editar el diagnóstico actual no debe alterar silenciosamente un informe histórico ya emitido; definir snapshot/versionado y comparación antes de implementar.
+
+### Casos de aceptación focales para futura ejecución autorizada
+| Transición | Resultado esperado para validar |
+| --- | --- |
+| `preparing → operating` | Retirar evidencia prelaunch no aplicable y replanificar ramas activas; no inventar historial |
+| `operating → paused` | Invalidar rutas exclusivas de operación activa sin penalizar madurez |
+| `has_customers=yes → no/unknown` | Reevaluar todas las puertas `activeHistory` y evidencias derivadas |
+| `sector=food_hospitality → unknown` | Retirar selector especializado; conservar alternativa genérica |
+| `niche=dentist → other` | Desactivar `q2_dental_care_continuation` y revisar `q2_appointments_rebooking` |
+| `goal=explain → otro` | Recalcular elegibilidad de sustituciones de gastronomía/agencia |
+| `cart_visibility=yes → no` | Desactivar `cart_followup`; no reutilizar respuesta anterior como evidencia |
+| `unknown → respuesta concreta` | Actualizar elegibilidad y suficiencia sin doble conteo |
+| `respuesta concreta → unknown` | Retirar conclusiones que exigían evidencia concreta; abstención si corresponde |
+
+### Orden del gate futuro
+A. Grafo de dependencias explícitas + contexto inferido; B. reglas de invalidación por cambio; C. trazas antes/después; D. revisión de evidencia y presupuesto 24+5; E. revisión es/en y privacidad; F. pruebas focales únicamente sobre archivos modificados **cuando exista autorización de implementación**. No ejecutar suites generales ni CI ahora.
+
+**Estado:** contrato de corrección documentado; mecanismo real de replay/invalidez y los nueve casos siguen SIN VERIFICAR. TAX-G3 continúa abierto.
+
+## Changelog adicional
+- **1.44.0 / 2026-10-29:** contrato documental de replanificación e invalidación tras correcciones, nueve casos focales y gates de aceptación; sin código, tests ni despliegues.
