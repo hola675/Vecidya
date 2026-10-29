@@ -4,11 +4,13 @@ import { LearnOfflineQueue, type LearnSyncOperation } from "../features/learn/le
 export function LearnSyncInbox({ userId }: { userId: string }) {
   const queue = useMemo(() => new LearnOfflineQueue(typeof window === "undefined" ? null : window.localStorage), []);
   const [anonymousCount, setAnonymousCount] = useState(0);
+  const [accountCount, setAccountCount] = useState(0);
   const [retain, setRetain] = useState(false);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
     setAnonymousCount(queue.read(null).operations.length);
+    setAccountCount(queue.read(userId).operations.length);
     setRetain(queue.retainAfterSignOut(userId));
   }, [queue, userId]);
 
@@ -28,6 +30,7 @@ export function LearnSyncInbox({ userId }: { userId: string }) {
         return [{ ...operation, baseVersion: item.version ?? operation.baseVersion, baseResetEpoch: item.resetEpoch ?? operation.baseResetEpoch, status: obsolete ? "blocked" as const : "conflict" as const, statusMessage: obsolete ? "La guía se reinició antes de sincronizar este cambio." : "El progreso cambió en otro dispositivo." }];
       });
       queue.update(userId, remaining);
+      setAccountCount(remaining.length);
       if (remaining.some((operation) => operation.status === "pending")) return synchronize();
       setStatus(remaining.length ? `${remaining.length} cambio(s) requieren revisión al abrir su guía.` : "Cambios sincronizados.");
     } catch { setStatus("Sin conexión; los cambios siguen guardados en este dispositivo."); }
@@ -38,6 +41,7 @@ export function LearnSyncInbox({ userId }: { userId: string }) {
     if (accept) {
       const rebound: LearnSyncOperation[] = queue.rebindAnonymousForAccount(pending, userId);
       queue.update(userId, [...queue.read(userId).operations, ...rebound]);
+      setAccountCount(queue.read(userId).operations.length);
     }
     queue.clear(null);
     setAnonymousCount(0);
@@ -49,6 +53,6 @@ export function LearnSyncInbox({ userId }: { userId: string }) {
     {anonymousCount > 0 && <><p>Hay {anonymousCount} cambio(s) anónimos en este dispositivo. Elige si quieres incorporarlos a esta cuenta.</p><button type="button" className="button button--primary" onClick={() => importAnonymous(true)}>Importar cambios</button><button type="button" className="text-link" onClick={() => importAnonymous(false)}>Descartar cambios anónimos</button></>}
     <label className="learn-sync-retention"><input type="checkbox" checked={retain} onChange={(event) => { setRetain(event.currentTarget.checked); queue.setRetainAfterSignOut(userId, event.currentTarget.checked); }} /> Conservar cambios pendientes en este dispositivo al cerrar sesión</label>
     <button type="button" className="button button--secondary" onClick={() => void synchronize()}>Sincronizar ahora</button>
-    <p aria-live="polite">{status || `${queue.read(userId).operations.length} cambio(s) de esta cuenta en cola.`}</p>
+    <p aria-live="polite">{status || `${accountCount} cambio(s) de esta cuenta en cola.`}</p>
   </section>;
 }

@@ -20,6 +20,7 @@ export function LearnProgressControls(props: Props) {
   const [favorite, setFavorite] = useState(props.initialFavorite);
   const [lastSection, setLastSection] = useState(props.initialLastSectionId);
   const [pending, setPending] = useState(0);
+  const [conflicts, setConflicts] = useState<LearnSyncOperation[]>([]);
   const [message, setMessage] = useState("");
   const [version, setVersion] = useState(props.version);
   const [resetEpoch, setResetEpoch] = useState(props.resetEpoch);
@@ -48,6 +49,7 @@ export function LearnProgressControls(props: Props) {
         return [{ ...op, baseVersion: item.version ?? op.baseVersion, baseResetEpoch: item.resetEpoch ?? op.baseResetEpoch, status: "conflict" as const, statusMessage: "El estado cambió en otra sesión. Confirma si quieres volver a aplicar esta acción." }];
       });
       queue.update(props.userId, remaining);
+      setConflicts(remaining.filter((operation) => operation.guideId === props.guideId && operation.status !== "pending"));
       setPending(remaining.length);
       if (remaining.some((operation) => operation.status === "pending")) return flush();
       const latest = result.results.at(-1);
@@ -59,6 +61,8 @@ export function LearnProgressControls(props: Props) {
 
   useEffect(() => {
     const snapshot = queue.read(props.userId);
+    setConflicts(snapshot.operations.filter((operation) => operation.guideId === props.guideId && operation.status !== "pending"));
+    setMessage(typeof navigator === "undefined" || navigator.onLine ? "Avance guardado." : "Sin conexión: los cambios permanecen en este dispositivo.");
     const guideOperations = snapshot.operations.filter((operation) => operation.guideId === props.guideId).sort((a, b) => a.clientSequence - b.clientSequence);
     if (guideOperations.length) {
       const restored = new Set(props.initialChecked);
@@ -110,12 +114,14 @@ export function LearnProgressControls(props: Props) {
   function retryConflict(operation: LearnSyncOperation) {
     const operations = queue.read(props.userId).operations.map((item) => item.operationId === operation.operationId ? { ...item, status: "pending" as const, statusMessage: undefined } : item);
     queue.update(props.userId, operations);
+    setConflicts(operations.filter((item) => item.guideId === props.guideId && item.status !== "pending"));
     setMessage("Reintentando el cambio confirmado.");
     void flush();
   }
 
   function discardBlocked(operation: LearnSyncOperation) {
     const removed = queue.discardDeviceTail(props.userId, operation.operationId);
+    setConflicts(queue.read(props.userId).operations.filter((item) => item.guideId === props.guideId && item.status !== "pending"));
     setPending((count) => Math.max(0, count - removed));
     setMessage(removed > 1 ? `Se descartaron ${removed} cambios de la cola de este dispositivo para mantener la secuencia.` : "Se descartó el cambio obsoleto.");
   }
@@ -128,8 +134,8 @@ export function LearnProgressControls(props: Props) {
       {props.showProgress !== false && <><span>Mi avance: {props.sectionIds.length ? Math.round(checked.size / props.sectionIds.length * 100) : 0}% ({checked.size} de {props.sectionIds.length} secciones) · {checked.size === props.sectionIds.length ? "Completado" : checked.size ? "En curso" : "Sin empezar"}</span>
       {checked.size > 0 && <button type="button" className="text-link" onClick={() => { if (append("reset-guide")) { setChecked(new Set()); setLastSection(null); } }}>Reiniciar mi progreso</button>}</>}
     </div>
-    <p className="learn-sync-status">{message || (pending ? `${pending} cambio(s) pendiente(s) de sincronizar.` : typeof navigator === "undefined" || navigator.onLine ? "Avance guardado." : "Sin conexión.")}</p>
-    {queue.read(props.userId).operations.filter((operation) => operation.guideId === props.guideId && operation.status !== "pending").map((operation) => <div className="learn-sync-conflict" key={operation.operationId}><p>{operation.statusMessage}</p>{operation.status === "conflict" ? <button type="button" className="button button--secondary" onClick={() => retryConflict(operation)}>Volver a aplicar este cambio</button> : <button type="button" className="text-link" onClick={() => discardBlocked(operation)}>Descartar el cambio y los posteriores de este dispositivo</button>}</div>)}
+    <p className="learn-sync-status">{message || (pending ? `${pending} cambio(s) pendiente(s) de sincronizar.` : "Estado de sincronización listo.")}</p>
+    {conflicts.map((operation) => <div className="learn-sync-conflict" key={operation.operationId}><p>{operation.statusMessage}</p>{operation.status === "conflict" ? <button type="button" className="button button--secondary" onClick={() => retryConflict(operation)}>Volver a aplicar este cambio</button> : <button type="button" className="text-link" onClick={() => discardBlocked(operation)}>Descartar el cambio y los posteriores de este dispositivo</button>}</div>)}
     {props.showProgress !== false && props.sectionIds.map((sectionId) => <div className="learn-section-progress" key={sectionId}>
       <button type="button" className="button button--secondary" onClick={() => { const next = !checked.has(sectionId); if (!append(next ? "check-section" : "uncheck-section", sectionId)) return; setChecked((current) => { const updated = new Set(current); next ? updated.add(sectionId) : updated.delete(sectionId); return updated; }); }}>{checked.has(sectionId) ? "Marcar como pendiente" : "Marcar como completada"}</button>
       <button type="button" className="text-link" onClick={() => { if (append("set-last-section", sectionId)) setLastSection(sectionId); }}>{lastSection === sectionId ? "Último punto guardado" : "Guardar como último punto"}</button>
