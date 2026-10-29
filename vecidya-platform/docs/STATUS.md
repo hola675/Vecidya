@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-02 persistencia inicial (2026-10-29)
+
+**CODE local:** tablas aisladas de sitio V2, borrador mutable y snapshots publicados inmutables; queries iniciales de creación, guardado con CAS y publicación con revisión esperada/organización. Migraciones `0034`–`0035` generadas; aplicadas solo a D1 local. Typecheck PASS; pruebas de concurrencia, runtime real, rollback y guards de rutas pendientes. No conectado a UI ni publicado. Imp-01 permanece abierto en PR #204.
 # MiniWeb V2 — contratos tipados (IMP-01, 2026-10-29)
 
 **Implementación parcial local:** pp/features/miniweb-v2/sections.ts define tipos y validadores iniciales S01–S12, envelope versión 1, IDs/orden únicos y allowlist de URL. Prueba focal 2/2 PASS; typecheck y build PASS. Aún sin persistencia, editor, renderer ni garantía tenant-scoped de medios; validar hours integralmente con IMP-06. No certificado ni publicado.

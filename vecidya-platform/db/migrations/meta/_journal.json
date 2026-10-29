@@ -239,6 +239,20 @@
       "when": 1793283769031,
       "tag": "0033_learn-sync-operations",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1793311811852,
+      "tag": "0034_miniweb-v2-draft-publication",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "6",
+      "when": 1793312040585,
+      "tag": "0035_miniweb-v2-multiple-sites",
+      "breakpoints": true
     }
   ]
 }
