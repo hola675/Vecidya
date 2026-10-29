@@ -6,6 +6,48 @@
 
 > **Fuente y niveles de certeza.** `APROBADO`: decisiones del usuario en la conversación de diseño. `CODE`: archivos inspeccionados en la rama predeterminada el 2026-10-28. `DOC`: estado descrito en documentos del repositorio, no revalidado por ejecución. `PROPUESTA`: diseño técnico por validar antes de implementarse. No confundir propuesta con función disponible.
 
+## Leyenda inicial y estado de ejecución
+
+**Cómo interpretar las marcas:** `[x]` = completado con evidencia del alcance indicado; `[~]` = documentado, pero pendiente de validación o decisión; `[ ]` = no iniciado; `[!]` = bloqueo que impide activar el siguiente paso. **Documentado no significa implementado, probado ni desplegado.**
+
+**Fuentes de certeza:** `APROBADO` = decisión del usuario; `CODE` = inspección estática de archivos; `DOC` = documentación no revalidada; `PROPUESTA` = criterio por aprobar o comprobar; `TEST` = resultado de prueba ejecutada (no hay resultados TEST nuevos en este plan).
+
+**Resumen de avance por alcance, a 2026-10-28:**
+
+| Tramo | Estado | Criterio de cierre |
+| --- | --- | --- |
+| Definición de producto, límites y 6/42 | [x] Diseño aprobado | §§1,3,19; candidatas editoriales aún por validar |
+| Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
+| Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
+| Fase 0 — baseline y decisiones bloqueantes | [~] Cierre documental preparado, validación pendiente | Diagnóstico legacy, CSRF, retención, editorial y pruebas focales |
+| Fase 1 — identidad editorial y DTOs seguros | [ ] Sin implementación | Pruebas de catálogo y no filtración |
+| Fase 2 — licencias y grants | [ ] Sin implementación | Tests de entitlement y revocación |
+| Fase 3 — catálogo, previews y retorno | [ ] Sin implementación | QA pública segura |
+| Fase 4 — progreso y favoritos D1 | [ ] Sin implementación | Tests de persistencia personal |
+| Fase 5 — sincronización y anonimato | [ ] Sin implementación | Tests de concurrencia e importación |
+| Fase 6 — itinerarios y UX | [ ] Sin implementación | QA accesible móvil |
+| Fase 7 — certificación y lanzamiento | [ ] Sin implementación | Evidencia focal, autorización de merge/deploy |
+
+**Lectura rápida:** §0 instrucciones; §§1–7 requisitos y contratos; §8 fases; §§9–16 validaciones, decisiones y PR; §17 bitácora; §§18–29 evidencias y decisiones ampliadas; §30 handoff. **En caso de discrepancia, las decisiones posteriores explícitas (§§19,25,27–29) refinan las propuestas anteriores, pero nunca sustituyen una decisión APROBADO sin confirmación del usuario.**
+
+### Dependencias y escalado progresivo
+
+`D0 baseline validado` → `D1 identidad editorial + clasificación 6/42` → `D2 DTO público seguro + guard de cuerpo` → `D3 entitlement real + grants` → `D4 catálogo/preview/retorno` → `D5 progreso D1` → `D6 sync y anónimo` → `D7 itinerarios/UX` → `D8 QA y lanzamiento autorizado`.
+
+**Regla de publicación:** D1 y D2 pueden prepararse internamente, pero **no se activa el modelo 6/42 en una ruta pública hasta que D2 y D3 estén integrados y los tests de filtración pasen**. La persistencia D5 puede desarrollarse en paralelo a D4 después de D3, en PR aislado; D6 depende de D5; D7 integra D4 y D6. D8 depende de todas las anteriores. No desplegar ni migrar D1 remota sin aprobación expresa.
+
+**Escalado seguro:** primero contratos y tests aislados, después D1 local, después integración con licencias reales, luego staging autorizado y por último producción autorizada. Cada salto requiere evidencia del paso anterior, rollback compatible con guard y revisión de privacidad; no confundir avance de documentación con avance de producto.
+
+### Registro de incoherencias detectadas y criterio de lectura
+
+- **Permisos:** §3.1.6 decía «propietario o actor autorizado»; la propuesta específica V1 de §28 restringe la concesión a `owner`. Queda como **propuesta de política**, no cambio aplicado a Better Auth.
+- **Importación anónima:** §3.2.19 planteaba fusión automática al crear cuenta, mientras §§19,21,25 exigen consentimiento. Se adopta la regla más protectora: **consentimiento explícito antes de toda importación**, tanto cuenta nueva invitada como existente; requiere confirmación de producto antes de implementarse.
+- **Sincronización:** §3.2.17 menciona fusionar operaciones independientes, pero §§25 y 29 proponen rechazo de versiones obsoletas por guía. Para V1, **conflicto explícito por versión** es la política provisional; optimizar fusiones independientes solo con pruebas de causalidad.
+- **Orden de PR:** §16 describe ocho checkpoints y §30 agrupa cuatro PR de implementación. Son **dos niveles de granularidad**, no calendarios incompatibles: mantener gates D0–D8 aunque se agrupen entregas únicamente con autorización.
+- **Cierre:** §17 mantenía «Fases 0–7 no iniciadas», aunque hubo inspección estática. Interpretar Fase 0 como **trabajo documental avanzado sin validación ejecutada**; Fases 1–7 continúan sin iniciar.
+
+---
+
 ## 0. Cómo usar este documento
 
 1. Leer `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md`, `STATUS.md`, `PROJECT_STATE.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `DATABASE.md`, `TESTING.md` y `docs/business/VECIDYA_PRODUCT_CATALOG.md`.
@@ -47,7 +89,7 @@ Transformar la biblioteca pública Aprende en una experiencia educativa de Vecid
 3. Las otras 42 guías requieren licencia **activa** Cuadra, Barrio o Ciudad. El registro gratuito **no** concede créditos ni desbloqueos. Suprimir el modelo anterior 10 anónimas + 5 por registro y todos sus contadores/prompts; verificar antes si hay datos heredados que requieran política de migración.
 4. Licencia comercial centralizada; Aprende no crea cobros ni suscripciones. Enlace hacia `/licencias` o detalle oficial validado y regreso seguro a la guía solicitada **solo cuando la licencia esté realmente activa**; puede requerir espera y activación manual.
 5. Acceso por **cuenta personal**: basta una organización donde el usuario sea propietario o colaborador activo con permiso explícito de Aprende, siempre que la organización tenga licencia activa. El progreso es personal, no propiedad de la organización.
-6. El permiso de colaborador para Aprende estará **desactivado por defecto** en invitaciones. Solo el propietario o actor con permiso de gestión autorizado podrá concederlo; no implica rol admin ni acceso a datos comerciales. Admin sin permiso Aprende no lo hereda automáticamente, salvo que sea propietario.
+6. El permiso de colaborador para Aprende estará **desactivado por defecto** en invitaciones. Para V1 se propone que solo el propietario organizacional pueda concederlo, pendiente de confirmación de producto; no implica rol admin ni acceso a datos comerciales. Admin sin permiso Aprende no lo hereda automáticamente, salvo que sea propietario.
 7. Al perder licencia, permiso o relación organizacional, se revoca acceso a las 42 guías; se conservan progreso y favoritos. Si otra organización habilita al usuario, el acceso continúa.
 8. Ni el cambio de organización activa ni el cierre de sesión transfieren datos de aprendizaje entre cuentas.
 
@@ -63,7 +105,7 @@ Transformar la biblioteca pública Aprende en una experiencia educativa de Vecid
 16. Sin conexión temporal: encolado de cambios **de progreso y favoritos**, persistidos localmente y sincronizados al reconectar; no prometer biblioteca descargable offline ni desbloqueos offline.
 17. Conflictos: fusionar operaciones independientes; para el mismo campo respetar acción explícita causalmente más reciente, incluyendo **desmarcar** y **reiniciar**. No usar unión ciega de checks ni sobrescribir todo el documento con la última copia.
 18. Al editar guías, preservar progreso de secciones equivalentes; nuevas o sustancialmente distintas quedan pendientes; eliminadas no cuentan en el denominador. Desbloqueos y favoritos no cambian por editar títulos.
-19. Historial anónimo de seis guías: persistencia local de lectura/favoritos cuando el navegador lo permita; al crear cuenta fusionar automáticamente, y al iniciar sesión en cuenta existente solicitar consentimiento antes de fusionar. Evitar fingerprinting. Al rechazar no transferir datos; limpiar adecuadamente estados privados al salir.
+19. Historial anónimo de seis guías: persistencia local de lectura/favoritos cuando el navegador lo permita; al entrar en cualquier cuenta obtenida por invitación, solicitar consentimiento explícito antes de importar o fusionar; Evitar fingerprinting. Al rechazar no transferir datos; limpiar adecuadamente estados privados al salir.
 20. Datos personales de aprendizaje no visibles para propietarios, otros colaboradores, GHL ni administradores ordinarios; cualquier acceso técnico extraordinario requiere base legal, autorización y auditoría separadas.
 
 ### 3.3 Criterios aprobados de contenido
@@ -368,9 +410,9 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
-| — | Fases 0–7 | NO INICIADAS | sin pruebas ni código nuevo |
+| 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |\n| — | Fases 1–7 | NO INICIADAS | sin pruebas ni código nuevo |
 
-**Próxima acción autorizable:** revisar este plan y aprobar **Fase 0** como checkpoint separado. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
+**Próxima acción autorizable:** validar bloqueos restantes de **Fase 0** y autorizar explícitamente el primer PR de implementación. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
