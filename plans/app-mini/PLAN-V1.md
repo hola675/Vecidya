@@ -505,6 +505,55 @@
 
 **Estado:** decisión de producto aprobada y documentada; resolver, migraciones, editor y pruebas aún no implementados. Esta decisión **resuelve la alternativa B del §25**.
 
+
+## 27. F2B — Contrato de migración V1→V2 y publicación histórica (especificación técnica, 2026-10-29)
+
+**Base inspeccionada en rama documental:** `app/features/miniweb/registry.ts` valida la configuración mediante claves exactas `version/templateKey/templateVersion/layoutVariant/modules`; cada módulo acepta `type/moduleVersion/enabled/sortOrder/layoutVariant/settings`, y el esquema actual impide repetir tipos por límite y reglas de validación. `db/queries/business-publication.server.ts` acepta snapshots schema 1–4, normaliza media y branding y conserva `draftRevision` y `publishedVersion`. Este contrato **no** implementa todavía V2.
+
+### Configuración V2 propuesta
+```ts
+type MiniWebConfigV2 = {
+  version: 2;
+  templateKey: string;
+  templateVersion: number;
+  layoutVariant: string;
+  modules: Array<{
+    instanceId: string; // identidad estable, distinta de type y sortOrder
+    type: string;
+    moduleVersion: number;
+    enabled: boolean;
+    sortOrder: number;
+    layoutVariant: string;
+    settings: unknown; // validador discriminado por type + moduleVersion
+  }>;
+};
+```
+**Reglas:** `instanceId` único por documento, inmutable al reordenar; `sortOrder` entero continuo 0..n-1; `type` puede repetirse solo para módulos declarados `repeatable` (galerías de imagen y video); portada/hero conserva unicidad y posición inicial; `settings` sin claves desconocidas ni HTML ejecutable; límites de número de módulos y tamaño del payload por definir con mediciones. No extender V1 cambiando su interpretación.
+
+### Migración de borradores y publicados
+1. Crear **lector dual**: V1 y V2; convertir V1 a V2 en memoria para editor sin escribir automáticamente ni modificar publicación.
+2. Generar IDs V1 deterministas y estables desde `organizationId` + índice/posición original + tipo, con algoritmo versionado; IDs nuevos V2 aleatorios/únicos. Validar duplicados y colisiones; el ID no concede autorización.
+3. Backfill **append-only** del snapshot actualmente publicado en `business_publication_version`, preservando el JSON y schemaVersion originales para auditoría. No reconstruir el histórico inexistente ni declarar que versiones sobrescritas antes del backfill son recuperables.
+4. Guardar V2 solo por mutación explícita autorizada, con `draftRevision` CAS y validación server-side de tenant y plantilla; publicar V2 en transacción que compruebe licencia, capacidad, derechos visuales DEC-10 y estado admin DEC-09.
+5. Mantener puntero público al snapshot vigente. Nueva publicación crea fila histórica inmutable y mueve puntero atómicamente; error de transacción deja intacta la publicación anterior.
+6. Restauración selecciona una versión propia, copia datos a borrador V2 y señala medios faltantes/incompatibilidades; nunca publica automáticamente. Para publicación posterior se revalidan derechos actuales, no los históricos.
+7. No eliminar medios de R2 mientras estén referenciados por snapshot público o versiones retenidas; separar desactivación lógica, cuota y GC físico. Definir política de retención antes de activar GC.
+8. Rollback: permitir lector legacy y mantener snapshot original; si se despliega escritor V2, el rollback del código no puede asumir que versiones V2 son legibles por el binario V1: usar flag de escritura, compatibilidad de lector y plan de despliegue escalonado.
+
+### Invariantes y casos focales
+- V1 original leído sin pérdida; convertir dos veces produce mismos `instanceId`.
+- Dos galerías del mismo tipo mantienen IDs y orden al guardar, mover, duplicar y publicar.
+- Hero no puede duplicarse ni moverse fuera de la primera posición.
+- Publicar y backfill concurrentes no crean dos versiones con mismo número.
+- Restauración de versión premium en cuenta rebajada no permite bypass de DEC-07/10.
+- Publicación congelada por DEC-09 no admite nuevas mutaciones MiniWeb; admin desactivada no reaparece por migración o restauración.
+- Dos cuentas distintas con `organizationId` distinto nunca comparten datos ni activos.
+- Snapshot publicado antes de migración conserva el mismo contenido público hasta publicación explícita.
+- Un medio referenciado en cualquier versión retenida no puede eliminarse físicamente.
+- Errores de backfill, migración o CAS no destruyen datos ni generan cobros.
+
+**Pendientes de diseño con coste/impacto:** límites de videos y medios, retención temporal/cantidad de versiones, catálogo real de plantillas, estrategia HTTP/SEO de MiniWeb desactivado. No inventar cifras ni fechas. **Estado:** especificación documentada; ninguna migración, prueba o despliegue ejecutado.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
