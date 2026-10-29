@@ -1,5 +1,7 @@
 import {
   MAX_MINIWEB_CONFIGURATION_BYTES,
+  MINIWEB_MODULE_REGISTRY,
+  MINIWEB_TEMPLATE_REGISTRY,
   parseMiniWebConfigurationJson,
   type MiniWebConfiguration,
   type MiniWebModuleType,
@@ -29,7 +31,7 @@ export type MiniWebConfigurationV2 = Readonly<{
 }>;
 
 export type MiniWebReadConfiguration = MiniWebConfiguration | MiniWebConfigurationV2;
-const moduleTypes = new Set<string>(["hero", "about", "contact", "hours", "services", "gallery", "location", "products", "articles", "faq", "team", "certifications", "testimonials"]);
+const activeTemplate = MINIWEB_TEMPLATE_REGISTRY["vecidya-default"];
 const MAX_V2_BYTES = 16384;
 const MAX_MODULES = 32;
 const instancePattern = /^[a-z][a-z0-9-]{0,63}$/;
@@ -62,10 +64,15 @@ export function parseMiniWebReadConfigurationJson(input: unknown): MiniWebReadCo
   for (const item of raw.modules) {
     if (!isRecord(item) || !keysMatch(item, ["instanceId", "type", "moduleVersion", "enabled", "sortOrder", "layoutVariant", "settings"])
       || typeof item.instanceId !== "string" || !instancePattern.test(item.instanceId) || ids.has(item.instanceId)
-      || typeof item.type !== "string" || !moduleTypes.has(item.type)
-      || item.moduleVersion !== 1 || typeof item.enabled !== "boolean"
+      || typeof item.type !== "string" || !Object.prototype.hasOwnProperty.call(MINIWEB_MODULE_REGISTRY, item.type)
+      || MINIWEB_MODULE_REGISTRY[item.type as MiniWebModuleType].availability !== "available"
+      || !activeTemplate.supportedModules.includes(item.type as MiniWebModuleType)
+      || item.moduleVersion !== MINIWEB_MODULE_REGISTRY[item.type as MiniWebModuleType].version || typeof item.enabled !== "boolean"
       || !Number.isSafeInteger(item.sortOrder) || (item.sortOrder as number) < 0 || (item.sortOrder as number) >= raw.modules.length
-      || orders.has(item.sortOrder as number) || item.layoutVariant !== "standard" || item.settings !== null) return null;
+      || orders.has(item.sortOrder as number)
+      || typeof item.layoutVariant !== "string"
+      || !MINIWEB_MODULE_REGISTRY[item.type as MiniWebModuleType].layoutVariants.includes(item.layoutVariant)
+      || item.settings !== null) return null;
     ids.add(item.instanceId);
     orders.add(item.sortOrder as number);
     modules.push({
