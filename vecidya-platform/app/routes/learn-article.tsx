@@ -210,6 +210,8 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
     <PublicLayout>
       <main className="public-page learn-article-page">
         <article>
+          {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} onCheckedChange={onCheckedChange}>
+            {({ toolbar, renderSectionActions }) => <>
           <div className="learn-article-feature">
             <header className="learn-article-header">
               <nav aria-label="Ruta de navegación" className="learn-article-breadcrumb">
@@ -226,7 +228,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ) : (
                 <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
               )}
-              {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} onCheckedChange={onCheckedChange} /> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
+              {toolbar}
               <div className="learn-article-quick">
                 <h2>En pocas palabras</h2>
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
@@ -258,6 +260,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   {section.bullets && <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}
                   {section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}
+                  {renderSectionActions(section.sectionId, section.heading)}
                 </section>
               ))}
               <p><a href="#contenido">Volver al inicio del contenido ↑</a></p>
@@ -283,6 +286,29 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               </div>
             </div>
           </div>
+            </>}
+          </LearnProgressControls> : <>
+            <div className="learn-article-feature">
+              <header className="learn-article-header">
+                <nav aria-label="Ruta de navegación" className="learn-article-breadcrumb"><Link to="/aprende">Aprende</Link><span aria-hidden="true">/</span><span>{article.category}</span></nav>
+                <p className="eyebrow">GUÍA PRÁCTICA · {article.category}</p><h1>{article.title}</h1><p className="learn-article-intro">{article.intro}</p>
+                <p className="learn-article-byline">Lectura aproximada: {readingMinutes} {readingMinutes === 1 ? "minuto" : "minutos"}</p>
+                {article.editorialDraft ? <p className="learn-article-byline"><strong>Borrador educativo de Aprende Vecidya</strong> · contenido asistido por IA, pendiente de revisión editorial y autoría</p> : <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>}
+                <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>
+                <div className="learn-article-quick"><h2>En pocas palabras</h2><ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul></div>
+              </header>
+              <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
+            </div>
+            <div className="learn-article-layout">
+              <div className="learn-article-toc-mobile"><details><summary>Índice · {progressPercent}%</summary><nav className="learn-article-toc-mobile__nav" aria-label="Índice del artículo"><strong>En esta guía</strong><ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`}>{section.heading}</a></li>)}</ol></nav></details></div>
+              <div className="learn-article-rail"><nav className="learn-article-toc" aria-label="Índice del artículo"><strong>En esta guía</strong><ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`}>{section.heading}</a></li>)}</ol></nav><Link className="learn-article-rail-link" to="/aprende">Explorar todas las guías <span aria-hidden="true">→</span></Link></div>
+              <div id="contenido" className="learn-article-body">{article.sections.map((section) => <section id={section.sectionId} key={section.sectionId}><h2>{section.heading}</h2>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}{section.bullets && <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}{section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}</section>)}
+                <p><a href="#contenido">Volver al inicio del contenido ↑</a></p>
+                <section className="learn-article-review" aria-labelledby="learn-review-title"><h2 id="learn-review-title">Repaso opcional: comprueba lo aprendido</h2><p>Si te sirve, responde con tus propias palabras y abre cada pista. Saltarlo no cambia tu progreso.</p><p><a href="#learn-related-title">Omitir el repaso y ver otras guías</a></p><ol>{article.enPocasPalabras.map((point, index) => <li key={point}><details><summary>{index === 0 ? "¿Cuál es la idea principal?" : index === 1 ? "¿Qué puedes aplicar?" : "¿Qué precaución debes recordar?"}</summary><p>{point}</p></details></li>)}</ol></section>
+                <div className="learn-article-cta"><p className="eyebrow">RELACIONADO CON VECIDYA</p><h2>{article.cta.copy}</h2><Link className="button button--primary" to={article.cta.to}>{article.cta.label}</Link></div>
+              </div>
+            </div>
+          </>}
         </article>
         <section className="learn-related" aria-labelledby="learn-related-title">
           <p className="eyebrow">SIGUE APRENDIENDO</p>

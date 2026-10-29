@@ -243,6 +243,8 @@ try {
         assert.equal(await mobileDetails.getAttribute("open"), null, "Elegir una sección cierra el índice compacto.");
         const destination = await activePage.locator(`[id="${firstSectionId}"]`).boundingBox();
         assert(destination && destination.y >= 60, "El destino de ancla no queda detrás del índice compacto cerrado.");
+        assert.equal(await activePage.locator(".learn-article-header .learn-section-progress").count(), 0, "Las acciones por sección no deben amontonarse en el encabezado.");
+        assert.equal(await activePage.locator(`[id="${firstSectionId}"] .learn-section-progress`).count(), 1, "Las acciones de avance deben aparecer dentro de su sección.");
         const progressButton = activePage.locator(".learn-section-progress button.button--secondary").first();
         await progressButton.click();
         assert.equal((await mobileSummary.textContent())?.trim(), `Índice · ${Math.round(100 / sample.sections.length)}%`, "El porcentaje del índice refleja el progreso recién marcado.");

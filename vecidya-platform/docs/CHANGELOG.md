@@ -1,5 +1,8 @@
 ## 0.9.1 — candidata local (2026-10-29; no publicada)
 
+- Corregido el diseño de avance en las guías: las acciones de completar y guardar el último punto aparecen junto al final de cada sección, mientras favoritos y avance global siguen en el encabezado. Las acciones anuncian el título de la sección a tecnologías de asistencia.
+- Añadida una comprobación E2E para impedir que los controles por sección vuelvan a amontonarse en el encabezado y verificar su ubicación correcta. Cambio solo local; sin publicación ni cambios de base de datos.
+
 - Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.
 - El usuario confirma que la prueba manual con NVDA y zoom 200 % fue ejecutada y aprobada. Se conserva como aceptación humana; no es certificación WCAG y los datos de navegador/lector/viewport no se registraron.
 - En el corte del PR #202, la retención 90/30 seguía pendiente de implementación y revisión legal/privacidad/costo. El checkpoint local siguiente implementa y prueba la purga; no se habilita en producción mientras la revisión legal siga abierta. Sin D1 remota ni deploy.
