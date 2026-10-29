@@ -1290,6 +1290,23 @@ Se comprobó por lectura del código que la comparación anterior omitía una se
 
 **Siguiente paso de implementación:** una vez aprobada la composición, convertir la maqueta en componentes React/CSS aislados con datos tipados; mantener el registro `available` y los permisos sin cambios hasta pasar pruebas focales y revisión visual.
 
+
+## 48. F6 — Endurecimiento focal del prototipo y diagnóstico del navegador (2026-10-29)
+
+**Cambio real:** `plans/app-mini/prototypes/miniweb-tiers-comparison.html`, commit `1543b494151aa50b3d1ca5a2e0f84fe7f2251f09`.
+
+- Se aplicó `minmax(0,...)` a columnas de hero Base/Pro para tolerar contenido largo sin forzar anchura.
+- Se aplicó `overflow-wrap:anywhere` a copy del hero, tarjetas de servicios, preguntas y marca para contener cadenas sin espacios.
+- El destino del enlace de salto `#preview` ahora admite foco programático mediante `tabindex="-1"`.
+- Se elevó el contraste del eyebrow Premium sobre fondo oscuro.
+- Estos son ajustes estáticos preventivos; **no** equivalen a validación visual ni a certificación WCAG.
+
+**Diagnóstico reproducido del entorno de prueba:** Playwright Python instalado, pero su navegador Chromium gestionado no está descargado. El Chromium del sistema `/usr/bin/chromium` **sí inicia** con `executable_path` y `--no-sandbox`. La descarga HTTPS directa de `raw.githubusercontent.com` desde el contenedor sigue fallando por conectividad, mientras la lectura del archivo desde el conector GitHub sí funciona. El bloqueo actual es **trasladar el contenido exacto del artefacto al contenedor**, no ejecutar Chromium.
+
+**Ruta siguiente:** usar un canal autorizado para disponer de la versión exacta del HTML en el entorno local y ejecutar una matriz focal 3×3; comparar capturas, DOM y overflow, y registrar PASS/FAIL. No sustituir el artefacto real por una reconstrucción aproximada para declarar tests aprobados.
+
+**Estado:** correcciones CSS/semánticas aplicadas en rama documental; navegador del sistema comprobado, pruebas del artefacto aún pendientes. No se modificaron `vecidya-platform`, CI, licencias ni despliegue.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
