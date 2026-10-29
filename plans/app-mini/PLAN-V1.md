@@ -2099,7 +2099,7 @@ No activar plantillas Pro/Premium en producción antes de: (1) aprobación visua
 **Estado:** revisión de fuente efectuada; prueba visual automatizada **bloqueada por transferencia del artefacto al navegador**, sin falsos PASS. PR #184 continúa abierto y sin merge/deploy.
 
 
-## 47. F6 — Paridad de contenido y semántica del prototipo (2026-10-29)
+## 47 bis. F6 — Paridad de contenido y semántica del prototipo (2026-10-29)
 
 **Corrección aplicada al prototipo HTML aislado:** commit `4a991202ce5d5f857f7e8eb5a6497d5d85471287` en `plans/app-mini/prototypes/miniweb-tiers-comparison.html`.
 
