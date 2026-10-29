@@ -2612,3 +2612,39 @@ El expediente de implementación (§78) y los contratos (§§79–80) son sufici
 **GOV-VERIFY revisado:** verificar que los archivos permanecen en `plans/app-mini/`, que sus referencias internas existen, que las decisiones del plan son consistentes y que no se atribuye implementación al código. **No** exige registro en la tabla canónica ni autorización de promoción. GOV-01 permanece **APPROVED en su alcance correcto: jerarquía interna del expediente**, no jerarquía del repositorio.
 
 **Consecuencia:** el bloqueo documental artificial identificado en §82 queda **RESUELTO por aclaración del responsable**. El siguiente trabajo es revisar referencias y coherencia del plan de desarrollo, siguiendo la separación que ya utiliza el proyecto Aprende, sin alterar gobernanza global ni añadir archivos rectores.
+
+
+## 84. Alineación con el patrón real de `plans/aprende` y cierre del alcance documental
+
+**Fuentes leídas:** `plans/README.md` y `plans/aprende/PLAN-V1.md` en `main` (lectura documental). El índice de `plans/` declara expresamente que contiene planes de trabajo futuros, que no describen funciones implementadas ni autorizan despliegues. Aprende utiliza un plan maestro funcional/técnico con decisiones, evidencia, arquitectura propuesta, seguridad, fases, pruebas focalizadas, aceptación y handoff; la ejecución posterior se registra por separado y requiere autorización.
+
+### 84.1 Contrato de equivalencia con Aprende
+
+| Dimensión del patrón Aprende | Equivalente APP-MINI | Veredicto |
+|---|---|---|
+| Plan en `plans/<producto>/PLAN-V1.md` | `plans/app-mini/PLAN-V1.md` | **ALIGNED** |
+| Decisiones explícitas y evidencia CODE/DOC/PROPUESTA | §§66–83 y actas | **ALIGNED**, conservar estado histórico |
+| Fronteras y permisos | §§69–71, 79–80 | **ALIGNED**, requiere validación física futura |
+| Contratos D1/CAS y migraciones futuras | §§70, 78–80 | **SPECIFIED**, no ejecutados |
+| Fases secuenciales con PR focales | IMP-01–12 (§78) | **ALIGNED** como handoff futuro; no crear PRs en esta planificación |
+| Seguridad, privacidad, QA y aceptación | §§72, 77, 79–80 | **SPECIFIED**, evidencias pendientes |
+| Acta de cierre del plan ≠ certificación de software | §§78–83 | **ALIGNED**, cierre documental condicionado |
+| Índice de `plans/` | solo enumera Aprende en `main` | **GAP de descubribilidad**: añadir enlace APP-MINI al índice **cuando se apruebe integrar el PR**, sin alterar documentación rectora |
+
+### 84.2 Corrección de los gates de planificación
+
+La política global de 20 documentos canónicos **no aplica a estos planes de desarrollo**; se cierra el falso bloqueo de promoción de §§81–82. La obligación de verificar todas las rutas de código citadas **no bloquea por sí sola el cierre del plan**: si una ruta corresponde a una hipótesis de implementación, se registra como verificación focal del ticket IMP correspondiente, como hace Aprende. Solo las rutas del expediente, la jerarquía de fuentes y las decisiones internas deben ser coherentes para entregar el plan.
+
+**Criterio de PLAN-READY DOCUMENTAL:** (a) alcance y no-alcance claros; (b) decisiones aprobadas separadas de pendientes; (c) contratos y riesgos con owner/gate; (d) dependencias y secuencia delegables; (e) pruebas focales definidas, no ejecutadas; (f) autorización de implementación pendiente. Los apartados (a)–(e) se consideran **DOCUMENTED** en §§66–84; (f) **NOT AUTHORIZED**. Por ello, **el expediente es apto para revisión de handoff documental**, sin afirmar que el código esté listo.
+
+### 84.3 Pendientes que viajan al ticket, no generan rondas interminables de plan
+
+- IMP-01/02: cotejar esquema físico, constraints y semántica D1/CAS; resolver ARC-01–04 antes de persistir/publicar.
+- IMP-03–06: validar nuevos componentes, horario DST y evidencia de 45 capturas; VIS-01 humana.
+- IMP-07/09: licencias y cupos atómicos; COM-01 define visibilidad/gracia antes de activar suspensión pública.
+- IMP-08: probar que importación opcional nunca consume horario V1.
+- IMP-10/11: pruebas focales, accesibilidad, seguridad, observabilidad y aprobación de release por SHA.
+- IMP-12: P6B aplazado hasta COM-01/PAY-01/BILL-02.
+- Índice `plans/README.md`: enlazar APP-MINI en un cambio documental autorizado al integrar el plan; no es requisito para seguir planificando.
+
+**Acta:** APP-MINI queda **PLANIFICACIÓN FUNCIONAL/TÉCNICA DOCUMENTADA — LISTA PARA REVISIÓN DE HANDOFF**, no implementada, no certificada y sin autorización para comenzar desarrollo. No se crea documentación rectora ni se impone un gate de catálogo canónico. El responsable conserva la aprobación final de diseño, seguridad y release.
