@@ -75,3 +75,41 @@ Panel interno: catálogo y precios versionados; asignación de licencias/add-ons
 5. Si la plataforma GHL permite exportar todos los eventos de consumo con la granularidad requerida; fallback a importación de reportes conciliados.
 
 **Principio de ejecución:** no bloquear el diseño ni B0/B1 por decisiones de pasarela; sí bloquear cobros reales, cambios de tarifa pública y automatizaciones irreversibles hasta validación. No tocar MiniWeb ni CRM operacional fuera de sus interfaces de licenciamiento.
+
+
+## 10. B0 — Matriz de monetización y reconciliación con catálogo existente (CODE, 2026-10-29)
+
+**Inventario verificado en `app/content/commercial-detail.ts`:** 3 licencias; 7 add-ons (IDs `whatsapp-business`, `telephony-sms`, `reputation-reviews`, `campaigns-diffusion`, `conversational-ai`, `voice-ai`, `connections-integrations`); 7 servicios (IDs `estructuracion`, `formalizacion`, `presencia-digital`, `visibilidad`, `automatizacion`, `inteligencia-artificial`, `desarrollo-empresarial`). **No crear SKUs duplicados** por la diferencia entre el título visible y el ID legacy.
+
+| Grupo | Qué se factura | Regla | Dependencia |
+| --- | --- | --- | --- |
+| Cuadra/Barrio/Ciudad | Licencia propia de Vecidya | 39/59/89 USD mensuales; sin 20 % automático | `organization_license`; CRM solo en org asignada |
+| Cuadra extra | Bloque de +3 publicaciones | Precio contractual por definir; no inventar tarifa | Cuenta titular, registro de ampliación F2A |
+| WhatsApp Business | Cuota nativa GHL y mensajes facturables | Cuota base GHL ×1,20; uso por tarifa nativa ×1,20 | Barrio/Ciudad, subcuenta y canal activado |
+| Telefonía y SMS | Números, SMS/MMS, llamadas y tasas de proveedor | Solo cargos reales GHL ×1,20; impuestos/tasas separados | Canal y país; no inventar fee mensual |
+| Reputación y Reseñas | Uso premium real de mensajes/IA | Función estándar ya incluida en CRM; no fee duplicado | Barrio/Ciudad y canales |
+| Campañas y Difusión | Envíos/canales premium reales | Configuración estándar incluida; consumo GHL ×1,20 | Consentimiento y canales |
+| IA Conversacional | Plan IA compartido o uso compatible | Un plan por localización, ×1,20 | Barrio/Ciudad; no duplicar plan de voz |
+| IA de Voz | Misma suscripción IA compartida + telefonía/uso extra | No segunda cuota IA; uso GHL ×1,20 | Telefonía habilitada y configuración |
+| Conexiones e Integraciones | Cargo externo real de app/API/ejecución | GHL ×1,20 si el cargo es GHL; otros proveedores requieren política específica | Integración estándar incluida no se cobra |
+| 7 servicios profesionales | Proyecto, implantación o gestión humana pactada | Presupuesto por alcance; **no** multiplicar mano de obra por tarifa GHL | Orden de servicio y aceptación |
+| Activaciones y tasas | Solo cargos comprobados y pactados | Desglosar, no camuflar en recargo | Evidencia de coste y contrato |
+
+**Regla aprobada DEC-BILL-01:** el 20 % es un **recargo fijo sobre la tarifa nativa GHL**, no una garantía de margen bruto 20 %. La tarifa histórica comercial del catálogo de 2026-10-20 `coste/0,80` queda obsoleta **para cargos revendidos de GHL**. No modificar precios base de licencias ni aplicar 20 % automáticamente a honorarios propios o proveedores distintos de GHL.
+
+**Deuda de consistencia identificada:** `app/content/commercial-detail.ts` sigue mostrando textos calculados con `PROVIDER_TARGET_MARGIN_PERCENT`, y `docs/business/VECIDYA_PRODUCT_CATALOG.md` contiene la regla anterior, precios piso 12,50/62,50/121,25 y referencia WhatsApp desde 15. **No actualizar páginas públicas parcialmente**: B1 debe unificar una sola fuente de tarifas versionadas y B7 reemplazar en un cambio coordinado toda afirmación antigua, conservando precios contratados en históricos.
+
+### B0.1 — Criterio de tarifas auditables
+Por cada cargo: `provider=GHL`, `provider_product_code`, `location_id`, `currency`, `country`, `unit`, `provider_price`, `source_url`, `verified_at`, `effective_from`, `markup_bps=2000`, `sell_price`, `rounding_policy`, `approval_status`. Separar tarifa de proveedor de cargo efectivamente incurrido y de línea facturada; si falta tarifa verificable, estado **pendiente de cotización** sin precio inventado.
+
+### B0.2 — Reglas de interfaz y factura
+Mostrar cada concepto con organización, producto, periodo, cantidad, precio unitario, base, consumo, impuestos/tasas externos, importe final y estado. Si una suscripción IA cubre dos funcionalidades, indicar **plan compartido** y no generar dos líneas mensuales. El total consolidado suma todas las organizaciones de la misma cuenta sin duplicar consumos, impuestos ni pagos.
+
+### B0.3 — Siguiente entrega técnica acotada
+1. B1-1: módulo puro de precio decimal con recargo fijo 2000 bps, redondeo documentado, casos fraccionarios, moneda y tests focales.
+2. B1-2: fuente de tarifas versionada, verificación/aprobación, sin migrar contratos existentes automáticamente.
+3. B2-1: asignaciones por cuenta y organización con permisos económicos independientes de Better Auth membership.
+4. B4-1: diseño de vista consolidada y detalle con datos tipados simulados claramente, sin fingir pagos reales.
+5. B7: cambio coordinado de catálogo público **solo** tras aprobar precios y evidencia; no publicar tarifas sin verificación.
+
+**Estado:** B0 inventario estructural completado por inspección estática; validación de precios unitarios oficiales, pruebas y ejecución de B1 pendientes.
