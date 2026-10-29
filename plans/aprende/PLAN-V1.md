@@ -16,17 +16,17 @@
 
 | Tramo | Estado | Criterio de cierre |
 | --- | --- | --- |
-| Definición de producto, límites y 6/42 | [x] Diseño aprobado | §§1,3,19; candidatas editoriales aún por validar |
+| Definición de producto, límites y 6/42 | [x] Diseño y selección editorial aprobados | §§1,3,19; el usuario aceptó las seis guías en revisiones actuales; distribución no desplegada |
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
 | Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
-| Fase 1 — identidad editorial y DTOs seguros | [~] Integrada; validación editorial pendiente | PR #183; manifest/DTOs; revisión y aceptación editorial 6/42 pendiente |
+| Fase 1 — identidad editorial y DTOs seguros | [~] Integrada; contenido de las seis gratuitas y clasificación 6/42 aceptados por el usuario para las revisiones actuales | PR #183; aceptación registrada en este checkpoint; distribución todavía no desplegada |
 | Fase 2 — licencias y grants | [~] Integrada por PR #185 | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; sin deploy |
 | Fase 3 — catálogo, previews y retorno | [x] Integrada por PR #186 | Filtros/etiquetas, retorno allowlisted y activación manual; QA y CI PASS |
 | Fase 4 — progreso y favoritos D1 | [x] Integrada por PR #187 | Migración `0032`, progreso personal, favoritos, reset epoch; Worker/D1, QA y CI PASS |
 | Fase 5 — sincronización y anonimato | [x] Integrada por PR #190 | Migración `0033`, sync idempotente, importación con consentimiento y cola temporal; Worker/D1 y CI PASS; producción pendiente de revisión de retención |
 | Fase 6 — itinerarios y UX | [x] Integrada por PR #193 en `main@3fdc17cc`; sin publicar | Progreso compartido por guía en nueve itinerarios, recomendaciones editoriales, ocultar/restaurar, repaso opcional y QA responsive/teclado |
-| Fase 7 — certificación y preparación de lanzamiento | [~] Certificación técnica local parcial | Worker/D1, privacidad de bundle, SEO, 48 guías y cuatro viewports pasan; falta revisión de seguridad independiente, aceptación editorial 6/42, retención, lector de pantalla y zoom 200 %. No habilita despliegue |
+| Fase 7 — certificación y preparación de lanzamiento | [~] Certificación técnica local parcial | Worker/D1, privacidad de bundle, SEO, 48 guías y cuatro viewports pasan; faltan revisión de seguridad independiente, retención, lector de pantalla y zoom 200 %. No habilita despliegue |
 
 **Lectura rápida:** §0 instrucciones; §§1–7 requisitos y contratos; §8 fases; §§9–16 validaciones, decisiones y PR; §17 bitácora; §§18–29 evidencias y decisiones ampliadas; §30 handoff. **En caso de discrepancia, las decisiones posteriores explícitas (§§19,25,27–29) refinan las propuestas anteriores, pero nunca sustituyen una decisión APROBADO sin confirmación del usuario.**
 
@@ -407,9 +407,9 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
-| 2026-10-29 | Preparación de perfiles y revisión humana; auditoría local y borradores FAQ en ocho guías | EN CURSO / APROBACIÓN DEL USUARIO PENDIENTE | 24 FAQ redactadas; el usuario revisará las seis candidatas gratuitas; `docs/TESTING.md`; PR #198 |
+| 2026-10-29 | Preparación de perfiles, auditoría y revisión humana | ACEPTADA POR EL USUARIO / PR #198 | Aprobación expresa de las seis guías gratuitas en sus revisiones vigentes, selección 6/42 y cambios editoriales de este checkpoint; gates legal, seguridad y accesibilidad continúan abiertos |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
-| 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / aceptación editorial pendiente | PR #183 integrada; 48 guideId, 387 sectionId, revisión 1, clasificación 6/42; tests de catálogo y privacidad ejecutados; gratuidad aún provisional |
+| 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / selección editorial 6/42 aceptada; distribución no desplegada | PR #183 integrada; 48 guideId, 390 sectionId actuales; aprobación de seis revisiones vigentes registrada abajo; tests de catálogo y privacidad ejecutados |
 | 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
 | 2026-10-29 | Fase 3: catálogo, preview y retorno | INTEGRADA | PR #186 en `main@9b39ffde`; 1.756 unitarias, QA responsive, typecheck/build/diff-check y CI PASS |
 | 2026-10-29 | Fase 4: progreso y favoritos personales | INTEGRADA | PR #187 en `main@67c2d1fa`; `0032`, Worker/D1 E2E, aislamiento, reset epoch, favoritos tras revocación, unitarias, QA, typecheck/build y CI PASS |
@@ -419,7 +419,7 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Fase 7 | EN CURSO — CERTIFICACIÓN LOCAL PARCIAL | Cierre requiere revisión de seguridad independiente, aceptación editorial de 6/42, política legal/operativa de retención, lector de pantalla y zoom 200 %; cualquier despliegue y migración remota conserva autorización específica |
+| — | Fase 7 | EN CURSO — CERTIFICACIÓN LOCAL PARCIAL | Cierre requiere revisión de seguridad independiente, política legal/operativa de retención, lector de pantalla y zoom 200 %; cualquier despliegue y migración remota conserva autorización específica |
 
 ### Preparación local para revisión humana y auditoría editorial (2026-10-29)
 
@@ -432,26 +432,26 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 
 Estos perfiles son lentes de lectura redactados para representar la audiencia declarada en `docs/ROADMAP.md`; no sustituyen entrevistas ni representan identidades, tamaños de empresa o resultados observados. Accesibilidad se evalúa transversalmente y con participantes reales que usen las tecnologías asistivas relevantes.
 
-**Roles humanos a asignar por una persona autorizada:** (1) responsable editorial que toma la decisión final y no aprueba su propio texto; (2) especialista del tema para validar afirmaciones y acciones; (3) verificador/a de fuentes que confirma que cada referencia respalda la frase y sigue vigente; (4) revisión profesional de privacidad/legal cuando haya obligaciones o jurisdicción; (5) revisión de lectura/accesibilidad y, cuando se requiera aceptación, lector/a con experiencia de uso relevante. Un solo perfil no prueba competencia legal ni de accesibilidad. El usuario confirma que realizará la lectura final y decidirá la aceptación de las seis candidatas gratuitas; aún debe revisar las revisiones vigentes y dejar registrada su decisión. Se registran persona y función reales, competencia pertinente, guía y `contentRevision`, fecha, fuentes consultadas, hallazgos y resultado `ACEPTAR`, `REVISAR`, `RETENER` o `RECLASIFICAR`.
+**Roles humanos a asignar por una persona autorizada:** (1) responsable editorial que toma la decisión final y no aprueba su propio texto; (2) especialista del tema para validar afirmaciones y acciones; (3) verificador/a de fuentes que confirma que cada referencia respalda la frase y sigue vigente; (4) revisión profesional de privacidad/legal cuando haya obligaciones o jurisdicción; (5) revisión de lectura/accesibilidad y, cuando se requiera aceptación, lector/a con experiencia de uso relevante. Un solo perfil no prueba competencia legal ni de accesibilidad.
 
-**Lista de lectura para el usuario (estado: pendiente; no constituye aprobación):**
+**Decisión del usuario (2026-10-29):** tras revisar el paquete, el usuario comunica «ya revise y apruebo todo». Se registra `ACEPTAR` para el contenido de las seis candidatas gratuitas en las revisiones listadas, para la selección editorial de acceso 6/42 y para los cambios editoriales de este checkpoint, incluidas las 24 FAQ nuevas y sus notas de fuentes/costos. La aprobación cubre las revisiones actuales y no se extrapola a las otras 42 guías completas ni a futuras revisiones. Se registra como decisión explícita del usuario en esta conversación; no se atribuyen nombre, credenciales profesionales, revisión legal ni pruebas de accesibilidad. Ningún contenido cambió después de esta decisión.
 
-| Guía candidata `always_free` | `contentRevision` vigente |
-| --- | ---: |
-| ¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo? (`que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo`) | 2 |
-| ¿Qué puede hacer una inteligencia artificial por un negocio? (`que-puede-hacer-una-inteligencia-artificial-por-un-negocio`) | 2 |
-| Automatizaciones: ahorrar tiempo sin complicar tu negocio (`automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio`) | 2 |
-| Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos (`dominio-hosting-sitio-web-como-funcionan`) | 1 |
-| Quiero llevar mi negocio a internet: ¿por dónde empiezo? (`como-empezar-a-digitalizar-un-negocio-desde-cero`) | 1 |
-| ¿Quién se encarga de qué? Organiza las tareas sin perseguir a tu equipo (`como-organizar-tareas-y-responsables-en-tu-equipo`) | 1 |
+**Registro de lectura y aceptación (revisiones vigentes al aprobar):**
 
-Registrar la decisión por guía sobre el texto y las fuentes de esa revisión; la clasificación 6/42 solo se cierra cuando las seis tengan `ACEPTAR` o se resuelva cualquier objeción mediante edición y nueva lectura.
+| Guía candidata `always_free` | `contentRevision` | Decisión |
+| --- | ---: | --- |
+| ¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo? (`que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo`) | 2 | ACEPTAR |
+| ¿Qué puede hacer una inteligencia artificial por un negocio? (`que-puede-hacer-una-inteligencia-artificial-por-un-negocio`) | 2 | ACEPTAR |
+| Automatizaciones: ahorrar tiempo sin complicar tu negocio (`automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio`) | 2 | ACEPTAR |
+| Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos (`dominio-hosting-sitio-web-como-funcionan`) | 1 | ACEPTAR |
+| Quiero llevar mi negocio a internet: ¿por dónde empiezo? (`como-empezar-a-digitalizar-un-negocio-desde-cero`) | 1 | ACEPTAR |
+| ¿Quién se encarga de qué? Organiza las tareas sin perseguir a tu equipo (`como-organizar-tareas-y-responsables-en-tu-equipo`) | 1 | ACEPTAR |
 
-**Límites de estado:** `editorialDraft` controla exposición de borradores; no registra por sí mismo identidad, fecha o alcance de una revisión. La aprobación editorial histórica del catálogo (PR #147) y el estado público del artículo no aprueban la selección de acceso 6/42. Toda modificación incrementa la revisión afectada; vuelve a requerir lectura humana antes de cerrar el gate. El usuario asumió la revisión de las seis candidatas gratuitas, pero no se registra aprobación hasta recibir su lectura y decisión sobre estas revisiones. La clase de acceso se confirma aparte.
+**Límites de estado:** `editorialDraft` controla exposición y no es recibo de aprobación. La aprobación editorial histórica del catálogo (PR #147) no era aprobación de la selección 6/42; esta selección queda ahora aceptada expresamente por el usuario para las seis guías de la tabla, sin publicarse ni desplegarse por este registro. Toda modificación posterior incrementa su revisión y requiere nueva lectura. La aceptación del contenido y el acceso 6/42 no cierra los gates legal/operativo, seguridad independiente ni accesibilidad.
 
-**Auditoría local RAN:** el catálogo contiene 48 guías, 6 categorías, 9 itinerarios, 390 `sectionId` estables y 6 candidatas `always_free` (una por categoría); el estado anterior tenía 387 secciones. Los 48 artículos tienen resumen y referencias HTTPS (2–6 fuentes; sin URL vacía o esquema no HTTPS), y los ejemplos presentes están marcados hipotéticos. El corte inicial encontró ocho guías sin FAQ; este checkpoint añade tres preguntas a cada una (24 FAQ en total), pendientes de lectura editorial. Tres secciones nuevas reciben `sectionId` estable; las guías que no agregaron secciones conservan sus identidades existentes. La auditoría focal de las seis candidatas encontró fuentes oficiales pertinentes, con tres grupos que necesitan nota de vigencia/jurisdicción: NIST Privacy Framework (1.1 todavía borrador), NIST AI RMF 1.0 (en revisión) e ICO (orientaciones de IA y PECR bajo revisión tras cambios legislativos). Se ajustaron localmente los alcances de esas referencias y la respuesta comercial de costos de IA para no prometer un fee mensual separado universal. Los ocho artículos quedan en revisión 3 (cuatro guías) o revisión 2 (cuatro guías). El usuario confirma que revisará las seis candidatas, pero todavía no se registra aceptación humana ni se cambia la decisión de acceso 6/42. Las fuentes, límites y resultados de estructura se registran en `docs/TESTING.md`.
+**Auditoría local RAN:** el catálogo contiene 48 guías, 6 categorías, 9 itinerarios, 390 `sectionId` estables y 6 candidatas `always_free` (una por categoría); el estado anterior tenía 387 secciones. Los 48 artículos tienen resumen y referencias HTTPS (2–6 fuentes; sin URL vacía o esquema no HTTPS), y los ejemplos presentes están marcados hipotéticos. El corte inicial encontró ocho guías sin FAQ; este checkpoint añade tres preguntas a cada una (24 FAQ en total), revisadas y aceptadas por el usuario junto con los demás cambios de este checkpoint. Tres secciones nuevas reciben `sectionId` estable; las guías que no agregaron secciones conservan sus identidades existentes. La auditoría focal de las seis candidatas encontró fuentes oficiales pertinentes, con tres grupos que necesitan nota de vigencia/jurisdicción: NIST Privacy Framework (1.1 todavía borrador), NIST AI RMF 1.0 (en revisión) e ICO (orientaciones de IA y PECR bajo revisión tras cambios legislativos). Se ajustaron localmente los alcances de esas referencias y la respuesta comercial de costos de IA para no prometer un fee mensual separado universal. Los ocho artículos quedan en revisión 3 (cuatro guías) o revisión 2 (cuatro guías); la aprobación registrada aplica a sus revisiones actuales. La evidencia técnica está en `docs/TESTING.md`.
 
-**Siguiente checkpoint:** resolver los gates abiertos de la Fase 7. Antes de producción deben aceptarse editorialmente las seis guías gratuitas y la clasificación 6/42, aprobarse retención/borrado de recibos y completarse las revisiones independientes de seguridad y accesibilidad. La validación de esta rama no implica despliegue ni migración D1 remota.
+**Siguiente checkpoint:** resolver los gates legales/operativos de retención y borrado de recibos, revisión independiente de seguridad y accesibilidad con lector de pantalla y zoom 200 %. La revisión editorial de las seis guías y la selección 6/42 ya está aceptada, pero el plan no está desplegado y esta aceptación no autoriza por sí sola despliegue o migración D1 remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
@@ -766,7 +766,7 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 
 **Decisión de producto confirmada por el usuario:** exclusivamente el rol `owner` de una organización puede conceder y revocar el permiso Aprende de sus colaboradores. No basta `admin`, ni ser titular de `billing_account`, ni seleccionar la organización activa. La verificación debe utilizar membresía organizacional real del actor y del destinatario en la misma organización. El propietario puede leer guías protegidas con licencia activa sin necesitar grant propio. Esta decisión sustituye formulaciones anteriores de «propietario o gestor autorizado».
 
-**Estado del plan:** `PLAN V1 CERRADO PARA IMPLEMENTACIÓN` significa requisitos, dependencias, contratos y alcance definidos; no equivale a producto publicado. Las fases 1–6 están integradas en `main@3fdc17cc`; la Fase 7 tiene certificación técnica local parcial, con gates editoriales, legales, de seguridad independiente y aceptación accesible aún abiertos. El detalle de evidencia y límites está en §17 y `docs/TESTING.md`.
+**Estado del plan:** `PLAN V1 CERRADO PARA IMPLEMENTACIÓN` significa requisitos, dependencias, contratos y alcance definidos; no equivale a producto publicado. Las fases 1–6 están integradas en `main@3fdc17cc`; la Fase 7 tiene certificación técnica local parcial. La aceptación editorial de las seis guías y la selección 6/42 ya está registrada; permanecen gates legales, de seguridad independiente y aceptación accesible. El detalle de evidencia y límites está en §17 y `docs/TESTING.md`.
 
 ### Matriz final de asuntos antes llamados bloqueos
 
@@ -775,7 +775,7 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 | B1 owner concede/revoca | **APROBADO**: exclusivamente `owner`; `admin` no concede | [x] decisión cerrada | Test focal de actor owner/admin/member y auditoría de cambios en PR entitlement |
 | B2 lifecycle legacy | **DEFINIDO**: fail-closed sin fila `active`; sin regularización automática | [x] política cerrada | Diagnóstico de datos solo lectura autorizado; tratamiento individual de excepciones antes de activar entitlement |
 | B3 CSRF y autorización | **DEFINIDO**: endpoint propio con control de sesión, Origin/CSRF, actor, destino y auditoría | [x] requisitos cerrados | Verificar patrón real del stack e implementar/testear endpoint en PR entitlement |
-| B4 seis guías gratuitas | **SELECCIÓN PROVISIONAL FIJADA**: seis slugs, uno por categoría, con IDs inmutables al implementar | [~] aceptación editorial de contenido pendiente | Revisión focal de texto/fuentes y confirmación editorial antes de publicar gratuidad |
+| B4 seis guías gratuitas | **SELECCIÓN EDITORIAL ACEPTADA** por el usuario para las seis revisiones actuales; los slugs/IDs se conservan | [x] decisión editorial y clasificación 6/42 aceptadas; sin deploy | Retención legal/operativa, seguridad independiente, accesibilidad y autorización específica antes de publicar gratuidad |
 | B5 retención y privacidad | **PROPUESTA BASE**: recibos 90 días, reintentos automáticos 30 días; no se aprueba retención legal sin revisión | [~] revisión legal/operativa pendiente | Medir costos, revisar aviso y borrado/exportación antes de migración y sincronización |
 | B6 conflictos de sync | **CONTRATO PROPUESTO**: versión/epoch, barrera de reset, ack idempotente y conflicto explícito | [x] diseño de prueba preparado | Implementar y probar concurrencia/duplicados/purga en PR sync |
 | B7 legado y copy comercial | **DEFINIDO**: no checkout; activación manual; no inventar créditos heredados | [x] límites fijados | Inspección de datos legacy y revisión de copy en PR catálogo |

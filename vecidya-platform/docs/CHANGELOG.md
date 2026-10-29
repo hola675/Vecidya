@@ -2,14 +2,14 @@
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — paquete local de revisión humana y auditoría
 
-- Define perfiles hipotéticos de cobertura y roles humanos con criterios, evidencia y decisiones separadas para contenido y clasificación de acceso. No representa entrevistas, personas reales ni aprobaciones.
+- Define perfiles hipotéticos de cobertura y roles humanos con criterios y evidencia separada. Los perfiles no representan entrevistas ni personas reales; la aprobación posterior del usuario se registra separadamente y con alcance explícito.
 - Auditoría estructural local del catálogo: 48 guías, 6 categorías, 9 itinerarios, 390 IDs de sección, fuentes HTTPS y seis candidatas 6/42; se redactan tres FAQ para cada una de las ocho guías que carecían de ellas. Tres secciones reciben IDs estables; cuatro guías quedan en `contentRevision: 3` y cuatro en `2` tras cambios de fuentes, costos y preguntas frecuentes.
-- El usuario confirma que revisará las seis candidatas gratuitas; su lectura y aceptación todavía no constan. FAQ nuevas, clasificación 6/42, revisión legal/operativa, seguridad y accesibilidad manual permanecen pendientes. Sin publicación, deploy, D1 remota ni firma editorial.
+- El usuario revisó y aprobó las seis candidatas gratuitas en sus revisiones vigentes, la clasificación editorial 6/42 y los cambios de contenido de este checkpoint. La aceptación no cubre las otras 42 guías completas ni revisiones futuras. Revisión legal/operativa, seguridad y accesibilidad manual permanecen pendientes. Sin publicación, deploy ni D1 remota.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 7 (certificación local parcial)
 
 - PR #193 integrada en `main@3fdc17cc`. Worker/D1 `0000–0033`, FK, autorización/revocación, bundle privacy, unitarias focales 81/81, QA 48 guías/9 rutas/4 viewports y consulta manual de licencias, typecheck, build, Drizzle y los workflows del PR pasan. Se actualizó la expectativa de CTA obsoleta en el E2E de licencias. Sin deploy/D1 remota.
-- No es lanzamiento: faltan aceptación editorial 6/42, aprobación legal/operativa de retención/borrado, revisión independiente de seguridad, lector de pantalla y zoom 200 %. AccessLint no pudo arrancar en Windows.
+- No es lanzamiento: la aceptación editorial 6/42 se registró después en el checkpoint de revisión humana; siguen pendientes la aprobación legal/operativa de retención/borrado, revisión independiente de seguridad, lector de pantalla y zoom 200 %. AccessLint no pudo arrancar en Windows.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 6 (PR #193 integrada; sin publicar)
 
