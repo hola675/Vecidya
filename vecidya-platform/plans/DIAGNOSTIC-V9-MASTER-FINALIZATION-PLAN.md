@@ -2477,3 +2477,31 @@ Por celda: (1) pertinencia al escenario, (2) pregunta concreta y regla, (3) tray
 
 ## Changelog adicional
 - **1.42.0 / 2026-10-29:** matriz explícita de 80 celdas no certificadas y evidencias focales D/S/C por escenario, con criterio de cierre verificable. Solo documentación.
+
+## 51. CONSOL-01 / TAX-G3 — semántica de respuestas neutrales y reglas (2026-10-29)
+**PLAN_ONLY.** Fuentes verificadas: `app/features/diagnostic/qbv2-rules.ts` blob `ffca84ac10af29983a2ed82c3e6395e8302e794f`; `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/v9-editorial-graph-audit.ts` blob `89bce38ab69d1b5c12d5a339fb8de923894da1c9`.
+
+### Contrato observado en el evaluador heredado
+- `answered`: `answers[question] !== undefined`. Incluye el valor explícito `unknown` como respuesta registrada; **no** significa evidencia suficiente.
+- `eq`: comparación estricta con valor esperado; `unknown` no satisface `eq(..., "operating")` ni `eq(..., "preparing")`.
+- `in`: exige cadena y pertenencia a valores declarados.
+- `and` requiere todas las condiciones; `or` cualquiera; `not` invierte el resultado booleano. La inversión de una condición especializada falsa permite conservar fallback genérico, sujeto a las demás condiciones de esa pregunta.
+- `q2_operational_status` usa `answeredV2("q2_has_customers")`, por lo que la respuesta `has_customers=unknown` permite **evaluar** la pregunta de estado; no garantiza orden real, renderizado ni continuación.
+
+### Tabla focal de consecuencias
+| Entrada | Resultado de regla documentado | Interpretación V9 permitida |
+| --- | --- | --- |
+| `has_customers=unknown` | `answered(has_customers)=true` | Se puede solicitar estado; historial sigue desconocido |
+| `operational_status=unknown` | `eq(status,operating)=false`; `eq(status,preparing)=false` | No asignar escenario operativo o prelaunch por inferencia |
+| `sector=unknown` | `eq(sector,grupo)=false` para los ocho selectores | Mantener ruta no especializada; no inferir nicho |
+| `has_customers=no` + `status=preparing` | Las reglas de piloto prelaunch basadas en `status=preparing` son candidatas | No atribuir ventas ni actividad histórica |
+| `status=paused` + `has_customers=yes` | `activeWithHistory=false` por exigir `operating` | No penalizar por omisión de ramas activas |
+| `q2_digital_tools_in_use=not_needed` | Opción `not_applicable` exclusiva en banco | No convertir preferencia declarada en madurez alta ni baja automáticamente |
+
+### Gate semántico antes de certificar
+El futuro agente debe distinguir **registro de respuesta**, **elegibilidad**, **aplicabilidad de la dimensión** y **suficiencia de evidencia** como cuatro estados independientes. Auditar también `unknown` explícito frente a pregunta omitida, cambio de respuesta y reevaluación de ramas; no equiparar `not_applicable` con evidencia negativa. El auditor de grafo detecta referencias y ciclos, pero no demuestra que una secuencia con respuestas neutrales sea alcanzable en ≤24+5 interacciones.
+
+**Estado:** semántica de reglas comprobada documentalmente; rutas reales, presupuesto y 80 celdas de suficiencia siguen NO DEMOSTRADOS. No hubo cambios de código, ejecución de pruebas ni CI.
+
+## Changelog adicional
+- **1.43.0 / 2026-10-29:** contrato de `answered/eq/in/and/or/not`, seis casos neutrales y gate de separación respuesta-elegibilidad-aplicabilidad-evidencia. Solo documentación.
