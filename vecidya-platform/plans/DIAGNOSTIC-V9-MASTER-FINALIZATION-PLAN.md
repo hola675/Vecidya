@@ -1406,3 +1406,64 @@ D-V9-001 a D-V9-023: APPROVED en sus alcances respectivos; D-V9-024 PENDING. Tex
 
 ## Changelog adicional
 - **1.23.0 / 2026-10-29:** D-V9-023 aprobada; guía de tono, biblioteca candidata es/en, sistema de microanimaciones, ocho tareas PLAN-TONE01–08, catorce criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 32. Decisión D-V9-024 — presentación híbrida adaptativa de preguntas (aprobada 2026-10-29)
+**Aprobación expresa:** «presentación híbrida adaptativa, una pregunta principal por vista y agrupación solo de campos breves inseparables». Estado APPROVED como criterio de experiencia y estructura de entrevista; exclusivamente PLAN_ONLY.
+
+### 32.1. Reglas de presentación y contabilización
+1. Mostrar **una pregunta o decisión principal por vista** como patrón por defecto; evitar pantallas de formulario extensas, ruido visual y desplazamientos innecesarios.
+2. Permitir agrupación solo de **campos breves semánticamente inseparables** que integren una misma decisión o respuesta (por ejemplo, un valor con su unidad), cuando ello mejore claridad y accesibilidad.
+3. **No agrupar preguntas independientes** bajo un mismo turno para eludir D-V9-020 ni el límite D-V9-019 de 24 + hasta 5 interacciones; si una vista requiere decisiones independientes, modelarlas y contarlas como turnos distintos o separarlas.
+4. Una pregunta presentada que requiere decisión consume una interacción aunque se responda «No sé», se omita o se cambie posteriormente; volver atrás o editar una respuesta ya contabilizada no añade una nueva interacción. Una aclaración semánticamente nueva sí cuenta.
+5. El formato de vista, las agrupaciones y las transiciones no alteran suficiencia de evidencia, selección adaptativa, ranking, scoring, consentimientos ni comparabilidad histórica.
+6. Mantener jerarquía visual clara: pregunta, contexto breve si necesario, opciones/entrada, acciones de avanzar/retroceder y progreso por hitos D-V9-022.
+7. La confirmación de respuesta y el paso a la siguiente vista deben ser fluidos pero reversibles; no avanzar de forma sorpresiva cuando haya múltiples selecciones, validación pendiente o riesgo de error.
+8. Priorizar uso móvil, controles táctiles accesibles, teclado, lectores de pantalla, foco, errores recuperables, latencia y dispositivos modestos; respetar movimiento reducido.
+9. Conservar respuestas, hitos y contador en pausa/reanudación y cambio es/en; evitar duplicación por recargas o fallos de red.
+10. La extensión excepcional después de 24 turnos requiere consentimiento explícito y se presenta como etapa diferenciada; el diseño híbrido no permite saltarse ese gate.
+
+### 32.2. Criterios editoriales para agrupar campos
+- **Admisible, sujeto a revisión:** campos de una misma respuesta indivisible, como cantidad y unidad, o una selección con precisión contextual breve.
+- **No admisible:** dos preguntas que puedan responderse por separado, dos dimensiones independientes, una pregunta comercial añadida, o subpreguntas ocultas en una tarjeta para reducir el contador.
+- **Caso dudoso:** documentar unidad semántica, carga cognitiva, posibilidad de omisión parcial y cómo se cuenta cada decisión antes de certificar el ítem.
+- La agrupación no convierte un conjunto de evidencias distintas en evidencia suficiente automáticamente.
+
+### 32.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-VIEW01 | Auditar pantallas, componentes, tipos de preguntas y navegación V9/QBV2 | Inventario de rutas, archivos, estados y SHA | No asumir implementación |
+| PLAN-VIEW02 | Definir patrón de una pregunta principal por vista | Especificación UX móvil/escritorio y jerarquía | Accesibilidad |
+| PLAN-VIEW03 | Establecer criterios formales de agrupación semántica | Matriz de ejemplos admitidos/rechazados es/en | Revisión editorial |
+| PLAN-VIEW04 | Alinear agrupaciones con unidad contable D-V9-020 | Contrato vista×decisión×turno y casos de edición | No eludir 24+5 |
+| PLAN-VIEW05 | Diseñar transición, validación, autoavance y navegación reversible | Flujos de interacción, errores y estados | Sin pérdida de respuesta |
+| PLAN-VIEW06 | Integrar conceptualmente hitos, microcopy y microanimaciones D-V9-021–023 | Especificación de presentación desacoplada | No afectar motor |
+| PLAN-VIEW07 | Documentar pausa, reanudación, idioma y recuperación de errores | Máquina de estados conceptual e idempotencia | Sin doble conteo |
+| PLAN-VIEW08 | Preparar pruebas focalizadas futuras C01–C10 y accesibilidad | Matriz de casos, conteos y resultados esperados | No ejecutar en PLAN_ONLY |
+
+### 32.4. Criterios de aceptación futuros
+1. La vista ordinaria presenta una decisión principal claramente identificable.
+2. Campos inseparables pueden convivir sin convertirse en decisiones ocultas.
+3. Dos preguntas independientes no consumen un único turno por compartir pantalla.
+4. «No sé» y «Prefiero omitir» cuentan como turno presentado.
+5. Volver atrás y editar no duplica contador.
+6. Una aclaración nueva consume turno y respeta consentimiento si supera 24.
+7. Las opciones múltiples no provocan autoavance antes de completar la decisión.
+8. La validación de errores no obliga a reiniciar entrevista.
+9. Hitos y mensajes reflejan eventos reales, no número de pantallas.
+10. Transiciones no bloquean interacción ni lectores de pantalla.
+11. En móvil, controles y textos siguen siendo legibles y utilizables.
+12. Cambiar idioma conserva respuestas y estructura semántica.
+13. Reanudación no repite preguntas ya contabilizadas por accidente.
+14. C01–C10 reciben vistas pertinentes sin imponer campos no aplicables.
+15. El formato de presentación no altera resultados del motor.
+16. El límite global de 29 turnos se mantiene sin agrupaciones artificiosas.
+
+### 32.5. Próxima decisión D-V9-025 — avance automático después de responder
+Opciones pendientes: **A** avanzar automáticamente en todas las respuestas válidas; **B** requerir siempre pulsar «Continuar»; **C** avance contextual: automático solo para selección única inequívoca y reversible, manual para múltiples selecciones, texto libre, datos sensibles o validaciones complejas (**recomendado provisionalmente**). Ninguna opción aprobada. Debe respetar accesibilidad, control del usuario, reducción de movimiento y evitar cambios inesperados.
+
+### 32.6. Estado
+D-V9-001 a D-V9-024 APPROVED en sus alcances respectivos. D-V9-025 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.24.0 / 2026-10-29:** D-V9-024 aprobada; patrón híbrido de preguntas, agrupación semántica sin eludir 24+5, ocho tareas PLAN-VIEW01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
