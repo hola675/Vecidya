@@ -33,11 +33,13 @@ export function evaluateMiniWebVisualAccess(
   requestedVariant: VisualVariant,
   licenses: readonly VerifiedVisualLicense[],
 ): VisualAccessDecision {
-  if (typeof billingOwnerId !== "string" || !billingOwnerId.trim()\n    || !Object.prototype.hasOwnProperty.call(minimumTier, requestedVariant)) {
+  if (typeof billingOwnerId !== "string" || !billingOwnerId.trim()
+    || !Object.prototype.hasOwnProperty.call(minimumTier, requestedVariant)) {
     return { allowed: false, effectiveTier: null, reason: "no_active_license" };
   }
   const tiers = licenses
-    .filter((license) => license !== null && typeof license === "object"\n      && license.active === true && license.billingOwnerId === billingOwnerId
+    .filter((license) => license !== null && typeof license === "object"
+      && license.active === true && license.billingOwnerId === billingOwnerId
       && VISUAL_TIERS.includes(license.tier))
     .map((license) => license.tier);
   if (tiers.length === 0) return { allowed: false, effectiveTier: null, reason: "no_active_license" };
