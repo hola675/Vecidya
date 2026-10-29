@@ -604,3 +604,21 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Decisiones aún abiertas antes de ejecutar:** (1) formato final de IDs editoriales y alias de slug; (2) retención de recibos sync y política de purga; (3) política de organizaciones sin fila de lifecycle; (4) autorizados a conceder grants Aprende; (5) consolidación de tablas secundarias de preferencias; (6) estrategia de publicación atómica para no exponer las 42 guías durante el cambio. Resolver cada una contra código y pruebas antes del bloque correspondiente, sin inventar comportamientos.
 
 **Evaluación de estado:** el plan documental de Fase 0 tiene criterios de salida definidos, pero **Fase 0 no se declara técnicamente aprobada**: faltan pruebas ejecutadas y validación de las decisiones abiertas. No hay autorización de implementación, merge ni despliegue.
+
+
+## 27. Identidad editorial estable y publicación segura (decisión técnica propuesta)
+
+**Evidencia estática:** `app/content/learn.ts` define `LearnArticle` con `slug`, `category`, `title`, `intro`, `excerpt`, `enPocasPalabras`, `relatedSlugs`, `cta` y `sections` sin identificador propio; cada sección tiene `heading`, párrafos, viñetas y bloques, sin `sectionId`. Los tests `learn-curriculum.test.ts` y `learn-content.test.ts` comprueban 48 guías, slugs únicos, estructura editorial y contenido concreto. Cambiar slug o títulos sin migración rompería referencias o pruebas.
+
+**Identidad propuesta:**
+- Añadir `guideId` opaco, inmutable y no derivado de título ni posición; el slug es ruta pública editable, no clave de progreso. Para las 48 guías actuales, asignar IDs una sola vez en manifiesto editorial versionado, sin reordenar ni modificar texto.
+- Añadir `sectionId` estable por guía; no usar índice de array ni texto de heading como identidad. Reordenar o editar una sección conserva su ID; dividir o fusionar secciones requiere mapa editorial explícito de equivalencias y política de progreso.
+- Añadir `contentRevision` entero positivo por guía; incrementar cuando cambie contenido semántico o la estructura de secciones. Cambios cosméticos no deben borrar checks. Un `revision_seen` anterior activa aviso de actualización y no marca automáticamente nuevas secciones como completas.
+- Mantener `slugAliases` como mapa explícito opcional de antiguas URLs a slug canónico, con redirección segura y sin crear nuevas identidades D1. Validar que aliases y slugs no colisionen.
+- Construir una única fuente editorial de clasificación `freeFullAccess`: exactamente seis `guideId`, uno por categoría; el resto de las 48 guías conserva preview pública y cuerpo protegido. No inferir gratuidad de orden, categoría o invitación.
+
+**Publicación segura:** primero introducir IDs, revisiones y DTOs allowlist con pruebas; después activar guard server-side para cuerpos y comprobar que las 42 guías nunca aparecen completas en SSR, loader, búsqueda o bundle cliente. Publicar la nueva experiencia solo después de que el guard esté operativo. Mantener 48 URLs públicas, seis cuerpos gratuitos y nueve itinerarios. Un rollback de interfaz no puede reactivar el loader antiguo que serializa cuerpos protegidos: el rollback debe conservar el guard.
+
+**Pruebas focalizadas nuevas:** unicidad de 48 `guideId`, `sectionId` por guía, revisiones válidas, seis gratuitas por categoría, ausencia de aliases duplicados, invariancia de progreso tras reordenamiento y cambio de slug, revisiones con nuevas secciones, no filtración de cuerpos en respuestas y artefactos cliente.
+
+**Pendiente:** el agente de implementación debe generar y revisar el manifiesto completo de IDs con el equipo editorial antes de congelarlo; no inventar equivalencias de secciones. Esta sección no cambia todavía contenido ni código.
