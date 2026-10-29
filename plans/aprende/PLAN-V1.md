@@ -455,3 +455,30 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Migraciones futuras:** aditivas, con índice único y FK comprobadas en D1 local; identificar número real de migración y rollback antes de escribir SQL. Sin migraciones remotas ni deploy.
 
 **Estado:** documentación; Fase 0 en progreso. No se ha implementado código.
+
+
+## 21. Fase 0 — contrato de progreso personal, sincronización y revisiones (propuesta técnica)
+
+**Evidencia CODE:** `app/content/learn.ts` define guías por `slug`, con `sections` sin ID estable; `app/routes/learn-article.tsx` genera anclas `section-${index+1}` y su loader devuelve el artículo completo; `app/content/learn-publication.ts` filtra publicación por `editorialDraft`, sin licencia; `db/client.server.ts` usa Drizzle con Cloudflare D1. Ninguna de estas fuentes implementa el progreso personal propuesto.
+
+**Contrato editorial:** agregar a cada guía un `guideId` inmutable (o usar slug como identidad solo si se garantiza alias/migración ante renombres), `contentRevision` semántica y a cada sección `sectionId` estable, independiente del título y posición. Validar IDs únicos por guía, orden explícito, y manifest de revisiones para mapear secciones equivalentes. El progreso solo considera secciones activas de la revisión vigente; una sección nueva significativa comienza sin marcar. Nunca inferir completado por scroll. Un cambio editorial no debe marcar una sección nueva automáticamente.
+
+**Tablas D1 propuestas, NO creadas:**
+- `learn_guide_progress`: `user_id`, `guide_id`, `revision_seen`, `last_section_id`, `updated_at`; UNIQUE `(user_id,guide_id)`; FK de usuario con cascada.
+- `learn_section_progress`: `user_id`, `guide_id`, `section_id`, `completed`, `updated_at`, `logical_version`; UNIQUE `(user_id,guide_id,section_id)`. No usar posición ni heading como clave.
+- `learn_favorite`: `user_id`, `guide_id`, `is_favorite`, `updated_at`; UNIQUE `(user_id,guide_id)`. Admitir favoritos de guías bloqueadas por licencia.
+- `learn_recent_visibility`: `user_id`, `guide_id`, `hidden_at` y última lectura; ocultar recientes no borra progreso.
+- `learn_recommendation_dismissal`: `user_id`, `guide_id`, `dismissed_at` y revocación; reversible.
+- `learn_sync_operation`: `user_id`, `operation_id`, `device_id`, `guide_id`, `operation_type`, `base_version`, `server_version`, `created_at`; UNIQUE `(user_id,operation_id)`; índice por usuario/guía/versión; retención limitada con ventana de reintentos definida. **No guardar cuerpos protegidos**.
+
+**Semántica de sincronización:** operaciones explícitas `section_check`, `section_uncheck`, `guide_mark_all`, `guide_reset`, `favorite_set`, `recent_hide`, `recommendation_dismiss` y reversión. Identificador idempotente por operación, versión monotónica asignada en servidor por guía y usuario, precondición `base_version`, y respuesta de conflicto con snapshot autorizado de progreso. Reset crea barrera de versión: operaciones antiguas no reviven checks. No aplicar unión OR de checks, ni ordenar por reloj del dispositivo. Reintentos del mismo `operation_id` devuelven el resultado ya registrado. Operaciones con versión obsoleta se rechazan o reconcilian solo mediante política determinista documentada y testeada.
+
+**Anonimato y sesión:** las seis guías gratuitas permiten progreso local; ningún dato anónimo entra en D1 sin una cuenta obtenida por invitación. Tras iniciar sesión, ofrecer importación consentida y revisión de conflictos para una cuenta existente. No mostrar botón de registro público. La cola offline conserva solo operaciones de progreso y favoritos, no contenido completo protegido. Revalidar licencia al solicitar cuerpo protegido; el progreso ya almacenado permanece si se suspende licencia.
+
+**Privacidad y control:** todas las consultas D1 de progreso se limitan al `session.user.id` del servidor, nunca a un `userId` suministrado por cliente; validar slugs, IDs, tamaños y operaciones; aplicar CSRF y límites de carga. El resumen público de las 48 guías no debe incluir `sections`, bloques, respuestas ni otros cuerpos protegidos en SSR, loader, hydration, búsquedas o caché.
+
+**Pruebas focalizadas adicionales:** dos dispositivos con check/uncheck; reset contra cola atrasada; reintento idempotente; revisión editorial con sección nueva; renombre de sección; borrado editorial; favorito en guía bloqueada; importación anónima con consentimiento; intento de escribir progreso ajeno; caducidad de licencia durante lectura; inspección de payload público sin contenido protegido.
+
+**Decisiones técnicas antes de migrar:** política de conflicto exacta, retención de operaciones, tratamiento de guía retirada, almacenamiento de alias de slug, y si versiones por guía bastan o se requieren versiones por agregado. Primero pruebas de contrato; después migraciones aditivas D1 local; ninguna modificación remota sin autorización.
+
+**Estado:** diseño documental de Fase 0, no implementación.
