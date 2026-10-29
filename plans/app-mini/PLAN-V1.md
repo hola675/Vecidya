@@ -2018,3 +2018,62 @@ Las composiciones son **valores iniciales editables**, no restricciones. Cualqui
 - **B / Producto:** definir política de turnos nocturnos, excepciones y «abierto ahora» (dueño: responsable Vecidya); bloquear GATE-HOURS hasta resolución.
 - **C / Ingeniería futura:** elección de tablas, transacciones, snapshots y API sin reutilizar horario V1 (dueño: agente de implementación); salida: diseño D1 revisado, no implementación en este PR.
 - **C / Seguridad futura:** política de consentimiento para equipo/testimonios y retención de medios (dueño: implementación + negocio); salida: especificación de autorización y retirada.
+
+
+## 70. Cierre de huecos de diseño — decisiones propuestas para ratificación
+
+**Naturaleza:** decisiones de planificación recomendadas, no aprobaciones humanas ni implementación. Sustituyen ambigüedades técnicas de §69; prevalecen las decisiones comerciales y de gobierno aún pendientes.
+
+### 70.1 Horarios nocturnos, festivos y excepciones (SPECIFIED)
+
+1. El día de la semana se interpreta en la zona IANA del negocio, nunca la del navegador. Formato 24 horas; intervalo normal [inicio, fin), sin incluir el extremo final.
+2. Los turnos que cruzan medianoche se representan con **intervalos partidos entre dos fechas locales**: por ejemplo lunes 22:00–martes 02:00 se almacena como lunes 22:00–24:00 y martes 00:00–02:00. **24:00** es un marcador de fin exclusivo, no una hora de inicio válida. El editor puede aceptar un turno nocturno y proponer el reparto, pero requiere confirmación explícita del usuario.
+3. Las excepciones tienen fecha local y tipo **cerrado**, **horario especial** o **nota informativa**. Precedencia: excepción cerrada > horario especial > horario semanal; la nota no cambia disponibilidad. Una fecha admite como máximo una excepción operativa; duplicados contradictorios se rechazan. Los festivos no se importan automáticamente: el usuario crea o confirma cada excepción.
+4. Un cierre excepcional de martes afecta el tramo que cae en martes incluso si procede de un turno iniciado el lunes. Los intervalos de fecha local se normalizan antes de aplicar precedencia. Cambio DST: se resuelve mediante zona IANA y fecha real; intervalos ambiguos/no existentes se muestran para corrección, nunca se desplazan silenciosamente.
+5. «Abierto ahora» **no es requisito de primera entrega**. Se publica horario declarado con zona horaria y aviso de posibles cambios; se habilitará indicador en fase posterior solo con motor probado en DST, medianoche, excepciones y latencia.
+6. Estado inicial V2: sin configurar. Ninguna lectura/importación/sugerencia desde horario V1. Si el horario no está configurado, la sección pública se oculta; no inventar «cerrado».
+7. Criterios HV2-06–12: turnos nocturnos, límites 00:00/24:00, festivo cerrado, horario especial, DST, excepciones contradictorias y ausencia de inferencia de «abierto ahora» deben contar con casos focales de aceptación.
+
+### 70.2 Editor V2 y publicación (SPECIFIED)
+
+**Flujo de edición:** crear borrador V2 → elegir familia y variante visual permitida → editar instancias S01–S12 → validación por sección → guardar revisión con control de versión CAS → previsualizar snapshot exacto → confirmar publicación → activar nueva versión inmutable → poder revertir a snapshot anterior. «Guardar» nunca significa «publicar». La vista previa se vincula a revisión concreta, no al estado mutable del editor. En caso de conflicto CAS, se preservan ambas versiones y se solicita resolución explícita.
+
+**Estados:** EMPTY, DRAFT, INVALID, READY, PUBLISHING, PUBLISHED, SUPERSEDED, ARCHIVED. Las transiciones y errores tienen mensajes accesibles. El renderer público no accede a borradores ni a credenciales; sirve únicamente snapshot publicado autorizado. La publicación verifica ownership, organización activa, cupo/licencia y versión CAS en servidor, no solo en UI. Las secciones desconocidas se registran como incidencia y no invalidan una publicación V1 existente.
+
+**Aceptación:** editar sin publicar no cambia URL pública; preview y publicación muestran el mismo snapshot; conflicto concurrente no pierde cambios; rollback restaura contenido anterior sin borrar historial; ninguna organización lee/edita/publica otra; al perder licencia se aplica política de visibilidad explícita sin borrado físico automático.
+
+### 70.3 Conversión voluntaria de publicación V1 (SPECIFIED)
+
+Solo se ofrece desde una publicación V1 que pertenece al usuario autorizado. Pantalla de consentimiento informa qué se copiará, qué no y que la publicación original no cambiará. Se elige familia y variante V2; se crea **un borrador nuevo**, no se sobrescribe el V1. Se copia selectivamente identidad pública, textos, contacto público, localización autorizada, medios autorizados y oferta compatible, con mapeo explícito por campo y reporte de omitidos. No se copian horarios V1 bajo ningún nombre, ni datos CRM privados, credenciales, IDs de secciones, estilos ni componentes V1. No se duplican entidades de negocio ni contactos. El borrador conserva ID de procedencia solo para auditoría de conversión, nunca como fuente dinámica de contenido.
+
+**Gates:** consentimiento verificable; mapeo versionado; permisos/medios; idempotencia mediante solicitud identificada; no publicar automáticamente; V1 intacto hasta publicación explícita V2; rollback lógico disponible; pruebas con V1 que tenga horario válido demuestran V2 vacío y ausencia de consultas al horario antiguo.
+
+### 70.4 Matriz visual de diseño (SPECIFIED, pendiente VIS-01)
+
+Las cinco familias comparten las doce secciones y acciones. **Base**: jerarquía tipográfica y bloques simples, navegación y CTAs accesibles. **Pro**: composición editorial avanzada, tarjetas y galería con mayor riqueza visual, sin funcionalidades adicionales. **Premium**: dirección de arte y ritmo visual más distintivos, composiciones de portada y transiciones opcionales respetando reduced-motion, sin funciones adicionales. Las 15 combinaciones (5 familias × 3 variantes) se validan en móvil, tableta y escritorio, además de estados vacío, error y contenido extenso. La aprobación VIS-01 requiere capturas reales y acta de aceptación; las definiciones aquí son criterios para diseñarlas, **no aceptación de capturas inexistentes**.
+
+### 70.5 Fases, responsables y salida (SPECIFIED)
+
+| Fase | Responsable propuesto | Dependencias | Entregable futuro / gate |
+|---|---|---|---|
+| P0 Contratos | Arquitectura + producto | CAT-01, decisión nocturnidad | esquemas S01–S12 y reglas de compatibilidad revisadas |
+| P1 Dominio y persistencia V2 | Backend + seguridad | P0 | D1 aislado, tenancy, CAS, snapshot, pruebas de aislamiento |
+| P2 Editor nuevo | Frontend + accesibilidad | P0, P1 | edición completa, validación, preview y estados |
+| P3 Renderer y familias | Diseño + frontend | P0, VIS-01 | 15 variantes y matriz responsive sin paridad funcional rota |
+| P4 Publicación y rollback | Backend + QA | P1–P3 | snapshot inmutable, ownership, cuotas, rollback |
+| P5 Conversión opt-in | Backend + frontend + QA | P1–P4 | mapeo consentido, auditoría, V1 intacto y horario V2 vacío |
+| P6 Servicios, pagos y lanzamiento | Producto + finanzas + operaciones | COM-01, PAY-01, BILL-02, REL-01, OPS-01 | política comercial aprobada y release autorizado |
+
+Cada fase exige revisión de seguridad, pruebas focales en archivos tocados y evidencia asociada al SHA; no ejecutar suites generales ni modificar CI global por defecto. El responsable humano aprueba decisiones comerciales y despliegue; los agentes no se autoaprueban. No hay estimaciones calendario fiables hasta asignar equipo y capacidad.
+
+### 70.6 Registro de decisiones aún humanas
+
+- **CAT-01:** confirmar cinco familias disponibles en los tres niveles, con paridad funcional (recomendado: sí).
+- **VIS-01:** aceptar las composiciones visuales reales, una vez presentadas.
+- **REL-01:** lanzar inicialmente con licencias administradas y checkout automático después (recomendado).
+- **COM-01/PAY-01/BILL-02:** moneda, tarifas GHL regionales, PSP, jurisdicción, impuestos, impago y condiciones contractuales; sin cifras o cobros públicos antes de aprobación.
+- **GOV-01:** consolidar documentos canónicos o aprobar excepción; recomendación: consolidación con índice y referencias, sin duplicar fuentes.
+- **OPS-01:** nombrar responsables humanos de diseño, seguridad y release.
+- **HV2-PRODUCT:** ratificar partición de turnos nocturnos, excepciones por fecha y no mostrar «abierto ahora» en primera entrega.
+
+**Resultado:** los cinco huecos de diseño enumerados al final de §69 quedan **SPECIFIED** como contratos y propuesta de secuencia. Las aprobaciones listadas siguen **PENDING HUMAN**, nunca CLOSED por silencio. El proyecto sigue en estado de planificación, no implementación.
