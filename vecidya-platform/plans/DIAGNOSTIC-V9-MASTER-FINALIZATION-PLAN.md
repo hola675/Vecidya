@@ -649,3 +649,61 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbri
 
 ## Changelog adicional
 - **1.11.0 / 2026-10-29:** D-V9-010 aprobada según opción A; presentación breve, trazabilidad interna no pública, tareas PLAN-T01–T06, criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 19. Decisión D-V9-011 — hoja de ruta «Ahora / Después / Más adelante» (aprobada 2026-10-29)
+**Aprobación expresa:** «hoja de ruta por etapas Ahora, Después y Más adelante, respetando prioridades y dependencias, sin plazos inventados». Estado APPROVED para producto; no autoriza implementación.
+
+### 19.1. Semántica de etapas
+- **Ahora:** acciones con prioridad o urgencia sustentada, y prerrequisitos que desbloquean otras acciones relevantes. No equivale a «hoy», «esta semana» ni a promesa de ejecución inmediata.
+- **Después:** acciones razonables tras completar habilitadores o atender prioridades anteriores; pueden coexistir acciones paralelas cuando no exista dependencia.
+- **Más adelante:** mejoras valiosas pero no bloqueantes o con menor prioridad contextual; no implica desinterés ni un calendario determinado.
+- La clasificación es una **secuencia relativa**, no un calendario. No inferir fechas, duraciones, costos ni disponibilidad de recursos.
+- Mantener ranking multicriterio D-V9-006 y objetivos confirmados D-V9-009. Las dependencias pueden alterar la secuencia de ejecución respecto del ranking, pero la excepción debe explicarse brevemente según D-V9-010.
+- No forzar acciones en las tres etapas si la evidencia solo sustenta una o dos. No rellenar etapas artificialmente.
+
+### 19.2. Reglas de planificación
+1. Separar prioridad de **orden ejecutable**: una acción de alto impacto puede requerir primero otra habilitadora.
+2. Registrar dependencias explícitas entre acciones, identificar ciclos y conflictos antes de producir una secuencia; no inventar relaciones causales.
+3. Admitir acciones paralelas y alternativas mutuamente excluyentes; no presentarlas como tareas obligatorias acumulativas.
+4. Con esfuerzo, recursos o dependencias desconocidos, mostrar incertidumbre y proponer una primera acción de validación si corresponde; no atribuir fechas.
+5. Si cambian objetivos confirmados, evidencia o contexto, versionar la hoja de ruta y recalcular etapas sin modificar arbitrariamente la madurez evaluada.
+6. No asignar «Ahora» a ofertas comerciales por disponibilidad del catálogo; servicios Vecidya y Aprende enriquecen las acciones **después** de ordenar y agrupar.
+7. Mantener utilidad para preparación, pausa, profesionales independientes, organizaciones sin venta directa y escenarios C01–C10.
+8. El resumen anónimo puede mostrar orientación inicial por etapas; el informe detallado autenticado contiene la hoja de ruta desarrollada, según contrato de vistas D-V9-005 aún por precisar.
+
+### 19.3. Contrato documental propuesto para cada acción
+Identificador y versión; objetivo confirmado relacionado (si existe); evidencia/área aplicable; prioridad multicriterio y justificación; etapa recomendada y motivo; dependencias con tipo y estado; alternativas/paralelismo; incertidumbres; condición observable para avanzar; recursos Aprende verificados y servicios Vecidya opcionales como enriquecimiento posterior. Estos son requisitos semánticos, no afirmación de campos existentes ni aprobación de esquema.
+
+### 19.4. Tareas para el agente futuro (especificar antes de codificar)
+| ID | Tarea documental | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-H01 | Inventariar el planificador actual, estructuras de acciones y dependencias en V9/QBV2 | Mapa de archivos, contratos, reglas y SHA | No asumir motor autónomo |
+| PLAN-H02 | Definir reglas de asignación a etapas sin tiempos absolutos | Tabla prioridad×urgencia×dependencias→etapa, con excepciones | Aprobación de producto |
+| PLAN-H03 | Especificar grafo de dependencias, alternativas, paralelismo y ciclos | Contrato de relaciones y pseudocódigo determinista | Ningún ciclo sin resolución |
+| PLAN-H04 | Definir condición observable de avance y replanificación | Estados, transiciones y eventos que justifican cambios | Sin fechas inventadas |
+| PLAN-H05 | Diseñar presentación en resumen anónimo e informe con cuenta | Ejemplos de hoja de ruta para C01–C10 | Coherencia con D-V9-005/010 |
+| PLAN-H06 | Definir incertidumbre, vacíos de etapa y ausencia de objetivos | Casos límite y fallbacks | Ninguna etapa rellenada artificialmente |
+| PLAN-H07 | Asegurar neutralidad comercial y desacoplamiento de Aprende/GHL | Diagrama de flujo evaluación→ranking→etapas→enriquecimiento | No retroalimentación comercial |
+| PLAN-H08 | Preparar pruebas focalizadas futuras de secuenciación y estabilidad | Matriz entradas→etapas/orden/explicaciones | Sin ejecutar en PLAN_ONLY |
+
+### 19.5. Casos de aceptación futuros
+1. Acción prioritaria bloqueada por otra: la habilitadora aparece primero, con explicación breve.
+2. Acciones independientes: pueden aparecer en paralelo en la misma etapa.
+3. Acciones alternativas: no se muestran como acumulativas obligatorias.
+4. Solo dos acciones pertinentes: no inventar una tercera etapa.
+5. Evidencia parcial: no inferir duración ni dependencia no sustentada.
+6. Objetivo modificado: reordenar acciones justificadamente sin alterar evaluación digital.
+7. Recurso Aprende retirado o servicio Vecidya no disponible: etapas y prioridades permanecen estables.
+8. Negocio en preparación u organización sin ventas: hoja de ruta pertinente sin exigir CRM, campañas o clientes.
+9. Ciclo de dependencias: no producir secuencia contradictoria; requerir resolución documentada.
+10. Mismas respuestas y reglas versionadas: mismo orden y etapas.
+
+### 19.6. Próxima decisión D-V9-012 — continuidad y seguimiento del plan
+Opciones a consultar: (A) hoja de ruta estática tras el diagnóstico, con opción de repetirlo; (B) seguimiento manual de acciones con estados, sin recalcular madurez automáticamente; (C) seguimiento manual, revisión periódica voluntaria y nueva evaluación explícita para actualizar madurez. La opción C parece coherente con continuidad, pero **no está aprobada**. No asumir notificaciones, plazos, automatizaciones ni integración CRM.
+
+### 19.7. Estado
+D-V9-001 a D-V9-011: APPROVED según sus secciones individuales; D-V9-012 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.12.0 / 2026-10-29:** D-V9-011 aprobada; etapas sin fechas, dependencias, paralelismo, tareas PLAN-H01–H08, criterios de aceptación y próxima decisión. Solo documentación.
