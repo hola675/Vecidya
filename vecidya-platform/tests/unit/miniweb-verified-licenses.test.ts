@@ -43,3 +43,19 @@ test("V2D: conserva el tier y billing account de la fila D1", async () => {
     { billingOwnerId: "owner-a", tier: "ciudad", active: true },
   ]);
 });
+
+test("V2D: descarta filas ajenas aunque el adaptador de consulta devuelva datos mezclados", async () => {
+  const { db } = fakeDatabase([
+    { billingOwnerId: "owner-b", tier: "ciudad", status: "active" },
+    { billingOwnerId: "owner-a", tier: "cuadra", status: "active" },
+  ]);
+  assert.deepEqual(await getVerifiedMiniWebVisualLicenses(db, "owner-a"), [
+    { billingOwnerId: "owner-a", tier: "cuadra", active: true },
+  ]);
+});
+
+test("V2D: no consulta D1 con identificador de tipo inválido", async () => {
+  const { db, wasQueried } = fakeDatabase([]);
+  assert.deepEqual(await getVerifiedMiniWebVisualLicenses(db, null as unknown as string), []);
+  assert.equal(wasQueried(), false);
+});
