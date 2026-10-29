@@ -1747,3 +1747,81 @@ D-V9-001 a D-V9-028 APPROVED en sus alcances respectivos. D-V9-029 PENDING; arqu
 
 ## Changelog adicional
 - **1.28.0 / 2026-10-29:** D-V9-028 aprobada; retención móvil de siete días desde guardado válido, tabla de eventos, ocho tareas PLAN-TTL01–08, dieciocho criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 37. Decisión D-V9-029 — borrador anónimo exclusivamente local, sin respaldo de servidor (aprobada 2026-10-29)
+**Aprobación expresa:** «almacenamiento local en el navegador para borradores anónimos, sin respaldo de servidor». Estado APPROVED como decisión arquitectónica de producto; exclusivamente PLAN_ONLY.
+
+### 37.1. Alcance y límites de arquitectura
+1. El **borrador anónimo incompleto** de Diagnóstico V9 se guardará en almacenamiento del **navegador del mismo dispositivo**, sin crear una copia de recuperación del borrador en el servidor.
+2. La reanudación depende de conservar los datos del navegador y del mismo contexto compatible (origen/perfil/modo de navegación); **no** se promete recuperación tras borrado de datos, modo privado, bloqueo de almacenamiento o cambio de dispositivo.
+3. La política de D-V9-028 se mantiene: **7 días desde el último guardado válido confirmado**, con verificación de caducidad **antes de mostrar o restaurar** el borrador; las visitas y animaciones no renuevan el plazo.
+4. La expiración impide reanudar y debe desencadenar limpieza local cuando la aplicación vuelva a ejecutarse; **no** prometer eliminación física exacta en el instante del vencimiento mientras el navegador esté cerrado ni eliminación de backups del dispositivo.
+5. Proporcionar control de **descartar borrador** y comenzar de nuevo, con alcance y consecuencias explicados en español e inglés.
+6. Guardar únicamente el **mínimo estado necesario** para restaurar respuestas, ruta/versión, hitos, contador 24+5, consentimiento de extensión vigente y preferencia de avance; evaluar por campo sensibilidad y necesidad.
+7. No guardar tokens de autenticación, secretos, credenciales, información comercial innecesaria ni datos personales opcionales que no sean imprescindibles para la evaluación.
+8. El almacenamiento local **no es sinónimo de cifrado, confidencialidad garantizada ni aislamiento frente a scripts del mismo origen, extensiones o personas con acceso al dispositivo**. Requiere revisión de amenazas, CSP/XSS, minimización, acceso y políticas de privacidad.
+9. No enviar el borrador al servidor por autosave, telemetría, logs, analytics, error tracking ni servicios terceros; definir controles que impidan capturar respuestas accidentalmente. Las solicitudes necesarias para evaluar preguntas o generar resultados deberán documentarse **separadamente** y no podrán presentarse como respaldo de borrador.
+10. No utilizar borradores anónimos para marketing, seguimiento comercial ni GHL. La transición voluntaria a cuenta/reclamo de informe D-V9-005 requiere flujo, autorización y política de datos independientes.
+11. Seleccionar la tecnología concreta (por ejemplo, IndexedDB u otra alternativa) **solo tras auditoría técnica** de tamaño, seguridad, compatibilidad, migración y facilidad de eliminación. No afirmar que ya está implementada.
+12. Ante cuota agotada, almacenamiento bloqueado, datos corruptos, versión incompatible o fallo de escritura, permitir continuar cuando sea viable, advertir que la reanudación podría no estar disponible y **no** declarar «guardado» si no se confirmó.
+13. Reanudar sin duplicar turnos, consentimiento, hitos, mensajes de éxito o efectos; la preferencia de avance se restaura para la misma evaluación.
+14. Separar explícitamente el ciclo de vida del **borrador incompleto** del de resultados finales, cuentas, informes y cualquier almacenamiento legítimo del backend, sin inferir políticas de retención de estos últimos.
+
+### 37.2. Riesgos y salvaguardas por diseñar
+| Riesgo | Salvaguarda documental requerida |
+| --- | --- |
+| Dispositivo o perfil compartido | Aviso claro, descarte fácil y minimización |
+| Borrado del navegador/modo privado | Explicar que la recuperación no está garantizada |
+| XSS/scripts del mismo origen | Auditoría de amenazas, CSP, dependencias y acceso |
+| Telemetría o errores que capturen respuestas | Contrato de exclusión/redacción de datos |
+| Reloj del dispositivo manipulado | Política de verificación y límites honestos de garantía |
+| Caducidad mientras la app está cerrada | No reanudar al volver; limpieza al próximo acceso |
+| Estado corrupto/incompatible | Descartar o recuperar solo datos verificables, nunca inventar |
+| Cambios de versión editorial | Política de migración compatible o reinicio informado |
+| Almacenamiento no disponible | Continuidad en sesión cuando sea viable, aviso explícito |
+| Consentimiento de extensión previo | Validar alcance/vigencia antes de usar turnos 25–29 |
+
+### 37.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-LOCAL01 | Auditar almacenamiento, telemetría, red y sesiones V9/QBV2 | Inventario de rutas, archivos y SHA | No asumir que es local hoy |
+| PLAN-LOCAL02 | Definir esquema mínimo y clasificación de sensibilidad | Matriz campo×finalidad×retención×riesgo | Minimización |
+| PLAN-LOCAL03 | Seleccionar tecnología de navegador y compatibilidad | ADR comparando alternativas y degradación | Revisión de seguridad |
+| PLAN-LOCAL04 | Especificar guardado válido, TTL móvil de 7 días y descarte | Contrato de eventos, caducidad y limpieza | D-V9-028 |
+| PLAN-LOCAL05 | Auditar amenazas de scripts, extensiones, dispositivos compartidos y telemetría | Modelo de amenazas y mitigaciones | Sin falsas garantías de cifrado |
+| PLAN-LOCAL06 | Diseñar UX de guardado, reanudación, eliminación y errores es/en | Flujos y microcopy certificado | Accesibilidad |
+| PLAN-LOCAL07 | Definir compatibilidad editorial, idempotencia y restauración 24+5 | Contrato de versión, migración y contadores | Sin duplicación |
+| PLAN-LOCAL08 | Separar claramente borrador local de informe final y cuenta | Diagrama de flujos y políticas de datos | D-V9-005; sin GHL |
+| PLAN-LOCAL09 | Preparar pruebas focalizadas futuras de almacenamiento y privacidad | Matriz de expiración, corrupción, cuota, idioma y red | No ejecutar en PLAN_ONLY |
+
+### 37.4. Criterios de aceptación futuros
+1. Un borrador anónimo incompleto no genera copia de recuperación en servidor.
+2. El estado guardado se restaura solo desde el navegador/dispositivo compatible.
+3. Borrar datos del navegador puede eliminar irrecuperablemente el progreso, y esto se comunica.
+4. Siete días desde el último guardado válido confirmado determinan la caducidad.
+5. Visitar la página o animar el progreso no renueva el TTL.
+6. Un borrador caducado no se muestra ni se reanuda.
+7. La limpieza se efectúa cuando la aplicación vuelve a ejecutarse, sin prometer borrado con navegador cerrado.
+8. El usuario puede descartar voluntariamente el borrador.
+9. El guardado fallido no se presenta como exitoso.
+10. Almacenamiento bloqueado o lleno ofrece salida clara y no bloquea innecesariamente la entrevista.
+11. No se incluyen secretos ni datos innecesarios en el borrador.
+12. Respuestas no se envían a telemetría, logs ni analytics como respaldo encubierto.
+13. La reanudación conserva contador 24+5, hitos y preferencia.
+14. El consentimiento excepcional se valida antes de continuar.
+15. Cambio de idioma no duplica turnos ni crea copias.
+16. Versión incompatible recibe manejo explícito sin inventar respuestas.
+17. La privacidad no se describe como cifrado garantizado por el mero almacenamiento local.
+18. El borrador no depende de GHL ni de crear cuenta.
+19. La reclamación de informe detallado sigue un flujo distinto y voluntario.
+20. Se documentan límites de seguridad en dispositivos compartidos.
+
+### 37.5. Próxima decisión D-V9-030 — datos permitidos en borrador local
+Alternativas pendientes: **A** guardar todas las respuestas de entrevista, salvo secretos y credenciales; **B** guardar solo respuestas estructuradas y estado mínimo, excluyendo texto libre potencialmente sensible (recomendado provisionalmente por privacidad, con advertencia de pérdida de campos); **C** permitir también texto libre con aviso específico y opción de excluirlo del guardado. Ninguna opción aprobada. Antes de decidir, verificar qué campos reales son necesarios para C01–C10 y evitar perder continuidad de forma sorpresiva.
+
+### 37.6. Estado
+D-V9-001 a D-V9-029 APPROVED en sus alcances respectivos; D-V9-030 PENDING. Tecnología concreta, amenazas y reglas de datos PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.29.0 / 2026-10-29:** D-V9-029 aprobada; arquitectura de borrador local sin respaldo servidor, límites de seguridad, nueve tareas PLAN-LOCAL01–09, veinte criterios de aceptación y próxima decisión. Solo documentación.
