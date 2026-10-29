@@ -2287,3 +2287,40 @@ Casos focales: alta autorizada, alta duplicada idempotente, actor sin permisos, 
 **Controles:** ninguna revisión de un agente sustituye la aprobación humana. El responsable decide sobre la evidencia aportada, no sobre supuestos. La aprobación de diseño no autoriza release; la de seguridad no habilita pagos; la aprobación de release requiere confirmación explícita por versión/entorno y checklist. No desplegar, fusionar ni ejecutar código desde esta tarea documental.
 
 **Impacto:** se elimina el bloqueo de «¿quién tiene autoridad final?» en OPS-01. Permanece pendiente asignar ejecutores/revisores técnicos y presentar evidencias para cada gate. COM-01, PAY-01 y BILL-02 siguen pendientes; GOV-01, CAT-01, HV2-PRODUCT y REL-01 continúan aprobados.
+
+
+## 77. Plan de cierre de evidencias — diseño, seguridad y release
+
+**Alcance:** documentos de entrega a futuros agentes. La autoridad de aprobación final corresponde al responsable del proyecto (§76); **ninguna evidencia ni aprobación se presume**.
+
+### 77.1 Paquete VIS-01 para aprobación visual
+
+Cada entrega visual futura deberá contener: identificador de familia, variante Base/Pro/Premium, SHA de implementación, dispositivo y dimensiones, estado del contenido, capturas reales, URL de preview restringida, lista de hallazgos, severidad, corrección y solicitud de decisión. La matriz base es de **5 familias × 3 variantes × 3 viewports = 45** evidencias, ampliada con estados vacío, largo, error, horario nocturno y excepciones. Las pruebas de teclado, contraste y reduced-motion se adjuntan como evidencia separada. El responsable puede aprobar por lote solo si el lote identifica exactamente las combinaciones y excepciones incluidas; silencio o aprobación de una familia no extiende el permiso a otras.
+
+**Plantilla de veredicto:** `VIS-01 / SHA / alcance / accepted|changes_requested|blocked / observaciones / aprobador / fecha`. No afirmar conformidad WCAG formal sin auditoría correspondiente.
+
+### 77.2 Paquete SEC-QA para aprobación técnica
+
+Inventario mínimo de superficies: identidad, organizaciones y roles, límites tenant, borradores y snapshots públicos, medios, conversiones V1→V2, Horario V2, cupos/licencias y operaciones administrativas. Exigir matriz de amenazas con casos de lectura/escritura cruzada, escalada de permisos, publicación por terceros, filtración de datos privados, inyección de contenido/URLs, abuso de subida de medios, replay/idempotencia y concurrencia CAS. Cada riesgo incluye mitigación, prueba focal futura, severidad residual y propietario. La aprobación humana requiere informe técnico y evidencia reproducible; un build verde por sí solo no basta.
+
+**Gates negativos obligatorios:** nunca importar horario V1; no leer borradores desde URL pública; no publicar sin autorización/entitlement; no duplicar cargo ni activar checkout; no modificar snapshots V1; no ejecutar GC físico automático. Los resultados se adjuntarán después de implementar, sin anticipar PASS.
+
+### 77.3 Paquete RELEASE para autorización puntual
+
+Checklist de preproducción: decisiones aplicables aprobadas, SHA exacto, diff revisado, migraciones con rollback probado, respaldo y restauración, permisos y secretos, límites de cuota, snapshots V1, evidencias VIS-01/SEC-QA, smoke DEV focal, observabilidad, responsable de guardia, procedimiento de reversión y comunicación. La autorización expresa debe incluir **SHA + entorno + ventana + alcance**; una autorización para staging no habilita producción. Si cambia el SHA o falla un gate, se vuelve a solicitar aprobación.
+
+**Prohibiciones:** este plan no ejecuta despliegue, no modifica CI, no hace merge, no crea migraciones ni declara QA terminado.
+
+### 77.4 Registro de pendientes de cierre
+
+| ID | Estado actual | Evidencia o decisión requerida | Autoridad |
+|---|---|---|---|
+| GOV-01 | APPROVED | verificación documental previa a merge | responsable del proyecto |
+| OPS-01 autoridad final | APPROVED | ejecutores y revisores técnicos por asignar | responsable del proyecto |
+| VIS-01 | PENDING EVIDENCE | 45 capturas base y accesibilidad | responsable del proyecto |
+| SEC-QA | PENDING EVIDENCE | amenazas, pruebas focales, aislamiento y revisión | responsable del proyecto |
+| RELEASE | NOT AUTHORIZED | SHA/entorno/ventana y gates firmados | responsable del proyecto |
+| COM-01 | PENDING HUMAN | política comercial mínima para P6A | responsable del proyecto |
+| PAY-01/BILL-02 | DEFERRED | proveedor, fiscalidad y facturación automática P6B | responsable del proyecto |
+
+**Resultado de planificación:** paquetes de aprobación VIS-01, SEC-QA y RELEASE definidos; no son entregables ya verificados.
