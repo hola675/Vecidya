@@ -963,6 +963,42 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado:** política comercial y funcional **aprobada y documentada**. Las plantillas Pro/Premium futuras son un diseño de catálogo, **no** plantillas existentes ni entregadas. No se modificó código, precios, tests ni producción.
 
+
+## 39. F6 — Estrategia de catálogo visual por familias y niveles (PROPUESTA, 2026-10-29)
+
+**Deriva de DEC-18 aprobada:** mismo constructor completo y módulos para Cuadra, Barrio y Ciudad; únicamente varía el acceso a plantillas/variantes visuales. **Este apartado propone criterios de calidad y organización; no modifica derechos ni se considera aprobado por silencio.**
+
+### Ejes independientes
+1. **Familia de negocio:** general, servicios, comercio/catálogo, gastronomía, profesional; categorías de descubrimiento, nunca permisos de sección.
+2. **Nivel visual mínimo:** `cuadra`, `barrio`, `ciudad`; orden creciente, resuelto con DEC-10 por titular.
+3. **Variante de diseño:** `base`, `pro`, `premium` cuando exista y tenga renderer real. No generar variantes nominales que solo cambien color.
+4. **Estilo editorial:** minimalista, cálido, audaz, clásico, etc., como etiquetas de búsqueda, no nueva jerarquía comercial.
+
+### Diferenciación tangible sin bloquear funciones
+| Nivel | Valor visual propuesto | No restringir |
+| --- | --- | --- |
+| Cuadra | Diseño profesional, identidad personalizable, rejillas y secciones bien compuestas, responsive completo | Productos, galerías, videos habilitados, FAQ, horarios, historial, SEO básico, controles del editor |
+| Barrio | Composiciones editoriales más variadas, jerarquías sofisticadas, tratamientos visuales de medios, variantes Pro por familia | Ningún módulo funcional |
+| Ciudad | Dirección artística distintiva, composiciones premium, sistemas visuales de marca más ricos y motion accesible si se soporta | Ningún módulo funcional |
+
+**Principio de calidad:** Cuadra nunca debe parecer una demo. Barrio/Ciudad no deben ser solo cambios de color, fuentes o un par de adornos. No prometer animaciones, efectos o layouts que el renderer aún no implemente. Cada variante premium requiere diferencia perceptible, accesibilidad, rendimiento y compatibilidad con contenidos reales.
+
+### Catálogo y flujo de selección
+- Mostrar primero **familia de negocio** y después todas las plantillas compatibles, etiquetadas por `Cuadra`, `Barrio`, `Ciudad`; permitir filtrar por estilo y nivel.
+- Ofrecer preview móvil/tableta/escritorio a todos los usuarios desde el editor de tableta/escritorio; preview no concede derecho de publicación.
+- Plantillas superiores pueden visualizarse con etiqueta de nivel y CTA informativo de mejora; nunca ocultar que Cuadra puede construir el mismo contenido.
+- Al cambiar de plantilla, preservar módulos/datos; informar incompatibilidades visuales y no borrar contenido. Los diseños premium no pueden depender de secciones exclusivas.
+- Proponer al menos una plantilla Cuadra por familia antes de afirmar que cada sector está cubierto; las cinco claves actuales son punto de partida, no catálogo completo.
+- Alinear marketing: `Cuadra = MiniWeb completo`, `Barrio = más variedad de diseño profesional`, `Ciudad = diseño premium`; otras ventajas de licencias (CRM por organización) se comunican por separado.
+
+### Reglas de producto y medición
+- No confundir **calidad visual** con **precio de alojamiento, velocidad, SEO o accesibilidad**: los tres niveles deben cumplir mínimos técnicos equivalentes.
+- Medir elección de plantilla, finalización de publicación, cambios de plantilla, upgrade motivado por diseño y satisfacción; evitar métricas inventadas.
+- No multiplicar variantes antes de tener ejemplos reales y pruebas con negocios distintos; priorizar calidad y reutilización de componentes.
+- Criterio de aceptación: mismo contenido y conjunto de módulos puede representarse en Cuadra/Barrio/Ciudad, con distinto layout, sin pérdida de datos y sin habilitar derechos CRM.
+
+**Estado:** estrategia de catálogo propuesta; sin mockups finales, tests, implementación ni despliegue.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
