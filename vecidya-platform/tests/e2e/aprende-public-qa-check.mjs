@@ -233,6 +233,19 @@ try {
         await mobileSummary.focus();
         await mobileSummary.press("Enter");
         assert.equal(await mobileDetails.getAttribute("open"), null, "El índice compacto se puede cerrar con teclado.");
+        await mobileSummary.press("Enter");
+        assert(await mobileDetails.getAttribute("open") !== null, "El índice compacto vuelve a abrirse antes de navegar.");
+        const firstSectionHref = await mobileDetails.locator("nav a").first().getAttribute("href");
+        assert(firstSectionHref?.startsWith("#"));
+        const firstSectionId = firstSectionHref.slice(1);
+        await mobileDetails.locator("nav a").first().evaluate((link) => link.click());
+        await activePage.waitForFunction((sectionId) => window.location.hash === `#${sectionId}`, firstSectionId);
+        assert.equal(await mobileDetails.getAttribute("open"), null, "Elegir una sección cierra el índice compacto.");
+        const destination = await activePage.locator(`[id="${firstSectionId}"]`).boundingBox();
+        assert(destination && destination.y >= 60, "El destino de ancla no queda detrás del índice compacto cerrado.");
+        const progressButton = activePage.locator(".learn-section-progress button.button--secondary").first();
+        await progressButton.click();
+        assert.equal((await mobileSummary.textContent())?.trim(), `Índice · ${Math.round(100 / sample.sections.length)}%`, "El porcentaje del índice refleja el progreso recién marcado.");
       } else {
         assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
       }

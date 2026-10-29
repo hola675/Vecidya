@@ -12,11 +12,13 @@ type Props = {
   initialLastSectionId: string | null;
   access: "always_free" | "licensed";
   showProgress?: boolean;
+  onCheckedChange?: (checkedSectionIds: string[]) => void;
 };
 
 export function LearnProgressControls(props: Props) {
   const queue = useMemo(() => new LearnOfflineQueue(typeof window === "undefined" ? null : window.localStorage), []);
   const [checked, setChecked] = useState(() => new Set(props.initialChecked));
+  useEffect(() => { props.onCheckedChange?.([...checked]); }, [checked, props.onCheckedChange]);
   const [favorite, setFavorite] = useState(props.initialFavorite);
   const [lastSection, setLastSection] = useState(props.initialLastSectionId);
   const [pending, setPending] = useState(0);

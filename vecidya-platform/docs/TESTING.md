@@ -2,7 +2,7 @@
 
 ## APRENDE-PLAN-V1 — índice de artículo móvil (Fase 7; 2026-10-29)
 
-**RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` **PASS**, 48 guías/9 itinerarios en 320, 390, 768 y 1366 px. La regresión valida que el índice compacto `Índice · NN%` se muestra hasta 820 px, el TOC de escritorio se oculta, Enter abre/cierra el `<details>` nativo, el foco permanece en el resumen, Tab llega al primer enlace y los destinos de sección resuelven. Typecheck y build **PASS**. Esta prueba de teclado y árbol DOM no reemplaza lector de pantalla real, zoom 200 %, auditoría de contraste ni aceptación manual. No se ejecutó AccessLint. Sin deploy.
+**RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` **PASS**, 48 guías/9 itinerarios en 320, 390, 768 y 1366 px. La regresión valida que el índice compacto `Índice · NN%` se muestra hasta 820 px, el TOC de escritorio se oculta, Enter abre/cierra el `<details>` nativo, el foco permanece en el resumen, Tab llega al primer enlace, seleccionar una sección cierra el índice sin tapar el destino y el porcentaje cambia al marcar progreso. Typecheck y build **PASS**. Esta prueba de teclado y árbol DOM no reemplaza lector de pantalla real, zoom 200 %, auditoría de contraste ni aceptación manual. No se ejecutó AccessLint. Sin deploy.
 
 ## APRENDE-PLAN-V1 — certificación técnica local (Fase 7; 2026-10-29)
 

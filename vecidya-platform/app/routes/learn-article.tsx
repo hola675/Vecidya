@@ -1,4 +1,5 @@
 import { Form, Link } from "react-router";
+import { useCallback, useState } from "react";
 import { and, eq } from "drizzle-orm";
 
 import { learnArticles } from "../content/learn";
@@ -201,7 +202,8 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
     );
   }
   const { article, relatedGuides, readingMinutes, personal, authenticated, userId, access } = loaderData;
-  const checked = new Set(personal.checkedSectionIds);
+  const [checked, setChecked] = useState(() => new Set(personal.checkedSectionIds));
+  const onCheckedChange = useCallback((checkedSectionIds: string[]) => setChecked(new Set(checkedSectionIds)), []);
   const progressPercent = Math.round((checked.size / article.sections.length) * 100);
 
   return (
@@ -224,7 +226,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ) : (
                 <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
               )}
-              {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} /> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
+              {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} onCheckedChange={onCheckedChange} /> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
               <div className="learn-article-quick">
                 <h2>En pocas palabras</h2>
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
@@ -238,7 +240,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                 <summary>Índice · {progressPercent}%</summary>
                 <nav className="learn-article-toc-mobile__nav" aria-label="Índice del artículo">
                   <strong>En esta guía</strong>
-                  <ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`}>{section.heading}</a></li>)}</ol>
+                  <ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`} onClick={(event) => { const details = event.currentTarget.closest("details"); if (details) window.setTimeout(() => { if (details.isConnected) details.open = false; }, 0); }}>{section.heading}</a></li>)}</ol>
                 </nav>
               </details>
             </div>
