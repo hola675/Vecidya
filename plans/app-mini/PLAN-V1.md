@@ -439,6 +439,37 @@
 
 **Estado:** DEC-09 aprobada y documentada. Backend, permisos, UI administrativa, migraciones y pruebas todavía no implementados.
 
+
+## 25. F0 — Contrato de plantillas en múltiples organizaciones (análisis de decisión, 2026-10-29)
+
+**Estado: PROPUESTA, pendiente de aprobación comercial.** DEC-06 asigna niveles esenciales/avanzados/premium a Cuadra/Barrio/Ciudad; DEC-08 separa **capacidad de publicación de la cuenta** (3 base +3 por Cuadra extra) del **CRM de cada organización**. Una licencia Barrio/Ciudad de la organización A no debe activar el CRM de B. Falta decidir si el **nivel visual de MiniWeb** es una ventaja compartida del titular o un derecho ligado a cada organización.
+
+### Alternativas sin inventar derechos
+- **A — nivel por organización (conservadora):** el MiniWeb de una organización sin Barrio/Ciudad propios usa plantillas esenciales, aunque el titular tenga Barrio/Ciudad para otra organización. La capacidad 3/6/9 sí es común. Pros: evita transferencias implícitas de prestaciones premium; contras: una misma cuenta verá catálogos distintos.
+- **B — nivel visual compartido por titular:** todas las organizaciones publicadas con cupo del mismo billing_account acceden al máximo nivel visual de alguna licencia activa del titular. **No** se comparte CRM, automatizaciones, canales ni servicios. Pros: experiencia de diseño coherente; contras: beneficio comercial adicional no aprobado, posible efecto de downgrade sobre varias páginas.
+- **C — nivel visual asignado expresamente:** el titular dispone de nivel visual de su licencia, pero una organización secundaria obtiene ese nivel solo si se le asigna un entitlement MiniWeb explícito y auditable, sin CRM. Pros: control granular; contras: nuevo contrato/flujo administrativo y regla comercial por definir.
+
+**Recomendación técnica hasta decisión:** implementar resolver con **dos dimensiones independientes** `publicationCapacity(billingAccountId)` y `templateTier(organizationId, billingAccountId)`, sin codificar que una licencia CRM se propaga entre organizaciones. Para pruebas y diseños no definitivos usar A como comportamiento provisional de menor privilegio; **no** dar por aprobada A ni bloquear F1/F3.
+
+### Reglas comunes a A/B/C
+1. Cupos base 3 una sola vez por titular con licencia activa; Cuadra extra +3; no sumar Barrio+Ciudad (DEC-08).
+2. CRM, workflows y add-ons vinculados a la organización destino; no se transfieren por compartir titular.
+3. El snapshot público premium ya publicado se preserva al reducir licencia (DEC-07) o congelarse por vencimiento (DEC-09).
+4. La desactivación por no renovación exige acto explícito de platform_admin (DEC-09).
+5. Cualquier nivel visual premium se valida en backend al guardar/publicar y en transacción consistente con licencia/cupo; la vista previa no concede derecho.
+6. El titular económico puede pagar varias organizaciones; sus facturas no conceden por sí mismas derechos de edición.
+7. Si el titular pierde la licencia que sustentaba el nivel compartido (opción B), las páginas existentes permanecen visibles; nuevas publicaciones requieren reevaluar derechos.
+
+### Pruebas focales a preparar
+- Titular con Barrio A + Cuadra B: capacidad 3, CRM Barrio solo A; nivel visual B según alternativa aprobada.
+- Titular con Barrio A + Ciudad C: capacidad 3, no 6; CRM por organización.
+- Titular con Ciudad A + Cuadra extra: capacidad 6; sin CRM adicional.
+- Downgrade/suspensión de A no modifica snapshot público de B; nueva publicación valida nivel efectivo.
+- Transferencia de titular y concurrencia entre licencia/cupo/publicación no permiten elevar derechos.
+- La desactivación administrativa de una organización no altera otras publicaciones.
+
+**Pregunta de decisión pendiente:** ¿el nivel de plantillas de Barrio/Ciudad debe beneficiar también a MiniWeb de otras organizaciones del mismo titular (B), quedar por organización (A), o asignarse expresamente (C)? No confundir esta elección con el cupo de publicaciones ni con el CRM.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
