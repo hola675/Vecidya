@@ -2409,3 +2409,29 @@ Completar esta matriz con el banco completo, las diez columnas C01–C10 y evide
 
 ## Changelog adicional
 - **1.42.0 / 2026-10-29:** matriz mínima 8×5 de evidencia focal explícita, con condiciones y límites de inferencia; sin ejecución, código ni pruebas.
+
+## 50. CONSOL-02 — contrato de certificación editorial y de grafo (2026-10-29)
+**PLAN_ONLY.** Fuentes verificadas: `qa03b/v9-editorial-review-matrix.ts` blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`; `qa03b/v9-editorial-graph-audit.ts` blob `89bce38ab69d1b5c12d5a339fb8de923894da1c9`.
+
+### Lo que realmente miden las auditorías actuales
+- `buildEditorialMatrixV9` devuelve conteos `questions/options/variants/revised/semanticReview/pendingHumanReview/answersWithEvidence/answersWithoutEvidence/reviewFlags`. **No se han ejecutado ni se declaran cifras nuevas**.
+- `classifyEditorialReviewPriorityV9`: `high` solo cuando hay `missing_evidence_mapping`; `medium` ante `neutral_with_evidence` o `needs_neutral_check`; el resto `low`. Prioridad de trabajo editorial, NO severidad de producto ni madurez.
+- `auditQuestionBankV9` devuelve preguntas, aristas, issues, resúmenes, y grados G0–G6. `findAnswerReferenceCyclesV9` solo detecta ciclos de referencias explícitas entre respuestas, no ciclos de dependencias contextuales inferidas.
+- Grados: G0 anclas de estado; G1 sector/nicho; G2 perfil operativo; G3 objetivo/fricción; G5 preguntas con evidencia V3 migrada; G6 confirmaciones/contradicciones; G4 restante. **Los grados describen función en el banco, no calidad certificada**.
+
+### Matriz de aceptación futura (sin ejecución ahora)
+| Gate | Evidencia obligatoria | No basta con |
+| --- | --- | --- |
+| E-01 integridad | IDs únicos, referencias válidas, sin ciclos relevantes, versiones consistentes | Solo contador 77 |
+| E-02 semántica | Revisión humana de enunciado, ayuda, opciones, neutrales y variantes | Ausencia de flags automáticos |
+| E-03 evidencia | Todas las opciones migradas mapeadas y `pending` no puntuadas | `answersWithEvidence` alto |
+| E-04 cobertura | Por C01–C10, dimensión aplicable con evidencia alcanzable o abstención explícita | Matriz conceptual A/T/? |
+| E-05 presupuesto | Traza de interacciones y consentimiento antes de 25; máximo 29 | Contar preguntas en catálogo |
+| E-06 bilingüe | Equivalencia es/en de todas las rutas públicas y estados | Traducción parcial |
+| E-07 independencia | Contratos de sesión, evaluación y replay V9 desacoplados de QBV2 | Banco candidato aislado |
+
+### Cierre de CONSOL-02
+El plan de revisión editorial queda especificado, pero **ningún gate E-01–E-07 se declara superado**. Siguiente paso: extraer evidencia materializada del banco y revisar condiciones reales de selección de preguntas; mantener trazas verificables con blob SHA. Toda implementación, test o CI requiere autorización posterior explícita.
+
+## Changelog adicional
+- **1.42.0 / 2026-10-29:** criterios de certificación E-01–E-07, interpretación de grados y prioridades editoriales, límites de auditoría sintáctica. Solo documentación.
