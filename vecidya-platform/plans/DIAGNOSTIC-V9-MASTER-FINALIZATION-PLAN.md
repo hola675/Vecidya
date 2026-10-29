@@ -707,3 +707,64 @@ D-V9-001 a D-V9-011: APPROVED según sus secciones individuales; D-V9-012 PENDIN
 
 ## Changelog adicional
 - **1.12.0 / 2026-10-29:** D-V9-011 aprobada; etapas sin fechas, dependencias, paralelismo, tareas PLAN-H01–H08, criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 20. Decisión D-V9-012 — seguimiento manual, revisión voluntaria y reevaluación explícita (aprobada 2026-10-29)
+**Aprobación expresa:** «seguimiento manual de acciones, revisión voluntaria de prioridades y reevaluación explícita para actualizar madurez». Estado APPROVED para definición de producto; NO autoriza código.
+
+### 20.1. Tres procesos separados
+- **Seguimiento manual:** el usuario autenticado registra el estado de cada acción de su hoja de ruta. El seguimiento es una declaración de progreso, no evidencia automática de madurez. Estados candidatos: pendiente, en proceso, completada, descartada/no aplicable; taxonomía definitiva PENDING.
+- **Revisión voluntaria de prioridades:** a petición del usuario, revisar objetivos confirmados, contexto, dependencias y esfuerzo; generar nueva versión de la hoja de ruta, con motivos del cambio. No modificar retroactivamente el resultado original ni su puntuación.
+- **Reevaluación explícita:** el usuario inicia voluntariamente un nuevo ciclo de evaluación. Solo el nuevo ciclo, con evidencia suficiente y reglas versionadas, puede producir nuevos niveles y, cuando estén calibradas, puntuaciones. No convertir automáticamente acciones marcadas como completadas en respuestas verificadas.
+
+### 20.2. Invariantes y fronteras
+1. Resultado de cada evaluación: instantánea histórica inmutable en cuanto a evidencia, versión de reglas, conclusiones y fecha; las correcciones o reevaluaciones se representan mediante versiones o runs nuevos según contrato por definir.
+2. Seguimiento y preferencias de prioridades son datos asociados a un plan, no al motor de scoring.
+3. «Completada» significa que el usuario reporta haber ejecutado una acción, no que V9 certifica un resultado.
+4. La reevaluación debe distinguir respuestas nuevas, reutilizadas con confirmación, desconocidas y obsoletas; no asumir que información histórica sigue vigente.
+5. El usuario puede consultar progreso y resultados previos dentro de permisos de identidad aprobados por D-V9-005; nunca exponer historial de otro usuario u organización.
+6. No programar reevaluaciones, correos, alertas, tareas GHL, recordatorios ni campañas automáticamente; todo eso requiere decisiones separadas.
+7. La disponibilidad de Aprende, servicios Vecidya o GHL no cambia estados de progreso, evidencia ni madurez.
+8. Mantener compatibilidad con los escenarios C01–C10 y con cambios de etapa (preparación, activo, pausa) sin asumir fracaso o mejora.
+9. El resumen anónimo no habilita seguimiento persistente por sí solo; el diseño de continuidad debe respetar el contrato de cuenta, claim y privacidad.
+10. El historial debe permitir distinguir cambios por ejecución del negocio de cambios por nueva versión de reglas; diseñar comparabilidad antes de mostrar flechas o porcentajes de evolución.
+
+### 20.3. Contratos conceptuales sujetos a auditoría
+- **Acción seguida:** referencia a plan/acción/versiones, estado manual, autor autorizado, fecha de declaración, nota opcional, historial de cambios y motivo cuando corresponda.
+- **Revisión de hoja de ruta:** referencia al diagnóstico de origen, objetivos/contexto vigentes, cambios solicitados, versión anterior/nueva, reglas y explicación breve de cambios.
+- **Nueva evaluación:** identidad del nuevo run, referencia opcional al anterior, consentimiento de reutilización, evidencias frescas, reglas/versiones y resultado independiente.
+Estos campos son requisitos de especificación, no afirmación de tablas existentes ni aprobación de retención de datos.
+
+### 20.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-F01 | Auditar historial, runs, ownership y persistencia existentes en V9/QBV2 | Mapa de archivos, tablas, rutas, permisos y SHA | No suponer continuidad implementada |
+| PLAN-F02 | Definir estados manuales y transiciones de acciones | Máquina de estados, reglas de edición y ejemplos | Aprobación editorial/producto |
+| PLAN-F03 | Diseñar historial de acciones y auditoría mínima | Esquema conceptual de versiones, autoría y privacidad | No mezclar con scoring |
+| PLAN-F04 | Especificar revisión voluntaria de objetivos y prioridades | Contrato de replanificación y ejemplos de cambios | Resultado original inmutable |
+| PLAN-F05 | Diseñar reevaluación explícita y reutilización consentida de respuestas | Flujo de nueva evaluación, caducidad y confirmación | Sin mejoras inferidas por checkboxes |
+| PLAN-F06 | Definir comparación histórica de resultados y compatibilidad de versiones | Política de comparabilidad, cambios de reglas e incertidumbre | Sin tendencias engañosas |
+| PLAN-F07 | Diseñar UX de progreso, revisión y reevaluación, con estados vacíos y errores | Secuencias anónimo/autenticado y accesibilidad | Sin automatizaciones implícitas |
+| PLAN-F08 | Especificar permisos multi-organización, minimización y borrado | Matriz de ownership, acceso, retención pendiente y casos negativos | Sin acceso cruzado |
+| PLAN-F09 | Preparar pruebas focalizadas futuras | Matriz de estado→cambio→efecto en plan/resultados/historial | No ejecutar en PLAN_ONLY |
+
+### 20.5. Criterios de aceptación futuros
+1. Marcar una acción completada no modifica el nivel ni la puntuación del diagnóstico.
+2. Cambiar objetivos confirmados permite revisar prioridades voluntariamente sin reescribir el resultado previo.
+3. La nueva evaluación requiere inicio explícito; no se ejecuta por completar acciones.
+4. Respuestas históricas obsoletas no se reutilizan como evidencia vigente sin validación.
+5. Comparar resultados de versiones no equivalentes no produce una mejora numérica ficticia.
+6. Usuario de otra organización no accede a acciones, historial ni reevaluaciones ajenas.
+7. Sin conexión con GHL o Aprende, el seguimiento y la reevaluación siguen definidos como funciones propias.
+8. Usuario anónimo puede obtener su resumen sin crear seguimiento persistente no autorizado.
+9. Negocio en pausa o sin ventas puede completar acciones pertinentes sin penalización comercial.
+10. Revisión sin cambios relevantes conserva prioridades y explica que no hubo cambios.
+
+### 20.6. Próxima decisión D-V9-013 — comparación histórica
+(A) comparar únicamente conclusiones cualitativas y acciones, indicando cambios de contexto; (B) comparar niveles por dimensión y, cuando exista calibración compatible, valores numéricos, con advertencias por cambios de metodología; (C) mostrar evolución visual y metas, con comparaciones solo entre versiones compatibles y evidencia suficiente. Ninguna opción está aprobada; no asumir que ya existe un historial técnicamente compatible.
+
+### 20.7. Estado
+D-V9-001 a D-V9-012: APPROVED según sus respectivas secciones; D-V9-013 PENDING. **PLAN_ONLY**: prohibido implementar, ejecutar pruebas, modificar CI, fusionar ramas o desplegar sin autorización expresa.
+
+## Changelog adicional
+- **1.13.0 / 2026-10-29:** D-V9-012 aprobada; separación seguimiento/replanificación/reevaluación, invariantes históricos, tareas PLAN-F01–F09, criterios de aceptación y próxima decisión. Solo documentación.
