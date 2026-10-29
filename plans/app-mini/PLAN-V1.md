@@ -406,6 +406,39 @@
 
 **No asumir aprobación por silencio:** para suspensiones, expiración, transferencia de titular, borrado histórico o acceso premium de organizaciones secundarias, preparar alternativas y solicitar decisión antes de implementar una política irreversible. Ninguna de estas pendientes impide seguir diseñando UI y contratos seguros.
 
+
+## 24. DEC-09 — Vencimiento, suspensión y desactivación manual de MiniWeb (APROBADO, 2026-10-29)
+
+**Decisión explícita del titular:** cuando la licencia venza o quede suspendida, el MiniWeb ya publicado **permanece visible al público**; el usuario no puede editar ni volver a publicar hasta regularizar su situación. Si no habrá renovación, un **administrador de plataforma Vecidya** puede desactivar posteriormente la publicación mediante una acción administrativa expresa.
+
+### Máquina de estados de publicación (contrato de diseño)
+- `draft`: sin publicación pública, contenido editable solo si licencia y permisos efectivos lo permiten.
+- `published`: publicación vigente, accesible públicamente, edición/publicación según permisos y licencia.
+- `published_frozen`: snapshot público **continúa visible** por vencimiento/suspensión; prohibidos cambios de MiniWeb y republicaciones; conservar borrador, historial y medios. Los cambios de datos de negocio ajenos a MiniWeb mantienen sus reglas de autorización independientes.
+- `unpublished_by_admin`: publicación oculta al público por decisión explícita de platform_admin ante no renovación; **no borrar** snapshot, versiones ni archivos. La ruta pública no debe mostrar una página activa; respuesta HTTP y SEO deben definirse y probarse.
+- `reactivated`: tras regularización de licencia, se recupera la capacidad de edición y publicación según derechos actuales; no restaurar automáticamente un MiniWeb previamente desactivado por admin sin revisión/autorización administrativa.
+
+### Acción administrativa de desactivación
+**Requisitos:** permiso específico `miniweb:publication:deactivate` de platform_admin, organización objetivo, motivo `non_renewal`, confirmación explícita, actor y timestamp, referencia de licencia y versión publicada, registro de auditoría. Operación idempotente, protegida con revisión/CAS y aislamiento por organización. Una desactivación no puede modificar publicaciones de otras organizaciones ni eliminar facturas. La reactivación administrativa requiere permiso separado y validación de licencia/cupo/plantilla; no equivale a restaurar un snapshot histórico en borrador.
+
+### Integración con Servicios y pagos
+- Vencimiento/suspensión del contrato y estado de pago son **hechos distintos**: una factura pendiente no desactiva automáticamente el MiniWeb si no existe transición de licencia autorizada.
+- El dashboard muestra licencia vencida/suspendida, MiniWeb público congelado y, si procede, desactivación administrativa; conserva cargos, recibos e historial.
+- No hacer de la UI de pagos fuente de derechos. El backend consulta el estado efectivo de licencia y la decisión administrativa de publicación.
+
+### Casos de prueba focales obligatorios
+1. Vencimiento o suspensión conserva la misma versión pública y bloquea guardar/publicar MiniWeb.
+2. Regularización recupera edición/publicación solo si la publicación no fue desactivada por admin.
+3. Admin desactiva por no renovación; la URL deja de servir contenido activo sin borrar versiones ni medios.
+4. Usuario normal, miembro de organización y soporte sin permiso no pueden desactivar/reactivar.
+5. Desactivación repetida es idempotente; carrera entre publicar y desactivar no deja estado inconsistente.
+6. Restauración administrativa exige derechos efectivos y no publica un borrador sin acción expresa.
+7. La baja de una organización no afecta MiniWeb ni facturas de otras del mismo titular.
+
+**No aprobados ni inventados:** días automáticos de gracia, avisos por plazo fijo, fecha automática de desactivación, borrado definitivo, penalizaciones ni reactivación automática tras desactivación manual. El administrador decide cuándo proceder una vez confirmada la no renovación.
+
+**Estado:** DEC-09 aprobada y documentada. Backend, permisos, UI administrativa, migraciones y pruebas todavía no implementados.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
