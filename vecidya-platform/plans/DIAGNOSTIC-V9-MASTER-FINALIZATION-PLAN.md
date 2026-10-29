@@ -2633,3 +2633,29 @@ Antes de aprobar una adición: demostrar hueco con ruta/escenario, comprobar que
 
 ## Changelog adicional
 - **1.47.0 / 2026-10-29:** directriz para ampliar el banco candidato sin techo artificial de 77; ocho hipótesis de preguntas, ficha editorial y gate de evidencia/presupuesto. Solo documentación.
+
+## 56. TAX-G2 / NEW-V9 — depuración focal de propuestas frente a preguntas existentes (2026-10-29)
+**PLAN_ONLY; ninguna pregunta aprobada ni incorporada.** Fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`, `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`, `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`.
+
+### Revisión de solapamientos y decisiones provisionales
+| Propuesta | Evidencia existente encontrada | Acción editorial siguiente |
+| --- | --- | --- |
+| NEW-V9-001 (pausa) | `q2_presence_digital_base` se restringe a actividad `active/prelaunch`; `q2_presence_offer_clarity` requiere además presencia fiable/parcial | **Candidato a adición contextual**: continuidad de información durante pausa no queda acreditada por esas reglas |
+| NEW-V9-002 (ONG sin donaciones) | `q2_nonprofit_donation_clarity` exige `donations/mixed`; `q2_nonprofit_support_type` es contextual/pending | **Candidato prioritario** a acceso/participación sin venta ni donación |
+| NEW-V9-003 (prelaunch) | `q2_startup_problem_clarity`, `q2_startup_offer_readiness`, `q2_startup_validation_evidence` observan claridad/validación; no demuestran acción pública actual | **Candidato condicional** a acceso; no duplicar claridad |
+| NEW-V9-004 (nicho desconocido) | `q2_presence_offer_clarity` ya aborda claridad cuando hay presencia y actividad activa/prelaunch | **Primero revisar ampliación de elegibilidad**, no agregar duplicado por defecto |
+| NEW-V9-005 (independiente) | Existen `q2_reputation_flow` y señales de autoridad especializadas en mapeos; cobertura sin reseñas no certificada | **Investigar opciones neutrales** antes de proponer nueva pregunta |
+| NEW-V9-006 (multicanal) | `q2_local_presence_consistency` ya figura en mapeos de presencia/descubrimiento | **Reutilización preferente**; comprobar elegibilidad C09 |
+| NEW-V9-007 (seguimiento autorizado) | `q2_followup_status_visibility` pregunta por revisión de pendientes; no verifica permiso de contacto | **Candidato condicional** separado de la frecuencia de seguimiento |
+| NEW-V9-008 (medición no comercial) | `q2_measurement_practice` ya menciona participantes, beneficiarios y aportes; `not_enough_activity` produce `not_applicable`, `unknown` incertidumbre | **Reutilizar primero** en actividad operativa; evaluar alternativa para preparación/pausa |
+
+### Dos fichas prioritarias para discusión humana (BORRADOR, sin mapping aprobado)
+**NEW-V9-002 — acceso a participación no comercial.** C05; `conversion_access`. Pregunta ES propuesta: «Si alguien quiere participar en una actividad de tu organización o pedir información, ¿tiene una forma clara de hacerlo hoy?» Opciones ES: `clear` «Sí, existe un paso claro y accesible»; `partial` «Puede hacerlo, pero necesita pedir orientación adicional»; `unclear` «No hay un paso claro todavía»; `not_applicable` «Ahora no recibimos participantes ni solicitudes»; `unknown` «No lo sé». EN provisional: “If someone wants to join an activity or request information, is there a clear way to do so today?” Opciones EN provisionales: “Yes, there is a clear, accessible next step”; “There is a way, but additional guidance is needed”; “There is no clear next step yet”; “We are not currently accepting participants or requests”; “I don't know”. `appliesWhen` propuesto: contexto organización sin fines de lucro, `operating`, y **sin** vía de donación pertinente; no inferir que donaciones y participación son mutuamente excluyentes. Valores tentativos `established/partial/weak/not_applicable/uncertainty` requieren revisión editorial, evidencia y migración.
+
+**NEW-V9-001 — información vigente en pausa.** C03; `digital_foundation` o `conversion_access` **por decidir**, nunca ambas sin evidencia separable. Pregunta ES propuesta: «Mientras tu actividad está en pausa, ¿las personas pueden encontrar información actualizada sobre su situación y cómo consultar novedades?» Opciones: `clear` «Sí, la información está disponible y actualizada»; `outdated` «Existe información, pero no está al día»; `none` «No hay información pública sobre la pausa»; `not_needed` «No corresponde publicar información durante esta pausa»; `unknown` «No lo sé». EN provisional: “While your activity is paused, can people find up-to-date information about its status and where to check for updates?” `appliesWhen` propuesto: `operational_status=paused`; evaluar necesidad real de visibilidad antes de puntuar. Evitar exigir web, redes o actividad comercial.
+
+### Gate editorial
+No añadir ambas al banco hasta verificar que una ruta concreta las necesita, que no duplican preguntas existentes y que reemplazan otras de menor valor dentro de 24+5. Completar EN de todas las opciones, accesibilidad, opciones neutras, evidencia por dimensión y revisión humana. Las demás seis propuestas quedan en investigación o reutilización, no descartadas definitivamente.
+
+## Changelog adicional
+- **1.48.0 / 2026-10-29:** ocho propuestas contrastadas con banco existente; dos borradores prioritarios y preferencia por reutilización para evitar inflar entrevistas. Solo documentación.
