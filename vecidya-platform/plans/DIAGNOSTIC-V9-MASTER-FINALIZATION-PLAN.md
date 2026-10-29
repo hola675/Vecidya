@@ -2670,3 +2670,16 @@ Clasificar cada pregunta y opción del banco ensamblado como **KEEP** (conservar
 
 ## Changelog adicional
 - **1.49.0 / 2026-10-29:** priorización editorial y clasificación KEEP/REVISE/REPLACE/ADD/HOLD; solo plan.
+
+## 58. TAX-G2 — distinción entre tamaño del banco y longitud de entrevista (2026-10-29)
+
+**PLAN_ONLY.** Fuente: `qa03b/specialty-branches-wave1.ts`, blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`. El ensamblaje `QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2` concatena banco V1 con tres preguntas especializadas y verifica mediante aserciones **77 entradas e IDs únicos**. Es un contrato declarado en fuente, **no** un recuento ejecutado ni una certificación editorial.
+
+**Regla de expansión:** separar `bank_size` (total de preguntas elegibles en catálogo) de `interview_count` (preguntas efectivamente presentadas y respondidas). `bank_size` puede superar 77 si hay huecos probados; `interview_count` mantiene ≤24 en ruta normal y máximo 29 únicamente con consentimiento explícito. Una nueva pregunta debe indicar a qué escenario/dimensión sirve, qué pregunta existente desplaza en esa ruta y por qué aumenta el valor de la evidencia. Nunca activar todas las preguntas nuevas de forma acumulativa.
+
+**Criterio de calidad:** más preguntas no implican mayor madurez ni mejor diagnóstico. Comparar cobertura, discriminación entre estados, neutralidad, accesibilidad ES/EN, coste y riesgo de sesgo. Mantener en HOLD preguntas sin evidencia verificable o traducción certificada. Los IDs nuevos requieren versión y contrato de migración/replay; los IDs antiguos no deben reinterpretarse silenciosamente.
+
+**Bloqueo actual:** falta materializar las 77 filas y sus opciones con trazabilidad; por tanto, no se declara cerrado TAX-G2 ni se aprueba todavía NEW-V9-001/002.
+
+## Changelog adicional
+- **1.50.0 / 2026-10-29:** contrato documental de expansión del catálogo independiente del presupuesto adaptativo de entrevista; sin implementación.
