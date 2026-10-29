@@ -130,7 +130,8 @@ try {
     assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, width + "px: deben verse 48 guías.");
     assert.equal(await activePage.locator(".learn-topic-list > li").count(), 6, width + "px: temas incorrectos.");
     assert.equal(await activePage.locator(".learn-path-list > li").count(), publicPaths.length, width + "px: itinerarios públicos incorrectos.");
-    assert.equal(await activePage.locator(".learn-guide__topic span").count(), 0, width + "px: muestra badges editoriales inaccesibles.");
+    assert.equal(await activePage.locator(".learn-guide__topic span").count(), 48, width + "px: cada guía debe explicar su tipo de acceso.");
+    assert.equal(await activePage.getByText("En revisión editorial", { exact: true }).count(), 0, width + "px: no deben mostrarse etiquetas de revisión en guías aprobadas.");
     const listingHrefs = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     assertAllVisibleLinksPublished(listingHrefs, width + "px listado");
     const pathwayHrefs = await activePage.locator(".learn-path__guides a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
@@ -175,9 +176,27 @@ try {
       const filtered = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
       assert(filtered.length > 0 && filtered.length < 48, "El filtro de categoría no funciona.");
       assertAllVisibleLinksPublished(filtered, "filtro CRM");
+      await activePage.getByRole("link", { name: "Con licencia", exact: true }).click();
+      await activePage.waitForURL(/acceso=licencia/);
+      const expectedLicensedCrm = publicArticles
+        .filter((article) => article.category === "CRM y clientes" && getLearnGuideAccess(article.slug) === "licensed")
+        .map((article) => `/aprende/${article.slug}`);
+      await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "Con licencia" }).waitFor();
+      await activePage.waitForFunction((count) => document.querySelectorAll(".learn-guide h3 a").length === count, expectedLicensedCrm.length);
+      const licensedCrm = await activePage.locator(".learn-guide h3 a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      assert.deepEqual(licensedCrm, expectedLicensedCrm, "El filtro de licencia conserva categoría y limita las guías correctamente.");
+      await activePage.getByRole("link", { name: "Acceso abierto", exact: true }).click();
+      await activePage.waitForURL(/acceso=abierto/);
+      const expectedFreeCrm = publicArticles
+        .filter((article) => article.category === "CRM y clientes" && getLearnGuideAccess(article.slug) === "always_free")
+        .map((article) => `/aprende/${article.slug}`);
+      await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "Acceso abierto" }).waitFor();
+      await activePage.waitForFunction((count) => document.querySelectorAll(".learn-guide h3 a").length === count, expectedFreeCrm.length);
+      const freeCrm = await activePage.locator(".learn-guide h3 a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      assert.deepEqual(freeCrm, expectedFreeCrm, "El filtro de acceso abierto conserva la categoría.");
       await activePage.locator(".learn-path-list summary").first().click();
       assert(await activePage.locator(".learn-path-list details").first().getAttribute("open") !== null, "No se expande itinerario.");
-      check("Búsqueda sin tildes, vacío, recuperación, categoría e itinerarios");
+      check("Búsqueda sin tildes, vacío, recuperación, filtros de categoría/acceso e itinerarios");
     }
 
     if (width === 390 || width === 1366) {
@@ -190,6 +209,8 @@ try {
       assert.equal(await activePage.locator(".learn-article-toc").count(), 0, "Preview no muestra índice de contenido protegido.");
       assert.equal((await activePage.content()).includes(licensedSample.sections[0].heading), false, "HTML e hidratación no contienen encabezados protegidos.");
       assert(await activePage.getByRole("link", { name: "Ver licencias Vecidya" }).isVisible());
+      const signInHref = await activePage.getByRole("link", { name: "Iniciar sesión" }).getAttribute("href");
+      assert.equal(signInHref, `/login?redirectTo=${encodeURIComponent(`/aprende/${licensedSample.slug}`)}`, "La sesión conserva el retorno a la guía solicitada.");
 
       const sample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "always_free") ?? publicArticles[0];
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });

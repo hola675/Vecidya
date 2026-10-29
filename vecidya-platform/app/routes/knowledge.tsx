@@ -8,10 +8,13 @@ import { publicListingRobots } from "../lib/public-seo";
 
 import type { Route } from "./+types/knowledge";
 
-function learnHref(category: string | null, search: string) {
+type LearnAccessFilter = "abierto" | "licencia";
+
+function learnHref(category: string | null, search: string, access: LearnAccessFilter | null) {
   const params = new URLSearchParams();
   if (category) params.set("tema", category);
   if (search) params.set("q", search);
+  if (access) params.set("acceso", access);
   const query = params.toString();
   return "/aprende" + (query ? "?" + query : "") + "#guias";
 }
@@ -21,14 +24,18 @@ export function loader({ request }: Route.LoaderArgs) {
   const search = (params.get("q") ?? "").trim().slice(0, 100);
   const requestedCategory = params.get("tema");
   const category = learnCategories.find((topic) => topic.name === requestedCategory)?.name ?? null;
+  const requestedAccess = params.get("acceso");
+  const access: LearnAccessFilter | null = requestedAccess === "abierto" || requestedAccess === "licencia" ? requestedAccess : null;
+  const entitlement = access === "abierto" ? "always_free" : access === "licencia" ? "licensed" : null;
   const publicArticles = getPublicLearnGuideSummaries(learnArticles);
   const articles = publicArticles
     .filter((article) => {
       if (category && article.category !== category) return false;
+      if (entitlement && article.access !== entitlement) return false;
       return matchesPublicLearnGuideSummary(article, search);
     })
-    .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
-      slug, title, excerpt, image, category: articleCategory, editorialDraft,
+    .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft, access }) => ({
+      slug, title, excerpt, image, category: articleCategory, editorialDraft, access,
     }));
   const topics = learnCategories.map((topic) => ({
     ...topic,
@@ -44,7 +51,7 @@ export function loader({ request }: Route.LoaderArgs) {
       return { slug: guide.slug, title: guide.title, editorialDraft: false };
     }),
   }));
-  return { articles, topics, pathways, search, category, total: publicArticles.length };
+  return { articles, topics, pathways, search, category, access, total: publicArticles.length };
 }
 
 export function meta({ location }: Route.MetaArgs) {
@@ -57,7 +64,7 @@ export function meta({ location }: Route.MetaArgs) {
 }
 
 export default function Knowledge({ loaderData }: Route.ComponentProps) {
-  const { articles, topics, pathways, search, category, total } = loaderData;
+  const { articles, topics, pathways, search, category, access, total } = loaderData;
 
   return (
     <PublicLayout>
@@ -70,11 +77,20 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
               <p>Para tu vida digital y para tu negocio: comprende primero, prioriza lo importante y decide qué herramienta realmente necesitas.</p>
             </div>
           </div>
+          <section className="learn-start" aria-labelledby="learn-start-title">
+            <div>
+              <p className="learn-section-kicker">EMPIEZA AQUÍ</p>
+              <h2 id="learn-start-title">Una pregunta concreta es suficiente.</h2>
+              <p>Busca una guía por tema o escribe lo que necesitas resolver. Puedes explorar las vistas previas sin iniciar sesión.</p>
+            </div>
+            <a className="button button--primary" href="#guias">Explorar guías</a>
+          </section>
           <form className="learn-discovery__form learn-atlas__form" method="get" action="/aprende#guias" role="search">
             <label htmlFor="learn-guide-search">Buscar en las guías</label>
             <div className="learn-discovery__search">
               <input id="learn-guide-search" type="search" name="q" maxLength={100} defaultValue={search} placeholder="Ej. contraseñas, IA, consultas o sitio web" />
               {category && <input type="hidden" name="tema" value={category} />}
+              {access && <input type="hidden" name="acceso" value={access} />}
               <button className="button button--primary" type="submit">Buscar</button>
             </div>
           </form>
@@ -116,12 +132,17 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <h2 className="learn-resources__title" id="learn-resources-title">Empieza por una pregunta concreta.</h2>
           <div className="learn-discovery">
             <nav className="learn-discovery__topics" aria-label="Filtrar guías por tema">
-              <Link className="learn-discovery__chip" to={learnHref(null, search)} aria-current={category === null ? "page" : undefined}>Todas</Link>
+              <Link className="learn-discovery__chip" to={learnHref(null, search, access)} aria-current={category === null ? "page" : undefined}>Todos los temas</Link>
               {topics.map((topic) => (
-                <Link className="learn-discovery__chip" to={learnHref(topic.name, search)} aria-current={category === topic.name ? "page" : undefined} key={topic.name}>
+                <Link className="learn-discovery__chip" to={learnHref(topic.name, search, access)} aria-current={category === topic.name ? "page" : undefined} key={topic.name}>
                   {topic.name}
                 </Link>
               ))}
+            </nav>
+            <nav className="learn-discovery__topics" aria-label="Filtrar guías por acceso">
+              <Link className="learn-discovery__chip" to={learnHref(category, search, null)} aria-current={access === null ? "page" : undefined}>Cualquier acceso</Link>
+              <Link className="learn-discovery__chip" to={learnHref(category, search, "abierto")} aria-current={access === "abierto" ? "page" : undefined}>Acceso abierto</Link>
+              <Link className="learn-discovery__chip" to={learnHref(category, search, "licencia")} aria-current={access === "licencia" ? "page" : undefined}>Con licencia</Link>
             </nav>
             <p className="learn-discovery__summary" role="status" aria-live="polite">
               {articles.length === 1 ? "1 guía encontrada" : articles.length + " guías encontradas"} de {total}
@@ -139,7 +160,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             <div className="learn-discovery__empty">
               <h3>No encontramos guías con esos criterios.</h3>
               <p>Prueba otra palabra o consulta todas las guías disponibles.</p>
-              <Link className="text-link" to="/aprende#guias">Ver todas las guías</Link>
+              <Link className="text-link" to={learnHref(null, "", null)}>Ver todas las guías</Link>
             </div>
           ) : (
             <ol className="learn-guide-list" aria-label="Guías disponibles">
@@ -150,6 +171,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
                     <div className="learn-guide__copy">
                       <p className="learn-guide__topic">
                         {article.category}
+                        <span> · {article.access === "always_free" ? "Acceso abierto" : "Acceso con licencia"}</span>
                         {article.editorialDraft && <span> · En revisión editorial</span>}
                       </p>
                       <h3><Link to={"/aprende/" + article.slug}>{article.title}</Link></h3>
@@ -200,7 +222,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
           <ul className="learn-topic-list">
             {topics.map((topic) => (
               <li key={topic.name}>
-                <Link to={learnHref(topic.name, search)}>
+                <Link to={learnHref(topic.name, search, access)}>
                   <span className="learn-topic-list__name">{topic.name}</span>
                   <span className="learn-topic-list__description">{topic.description}</span>
                   <span className="learn-topic-list__count">Ver {topic.count} {topic.count === 1 ? "guía" : "guías"}</span>
