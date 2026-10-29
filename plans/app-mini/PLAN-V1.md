@@ -2271,3 +2271,19 @@ Casos focales: alta autorizada, alta duplicada idempotente, actor sin permisos, 
 - **P6B:** PAY-01 y BILL-02 permanecen aplazados por decisión del responsable.
 
 **Resultado:** OPS-02 queda **SPECIFIED**. P6A no queda autorizado hasta resolver los bloqueos aplicables y recibir aprobación humana de lanzamiento.
+
+
+## 76. OPS-01 — autoridad de aprobación designada por el responsable
+
+**Decisión explícita del responsable:** «Yo apruebo», en respuesta a quién aprueba diseño, seguridad y lanzamiento. Se registra al **responsable del proyecto Vecidya** como **aprobador final de diseño visual (VIS-01), revisión de seguridad/QA y autorización de lanzamiento (release)**. No se infiere nombre legal, identidad de cuenta, suplente ni disponibilidad. La designación es una asignación de autoridad, **no aprobación anticipada** de los entregables.
+
+| Gate | Aprobador final | Preparación de evidencia | Estado |
+|---|---|---|---|
+| VIS-01 — diseños reales | Responsable del proyecto | Diseño UX/UI + QA | Aprobador designado; evidencia y aceptación pendientes |
+| SEC-QA — seguridad y calidad | Responsable del proyecto | Ingeniería de seguridad + QA; revisión técnica independiente cuando corresponda | Aprobador designado; auditoría y aceptación pendientes |
+| RELEASE — producción | Responsable del proyecto | Ingeniería + operaciones | Aprobador designado; autorización específica pendiente |
+| OPS-01 — nombramiento de aprobador final | Responsable del proyecto | Acta §76 | **APPROVED en cuanto a autoridad final**; ejecutores y suplentes aún por designar |
+
+**Controles:** ninguna revisión de un agente sustituye la aprobación humana. El responsable decide sobre la evidencia aportada, no sobre supuestos. La aprobación de diseño no autoriza release; la de seguridad no habilita pagos; la aprobación de release requiere confirmación explícita por versión/entorno y checklist. No desplegar, fusionar ni ejecutar código desde esta tarea documental.
+
+**Impacto:** se elimina el bloqueo de «¿quién tiene autoridad final?» en OPS-01. Permanece pendiente asignar ejecutores/revisores técnicos y presentar evidencias para cada gate. COM-01, PAY-01 y BILL-02 siguen pendientes; GOV-01, CAT-01, HV2-PRODUCT y REL-01 continúan aprobados.
