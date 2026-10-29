@@ -442,7 +442,7 @@
 
 ## 25. F0 — Contrato de plantillas en múltiples organizaciones (análisis de decisión, 2026-10-29)
 
-**Estado: PROPUESTA, pendiente de aprobación comercial.** DEC-06 asigna niveles esenciales/avanzados/premium a Cuadra/Barrio/Ciudad; DEC-08 separa **capacidad de publicación de la cuenta** (3 base +3 por Cuadra extra) del **CRM de cada organización**. Una licencia Barrio/Ciudad de la organización A no debe activar el CRM de B. Falta decidir si el **nivel visual de MiniWeb** es una ventaja compartida del titular o un derecho ligado a cada organización.
+**Estado: análisis histórico de alternativas; opción B aprobada posteriormente en DEC-10.** DEC-06 asigna niveles esenciales/avanzados/premium a Cuadra/Barrio/Ciudad; DEC-08 separa **capacidad de publicación de la cuenta** (3 base +3 por Cuadra extra) del **CRM de cada organización**. Una licencia Barrio/Ciudad de la organización A no debe activar el CRM de B. Falta decidir si el **nivel visual de MiniWeb** es una ventaja compartida del titular o un derecho ligado a cada organización.
 
 ### Alternativas sin inventar derechos
 - **A — nivel por organización (conservadora):** el MiniWeb de una organización sin Barrio/Ciudad propios usa plantillas esenciales, aunque el titular tenga Barrio/Ciudad para otra organización. La capacidad 3/6/9 sí es común. Pros: evita transferencias implícitas de prestaciones premium; contras: una misma cuenta verá catálogos distintos.
@@ -468,7 +468,42 @@
 - Transferencia de titular y concurrencia entre licencia/cupo/publicación no permiten elevar derechos.
 - La desactivación administrativa de una organización no altera otras publicaciones.
 
-**Pregunta de decisión pendiente:** ¿el nivel de plantillas de Barrio/Ciudad debe beneficiar también a MiniWeb de otras organizaciones del mismo titular (B), quedar por organización (A), o asignarse expresamente (C)? No confundir esta elección con el cupo de publicaciones ni con el CRM.
+**Decisión resuelta en DEC-10 (§26): opción B aprobada; nivel visual compartido por titular, CRM por organización, cupos DEC-08 sin acumulación Barrio/Ciudad.**
+
+
+## 26. DEC-10 — Plantillas MiniWeb premium compartidas por titular (OPCIÓN B APROBADA, 2026-10-29)
+
+**Decisión explícita:** el titular de facturación puede usar en todas sus organizaciones MiniWeb el **máximo nivel visual de plantillas** que le otorgue cualquiera de sus licencias activas Cuadra/Barrio/Ciudad. Se comparte **solo el nivel de diseño MiniWeb**, no CRM, automatizaciones, contactos, canales, add-ons ni otros servicios. DEC-08 sigue vigente: **un único bloque base de 3 publicaciones**, más +3 por cada licencia Cuadra adicional de capacidad, sin sumar cupos por Barrio+Ciudad.
+
+### Contrato de derechos efectivo
+- `billingAccountId` es la frontera para `effectiveMiniWebTemplateTier`: `max(active organization_license.plan_code)` orden `cuadra < barrio < ciudad`, considerando solo licencias efectivas vigentes del mismo titular. No elevar por `pending`, `suspended`, `cancelled` o expiradas.
+- `effectivePublicationCapacity` se resuelve **por separado**: 3 si existe al menos una licencia base activa, más 3 por ampliación Cuadra extra activa. Barrio y Ciudad no suman nuevos bloques.
+- `effectiveCrmEntitlement(organizationId)` sigue leyendo únicamente la licencia activa de **esa organización**. Nunca inferir CRM por nivel visual compartido ni por ser miembro de una organización del titular.
+- El nivel visual compartido se aplica a organizaciones autorizadas de esa cuenta, con cupo/ocupación de publicación verificado y permisos de edición de su organización; **no** permite a un titular editar negocios ajenos solo por ser pagador.
+- Para una organización sin licencia propia pero con MiniWeb amparado por el titular, el derecho de diseño deriva del nivel visual compartido; **no** se crea licencia CRM ficticia.
+- Si la licencia que aportaba Ciudad/Barrio se suspende, vence o se reduce, se recalcula el máximo nivel. Los snapshots publicados premium siguen visibles sin alterarse (DEC-07/DEC-09); guardar/publicar un diseño que ya excede el nivel efectivo requiere seleccionar plantilla autorizada. Si no queda ninguna licencia activa, toda nueva edición/publicación MiniWeb queda bloqueada.
+- Una desactivación administrativa por no renovación (DEC-09) prevalece sobre el nivel visual compartido: no hay reactivación automática al contratar otra licencia.
+
+### Concurrencia, auditoría y migración
+- Resolver en servidor al seleccionar plantilla, guardar y publicar; publicar exige validación consistente de `billingAccountId`, licencia efectiva, capacidad, organización y `draftRevision` en el commit. No confiar en datos de sesión o frontend cacheados.
+- Registrar en la versión publicada `templateId`, `templateVersion`, `effectiveTierAtPublish` y fuente `billingAccountId` para auditoría, **sin** usar el tier histórico como permiso para nuevas publicaciones.
+- Cambios de titular deben reevaluar cupos y tier, no transferir automáticamente licencias ni contenidos; conservar snapshot y señalar sobrecupo si procede. No borrar ni degradar publicaciones existentes automáticamente.
+- Las cuentas y organizaciones ya publicadas requieren backfill idempotente del titular/ocupación, sin doble consumo de cupo.
+
+### Matriz focal de aceptación
+| Cuenta y licencias activas | Cupos | Plantillas para todas sus organizaciones autorizadas | CRM |
+| --- | ---: | --- | --- |
+| Solo Cuadra A | 3 | Esenciales | Sin CRM |
+| Barrio A + Cuadra B | 3 | Esenciales + avanzadas en A y B | Barrio solo A |
+| Ciudad A + Barrio B | 3 | Esenciales + avanzadas + premium en A y B | Ciudad solo A; Barrio solo B |
+| Ciudad A + Cuadra extra | 6 | Premium en organizaciones autorizadas del titular | Ciudad solo A |
+| Barrio A + Ciudad B + 2 Cuadras extra | 9 | Premium en todas las autorizadas | CRM solo A y B según su licencia |
+| Ciudad A suspendida + Barrio B activa | 3 | Avanzadas para nuevos cambios; premium ya publicado se conserva | Barrio solo B |
+| Todas las licencias vencidas | 0 disponibles para nueva publicación | Sin nuevas ediciones/publicaciones; snapshots congelados visibles | Sin CRM efectivo |
+
+**No implica:** comprar CRM para organizaciones secundarias, cupos adicionales por subir a Barrio/Ciudad, cambios en precios de licencias, publicación automática, permiso de administrador sobre otras organizaciones ni borrado de diseños al bajar de nivel.
+
+**Estado:** decisión de producto aprobada y documentada; resolver, migraciones, editor y pruebas aún no implementados. Esta decisión **resuelve la alternativa B del §25**.
 
 ## 12. Registro de avance
 
