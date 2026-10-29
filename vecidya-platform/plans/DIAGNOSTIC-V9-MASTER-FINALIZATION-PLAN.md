@@ -2382,3 +2382,30 @@ Construir matriz por dimensión y escenario con `direct/supporting/contextual/mi
 
 ## Changelog adicional
 - **1.41.0 / 2026-10-29:** preauditoría documental C02/C03/C05/C10/C07 y distinción entre estado, historial, aplicabilidad y evidencia. Sin código ni pruebas.
+
+## 50. CONSOL-01 / TAX-G3 — matriz mínima de evidencia verificada (2026-10-29)
+**PLAN_ONLY; lectura estática, sin ejecución de rutas.** Fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`; `qa03b/v9-editorial-review-matrix.ts` blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`.
+
+**Leyenda:** D = pregunta con evidencia V3 directa explícita y condición compatible; S = evidencia V3 supporting explícita; — = no se identificó evidencia específica en esta revisión focal; NO implica ausencia en todo el banco. **Ninguna celda significa ruta ejecutada ni nivel certificable.** En una celda D+S ambas existen como candidatas.
+
+| Dimensión candidata | C02 preparando | C03 pausado | C05 organización sin venta | C07 ecommerce activo | C10 nicho desconocido |
+| --- | --- | --- | --- | --- | --- |
+| clarity_positioning | D+S: startup_problem_clarity / offer_readiness + validation_evidence | — | — | — | — |
+| digital_foundation | — | — | — | — | — |
+| discovery | — | — | — | — | — |
+| trust_reputation | — | — | — | — | — |
+| conversion_access | — | — | D condicional: nonprofit_donation_clarity solo donaciones/mixto | D condicional: ecommerce_checkout_friction | — |
+| relationship_recurrence | — | — | — | D condicional: ecommerce_cart_followup con visibilidad=yes y permiso; repeat_purchase pending | — |
+| measurement_optimization | — | — | — | S condicional: ecommerce_cart_visibility | — |
+| digital_readiness | — | — | — | — | — |
+
+**Advertencia sobre C05:** `nonprofit_donation_clarity` requiere actividad actual, organización/misión y tipo de apoyo donaciones/mixto; no generalizar D a toda organización sin venta. **Advertencia sobre C07:** las tres preguntas señaladas exigen historial real y/o respuesta previa; no cubren tiendas sin compradores. **C10:** desconocimiento de nicho es una variable transversal, no una prueba de ausencia de evidencia en ocho dimensiones.
+
+### Hallazgo de contrato editorial
+`buildEditorialMatrixV9` ya devuelve `summary.questions/options/variants/revised/semanticReview/pendingHumanReview/answersWithEvidence/answersWithoutEvidence/reviewFlags`. Sus filas contienen `readsAs` por opción solo cuando hay un estado explícito en `evidenceV3`; una opción sin `readsAs` puede ser contextual, pendiente o tener mapeo incompleto. No interpretar `answersWithoutEvidence` automáticamente como defectos. Las alertas `missing_evidence_mapping` sí requieren revisión específica de dimensiones migradas. No se han ejecutado las funciones ni certificado cifras actuales.
+
+### Gate inmediato
+Completar esta matriz con el banco completo, las diez columnas C01–C10 y evidencia con IDs/estados por celda. Registrar condiciones de aplicabilidad y variantes por fila, marcar `no demostrado` hasta traza de alcanzabilidad. No aprobar taxonomía ni calificación hasta cerrar los vacíos; no usar puntuación heredada como sustituto.
+
+## Changelog adicional
+- **1.42.0 / 2026-10-29:** matriz mínima 8×5 de evidencia focal explícita, con condiciones y límites de inferencia; sin ejecución, código ni pruebas.
