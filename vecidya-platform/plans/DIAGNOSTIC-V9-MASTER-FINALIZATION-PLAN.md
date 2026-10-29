@@ -333,3 +333,59 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 modelo
 
 ## Changelog adicional
 - **1.5.0 / 2026-10-29:** D-V9-004 aprobada; reglas de entrevista, decisiones aún abiertas, tareas PLAN-Q01–Q07, criterios de aceptación y siguiente consulta. Solo documentación.
+
+
+## 13. Decisión D-V9-005 — resumen anónimo e informe detallado con cuenta (aprobada 2026-10-29)
+**Aprobación expresa del responsable:** «resumen anónimo e informe detallado con cuenta». Estado: APPROVED como comportamiento de producto, NO como implementación.
+
+### 13.1. Dos niveles de presentación
+**Anónimo, después de finalizar:** resumen de madurez digital comprensible y útil, con fortalezas principales, oportunidades y orientación inicial. Debe comunicar insuficiencia de evidencia y no prometer puntuaciones no calibradas. No exigir cuenta para finalizar o consultar ese resumen.
+
+**Usuario autenticado:** informe detallado por dimensiones aplicables, evidencias y límites, prioridades justificadas, recomendaciones y continuidad/historial cuando los contratos de persistencia estén aprobados. El registro no modifica respuestas, scoring, calibración ni conclusiones; solo autoriza una vista ampliada y funcionalidades asociadas a identidad.
+
+**No decidido todavía:** campos exactos de cada vista, número de fortalezas/prioridades visibles anónimamente, si existe descarga, cuánto tiempo persiste un run anónimo, qué consentimientos se necesitan, si puede compartirse un enlace, y política de borrado/retención. No inventar valores ni asumir acceso público a resultados personales.
+
+### 13.2. Contratos de seguridad y continuidad para el futuro agente
+- Separar motor de evaluación de autorización de lectura: la identidad nunca cambia la nota o prioridad.
+- Diseñar ownership de run, claim autenticado y asociación a organización como actos distintos; vincular negocio requiere autorización explícita y verificación de permisos.
+- Definir tokens/cookies de sesión anónima, expiración, rotación, idempotencia, reclamación única y protección frente a acceso cruzado. Seleccionar mecanismos concretos tras auditar rutas y migraciones V9 reales.
+- Proteger evidencias sensibles del informe detallado frente a exposición en endpoints, caché, logs, URLs o resúmenes públicos.
+- Si falla el login/claim, conservar el resumen y ofrecer recuperación segura sin duplicar resultados ni cambiar la evaluación.
+- Revisar accesibilidad y UX del paso de resumen a registro, con explicación clara del beneficio y sin bloqueo previo a terminar la entrevista.
+- Integrar Aprende y servicios solo según contratos aprobados; no utilizar GHL como requisito para identidad, resultados o scoring.
+
+### 13.3. Tareas de especificación para el agente futuro
+| ID | Tarea documental | Entregable / evidencia exigida | Gate |
+| --- | --- | --- | --- |
+| PLAN-I01 | Inventariar rutas V9 de run, finalización, resultado, claim, estado e historial, y tablas D1 asociadas | Mapa de endpoints, permisos y contratos actuales con rutas/SHA | No asumir que endpoints existentes están certificados |
+| PLAN-I02 | Diseñar contrato de resumen anónimo | Campos permitidos/prohibidos y ejemplo con evidencia parcial | Útil sin cuenta y sin datos sensibles |
+| PLAN-I03 | Diseñar contrato de informe autenticado | Esquema de dimensiones, evidencias, prioridades y explicaciones | Trazabilidad y consistencia con resumen |
+| PLAN-I04 | Diseñar flujo de transición anónimo→cuenta→claim | Diagrama de estados, errores, reintentos, expiración y permisos | No pérdida ni doble claim |
+| PLAN-I05 | Diseñar historial, asociación voluntaria a negocio y autorización multi-organización | Matriz de roles, ownership y escenarios negativos | Sin acceso cruzado |
+| PLAN-I06 | Proponer retención, borrado, consentimiento y política de datos | Tabla de datos, propósito, plazo propuesto y aprobación pendiente | No establecer plazos sin decisión |
+| PLAN-I07 | Especificar pruebas focalizadas futuras de resultados y seguridad | Matriz entrada→vista anónima/autenticada→permiso→resultado esperado | Misma evaluación para ambas vistas |
+
+### 13.4. Casos de aceptación futuros
+1. Run anónimo completo: resumen disponible sin iniciar sesión; no filtra informe detallado.
+2. Login posterior: informe detallado del mismo run, sin alterar respuestas o resultado.
+3. Claim repetido: no duplica ni cambia propietario sin autorización.
+4. Dos usuarios/organizaciones: acceso cruzado denegado, incluidos endpoints e historial.
+5. Run anónimo caducado o token inválido: respuesta segura, sin acceso a terceros.
+6. Evidencia insuficiente: resumen e informe expresan incertidumbre coherente.
+7. Fallo de autenticación: no se pierde el resultado de evaluación ni se atribuye a otra cuenta.
+8. Recursos Aprende no disponibles: informe sigue siendo útil sin enlace inventado.
+
+### 13.5. Impacto en plan
+- F05: contratos de resumen anónimo e informe autenticado separados de cálculo.
+- F07: claim, ownership, permisos, historial y privacidad se convierten en gates explícitos.
+- F08: pruebas negativas de exposición, accesibilidad y continuidad.
+- F10: aceptación de transición anónimo→cuenta antes de lanzamiento.
+
+### 13.6. Próxima decisión D-V9-006 — priorización de acciones
+Determinar cómo ordenar acciones del informe: (A) impacto digital esperado; (B) facilidad y rapidez de ejecución; (C) combinación explicable de impacto, urgencia, esfuerzo y objetivo declarado, sin presentar estimaciones como hechos. Requiere aprobación del responsable.
+
+### 13.7. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 modelo híbrido APPROVED; D-V9-004 entrevista adaptativa APPROVED; D-V9-005 resumen anónimo / informe con cuenta APPROVED; D-V9-006 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.6.0 / 2026-10-29:** D-V9-005 aprobada; contratos de vistas, transición de identidad, seguridad, tareas PLAN-I01–I07 y decisión siguiente. Documentación exclusivamente.
