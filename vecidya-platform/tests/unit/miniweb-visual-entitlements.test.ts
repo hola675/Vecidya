@@ -45,3 +45,9 @@ test("V2C: no concede acceso por tier manipulado ni identificadores similares", 
   assert.equal(access("owner-a", "base", [license("ciudad", "owner-a-extra")]).allowed, false);
   assert.equal(access("owner-a", "base", [license("ciudad", "owner-a", false), license("cuadra", "owner-a", true)]).effectiveTier, "cuadra");
 });
+
+test("V2C: tolera registros de licencia malformados sin conceder acceso", () => {
+  const malformed = [null, undefined, { tier: "ciudad", billingOwnerId: "owner-a", active: "true" }] as unknown as Parameters<typeof access>[2];
+  assert.equal(access("owner-a", "premium", malformed).allowed, false);
+  assert.equal(access("owner-a", "base", [...malformed, license("cuadra")]).allowed, true);
+});
