@@ -34,3 +34,14 @@ test("V2C: no muta el conjunto de licencias", () => {
   assert.equal(access("owner-a", "pro", licenses).effectiveTier, "barrio");
   assert.equal(licenses[0].tier, "barrio");
 });
+
+test("V2C: no concede Premium por licencia ajena aunque sea la más alta", () => {
+  const result = access("owner-a", "premium", [license("barrio"), license("ciudad", "owner-b")]);
+  assert.deepEqual(result, { allowed: false, effectiveTier: "barrio", reason: "insufficient_tier" });
+});
+
+test("V2C: no concede acceso por tier manipulado ni identificadores similares", () => {
+  assert.equal(access("owner-a", "base", [{ ...license("ciudad"), tier: "superadmin" as "ciudad" }]).allowed, false);
+  assert.equal(access("owner-a", "base", [license("ciudad", "owner-a-extra")]).allowed, false);
+  assert.equal(access("owner-a", "base", [license("ciudad", "owner-a", false), license("cuadra", "owner-a", true)]).effectiveTier, "cuadra");
+});
