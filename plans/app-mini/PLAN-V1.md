@@ -6,6 +6,825 @@
 
 > **Evidencia:** `APROBADO` = decisión explícita del usuario; `CODE` = inspección estática de `main`; `DOC` = documentación del repositorio no revalidada en ejecución; `PROPUESTA` = diseño pendiente de validación; `TEST` = prueba efectivamente ejecutada (ninguna nueva). **Marcas:** `[x]` documentado/comprobado dentro de su alcance, `[~]` parcial o pendiente de decisión, `[ ]` no implementado, `[!]` bloqueo. Ningún `[x]` documental acredita software terminado.
 
+
+## GUÍA DE LECTURA Y EJECUCIÓN PARA AGENTES — ENTRADA OBLIGATORIA
+
+**Estado:** plan de desarrollo, no documentación rectora; **implementación NO autorizada**. Este documento vive en `plans/` como el plan Aprende. Los anexos son referencias subordinadas y las políticas del repositorio (`AGENTS.md`, `GOVERNANCE.md`) siguen vigentes.
+
+### Orden obligatorio de lectura (no cronológico)
+
+1. **Decisiones y límites actuales:** §§83–84, 66, 68, 71, 74, 76. Resolver primero la diferencia entre aprobado, propuesto, histórico y pendiente.
+2. **Qué se construirá:** §§69–70 y el anexo `CONTRATO-VARIANTES-V2.md`; doce secciones nuevas, cinco familias × tres variantes, horario V2 aislado.
+3. **Conexiones y seguridad:** §§79–80; revisar límites de identidad, organizaciones, titular comercial, licencias, publicación, GHL y ledger.
+4. **Entrega por tickets:** §78 y §77; criterios de aceptación, pruebas focales, evidencias, permisos humanos y release.
+5. **Licencias manuales y comercio:** §75 y anexo `SERVICIOS-PAGOS-PLAN-V1.md`; P6A manual separado de P6B pagos.
+6. **Historia y fundamento:** §§0–65 y §67 solo cuando se requiera rastrear una decisión o un diagnóstico anterior; **no ejecutar instrucciones históricas sin reconciliarlas**.
+
+### Reglas de precedencia
+
+1. **Instrucción explícita más reciente del responsable** y decisiones aprobadas registradas en §§66, 68, 71, 74, 76, 83–84 prevalecen sobre propuestas anteriores dentro del plan.
+2. Para reglas de trabajo y estado real del software, prevalecen `AGENTS.md`, `GOVERNANCE.md`, código y pruebas verificadas. Este plan **no** sustituye esas fuentes.
+3. Un apartado antiguo marcado «APROBADO» sigue válido **salvo** que una decisión posterior lo sustituya explícitamente; no se descarta todo el historial por estar en la segunda parte.
+4. `SPECIFIED` significa contrato documental, **no** `IMPLEMENTED` ni `PASS`. Si hay contradicción sin resolución explícita, **bloquear la decisión afectada y escalar**, no inventar un desempate.
+5. Los títulos y números de sección se preservan como identificadores estables, aunque el orden físico ahora sea temático y no numérico.
+
+### Invariantes no negociables
+
+- MiniWeb V2 **nuevo desde cero**: no reutilizar editor, secciones, renderer, plantillas ni horario V1. Importación V1→V2 solo voluntaria y allowlist de datos de negocio; **nunca horario V1**.
+- Cuadra, Barrio y Ciudad: **misma funcionalidad**, diferencias exclusivamente visuales. Cinco familias y tres variantes visuales.
+- Una licencia/entitlement canónica, con autorización de servidor y aislamiento multi-organización; no confundir titular de facturación con editor de una organización.
+- MiniWeb público no depende de que GHL responda. CRM, consumos y pagos son dominios separados.
+- P6A: licencias administradas manualmente; P6B: pagos automáticos **aplazados**. COM-01, PAY-01 y BILL-02 no se presumen aprobados.
+- No declarar diseños, seguridad o release aprobados sin evidencias concretas y decisión del responsable. No merge, despliegue ni migraciones desde esta tarea de planificación.
+
+### Ruta de ejecución futura (no iniciada)
+
+`IMP-01 contratos/esquemas → IMP-02 persistencia/CAS → IMP-03 editor + IMP-04 renderer + IMP-06 horario → IMP-05 variantes + IMP-07 publicación/cupos → IMP-08 conversión opt-in + IMP-09 P6A → IMP-10 SEC-QA/VIS-01 → IMP-11 autorización release`. `IMP-12` (pagos P6B) queda fuera del primer lanzamiento.
+
+**Regla de handoff:** cada agente recibe un ticket de §78, verifica sus dependencias y las fuentes de verdad del repositorio, propone cambios mínimos, ejecuta **pruebas focales** de los archivos afectados, registra SHA/evidencia y solicita revisión. Las futuras fases siguen la política de ramas/worktrees del repositorio; **el presente trabajo de planificación conserva solo PR #184**.
+
+### Índice de decisiones clave
+
+| Tema | Fuente de decisión | Estado |
+|---|---|---|
+| V2 completamente nuevo | §66 DEC-19 | APROBADO |
+| Exclusivamente planificación en este PR | §68 | VIGENTE |
+| 12 secciones nuevas | §69 | ESPECIFICADO |
+| Cinco familias, tres variantes | §71 CAT-01 | APROBADO |
+| Horario V2 independiente | §71 HV2-PRODUCT | APROBADO |
+| Licencias manuales P6A | §71 REL-01 | APROBADO |
+| Gobierno interno del expediente | §§74, 83 | APROBADO; no rector global |
+| Aprobador final humano | §76 | DESIGNADO; no aprobación anticipada |
+| Contratos de arquitectura y escalabilidad | §§79–80 | ESPECIFICADOS; pendientes de verificación técnica |
+| Tarifas, suspensión, PSP y facturación | §§71, 75, 79–80 | DECISIONES AÚN PENDIENTES según ámbito |
+| Evidencia visual, SEC-QA, release | §77 | NO APROBADOS |
+| Plan comparado con Aprende | §84 | DOCUMENTADO; implementación no iniciada |
+
+---
+
+# PARTE A — CONTRATOS VIGENTES Y ENTREGA A AGENTES
+
+Las secciones 66–84 se presentan primero para que la ejecución futura parta del contrato vigente. **La posición no cambia su ID ni eleva propuestas a decisiones aprobadas.**
+
+## 66. DEC-19 — MiniWeb V2 nuevo desde cero con migración selectiva de legado (2026-10-29; decisión del usuario)
+
+**Decisión aprobada:** MiniWeb V2 es un sistema completo nuevo: **todas las secciones, su estructura, UI, composición, configuración y contrato de publicación se diseñan de cero** conforme a las políticas vigentes y a las variantes visuales Cuadra (Base), Barrio (Pro) y Ciudad (Premium). Reutilizar V1 significa aprovechar capacidades, datos o infraestructura *solo cuando sean útiles y compatibles*, nunca trasladar fielmente las secciones ni conservar su estructura por inercia.
+
+### 66.1 Reutilización por frontera
+
+| Elemento V1 | Política V2 |
+| --- | --- |
+| Componentes visuales de secciones, layouts y templates | **No copiar como secciones V2**; reconstruir diseño y esquema |
+| Datos maestros del negocio, identidad, medios y ofertas | Candidatos a importación/mapeo explícito y validado, sin vinculación permanente obligatoria |
+| Autenticación, tenant guards, permisos, almacenamiento de medios, utilidades seguras y CAS | Reutilización interna selectiva, tras inspección CODE y pruebas focales |
+| Snapshots V1 y URLs públicas actuales | Mantener lectura/servicio legado; permitir edición/migración V2 sin alterar el snapshot histórico |
+| Familias antiguas | Fuente de contenido/mapeo para conversión, **no** plantilla V2 disfrazada |
+| **Horario V1: sección, datos, lógica y vínculo** | **EXCLUIDOS TOTALMENTE de la nueva sección Horario V2**: no importar, no leer como fallback, no sincronizar, no enlazar ni compartir modelo. Horario V2 se crea de cero, con datos nuevos introducidos explícitamente por el usuario |
+
+### 66.2 Adaptación posterior de publicaciones existentes
+
+**Flujo objetivo:** `sitio V1 publicado` → `Crear versión V2 desde publicación` → `seleccionar familia y tier visual autorizado` → `importación selectiva de contenido permitido` → `resolver campos incompatibles` → `editar nuevas secciones V2` → `previsualizar` → `publicar V2 de manera explícita`.
+
+- La conversión crea un **borrador V2 independiente**, con `sourcePublicationId`, `migrationVersion`, reporte de campos importados/omitidos y provenance para auditoría; **no** modifica la publicación V1 ni actualiza silenciosamente el sitio público.
+- Cada sección V2 posee identificadores y schema propios, sin dependencia de estructura DOM, IDs o clases CSS de V1. Un adaptador de una sola ejecución puede leer contenidos V1 **excepto horario** y producir datos V2 normalizados. El render V2 nunca depende del renderer V1.
+- La publicación explícita cambia la versión activa mediante control de revisión/CAS; conservar snapshots anteriores y capacidad de recuperación. Un downgrade o falta de licencia no provoca conversión ni despublicación automática.
+- La importación selectiva debe respetar titularidad tenant, permisos de medios, derechos de publicación, cupo y contenido publicado; registrar conflictos sin sobreescribir trabajo del usuario.
+- **Horario V2:** estado inicial vacío o pendiente de configuración, sin valores precargados, sin sugerencias provenientes del horario V1 y sin vínculo de sincronización; su guardado y validación son nuevos. V1 sigue mostrando sus propios horarios en publicaciones históricas mientras no se publique V2, pero esos horarios nunca alimentan V2.
+
+### 66.3 Plan técnico por checkpoints
+
+1. **V2-SCHEMA:** diseñar desde cero catálogo de secciones y campos V2, independientes de V1; definición de capacidades iguales en Base/Pro/Premium, solo composición visual distinta.
+2. **V2-HOURS:** nueva sección Horario con su propia persistencia, validación, editor y renderer; pruebas que demuestren ausencia de lectura/importación/vínculo con horarios V1.
+3. **V2-ADAPTER:** inventario campo por campo de datos V1 elegibles; conversor opt-in y reporte, con blacklist absoluta de horario.
+4. **V2-EDITOR:** nuevo editor de secciones V2, reutilizando únicamente shell, autenticación y servicios seguros pertinentes; no reutilizar formularios visuales de secciones V1.
+5. **V2-RENDER:** cinco familias nuevas, tres variantes visuales cada una, renderer aislado de V1; pruebas 3×3 por familia, paridad funcional y accesibilidad.
+6. **V2-PUBLISH:** publicación explícita, compatibilidad de snapshots y rollback lógico; pruebas focales de V1 sin regresión, CAS, ownership y cuota.
+7. **V2-MIGRATE-UI:** acción de convertir una publicación antigua desde su edición, con previsualización y confirmación; no migración masiva automática.
+
+### 66.4 Criterios de aceptación obligatorios
+
+- **AC-19A:** ningún componente de sección V1 se registra como sección V2 sin rediseño y nuevo contrato.
+- **AC-19B:** un sitio V1 permanece visual y funcionalmente intacto hasta que su titular confirme publicar V2.
+- **AC-19C:** el adaptador migra únicamente contenido permitido, con reporte y reversibilidad; no duplica contactos, CRM ni entidades de negocio.
+- **AC-19D:** horario V2 comienza sin datos heredados y funciona sin consultas al horario V1. Test de no importación incluso si V1 contiene horarios válidos.
+- **AC-19E:** Cuadra/Barrio/Ciudad ofrecen las mismas secciones y capacidades V2, diferenciadas únicamente por diseño visual y entitlements aprobados.
+- **AC-19F:** el usuario puede elegir una familia nueva al convertir V1, editar el resultado y publicar una nueva versión sin perder su historial.
+
+**Precedencia:** DEC-19 sustituye cualquier instrucción anterior de «reutilizar secciones V1», «extender el editor de secciones existente» o «preservar la sección Horarios V1 en V2». Mantener compatibilidad pública V1 no significa vincular su horario a V2. **GAP-19 cambia de OPEN a SPECIFIED por decisión; implementación y pruebas siguen pendientes.** GAP-21/22 permanecen abiertos hasta diseñar el adaptador y verificar el código.
+
+
+## 67. Primer checkpoint CODE de DEC-19 — PR #197 (2026-10-29)
+
+**Implementación creada en rama independiente desde main:** `feat/miniweb-v2-section-contract-hours-isolation`, PR [#197](https://github.com/hola675/Vecidya/pull/197) **draft**.
+
+**Archivos nuevos:** `app/features/miniweb-v2/sections.ts` (tipos de 12 secciones V2, cinco familias, tres variantes visuales, borrador V2 y nuevo horario vacío con validación), `app/features/miniweb-v2/migrate.ts` (importación voluntaria de campos publicados permitidos y exclusión absoluta de horarios), `tests/unit/miniweb/v2-sections.test.ts` (cuatro tests focales).
+
+**Alcance real:** código puro inicial; no UI, no ruta, no D1, no renderer, no publicación, no migración automática, no cambio del horario legado en producción. Las pruebas están escritas, **no se declara RAN/PASS** sin ejecución de CI o local sobre SHA del PR.
+
+**Trazabilidad:** DEC-19/AC-19C y AC-19D tienen primera implementación parcial; GAP-19 pasa de SPECIFIED a PARTIAL CODE, pendiente de UI y prueba; GAP-21/22 siguen OPEN. Próximos PRs: modelo persistente de Horario V2 separado, pruebas de ausencia de consultas a V1, renderer de secciones nuevas, editor y conversión desde publicación.
+
+
+## 68. Corrección de alcance — PLANIFICACIÓN EXCLUSIVA (2026-10-29)
+
+**Instrucción explícita del responsable:** el alcance de este trabajo es **crear, cerrar y entregar el plan**, no implementar MiniWeb V2. La creación previa de archivos ejecutables fue una desviación. Desde este checkpoint, no se crearán ni editarán archivos de aplicación, migraciones, tests o CI en nombre de esta tarea. El plan puede especificar contratos, pruebas, fases, dependencias y criterios de aceptación para que otros agentes los implementen posteriormente.
+
+**Alcance aprobado de planificación:** catálogo y diseño de secciones V2 completamente nuevas; cinco familias × variantes visuales Base/Pro/Premium para Cuadra/Barrio/Ciudad; funcionalidades comunes; horario nuevo independiente sin lecturas/importaciones/sincronización V1; conversión opt-in de contenido publicado V1 excluyendo horario; arquitectura objetivo, datos, publicación, rollback, seguridad, cuotas, precios, accesibilidad, pruebas focalizadas propuestas, fases, responsables y decisiones humanas.
+
+**Estado honesto:** los archivos de código introducidos en PR #184 durante la desviación son prototipos no certificados y **no constituyen una implementación autorizada**. Deben excluirse del PR de planificación y dejarse a cargo del equipo de implementación en un trabajo futuro autorizado. No declarar cierre técnico, PASS, despliegue ni disponibilidad del producto por existir documentación o prototipos.
+
+**Cierre del plan:** cada hueco se clasifica como (A) resuelto por decisión y contrato, (B) decisión humana pendiente con dueño y fecha, o (C) investigación técnica delegada con criterio de salida. Un plan puede quedar listo para ejecución sin que el código esté implementado. El cierre de planificación requiere matriz de trazabilidad, contratos por sección, dependencias, secuencia de fases, estimaciones relativas, gates de calidad, decisiones y riesgos residuales. Ninguna tarea de implementación se ejecuta desde esta conversación.
+
+
+## 69. Catálogo contractual de secciones MiniWeb V2 — diseño nuevo desde cero
+
+**Estado: SPECIFIED FOR IMPLEMENTATION, no código.** Cada sección V2 tiene contrato propio, independiente de componentes y modelos visuales V1. Todas las secciones están disponibles funcionalmente en Cuadra/Barrio/Ciudad; las variantes Base/Pro/Premium modifican solo presentación. Las cinco familias comparten catálogo y editor; su diferencia es composición, orden inicial y lenguaje visual, nunca bloqueo funcional.
+
+| ID | Sección V2 | Datos editables mínimos | Reglas y criterio de aceptación |
+|---|---|---|---|
+| S01 | Portada / Hero | título, subtítulo, CTA, imagen y alt | CTA con destino válido; imagen opcional; diseño responsive |
+| S02 | Sobre el negocio | titular, descripción, bloques narrativos, imágenes | texto sanitizado; bloques ordenables |
+| S03 | Servicios | elementos con título, descripción, imagen, CTA y orden | vacíos no se publican; no crear entidades CRM duplicadas |
+| S04 | Productos / catálogo | elementos, categoría, imagen, descripción, CTA | sin pagos implícitos ni disponibilidad inventada |
+| S05 | Galería | media, alt, orden, pie | solo media autorizada al negocio; tamaños optimizados |
+| S06 | Contacto | teléfono, email, enlaces, CTA | validar URL/esquemas; no exponer datos privados |
+| S07 | Ubicación / cobertura | dirección pública opcional, ciudad, zona, mapa opt-in | no revelar domicilio sin consentimiento |
+| S08 | Preguntas frecuentes | pares pregunta-respuesta, orden | respuestas visibles sin JS; contenido seguro |
+| S09 | Equipo | perfiles, rol, descripción, fotografía, consentimiento | no publicar información personal sin permiso |
+| S10 | Certificaciones | entidad emisora, título, fecha, documento/imagen opcional | sin badges falsos ni verificación no acreditada |
+| S11 | Testimonios | texto, autor público consentido, contexto | moderación y retiro; sin ratings fabricados |
+| S12 | Horario V2 | zona horaria IANA, siete días, cierres, intervalos, excepciones fechadas, nota | **vacío de origen**, sin importación/consulta/sync/fallback de horarios V1 |
+
+### 69.1 Contrato común de cada instancia
+
+Cada instancia contiene identificador propio V2, tipo de sección, versión de esquema, estado borrador/publicable, posición, visibilidad, contenido tipado y metadatos de edición. Identificadores estables y sin colisiones; orden explícito; validación por tipo; sanitización y permisos de media. El renderer ignora instancias desconocidas sin romper la página y registra el problema para diagnóstico; el editor no elimina contenido desconocido silenciosamente. Una sección sin datos obligatorios no puede publicarse como completa.
+
+### 69.2 Horario V2 — contrato de cero absoluto
+
+- No reutilizar tablas, queries, formularios, componentes, valores predeterminados basados en V1 ni adaptadores de horario legado.
+- Persistencia V2 independiente y tenant-scoped; cada negocio crea sus propios siete días, zona horaria y excepciones. Estado inicial: **sin configurar**; el editor puede ofrecer siete días cerrados como estructura vacía, no como dato importado.
+- Día cerrado no admite intervalos; día abierto exige al menos uno. Formato 24 h; inicio anterior a fin; intervalos no superpuestos, incluso si se introducen desordenados. Turnos nocturnos requieren regla explícita de partición o soporte de cruce de día antes de implementación.
+- Excepciones fechadas tienen prioridad sobre horario semanal; definir precedencia de cierres, festivos y apertura especial. Render público debe mostrar zona horaria y aclarar que el horario puede variar; no inferir «abierto ahora» sin motor de zona horaria probado.
+- AC-HV2-01: negocio nuevo sin V1 guarda y publica horario V2. AC-HV2-02: negocio con horario V1 válido inicia V2 vacío. AC-HV2-03: modificar V1 después no modifica V2. AC-HV2-04: publicar V2 no modifica snapshot V1. AC-HV2-05: horarios superpuestos, zona inválida, días duplicados y excepciones contradictorias fallan validación focal.
+
+### 69.3 Matriz de familias y variantes
+
+| Familia | Composición editorial inicial sugerida | Base/Pro/Premium |
+|---|---|---|
+| Vecidya Default | portada, sobre, servicios, contacto, ubicación, horario | mismas secciones; distinta jerarquía y tratamiento visual |
+| Services Studio | portada, servicios, testimonios, FAQ, contacto, horario | mismas funciones; estética orientada a servicios |
+| Catalog Store | portada, productos, galería, FAQ, contacto, horario | mismas funciones; estética de catálogo |
+| Gastronomy Table | portada, productos, galería, horario, ubicación, contacto | mismas funciones; estética gastronómica |
+| Professional Profile | portada, sobre, certificaciones, equipo, testimonios, contacto | mismas funciones; estética profesional |
+
+Las composiciones son **valores iniciales editables**, no restricciones. Cualquier familia puede añadir, quitar u ordenar cualquiera de las doce secciones. La matriz definitiva de variantes visuales queda sujeta a VIS-01/CAT-01; no introducir capacidades funcionales premium.
+
+### 69.4 Gates de planificación para delegación
+
+**GATE-SCHEMA:** especificación de contenido tipado y evolución de versión para S01–S12. **GATE-HOURS:** aislamiento demostrable V1/V2 y decisiones de nocturnidad/excepciones. **GATE-EDITOR:** estados vacío, error, guardado, preview y accesibilidad. **GATE-RENDER:** matriz cinco familias × tres variantes × tres viewports, sin diferencias funcionales. **GATE-PUBLISH:** preview/publicación explícita, CAS, tenant ownership, snapshot inmutable y rollback. **GATE-MIGRATE:** consentimiento por publicación, importación selectiva documentada, reporte, exclusión absoluta de horario. Todos son criterios para futuros agentes, **no tests ejecutados**.
+
+### 69.5 Huecos abiertos de esta sección
+
+- **B / Producto:** CAT-01 y VIS-01 (dueño: responsable Vecidya); decidir catálogo visual y elegibilidad exacta antes de congelar diseños.
+- **B / Producto:** definir política de turnos nocturnos, excepciones y «abierto ahora» (dueño: responsable Vecidya); bloquear GATE-HOURS hasta resolución.
+- **C / Ingeniería futura:** elección de tablas, transacciones, snapshots y API sin reutilizar horario V1 (dueño: agente de implementación); salida: diseño D1 revisado, no implementación en este PR.
+- **C / Seguridad futura:** política de consentimiento para equipo/testimonios y retención de medios (dueño: implementación + negocio); salida: especificación de autorización y retirada.
+
+
+## 70. Cierre de huecos de diseño — decisiones propuestas para ratificación
+
+**Naturaleza:** decisiones de planificación recomendadas, no aprobaciones humanas ni implementación. Sustituyen ambigüedades técnicas de §69; prevalecen las decisiones comerciales y de gobierno aún pendientes.
+
+### 70.1 Horarios nocturnos, festivos y excepciones (SPECIFIED)
+
+1. El día de la semana se interpreta en la zona IANA del negocio, nunca la del navegador. Formato 24 horas; intervalo normal [inicio, fin), sin incluir el extremo final.
+2. Los turnos que cruzan medianoche se representan con **intervalos partidos entre dos fechas locales**: por ejemplo lunes 22:00–martes 02:00 se almacena como lunes 22:00–24:00 y martes 00:00–02:00. **24:00** es un marcador de fin exclusivo, no una hora de inicio válida. El editor puede aceptar un turno nocturno y proponer el reparto, pero requiere confirmación explícita del usuario.
+3. Las excepciones tienen fecha local y tipo **cerrado**, **horario especial** o **nota informativa**. Precedencia: excepción cerrada > horario especial > horario semanal; la nota no cambia disponibilidad. Una fecha admite como máximo una excepción operativa; duplicados contradictorios se rechazan. Los festivos no se importan automáticamente: el usuario crea o confirma cada excepción.
+4. Un cierre excepcional de martes afecta el tramo que cae en martes incluso si procede de un turno iniciado el lunes. Los intervalos de fecha local se normalizan antes de aplicar precedencia. Cambio DST: se resuelve mediante zona IANA y fecha real; intervalos ambiguos/no existentes se muestran para corrección, nunca se desplazan silenciosamente.
+5. «Abierto ahora» **no es requisito de primera entrega**. Se publica horario declarado con zona horaria y aviso de posibles cambios; se habilitará indicador en fase posterior solo con motor probado en DST, medianoche, excepciones y latencia.
+6. Estado inicial V2: sin configurar. Ninguna lectura/importación/sugerencia desde horario V1. Si el horario no está configurado, la sección pública se oculta; no inventar «cerrado».
+7. Criterios HV2-06–12: turnos nocturnos, límites 00:00/24:00, festivo cerrado, horario especial, DST, excepciones contradictorias y ausencia de inferencia de «abierto ahora» deben contar con casos focales de aceptación.
+
+### 70.2 Editor V2 y publicación (SPECIFIED)
+
+**Flujo de edición:** crear borrador V2 → elegir familia y variante visual permitida → editar instancias S01–S12 → validación por sección → guardar revisión con control de versión CAS → previsualizar snapshot exacto → confirmar publicación → activar nueva versión inmutable → poder revertir a snapshot anterior. «Guardar» nunca significa «publicar». La vista previa se vincula a revisión concreta, no al estado mutable del editor. En caso de conflicto CAS, se preservan ambas versiones y se solicita resolución explícita.
+
+**Estados:** EMPTY, DRAFT, INVALID, READY, PUBLISHING, PUBLISHED, SUPERSEDED, ARCHIVED. Las transiciones y errores tienen mensajes accesibles. El renderer público no accede a borradores ni a credenciales; sirve únicamente snapshot publicado autorizado. La publicación verifica ownership, organización activa, cupo/licencia y versión CAS en servidor, no solo en UI. Las secciones desconocidas se registran como incidencia y no invalidan una publicación V1 existente.
+
+**Aceptación:** editar sin publicar no cambia URL pública; preview y publicación muestran el mismo snapshot; conflicto concurrente no pierde cambios; rollback restaura contenido anterior sin borrar historial; ninguna organización lee/edita/publica otra; al perder licencia se aplica política de visibilidad explícita sin borrado físico automático.
+
+### 70.3 Conversión voluntaria de publicación V1 (SPECIFIED)
+
+Solo se ofrece desde una publicación V1 que pertenece al usuario autorizado. Pantalla de consentimiento informa qué se copiará, qué no y que la publicación original no cambiará. Se elige familia y variante V2; se crea **un borrador nuevo**, no se sobrescribe el V1. Se copia selectivamente identidad pública, textos, contacto público, localización autorizada, medios autorizados y oferta compatible, con mapeo explícito por campo y reporte de omitidos. No se copian horarios V1 bajo ningún nombre, ni datos CRM privados, credenciales, IDs de secciones, estilos ni componentes V1. No se duplican entidades de negocio ni contactos. El borrador conserva ID de procedencia solo para auditoría de conversión, nunca como fuente dinámica de contenido.
+
+**Gates:** consentimiento verificable; mapeo versionado; permisos/medios; idempotencia mediante solicitud identificada; no publicar automáticamente; V1 intacto hasta publicación explícita V2; rollback lógico disponible; pruebas con V1 que tenga horario válido demuestran V2 vacío y ausencia de consultas al horario antiguo.
+
+### 70.4 Matriz visual de diseño (SPECIFIED, pendiente VIS-01)
+
+Las cinco familias comparten las doce secciones y acciones. **Base**: jerarquía tipográfica y bloques simples, navegación y CTAs accesibles. **Pro**: composición editorial avanzada, tarjetas y galería con mayor riqueza visual, sin funcionalidades adicionales. **Premium**: dirección de arte y ritmo visual más distintivos, composiciones de portada y transiciones opcionales respetando reduced-motion, sin funciones adicionales. Las 15 combinaciones (5 familias × 3 variantes) se validan en móvil, tableta y escritorio, además de estados vacío, error y contenido extenso. La aprobación VIS-01 requiere capturas reales y acta de aceptación; las definiciones aquí son criterios para diseñarlas, **no aceptación de capturas inexistentes**.
+
+### 70.5 Fases, responsables y salida (SPECIFIED)
+
+| Fase | Responsable propuesto | Dependencias | Entregable futuro / gate |
+|---|---|---|---|
+| P0 Contratos | Arquitectura + producto | CAT-01, decisión nocturnidad | esquemas S01–S12 y reglas de compatibilidad revisadas |
+| P1 Dominio y persistencia V2 | Backend + seguridad | P0 | D1 aislado, tenancy, CAS, snapshot, pruebas de aislamiento |
+| P2 Editor nuevo | Frontend + accesibilidad | P0, P1 | edición completa, validación, preview y estados |
+| P3 Renderer y familias | Diseño + frontend | P0, VIS-01 | 15 variantes y matriz responsive sin paridad funcional rota |
+| P4 Publicación y rollback | Backend + QA | P1–P3 | snapshot inmutable, ownership, cuotas, rollback |
+| P5 Conversión opt-in | Backend + frontend + QA | P1–P4 | mapeo consentido, auditoría, V1 intacto y horario V2 vacío |
+| P6 Servicios, pagos y lanzamiento | Producto + finanzas + operaciones | COM-01, PAY-01, BILL-02, REL-01, OPS-01 | política comercial aprobada y release autorizado |
+
+Cada fase exige revisión de seguridad, pruebas focales en archivos tocados y evidencia asociada al SHA; no ejecutar suites generales ni modificar CI global por defecto. El responsable humano aprueba decisiones comerciales y despliegue; los agentes no se autoaprueban. No hay estimaciones calendario fiables hasta asignar equipo y capacidad.
+
+### 70.6 Registro de decisiones aún humanas
+
+- **CAT-01:** confirmar cinco familias disponibles en los tres niveles, con paridad funcional (recomendado: sí).
+- **VIS-01:** aceptar las composiciones visuales reales, una vez presentadas.
+- **REL-01:** lanzar inicialmente con licencias administradas y checkout automático después (recomendado).
+- **COM-01/PAY-01/BILL-02:** moneda, tarifas GHL regionales, PSP, jurisdicción, impuestos, impago y condiciones contractuales; sin cifras o cobros públicos antes de aprobación.
+- **GOV-01:** consolidar documentos canónicos o aprobar excepción; recomendación: consolidación con índice y referencias, sin duplicar fuentes.
+- **OPS-01:** nombrar responsables humanos de diseño, seguridad y release.
+- **HV2-PRODUCT:** ratificar partición de turnos nocturnos, excepciones por fecha y no mostrar «abierto ahora» en primera entrega.
+
+**Resultado:** los cinco huecos de diseño enumerados al final de §69 quedan **SPECIFIED** como contratos y propuesta de secuencia. Las aprobaciones listadas siguen **PENDING HUMAN**, nunca CLOSED por silencio. El proyecto sigue en estado de planificación, no implementación.
+
+
+## 71. Acta de decisiones aprobadas por el responsable — 2026-10-29
+
+**Fuente de autoridad:** aprobación explícita del responsable del proyecto en esta conversación: `familias=yes; horario=yes; lanzamiento=manual; pagos=pending`. Este acta **prevalece sobre las menciones de pendiente o recomendado** para las cuatro decisiones concretas aprobadas en §§54, 56, 69 y 70. No supone aprobación de otras decisiones ni autorización de implementación, merge o despliegue.
+
+| Decisión | Estado vinculante | Alcance aprobado |
+|---|---|---|
+| **CAT-01** | **APPROVED** | Las cinco familias `vecidya-default`, `services-studio`, `catalog-store`, `gastronomy-table`, `professional-profile` están disponibles en Cuadra, Barrio y Ciudad; todas ofrecen las mismas secciones y funcionalidades. Base/Pro/Premium solo alteran presentación. |
+| **HV2-PRODUCT** | **APPROVED** | Horario V2 creado desde cero, sin leer/importar/sincronizar V1. Se aprueba el contrato de §70.1: turnos nocturnos partidos por fecha local, excepciones fechadas con precedencia, zona IANA, sin indicador «abierto ahora» en primera entrega. |
+| **REL-01** | **APPROVED** | Primer lanzamiento con **licencias administradas**; checkout y cobro automático quedan para una entrega posterior sujeta a aprobación específica. |
+| **COM-01 / PAY-01 / BILL-02** | **PENDING HUMAN — ratificado** | No se eligen todavía PSP, jurisdicción, tratamiento fiscal, moneda/tarifas GHL regionales, impagos ni condiciones contractuales. No publicar precios regionales no aprobados ni activar cobros automáticos. |
+
+### 71.1 Efectos inmediatos sobre la planificación
+
+- **P0:** CAT-01 y HV2-PRODUCT dejan de bloquear el cierre de contratos; mantener las revisiones técnicas de arquitectura, seguridad y aceptación.
+- **P3:** se pueden diseñar las quince combinaciones visuales sin bloquear funciones por nivel; **VIS-01 sigue pendiente** de revisión y aceptación de diseños reales.
+- **P6:** dividir en **P6A — lanzamiento con licencias administradas** y **P6B — automatización de checkout/cobro**. P6A no depende de tener un PSP elegido, pero sí de la política operativa, comercial y legal aplicable a licencias administradas y de OPS-01. P6B permanece bloqueada por COM-01/PAY-01/BILL-02 y aprobación expresa.
+- La documentación histórica que presenta CAT-01, HV2-PRODUCT o REL-01 como «pendiente» refleja el estado anterior a este acta; **no reabrirlas sin una nueva decisión explícita**.
+
+### 71.2 Pendientes que NO se consideran aprobados
+
+**VIS-01** (aceptación visual real), **COM-01** (tarifas, regiones, monedas y términos), **PAY-01** (proveedor y flujo de pagos), **BILL-02** (facturación, impuestos e impago), **GOV-01** (gobierno documental) y **OPS-01** (responsables de diseño, seguridad y autorización de release). Las decisiones sobre permisos, retención y consentimiento también requieren sus revisiones correspondientes. Ninguna se infiere por silencio.
+
+**Estado del proyecto:** decisiones de producto anteriores aprobadas; el PR #184 continúa siendo **exclusivamente de planificación**. No ejecutar código, migraciones, pruebas ni despliegues como consecuencia de este acta.
+
+
+## 72. Gobierno documental, aceptación visual y operación — cierre de especificaciones
+
+**Alcance:** planificación exclusivamente. Esta sección define propuestas listas para aprobación; no sustituye decisiones humanas GOV-01, VIS-01 ni OPS-01.
+
+### 72.1 GOV-01 — propuesta de gobierno documental (SPECIFIED / APPROVAL PENDING)
+
+**Opción recomendada:** mantener `plans/app-mini/PLAN-V1.md` como única fuente normativa del alcance MiniWeb V2, con anexos de apoyo estrictamente informativos e índice de referencias. Evitar duplicar decisiones vinculantes en múltiples Markdown. Si el límite de documentos canónicos del repositorio obliga a consolidar, mover contenido al documento canónico aprobado sin perder enlaces, historial, identificadores DEC/GAP/AC ni autoría. No borrar ni renombrar documentos sin inventario previo y verificación de referencias entrantes.
+
+**Procedimiento de aceptación GOV-01:** (1) inventario de los cinco archivos del PR y de las reglas documentales vigentes; (2) tabla `documento → propietario → función → autoridad → enlaces`; (3) propuesta de consolidación y redirecciones; (4) aprobación del responsable de gobierno; (5) ejecución por agente autorizado en un trabajo documental posterior. Criterio de salida: una sola definición vigente por decisión y cero enlaces rotos verificados. **No se declara GOV-01 aprobado**.
+
+### 72.2 VIS-01 — matriz de revisión y firma (SPECIFIED / APPROVAL PENDING)
+
+Se exige evidencia visual **real**, no mockups asumidos como capturas del producto. Por cada familia (5) y variante (3), revisar:
+- escritorio ≥1280 px, tableta 768–1024 px y móvil 360–430 px;
+- portada, navegación, contenido largo, sección vacía, contacto, galería, horario con excepción y error de medios;
+- contraste, foco visible, teclado, semántica, textos alternativos, reduced-motion y ausencia de desbordamiento;
+- paridad funcional de las doce secciones en Base, Pro y Premium;
+- no filtración de datos privados ni mensajes que aparenten servicios/cobros no habilitados.
+
+**Evidencia mínima:** matriz de 15 combinaciones × 3 viewports = **45 capturas base**, más escenarios de estado por muestreo trazable; cada entrada registra versión/SHA, fecha, dispositivo, revisor, hallazgos y decisión `accepted | changes_requested | blocked`. No marcar VIS-01 `accepted` hasta aprobación humana de las capturas y correcciones. El diseño puede especificarse antes; la aceptación final exige producto renderizado.
+
+### 72.3 OPS-01 — matriz RACI y autorización de lanzamiento (SPECIFIED / OWNERS PENDING)
+
+| Actividad | Responsable ejecutor propuesto | Aprobador obligatorio | Evidencia |
+|---|---|---|---|
+| Catálogo y alcance | Producto / agente documental | Responsable Vecidya | acta DEC y matriz AC |
+| Diseño visual | Diseño UX/UI | Responsable visual designado | 45 capturas y registro VIS-01 |
+| Modelo de datos y seguridad | Ingeniería backend + seguridad | Responsable técnico/seguridad designado | revisión tenancy, CAS, privacidad |
+| Accesibilidad y QA | QA + frontend | Responsable QA designado | matriz focal y hallazgos |
+| Licencias administradas | Operaciones + soporte | Responsable comercial designado | procedimiento alta/suspensión/reactivación |
+| Publicación y rollback | Ingeniería / operaciones | Responsable de release designado | checklist, ventana, reversión, monitoreo |
+| Tarifas, PSP, fiscalidad | Finanzas/legal | Responsable comercial/legal designado | acta COM-01/PAY-01/BILL-02 |
+
+**Separación de funciones:** quien implementa no aprueba unilateralmente su propia seguridad o release; los agentes pueden preparar evidencias, no otorgar aprobación humana. La ausencia de un aprobador identificado bloquea el gate correspondiente, no el trabajo documental. Los nombres propios quedan vacíos hasta designación explícita.
+
+### 72.4 P6A — operación con licencias administradas (SPECIFIED)
+
+**Sin checkout automático.** Operaciones asigna licencia por propietario de facturación, registra actor, motivo, fecha y evidencia de autorización; el sistema comprueba cuota y entitlements antes de publicar. Definir estados `pending_activation → active → suspended → expired/cancelled`, con política de gracia aún sujeta a revisión comercial. Suspensión impide nuevas publicaciones cuando corresponda, sin eliminar contenido ni efectuar GC automático; el comportamiento de la URL pública debe documentarse y aprobarse antes del lanzamiento. Soporte dispone de procedimiento de corrección de asignaciones, reversión y auditoría.
+
+**Gate de lanzamiento P6A:** decisiones comerciales mínimas aplicables a licencias manuales, OPS-01 con responsables nombrados, VIS-01 aceptado, seguridad y QA firmados, prueba de rollback y monitoreo. El aplazamiento de PAY-01/BILL-02 no autoriza publicar precios o condiciones legales sin revisión.
+
+### 72.5 Matriz de cierre y prioridades
+
+| ID | Estado de planificación | Bloqueo real | Próximo acto |
+|---|---|---|---|
+| CAT-01 | APPROVED | ninguno de producto | usar como contrato |
+| HV2-PRODUCT | APPROVED | ninguno de producto | usar como contrato |
+| REL-01 | APPROVED | ninguno de producto | dividir P6A/P6B |
+| GOV-01 | SPECIFIED / PENDING APPROVAL | gobierno documental | aprobar consolidación o excepción |
+| VIS-01 | SPECIFIED / PENDING EVIDENCE | 45 capturas y firma | preparar diseño; aceptar después |
+| OPS-01 | SPECIFIED / PENDING OWNERS | nombres y autorizaciones | designar responsables |
+| COM-01 | PENDING HUMAN | tarifas, región, moneda, términos | mantener sin precios no aprobados |
+| PAY-01 | PENDING HUMAN | PSP y checkout | posponer a P6B |
+| BILL-02 | PENDING HUMAN | fiscalidad, impagos y facturación | posponer automatización a P6B |
+
+**Criterio de cierre de esta etapa:** GOV-01, VIS-01 y OPS-01 tienen contrato y evidencias exigidas, **no aprobaciones**. Ninguna de las tareas de esta sección constituye implementación, prueba ejecutada ni despliegue.
+
+
+## 73. Inventario verificado del PR y expediente de decisiones GOV-01 / OPS-01
+
+**Fuente:** inventario de archivos cambiados en el PR #184 consultado en GitHub el 2026-10-29. **Alcance:** cinco archivos añadidos, de los cuales tres Markdown y dos recursos de prototipo; no se han modificado aplicaciones, bases de datos ni CI en esta etapa.
+
+| Archivo en PR #184 | Tipo | Función documental propuesta | Autoridad normativa |
+|---|---|---|---|
+| `plans/app-mini/PLAN-V1.md` | Markdown | plan maestro, decisiones, trazabilidad, fases y aceptación | **canónico propuesto**, sujeto a GOV-01 |
+| `plans/app-mini/CONTRATO-VARIANTES-V2.md` | Markdown | especificación de variantes visuales y contratos | anexo subordinado; no duplicar decisiones |
+| `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md` | Markdown | escenarios y contratos de servicios/pagos | anexo subordinado; no activar pagos |
+| `plans/app-mini/prototypes/miniweb-tiers-comparison.html` | HTML | referencia comparativa de diseño | material ilustrativo, no implementación del producto |
+| `plans/app-mini/prototypes/test-miniweb-tiers.mjs` | JS de prototipo | comprobación auxiliar del prototipo | no constituye test de producción ni certificación |
+
+### 73.1 Propuesta operativa GOV-01 (lista para aprobación)
+
+1. **Una autoridad:** decisiones vinculantes en el plan maestro; anexos contienen detalles extensos y remiten al identificador de decisión del maestro. Una contradicción se resuelve por la decisión aprobada más reciente, no por el archivo más nuevo.
+2. **No borrar anexos automáticamente:** preservar los dos Markdown de apoyo como documentación de consulta hasta que se haga inventario de enlaces entrantes y se apruebe consolidación. Los prototipos permanecen marcados como ilustrativos y fuera del alcance de implementación.
+3. **Registro único de decisiones:** ID, estado (`proposed/specified/approved/superseded`), autoridad, fecha, documento fuente, dependencias, evidencia y enlace al reemplazo. Cambios de estado requieren una instrucción humana explícita cuando afecten precio, lanzamiento, permisos o gobierno.
+4. **Regla de mantenimiento:** una sola edición normativa por decisión, actualización de referencias cruzadas y registro de precedencia. Prohibido declarar GOV-01 aprobado por esta propuesta.
+5. **Gate GOV-01:** el responsable del proyecto aprueba la autoridad canónica y el tratamiento de anexos; después un agente documental autorizado verifica el límite de Markdown canónicos y enlaces. Sin ese control, estado `PENDING APPROVAL`.
+
+### 73.2 OPS-01 — asignación pendiente, sin nombres inferidos
+
+Los roles están definidos en §72.3, pero **ninguna persona ha sido designada formalmente**. Se requieren al menos cuatro designaciones o acumulaciones expresamente aceptadas: (1) propietario del producto y decisiones comerciales, (2) aprobador visual, (3) aprobador de seguridad/QA y (4) autorizador de release. Una persona puede asumir varios roles si queda documentado, pero nadie se autoaprueba su propia entrega técnica sin revisión independiente cuando exista riesgo de seguridad.
+
+**Formato de acta futuro:** `rol → persona designada → alcance → suplente opcional → fecha → aceptación`. Hasta entonces OPS-01 sigue `PENDING OWNERS`. La planificación técnica puede continuar; el lanzamiento no.
+
+### 73.3 Próxima cola de planificación y condición de cierre
+
+- **DOC-01:** revisión de consistencia entre los tres Markdown: decisiones CAT-01, HV2-PRODUCT y REL-01 aprobadas deben prevalecer sobre menciones históricas; tarifas/PSP siguen pendientes.
+- **TRACE-01:** matriz `S01–S12 → contrato → validación → seguridad → prueba focal futura → fase → dueño`.
+- **OPS-02:** guion de alta, suspensión, reactivación y soporte de licencias administradas, sin decidir precios ni gracia contractual.
+- **VIS-02:** checklist por familia/variante y plantilla de acta de aceptación para VIS-01, sin afirmar capturas o QA ejecutados.
+
+**Estado:** GOV-01 preparado para decisión, OPS-01 preparado para nombramientos; no están aprobados. Este checkpoint no autoriza editar código, ejecutar prototipos, fusionar el PR ni desplegar.
+
+
+## 74. GOV-01 aprobado y matriz de trazabilidad para entrega a implementación
+
+**Aprobación explícita del responsable (2026-10-29):** GOV-01 **APPROVED**. `PLAN-V1.md` es el **único documento maestro normativo**; `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md` son **anexos subordinados**. En contradicciones prevalecen las decisiones vigentes del maestro, con prioridad a las actas explícitas más recientes. Los prototipos HTML/JS son solo referencia ilustrativa. No se borran ni fusionan anexos por esta decisión; cualquier reorganización futura requiere inventario de enlaces y revisión documental. Esta aprobación no resuelve por sí sola el cumplimiento mecánico del límite de documentos canónicos del repositorio: comprobarlo antes del merge.
+
+### 74.1 Trazabilidad S01–S12 para agentes implementadores (especificación, no ejecución)
+
+| Sección | Validación y privacidad exigidas | Prueba focal futura | Fase responsable |
+|---|---|---|---|
+| S01 Hero | CTA seguro, alt y longitud controlada | CTA inválido y móvil estrecho | P2/P3 |
+| S02 Sobre | sanitización, orden y límites | HTML peligroso y reordenación | P2/P3 |
+| S03 Servicios | identidad/medios autorizados, no duplicar CRM | servicio vacío, orden y ownership | P2/P3 |
+| S04 Catálogo | CTA y categoría válidos, sin precio/disponibilidad inferidos | ítem sin imagen, categoría inválida | P2/P3 |
+| S05 Galería | propiedad del medio, alt, tamaños | medio ajeno y fallo de carga | P2/P3 |
+| S06 Contacto | URL, teléfono/email públicos y permisos | enlace peligroso, dato privado | P2/P3 |
+| S07 Ubicación | consentimiento de dirección pública, opt-in mapa | dirección oculta y mapa sin permiso | P2/P3 |
+| S08 FAQ | texto seguro, accesibilidad sin JS | contenido largo y navegación teclado | P2/P3 |
+| S09 Equipo | consentimiento de perfiles y retirada | perfil sin consentimiento | P2/P3 |
+| S10 Certificaciones | fuente, fecha, no simular verificación | certificación sin respaldo | P2/P3 |
+| S11 Testimonios | autorización, moderación y retirada | testimonio revocado | P2/P3 |
+| S12 Horario V2 | IANA, siete días, excepciones, aislamiento V1 | horario nocturno, DST, no import V1 | P1/P2/P3 |
+
+**Gates transversales:** ownership y tenant isolation; CAS y revisión inmutable; no publicación implícita; cuotas; accesibilidad; permisos de medios; no filtración de datos; reversión lógica; snapshots V1 intactos. Para cada caso futuro registrar SHA, fixture, comando focal, resultado, revisor y evidencia; no afirmar PASS sin ejecución.
+
+### 74.2 Contrato de entregables y secuencia
+
+1. **Paquete de planificación P0:** este maestro, anexos subordinados, catálogo de doce secciones, reglas HV2 y decisiones aprobadas. Se entrega a arquitectura para revisión técnica sin programar desde este PR.
+2. **Paquete de diseño P3:** 15 combinaciones visuales y evidencia VIS-01; la aceptación de diseños reales sigue pendiente.
+3. **Paquete operativo P6A:** procedimiento de licencias administradas, asignación de aprobadores OPS-01, seguridad, QA, rollback y monitoreo. No exige PSP para checkout, pero sí cumplimiento comercial y legal aplicable.
+4. **Paquete comercial P6B:** COM-01, PAY-01, BILL-02 deliberadamente aplazados; no habilitar cobros ni precios no aprobados.
+
+### 74.3 Pendientes después de GOV-01
+
+- **OPS-01:** designar personas para aprobación de producto/comercial, diseño, seguridad/QA y release.
+- **VIS-01:** revisar y aceptar evidencia real de las quince combinaciones.
+- **COM-01, PAY-01, BILL-02:** mantener sin aprobación; no elegir proveedor, jurisdicción, tarifas ni política de impago.
+- **GOV-VERIFY:** comprobar el límite de Markdown canónicos y los enlaces cruzados antes de integrar; aprobación conceptual GOV-01 no equivale a validación de repositorio.
+
+**Estado:** GOV-01 aprobado; matriz TRACE-01 especificada. No implementación, tests ejecutados, merge ni despliegue.
+
+
+## 75. Procedimiento operativo P6A y cierre de preparación OPS-02
+
+**Estado: SPECIFIED, no autorizado para producción.** Esta especificación permite lanzar posteriormente con licencias administradas, conforme a REL-01, sin implementar checkout, procesar pagos o elegir PSP.
+
+### 75.1 Alta y activación manual
+
+1. Operaciones identifica al propietario de facturación y su organización mediante mecanismos existentes; comprueba autorización y ausencia de duplicados.
+2. Registra solicitud con ID, actor solicitante, aprobador comercial, organización, paquete Cuadra/Barrio/Ciudad, cupos aplicables, motivo, fecha y evidencia. **No registrar credenciales ni datos de pago.**
+3. Un operador autorizado verifica la decisión comercial y activa la licencia con vigencia explícita. La operación debe ser idempotente y auditable.
+4. El sistema recalcula entitlements y cuotas de publicación del propietario; la interfaz presenta estado real y confirmación. Una activación no publica automáticamente ningún MiniWeb.
+5. El responsable de soporte dispone de guía para investigar diferencias entre licencia concedida y licencia visible, sin editar datos directamente en producción.
+
+### 75.2 Suspensión, expiración, reactivación y corrección
+
+- **Suspensión:** exige motivo y aprobador; bloquea nuevas acciones sujetas a licencia según la política final. No borra borradores, snapshots ni medios, ni ejecuta GC físico. El comportamiento público de una publicación existente queda **pendiente de política comercial/legal** y no se presupone.
+- **Expiración:** transición basada en vigencia registrada; cualquier periodo de gracia requiere aprobación comercial específica. Sin esa decisión no se inventan días de gracia.
+- **Reactivación:** valida titularidad y autorización, registra antes/después y restaura derechos según licencia vigente; no publica automáticamente.
+- **Corrección:** si una licencia se asignó al propietario equivocado, se abre incidencia, se bloquean efectos adicionales, se documenta compensación y se obtiene revisión de seguridad cuando haya exposición entre tenants. No transferir datos entre organizaciones por simple reasignación de licencia.
+- **Auditoría:** conservar actor, instante, entidad, motivo, estado previo/nuevo, evidencia y resultado, con acceso restringido y política de retención por aprobar.
+
+### 75.3 Pruebas y aceptación futura
+
+Casos focales: alta autorizada, alta duplicada idempotente, actor sin permisos, licencia de otra organización, cuota de tres sitios publicados por propietario, ampliación +3 mediante Cuadra adicional cuando corresponda, suspensión sin borrado, expiración, reactivación, conflicto concurrente, reversión administrativa y no activación accidental de checkout. Los resultados se verifican contra entorno DEV y SHA concreto durante implementación; este plan **no declara pruebas ejecutadas**.
+
+### 75.4 Dependencias que no se cierran por documentación
+
+- **OPS-01:** falta designación nominal y aceptación de los aprobadores.
+- **COM-01:** faltan condiciones de contratación y política de suspensión/visibilidad pública, incluso con licencias manuales.
+- **VIS-01:** faltan capturas reales y firma visual.
+- **GOV-VERIFY:** falta comprobación de reglas de repositorio y referencias antes de merge.
+- **P6B:** PAY-01 y BILL-02 permanecen aplazados por decisión del responsable.
+
+**Resultado:** OPS-02 queda **SPECIFIED**. P6A no queda autorizado hasta resolver los bloqueos aplicables y recibir aprobación humana de lanzamiento.
+
+
+## 76. OPS-01 — autoridad de aprobación designada por el responsable
+
+**Decisión explícita del responsable:** «Yo apruebo», en respuesta a quién aprueba diseño, seguridad y lanzamiento. Se registra al **responsable del proyecto Vecidya** como **aprobador final de diseño visual (VIS-01), revisión de seguridad/QA y autorización de lanzamiento (release)**. No se infiere nombre legal, identidad de cuenta, suplente ni disponibilidad. La designación es una asignación de autoridad, **no aprobación anticipada** de los entregables.
+
+| Gate | Aprobador final | Preparación de evidencia | Estado |
+|---|---|---|---|
+| VIS-01 — diseños reales | Responsable del proyecto | Diseño UX/UI + QA | Aprobador designado; evidencia y aceptación pendientes |
+| SEC-QA — seguridad y calidad | Responsable del proyecto | Ingeniería de seguridad + QA; revisión técnica independiente cuando corresponda | Aprobador designado; auditoría y aceptación pendientes |
+| RELEASE — producción | Responsable del proyecto | Ingeniería + operaciones | Aprobador designado; autorización específica pendiente |
+| OPS-01 — nombramiento de aprobador final | Responsable del proyecto | Acta §76 | **APPROVED en cuanto a autoridad final**; ejecutores y suplentes aún por designar |
+
+**Controles:** ninguna revisión de un agente sustituye la aprobación humana. El responsable decide sobre la evidencia aportada, no sobre supuestos. La aprobación de diseño no autoriza release; la de seguridad no habilita pagos; la aprobación de release requiere confirmación explícita por versión/entorno y checklist. No desplegar, fusionar ni ejecutar código desde esta tarea documental.
+
+**Impacto:** se elimina el bloqueo de «¿quién tiene autoridad final?» en OPS-01. Permanece pendiente asignar ejecutores/revisores técnicos y presentar evidencias para cada gate. COM-01, PAY-01 y BILL-02 siguen pendientes; GOV-01, CAT-01, HV2-PRODUCT y REL-01 continúan aprobados.
+
+
+## 77. Plan de cierre de evidencias — diseño, seguridad y release
+
+**Alcance:** documentos de entrega a futuros agentes. La autoridad de aprobación final corresponde al responsable del proyecto (§76); **ninguna evidencia ni aprobación se presume**.
+
+### 77.1 Paquete VIS-01 para aprobación visual
+
+Cada entrega visual futura deberá contener: identificador de familia, variante Base/Pro/Premium, SHA de implementación, dispositivo y dimensiones, estado del contenido, capturas reales, URL de preview restringida, lista de hallazgos, severidad, corrección y solicitud de decisión. La matriz base es de **5 familias × 3 variantes × 3 viewports = 45** evidencias, ampliada con estados vacío, largo, error, horario nocturno y excepciones. Las pruebas de teclado, contraste y reduced-motion se adjuntan como evidencia separada. El responsable puede aprobar por lote solo si el lote identifica exactamente las combinaciones y excepciones incluidas; silencio o aprobación de una familia no extiende el permiso a otras.
+
+**Plantilla de veredicto:** `VIS-01 / SHA / alcance / accepted|changes_requested|blocked / observaciones / aprobador / fecha`. No afirmar conformidad WCAG formal sin auditoría correspondiente.
+
+### 77.2 Paquete SEC-QA para aprobación técnica
+
+Inventario mínimo de superficies: identidad, organizaciones y roles, límites tenant, borradores y snapshots públicos, medios, conversiones V1→V2, Horario V2, cupos/licencias y operaciones administrativas. Exigir matriz de amenazas con casos de lectura/escritura cruzada, escalada de permisos, publicación por terceros, filtración de datos privados, inyección de contenido/URLs, abuso de subida de medios, replay/idempotencia y concurrencia CAS. Cada riesgo incluye mitigación, prueba focal futura, severidad residual y propietario. La aprobación humana requiere informe técnico y evidencia reproducible; un build verde por sí solo no basta.
+
+**Gates negativos obligatorios:** nunca importar horario V1; no leer borradores desde URL pública; no publicar sin autorización/entitlement; no duplicar cargo ni activar checkout; no modificar snapshots V1; no ejecutar GC físico automático. Los resultados se adjuntarán después de implementar, sin anticipar PASS.
+
+### 77.3 Paquete RELEASE para autorización puntual
+
+Checklist de preproducción: decisiones aplicables aprobadas, SHA exacto, diff revisado, migraciones con rollback probado, respaldo y restauración, permisos y secretos, límites de cuota, snapshots V1, evidencias VIS-01/SEC-QA, smoke DEV focal, observabilidad, responsable de guardia, procedimiento de reversión y comunicación. La autorización expresa debe incluir **SHA + entorno + ventana + alcance**; una autorización para staging no habilita producción. Si cambia el SHA o falla un gate, se vuelve a solicitar aprobación.
+
+**Prohibiciones:** este plan no ejecuta despliegue, no modifica CI, no hace merge, no crea migraciones ni declara QA terminado.
+
+### 77.4 Registro de pendientes de cierre
+
+| ID | Estado actual | Evidencia o decisión requerida | Autoridad |
+|---|---|---|---|
+| GOV-01 | APPROVED | verificación documental previa a merge | responsable del proyecto |
+| OPS-01 autoridad final | APPROVED | ejecutores y revisores técnicos por asignar | responsable del proyecto |
+| VIS-01 | PENDING EVIDENCE | 45 capturas base y accesibilidad | responsable del proyecto |
+| SEC-QA | PENDING EVIDENCE | amenazas, pruebas focales, aislamiento y revisión | responsable del proyecto |
+| RELEASE | NOT AUTHORIZED | SHA/entorno/ventana y gates firmados | responsable del proyecto |
+| COM-01 | PENDING HUMAN | política comercial mínima para P6A | responsable del proyecto |
+| PAY-01/BILL-02 | DEFERRED | proveedor, fiscalidad y facturación automática P6B | responsable del proyecto |
+
+**Resultado de planificación:** paquetes de aprobación VIS-01, SEC-QA y RELEASE definidos; no son entregables ya verificados.
+
+
+## 78. Expediente de entrega a agentes implementadores — planificación cerrada por paquetes
+
+**Objetivo:** descomponer el alcance aprobado en tickets delegables con orden, contratos de entrada/salida y límites de autonomía. Esta sección **no autoriza ejecutar los tickets**.
+
+### 78.1 Reglas obligatorias para cada agente
+
+1. Leer `PLAN-V1.md` como fuente normativa y consultar los dos anexos subordinados; aplicar decisiones vigentes CAT-01, HV2-PRODUCT, REL-01, GOV-01 y autoridad §76.
+2. No reutilizar secciones, componentes, editor, renderer ni horarios MiniWeb V1. Conservar snapshots V1 y limitar el posible reuso a infraestructura/identidad/datos de negocio auditados.
+3. Trabajar con cambios mínimos, aislar tenants, documentar SHA y pruebas **focales**; no modificar CI global ni ejecutar suites generales por defecto.
+4. No decidir precios, PSP, impuestos, jurisdicción, periodos de gracia ni visibilidad pública de licencias suspendidas. Escalar esas cuestiones a COM-01/PAY-01/BILL-02.
+5. No asumir que el usuario aprobó capturas, seguridad o release. Cada gate requiere evidencia y autorización específica. No hacer merge ni desplegar producción sin aprobación explícita.
+
+### 78.2 Backlog delegable y dependencias
+
+| Ticket | Alcance de implementación futuro | Entrada obligatoria | Entregable verificable / aceptación |
+|---|---|---|---|
+| IMP-01 | Diseño técnico de esquemas V2 S01–S12 y tipos versionados | §§69–71, CAT-01/HV2 aprobados | contrato tipado, validación por sección, compatibilidad y revisión técnica |
+| IMP-02 | Persistencia V2, revisiones CAS y snapshots inmutables | IMP-01 | aislamiento tenant, historial, rollback y pruebas de concurrencia |
+| IMP-03 | Editor nuevo desde cero y vista previa por revisión | IMP-01/02 | guardar sin publicar, validación, conflictos y accesibilidad |
+| IMP-04 | Renderer público V2 y seguridad de contenido | IMP-01/02 | solo snapshot publicado, fallbacks seguros, V1 intacto |
+| IMP-05 | Cinco familias × tres variantes visuales | IMP-03/04 | paridad funcional, 45 capturas base y revisión VIS-01 |
+| IMP-06 | Motor Horario V2 independiente | IMP-01/02 | nocturnidad, excepciones, DST, cero lecturas V1 |
+| IMP-07 | Publicación, cuotas, entitlement y rollback | IMP-02/04/06 | ownership, 3 slots por propietario, +3 por Cuadra adicional, CAS |
+| IMP-08 | Conversión voluntaria V1→V2 de datos permitidos | IMP-03/07 | consentimiento, allowlist, auditoría, horarios V2 vacíos |
+| IMP-09 | Licencias administradas P6A y soporte | IMP-02/07, COM-01 mínima | activación/suspensión/reactivación auditables, sin checkout |
+| IMP-10 | Seguridad, accesibilidad y QA de integración focal | IMP-03–09 | expediente SEC-QA, incidencias y evidencias por SHA |
+| IMP-11 | Preparación de release y reversión | IMP-05/10, VIS-01, OPS-01 | checklist y solicitud de autorización, **sin despliegue implícito** |
+| IMP-12 | Pagos automáticos P6B | COM-01/PAY-01/BILL-02 aprobados | ticket bloqueado y fuera del primer lanzamiento |
+
+**Paralelización recomendada:** IMP-01 primero; tras su revisión, IMP-02 y prototipado visual documental en paralelo; IMP-03/04/06 después de los contratos; IMP-05/07 cuando estén listas sus dependencias; IMP-08/09 tras publicación y permisos; IMP-10/11 al final. La asignación real depende de capacidad y revisores.
+
+### 78.3 Contrato de handoff de cada ticket
+
+Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`, `dependencias`, `archivos previstos`, `invariantes de seguridad`, `criterios de aceptación`, `pruebas focales`, `riesgos`, `evidencia`, `responsable ejecutor`, `revisor`, `SHA` y `estado`. Estados permitidos: `planned → ready → in_progress → review → accepted`, además de `blocked`; `accepted` exige evidencia y aprobación correspondiente, nunca inferencia.
+
+### 78.4 Preguntas de bloqueo que un agente debe escalar
+
+- ¿Se permite mostrar una publicación ya activa durante suspensión o expiración? **COM-01 pendiente.**
+- ¿Qué precios, impuestos, PSP o términos se aplican? **COM-01/PAY-01/BILL-02 pendientes.**
+- ¿Quién revisa técnicamente seguridad y quién ejecuta cada paquete? **Ejecutores OPS-01 pendientes; aprobador final ya designado.**
+- ¿Qué diseños concretos quedan aceptados? **VIS-01 pendiente de capturas reales.**
+- ¿Se puede fusionar el PR documental o desplegar? **No sin autorización explícita.**
+
+### 78.5 Definición de cierre de planificación
+
+**PLAN-READY** significa que el backlog y sus dependencias, reglas, decisiones y evidencias exigidas están especificados; **no** significa que existan implementación, tests aprobados, revisión legal o release. Los tickets IMP-01–11 quedan **PLANNED, NOT STARTED**; IMP-12 **BLOCKED/DEFERRED**. No se otorga PLAN-READY definitivo hasta revisar consistencia de los anexos y el límite de documentos canónicos (`GOV-VERIFY`).
+
+
+## 79. Auditoría de lógica, escalabilidad, huecos, dependencias y conexiones (2026-10-29)
+
+**Método y evidencia:** revisión documental del maestro y los dos anexos del PR #184; no auditoría dinámica del código ni pruebas de carga. Hallazgos = riesgos y contratos insuficientemente cerrados, **no fallos demostrados en producción**. Clasificación: **CRÍTICO** puede comprometer aislamiento/contabilidad/publicación; **ALTO** bloquea un contrato de integración; **MEDIO** afecta operabilidad/evolución.
+
+### 79.1 Fronteras y fuentes de verdad
+
+| Dominio | Fuente de verdad prevista | Consumidores / frontera |
+|---|---|---|
+| Identidad, membresía y autorización | plataforma Vecidya, resuelta en servidor | editor, publicación, administración y facturación; nunca IDs de UI confiables |
+| Organización | dominio organizacional Vecidya | perfil público, MiniWeb, licencias y conexión GHL |
+| Billing account y delegaciones | dominio comercial Vecidya | suscripciones, licencias, facturas y consolidado multi-org |
+| Licencia y entitlements | **un único contrato de derechos** en Vecidya | MiniWeb y Mi Vecidya; no crear segunda licencia paralela |
+| Borrador/snapshot MiniWeb V2 | dominio MiniWeb V2 | editor y renderer público; V1 aislado |
+| Horario V2 | sección V2 versionada | editor/snapshot/renderer V2; **nunca** horario V1 |
+| Operación CRM, contactos y pipelines | GHL externo | adaptador de integración; no replicar operación CRM en MiniWeb |
+| Consumo y costes de proveedor | evento externo verificable y ledger comercial Vecidya | conciliación, reportes y futura facturación |
+| Cobros PSP | proveedor por decidir (P6B) | webhooks verificados y libro económico; fuera de P6A |
+
+**Regla arquitectónica:** modular monolith inicialmente, con módulos de dominio y APIs internas estables; no introducir microservicios, colas ni D1 adicionales sin umbral medido. Separar acoplamiento **lógico** aunque se despliegue junto. El editor no consulta directamente GHL ni el ledger; consume contratos Vecidya autorizados.
+
+### 79.2 Hallazgos priorizados y cierre propuesto
+
+| ID | Severidad | Hueco/riesgo detectado en especificación | Contrato o acción de cierre |
+|---|---|---|---|
+| ARC-01 | CRÍTICO | Doble representación potencial de licencia entre MiniWeb y Servicios/Pagos | Definir único `EntitlementService` que deriva derechos de licencia canónica; lecturas consistentes, sin mutaciones duplicadas |
+| ARC-02 | CRÍTICO | Propietario de facturación multi-org vs permisos de miembros de organización | Matriz RBAC/ABAC por acción: `billing_account`, `organization`, rol, licencia, actor; tests cross-tenant |
+| ARC-03 | CRÍTICO | Publicación y consumo de cupos con operaciones concurrentes | Transacción/CAS para reservar cupo y activar snapshot; unicidad por slot, rollback compensado |
+| ARC-04 | ALTO | V1→V2 y publicación podrían producir doble URL/estado ambiguo | Identidad pública estable, puntero activo versionado, conmutación explícita, reversión y caché invalidada |
+| ARC-05 | ALTO | No hay política contractual completa de eventos entre dominios | Outbox transaccional si se introducen eventos asíncronos; entrega al menos una vez, consumidor idempotente, DLQ/reconciliación |
+| ARC-06 | ALTO | Integración GHL requiere mapa robusto location/subaccount→organización | Tabla de correspondencias con unicidad, validación de titular, rotación de credenciales, estado desconectado y reconciliación |
+| ARC-07 | ALTO | Licencias manuales con activación externa pueden quedar a medias | Máquina de estados separa `licensed`, `provisioning`, `active_external`, `failed`; reintentos y compensación |
+| ARC-08 | ALTO | Snapshot y medios pueden crecer sin límites operativos definidos | Presupuesto por tamaño/volumen, límites por tenant, almacenamiento de medios fuera del snapshot, retención/GC por aprobar |
+| ARC-09 | ALTO | El plan de pagos futuros menciona eventos/ledger sin SLA de frescura | `observed_at`, `provider_period`, `reconciled_at`, estados `pending/verified/disputed`, indicador de datos atrasados |
+| ARC-10 | ALTO | Horario V2 nocturno y excepciones exigen semántica DST y UTC inequívoca | Fechas locales + zona IANA, normalización de intervalos y pruebas de transición, sin indicador abierto-ahora inicial |
+| ARC-11 | MEDIO | Dependencia del editor respecto a catálogo/medios puede provocar fallos en cascada | Editor resiliente con estados loading/empty/error, reintentos acotados y última revisión guardada |
+| ARC-12 | MEDIO | No hay objetivos cuantitativos de rendimiento/capacidad aprobados | Definir SLO y presupuesto por operación; medir p95, tasa de error, almacenamiento, coste y concurrencia antes de escalar |
+| ARC-13 | ALTO | Contradicciones históricas entre anexos y decisiones recientes | Precedencia GOV-01: §§66–79 del maestro y actas aprobadas; anexos informativos, auditoría de referencias antes de merge |
+| ARC-14 | ALTO | Licencia suspendida y URL pública sin política comercial definitiva | Bloqueo COM-01 para decisión de visibilidad, gracia y comunicación; no inventar comportamiento |
+| ARC-15 | ALTO | P6A podría mostrar facturas/cargos sin ledger verificado | Etiquetar claramente estimaciones y estados manuales; no afirmar deuda, factura pagada ni consumo conciliado sin evidencia |
+
+### 79.3 Contratos de conexión entre módulos
+
+**Identidad → dominio:** `ActorContext` resuelto en servidor contiene actor, roles, organizaciones autorizadas y permisos; cada acción evalúa recurso concreto, no solo autenticación. Las revocaciones se reflejan en lecturas y escrituras sensibles; tokens de preview tienen caducidad, alcance y no son públicos.
+
+**Licencia → MiniWeb:** interfaz de lectura `getEntitlements(billingAccountId, organizationId, at)` con resultado versionado, origen, cupo, asignaciones y estado; solo el dominio de licencias muta derechos. MiniWeb valida derechos al reservar/publicar y no copia reglas de precio.
+
+**MiniWeb → publicación:** borrador revisionado → validación → reserva atómica de slot → snapshot inmutable → puntero público activo → invalidación de caché; si falla un paso, mantener la publicación anterior y registrar compensación. No se asume transacción distribuida: el diseño físico debe confirmar las garantías reales de D1/Workers.
+
+**Organización → GHL:** adaptador aislado y mapeo explícito de ID de organización a location/subaccount; fallos externos no deben impedir lectura del MiniWeb publicado. Secretos solo en servidor, sin exponer identificadores de proveedor al público.
+
+**GHL → consumo/ledger:** ingesta autenticada, normalización decimal/moneda, idempotencia por `provider + external_event_id`, trazabilidad de periodos y conciliación. No activar cobros por eventos no conciliados. Aplicar margen ×1.20 únicamente sobre costes elegibles definidos; evitar doble recargo de IA.
+
+**Licencias → Mi Vecidya:** mostrar estado contractual y de aprovisionamiento por separado. No usar el estado de GHL como sustituto de licencia ni inferir facturas pagadas por acceso activo.
+
+### 79.4 Escalabilidad: hipótesis y pruebas de capacidad futuras
+
+- **Datos:** índices compuestos por tenant/organización/estado y cursor estable; no cargar todos los negocios, medios o movimientos en una consulta; paginar y proyectar columnas.
+- **Publicación:** servir snapshots cacheables e inmutables, con clave que incluya versión; invalidación de puntero activo al publicar/revertir. Medir latencia de lectura pública y propagación, no asumir consistencia instantánea.
+- **Medios:** objetos externos con ownership, variantes optimizadas y cuota; evitar blobs en D1 o documentos JSON gigantes. Retención y borrado físico solo tras aprobación.
+- **Operación:** reintentos exponenciales con jitter, idempotencia, circuit breaker hacia GHL, dead-letter y conciliación si se adopta procesamiento asíncrono.
+- **Economía:** importes en enteros de unidad menor o decimal exacto, nunca float binario; congelar precio/moneda/tipo de cambio por periodo; ledger append-only con ajustes compensatorios.
+- **Objetivos por definir:** usuarios simultáneos, organizaciones por billing account, MiniWeb publicados, escrituras por segundo, tamaño máximo de snapshot, almacenamiento por organización, p95 y coste operativo. **No inventar SLO ni umbrales de migración.**
+
+### 79.5 Dependencias corregidas
+
+`Identidad/tenancy → modelo organizacional/billing account → licencia canónica/entitlements → esquema V2 → persistencia/CAS → editor + renderer + horario → publicación/cuotas → conversión opt-in → integración GHL + P6A → seguridad/QA + VIS-01 → autorización RELEASE`.
+
+**Carril comercial separado:** `catálogo/contratos → ledger/consumos conciliados → COM-01/PAY-01/BILL-02 → PSP/webhooks/facturas → P6B`. P6B no es requisito para P6A. La conexión con GHL es opcional para servir un MiniWeb publicado; su aprovisionamiento es obligatorio solo para servicios CRM contratados.
+
+**Dependencia humana:** VIS-01 y SEC-QA necesitan evidencia futura; OPS-01 tiene aprobador final designado, pero no ejecutores; COM-01 sigue bloqueando políticas comerciales de suspensión. GOV-01 está aprobado, con GOV-VERIFY pendiente.
+
+### 79.6 Estado de auditoría y decisión recomendada
+
+**Cerrados a nivel de diseño:** mapa de fuentes de verdad, fronteras entre dominios, contratos propuestos de integración y grafo de dependencias. **Pendientes de validación técnica:** garantías transaccionales reales, modelo físico de cuotas, índices, esquema de eventos, límites, SLO y compatibilidad de integración GHL. **Pendientes humanos:** política de suspensión/visibilidad, responsables técnicos, aceptación visual, seguridad y release; pagos e impuestos permanecen aplazados.
+
+**Regla de salida:** no declarar `PLAN-READY` ni permitir implementación sin revisar ARC-01–04 y ARC-13 contra contratos existentes; el resto se convierte en tickets con dueño, evidencia y gate. Esta auditoría documental no acredita pruebas ni certificación de escalabilidad.
+
+
+## 80. Contratos verificables para riesgos críticos y conciliación de anexos
+
+**Alcance de esta auditoría:** lectura documental del maestro y de `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md`. No se han comprobado tablas D1, rutas activas, constraints, API de GHL ni ejecución. Los siguientes contratos son **criterios de diseño** y deben cotejarse con el repositorio antes de codificar.
+
+### 80.1 ARC-01 — un solo motor de derechos
+
+- **Propietario:** dominio comercial/licencias Vecidya. `billing_account` es titular económico; `organization` recibe el servicio; `license` es concesión versionada; `entitlement` es resultado derivado, no una segunda licencia.
+- **Contrato:** `resolveEntitlements(actorContext, billingAccountId, organizationId, at)` devuelve `decision: allow|deny`, `reason`, `license_revision`, `effective_at`, `slots_total`, `slots_used` y asignaciones; la identidad y pertenencia se resuelven en servidor.
+- **Invariante:** una asignación administrativa y una publicación no generan dos derechos distintos; no hay autorización basada en un `billing_account_id` recibido del navegador sin verificación.
+- **Aceptación futura:** tests de licencia duplicada, organización no vinculada, revocación, múltiples organizaciones del mismo titular y ampliación Cuadra +3. Los límites de tres publicaciones por propietario y +3 por Cuadra adicional son reglas del maestro, sujetas a verificación de implementación.
+
+### 80.2 ARC-02 — matriz de acceso multi-tenant
+
+| Actor | Perfil público | Editor de su organización | Publicar con cupo | Consolidado de facturación | Administrar licencia |
+|---|---|---|---|---|---|
+| Visitante | lectura publicada | no | no | no | no |
+| Miembro sin permiso de edición | lectura publicada | no | no | no por defecto | no |
+| Editor autorizado | lectura publicada | sí | solo con permiso explícito | no por defecto | no |
+| Owner/delegado de billing account | lectura publicada | solo si tiene permiso en organización | con permiso y cupo | sí según delegación | según rol autorizado |
+| Operador Vecidya | lectura publicada | solo con autorización administrativa auditada | solo con operación auditada | acceso mínimo por función | según privilegio administrativo |
+
+**Regla:** no confundir ownership comercial con rol de editor; la revocación de delegación de facturación no debe borrar contenido ni otorgar acceso cruzado. Matriz para validar en servidor, no asumir roles existentes con estos nombres.
+
+### 80.3 ARC-03/04 — reserva de slot, publicación y rollback
+
+- **Modelo lógico:** `publication_slot(owner, slot_id, assigned_organization, state, revision)`; `miniweb_snapshot(organization, version, immutable_payload_ref)`; `public_pointer(organization, active_snapshot, revision)`. Son entidades conceptuales, no afirmaciones sobre tablas actuales.
+- **Invariante de cuota:** `active_slots <= granted_slots` por propietario; una publicación nueva requiere reserva/ocupación exclusiva del slot, y el reemplazo de snapshot de una misma publicación **no consume un segundo slot**.
+- **Secuencia segura:** validar identidad/organización/licencia → reservar slot con constraint o transacción compatible → generar snapshot inmutable → verificar versión CAS → activar puntero público → registrar auditoría → invalidar caché. La versión previa continúa servible hasta que la nueva sea visible.
+- **Fallo entre reserva y activación:** liberar reserva temporal mediante compensación idempotente; no contar indefinidamente slots huérfanos. El borrador se conserva. Rollback activa un snapshot previo mediante nueva revisión de puntero y no borra historia.
+- **Aceptación futura:** dos publicaciones simultáneas sobre último slot, doble clic, caída tras reserva, caída tras snapshot, CAS obsoleto, rollback, cambio de owner, expiración de licencia y publicación de otra organización.
+
+### 80.4 ARC-05/06/07/09 — contratos de conexión y reconciliación
+
+**Eventos internos si se introducen:** envelope `event_id`, `event_type`, `schema_version`, `occurred_at`, `tenant_id`, `aggregate_id`, `aggregate_revision`, `correlation_id` y payload mínimo. El consumidor verifica autorización/contexto, deduplica por `event_id`, tolera reordenación y registra errores recuperables; outbox transaccional solo si el flujo realmente se vuelve asíncrono.
+
+**GHL:** mapeo uno-a-uno o regla explícita de multiplicidad entre `organization_id` y `ghl_location_id`, sin inferir por nombres. Alta/revinculación exige prueba de pertenencia, revocación de credenciales y auditoría. Si GHL falla, el MiniWeb publicado sigue disponible; la activación CRM pasa a `pending/failed` y se reconcilia, sin declarar activo un servicio no aprovisionado.
+
+**Consumo:** clave de deduplicación `provider + external_event_id` y, si no existe ID fiable, hash estable de campos de origen con procedimiento de conciliación manual. Estados `received → normalized → verified → reconciled` o `disputed`; cada importe conserva moneda, unidad, periodo, coste original y margen elegible. No generar deuda exigible a partir de evento no verificado.
+
+### 80.5 ARC-08/10/11/12/14/15 — gates restantes
+
+| Riesgo | Gate de cierre técnico o humano |
+|---|---|
+| Medios y crecimiento | presupuesto de bytes, objetos por tenant, variantes, retención, coste y medición real |
+| Horario y DST | fixtures de zonas IANA, madrugada, festivos, excepciones y no-importación V1 |
+| Editor resiliente | persistencia de borrador, errores recuperables y estados de medios/catálogo |
+| Escalabilidad | baseline p50/p95, tasa de error, cardinalidad, concurrencia, coste y umbrales aprobados |
+| Suspensión/visibilidad | COM-01 humana, no inferir política |
+| Ledger y UI comercial | distinguir estimación, registrado, conciliado, facturado y cobrado; no prometer exactitud sin fuente |
+
+### 80.6 Reconciliación de los dos anexos — observaciones concretas
+
+1. **`CONTRATO-VARIANTES-V2.md`, §5**, mantiene una «secuencia de PRs pequeños» como propuesta histórica. **No rige este trabajo documental**, que permanece en una sola rama y PR #184; los tickets IMP-01–12 son futuras unidades delegables y no autorizan crear PRs ahora.
+2. Ese anexo incluye diagnóstico de `registry.ts` V1 y tipos propuestos: **contexto histórico, no autorización para reutilizar editor, secciones, renderer ni horario V1**. Prevalecen §§66, 69–71.
+3. **`SERVICIOS-PAGOS-PLAN-V1.md`, §9/§11.3**, contiene decisiones de lanzamiento pendientes en el momento de redacción: **REL-01 ya fue aprobado para licencias administradas** (§71), mientras COM-01/PAY-01/BILL-02 permanecen pendientes. Cualquier gate del anexo que parezca exigir PSP para P6A se interpreta solo para P6B.
+4. El anexo comercial habla de `billing_account`, `organization_license` y ledger; MiniWeb debe **consumir los derechos canónicos**, no duplicar suscripciones o inventar una cuenta pagadora paralela.
+5. El diagnóstico técnico de ambos anexos es **evidencia documental fechada**, no comprobación del estado de `main` en este turno. Revalidar antes de implementar.
+
+### 80.7 Matriz de cierre real
+
+- **ARC-01/02/03/04:** contratos y criterios de aceptación **SPECIFIED**; pendientes comprobación de modelo físico, constraints y concurrencia.
+- **ARC-05/06/07/09:** conexiones y fallos **SPECIFIED**; pendientes verificación de proveedor y decisiones de integración.
+- **ARC-08/10/11/12:** criterios **SPECIFIED**; pendientes pruebas, límites y métricas reales.
+- **ARC-13:** precedencia documental **RESOLVED BY GOV-01**; aún falta comprobación automática/manual de enlaces y reglas de repositorio.
+- **ARC-14/15:** política comercial y exactitud económica **PENDING HUMAN/INTEGRATION**.
+- **PLAN-READY:** todavía **NO DECLARADO**; la revisión de diseño no equivale a prueba de software.
+
+**Siguiente comprobación documental:** inventario de enlaces entre los tres archivos, revisión de contradicciones normativas residuales y verificación del límite de documentos canónicos antes de solicitar aprobación de merge.
+
+
+## 81. Auditoría documental de referencias, contradicciones y cierre GOV-VERIFY
+
+**Evidencia inspeccionada (2026-10-29):** lectura de los tres Markdown del PR #184. El maestro tiene 277 encabezados Markdown de nivel 1–3 y un enlace Markdown explícito hacia el PR histórico #197; los dos anexos no contienen enlaces Markdown `[texto](destino)`. Esto **no equivale** a una verificación exhaustiva de referencias de texto, rutas en backticks, enlaces de GitHub externos ni reglas CI del repositorio.
+
+### 81.1 Contradicciones y precedencia
+
+| Hallazgo | Ubicación | Diagnóstico | Tratamiento normativo |
+|---|---|---|---|
+| DOC-01 | Anexo variantes §5 | «secuencia de PRs pequeños» podría interpretarse como orden de abrir PRs ahora | Histórica/propuesta: el trabajo documental continúa en **un único PR #184**; los tickets futuros no crean ramas automáticamente |
+| DOC-02 | Anexo variantes §1–4 | Diagnóstico y tipos de MiniWeb V1 podrían confundirse con reuso autorizado | Solo referencia para compatibilidad; §§66/69–71 exigen secciones, editor, renderer y horarios V2 desde cero |
+| DOC-03 | Anexo comercial §9 y §11.3 | REL-01 aparece entre decisiones pendientes | **REL-01 APPROVED**: P6A manual; COM-01/PAY-01/BILL-02 siguen pendientes para sus ámbitos |
+| DOC-04 | Maestro §67 | Menciona trabajo anterior de código y PR #197 | Registro histórico **SUPERSEDED** por §68: prototipos de código retirados del PR #184; #197 cerrado sin merge |
+| DOC-05 | Maestro §§54/56/70 | CAT-01, HV2 y GOV-01 aparecen pendientes en pasajes anteriores | **APPROVED** por §§71/74; §76 asigna autoridad final, no aprueba evidencias futuras |
+| DOC-06 | Anexo comercial | B8 QA/lanzamiento puede leerse como gate del lanzamiento manual | B8 y cobros automáticos corresponden a P6B cuando requieran PSP; P6A mantiene QA de licencias sin PSP |
+| DOC-07 | Todos | Rutas y referencias cruzadas son mayormente texto/backticks, no enlaces verificables | Antes de merge, inventariar rutas y encabezados; no afirmar enlaces válidos por ausencia de Markdown links |
+
+**Regla:** una contradicción histórica no invalida la aprobación más reciente. El lector debe aplicar la jerarquía GOV-01 y las actas fechadas. Cualquier nueva decisión comercial exige aprobación explícita.
+
+### 81.2 Criterios GOV-VERIFY de cierre
+
+1. **Inventario:** contrastar los cinco archivos cambiados en el PR y clasificar tres Markdown (maestro + dos anexos) y dos recursos de prototipo ilustrativo.
+2. **Canonicidad:** confirmar contra las reglas reales del repositorio el límite permitido de documentos canónicos; la aprobación GOV-01 define autoridad pero **no demuestra cumplimiento mecánico**.
+3. **Referencias:** comprobar que las rutas de archivos mencionadas existen en el ref correcto, que no hay enlaces rotos y que los identificadores de decisiones apuntan al acta vigente. El enlace al PR #197 se conserva solo como antecedente cerrado.
+4. **Consistencia:** ejecutar revisión documental focal de DOC-01–07; distinguir frases históricas de decisiones actuales. No modificar los anexos ni sus encabezados por reflejo sin necesidad.
+5. **Cierre:** generar reporte con fecha, SHA, hallazgos, evidencia y veredicto `pass/fail/needs-human`. Solo `pass` verificado permite marcar GOV-VERIFY completado.
+
+**Estado:** **DOC-01–06 RECONCILED NORMATIVELY**, no reescritura de anexos; **DOC-07/GOV-VERIFY PENDING REPOSITORY VALIDATION**. La inspección no ha ejecutado validadores ni comprobado límites CI. No declarar PLAN-READY definitivo todavía.
+
+### 81.3 Entrega final aún pendiente
+
+El expediente de implementación (§78) y los contratos (§§79–80) son suficientes para iniciar revisión técnica futura, **no ejecución autorizada**. Permanecen pendientes: GOV-VERIFY, validación física ARC-01–04, ejecutores técnicos, política comercial mínima P6A, VIS-01, SEC-QA y autorización de release. COM-01/PAY-01/BILL-02 no se dan por aprobados.
+
+
+## 82. GOV-VERIFY — contraste directo con reglas del repositorio (2026-10-29)
+
+**Evidencia CODE/DOC consultada en `main`:** `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md` y `vecidya-platform/app/features/miniweb/registry.ts`; inventario del PR #184 obtenido de GitHub. No se ejecutaron comandos locales ni tests. `main` es un objetivo móvil: repetir comparación de SHA antes del merge.
+
+### 82.1 Inventario exacto del PR #184 (GIT)
+
+1. `plans/app-mini/PLAN-V1.md`: maestro normativo del **plan**.
+2. `plans/app-mini/CONTRATO-VARIANTES-V2.md`: anexo subordinado.
+3. `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md`: anexo subordinado.
+4. `plans/app-mini/prototypes/miniweb-tiers-comparison.html`: prototipo ilustrativo.
+5. `plans/app-mini/prototypes/test-miniweb-tiers.mjs`: auxiliar de prototipo; no evidencia de prueba productiva.
+
+**Resultado:** inventario de cinco rutas **VERIFIED (GIT)**. No se observaron archivos de aplicación entre los cinco cambios listados.
+
+### 82.2 Regla de 20 documentos canónicos
+
+`AGENTS.md` y `GOVERNANCE.md` establecen máximo **20 Markdown canónicos activos** y recuento documental de **16**, registrado en la gobernanza. **Interpretación segura:** no equiparar tres archivos Markdown nuevos con tres canónicos automáticamente. GOV-01 otorga a `PLAN-V1.md` primacía **dentro del expediente APP-MINI**, pero no lo incorpora por sí solo a la tabla global de documentos canónicos de `GOVERNANCE.md`.
+
+**Gate previo al merge:** decidir explícitamente si el maestro entra al catálogo canónico global (y dónde queda registrado); mantener anexos como referencias subordinadas/no canónicas salvo decisión distinta; comprobar recuento actualizado sobre HEAD real. Si se promoviera uno, el recuento teórico sería 17 partiendo de 16, **no un recuento actual verificado**. No editar el catálogo ni afirmar cupo disponible definitivo sin esa comprobación.
+
+### 82.3 Reglas operativas verificadas
+
+- `AGENTS.md` pide pruebas focales y certificación del alcance modificado; suites generales solo si el riesgo transversal lo justifica. Este PR es documental: **no se atribuyen PASS de tests de aplicación**.
+- `GOVERNANCE.md` exige reconciliar `STATUS.md`/`PROJECT_STATE.md` con evidencia de implementación cuando corresponda; el presente expediente no altera el estado de capacidades de producción.
+- Merge condicionado a autorización explícita, checks y ausencia de conflictos; deploy independiente. La excepción de mantener **un único PR documental** es el alcance acordado para este expediente; no prescribe la estrategia de ramas de los futuros tickets de implementación.
+- La fuente de verdad técnica es código/configuración/pruebas, no afirmaciones del plan.
+
+### 82.4 Contraste puntual del MiniWeb V1
+
+`registry.ts` en `main` todavía describe plantillas con `version: 1`, variantes `standard` y familias alternativas `planned`. Esto **sustenta que el diseño V2 de cinco familias × tres variantes no debe presentarse como ya implementado**. La lectura es estática; no demuestra comportamiento desplegado. Se mantiene DEC-19: V2 nuevo y sin reutilizar secciones/horario V1.
+
+### 82.5 Estado GOV-VERIFY
+
+| Comprobación | Resultado | Límite |
+|---|---|---|
+| Archivos cambiados del PR #184 | **VERIFIED** | inventario GitHub de cinco archivos |
+| Existencia de `AGENTS.md`/`GOVERNANCE.md` | **VERIFIED** | lectura en `main` |
+| Regla máximo 20, recuento documentado 16 | **VERIFIED AS POLICY** | recuento real del HEAD no recontado |
+| Un maestro normativo y anexos subordinados | **APPROVED (GOV-01)** | falta decidir promoción al catálogo global |
+| Ausencia de cambios de código en PR | **VERIFIED BY FILE LIST** | no equivale a validación de contenido de prototipos |
+| Integridad de todas las rutas/referencias | **PENDING** | falta inventario completo de referencias en texto |
+| Checks del PR, conflictos y autorización merge | **PENDING** | no se consultaron checks ni se solicitó merge |
+
+**Veredicto:** GOV-VERIFY **PARTIAL**, con política e inventario confirmados. No declarar PLAN-READY completo ni solicitar merge automático. El siguiente paso es verificar rutas citadas, referencias normativas y estado del PR contra el SHA actual, y plantear al responsable la decisión sobre la promoción del maestro al catálogo global.
+
+
+## 83. Corrección explícita del alcance de gobernanza — planes de desarrollo, no documentos rectores
+
+**Aclaración del responsable (2026-10-29):** «Estamos diseñando un plan que vive en la carpeta `plans` y no es documentación rectora del proyecto, sino planes de desarrollo, como el plan de Aprende».
+
+**Decisión aplicada:** `plans/app-mini/PLAN-V1.md` es el **plan maestro dentro del expediente de desarrollo APP-MINI**, no un documento canónico rector de Vecidya ni una entrada que deba promoverse a la tabla de `GOVERNANCE.md`. Los anexos de `plans/app-mini/` siguen subordinados **solo dentro de ese expediente**. `AGENTS.md`, `GOVERNANCE.md`, `PROJECT_STATE.md`, `STATUS.md` y demás documentación rectora mantienen su autoridad para políticas de repositorio, estado técnico y evidencias.
+
+**Corrección a §§74, 81 y 82:** expresiones como «único maestro normativo», «promoción al catálogo global» o «decidir si el maestro entra al catálogo canónico» deben interpretarse exclusivamente en el ámbito del plan APP-MINI. **Se retira como bloqueo y como pregunta al responsable** la promoción al catálogo de Markdown canónicos. El límite de 20 documentos rectores no es un cupo que este expediente deba consumir; la presencia de tres Markdown en `plans/` no los convierte en documentos rectores. Se mantiene únicamente la obligación general de no generar documentación rectora paralela.
+
+**GOV-VERIFY revisado:** verificar que los archivos permanecen en `plans/app-mini/`, que sus referencias internas existen, que las decisiones del plan son consistentes y que no se atribuye implementación al código. **No** exige registro en la tabla canónica ni autorización de promoción. GOV-01 permanece **APPROVED en su alcance correcto: jerarquía interna del expediente**, no jerarquía del repositorio.
+
+**Consecuencia:** el bloqueo documental artificial identificado en §82 queda **RESUELTO por aclaración del responsable**. El siguiente trabajo es revisar referencias y coherencia del plan de desarrollo, siguiendo la separación que ya utiliza el proyecto Aprende, sin alterar gobernanza global ni añadir archivos rectores.
+
+
+## 84. Alineación con el patrón real de `plans/aprende` y cierre del alcance documental
+
+**Fuentes leídas:** `plans/README.md` y `plans/aprende/PLAN-V1.md` en `main` (lectura documental). El índice de `plans/` declara expresamente que contiene planes de trabajo futuros, que no describen funciones implementadas ni autorizan despliegues. Aprende utiliza un plan maestro funcional/técnico con decisiones, evidencia, arquitectura propuesta, seguridad, fases, pruebas focalizadas, aceptación y handoff; la ejecución posterior se registra por separado y requiere autorización.
+
+### 84.1 Contrato de equivalencia con Aprende
+
+| Dimensión del patrón Aprende | Equivalente APP-MINI | Veredicto |
+|---|---|---|
+| Plan en `plans/<producto>/PLAN-V1.md` | `plans/app-mini/PLAN-V1.md` | **ALIGNED** |
+| Decisiones explícitas y evidencia CODE/DOC/PROPUESTA | §§66–83 y actas | **ALIGNED**, conservar estado histórico |
+| Fronteras y permisos | §§69–71, 79–80 | **ALIGNED**, requiere validación física futura |
+| Contratos D1/CAS y migraciones futuras | §§70, 78–80 | **SPECIFIED**, no ejecutados |
+| Fases secuenciales con PR focales | IMP-01–12 (§78) | **ALIGNED** como handoff futuro; no crear PRs en esta planificación |
+| Seguridad, privacidad, QA y aceptación | §§72, 77, 79–80 | **SPECIFIED**, evidencias pendientes |
+| Acta de cierre del plan ≠ certificación de software | §§78–83 | **ALIGNED**, cierre documental condicionado |
+| Índice de `plans/` | solo enumera Aprende en `main` | **GAP de descubribilidad**: añadir enlace APP-MINI al índice **cuando se apruebe integrar el PR**, sin alterar documentación rectora |
+
+### 84.2 Corrección de los gates de planificación
+
+La política global de 20 documentos canónicos **no aplica a estos planes de desarrollo**; se cierra el falso bloqueo de promoción de §§81–82. La obligación de verificar todas las rutas de código citadas **no bloquea por sí sola el cierre del plan**: si una ruta corresponde a una hipótesis de implementación, se registra como verificación focal del ticket IMP correspondiente, como hace Aprende. Solo las rutas del expediente, la jerarquía de fuentes y las decisiones internas deben ser coherentes para entregar el plan.
+
+**Criterio de PLAN-READY DOCUMENTAL:** (a) alcance y no-alcance claros; (b) decisiones aprobadas separadas de pendientes; (c) contratos y riesgos con owner/gate; (d) dependencias y secuencia delegables; (e) pruebas focales definidas, no ejecutadas; (f) autorización de implementación pendiente. Los apartados (a)–(e) se consideran **DOCUMENTED** en §§66–84; (f) **NOT AUTHORIZED**. Por ello, **el expediente es apto para revisión de handoff documental**, sin afirmar que el código esté listo.
+
+### 84.3 Pendientes que viajan al ticket, no generan rondas interminables de plan
+
+- IMP-01/02: cotejar esquema físico, constraints y semántica D1/CAS; resolver ARC-01–04 antes de persistir/publicar.
+- IMP-03–06: validar nuevos componentes, horario DST y evidencia de 45 capturas; VIS-01 humana.
+- IMP-07/09: licencias y cupos atómicos; COM-01 define visibilidad/gracia antes de activar suspensión pública.
+- IMP-08: probar que importación opcional nunca consume horario V1.
+- IMP-10/11: pruebas focales, accesibilidad, seguridad, observabilidad y aprobación de release por SHA.
+- IMP-12: P6B aplazado hasta COM-01/PAY-01/BILL-02.
+- Índice `plans/README.md`: enlazar APP-MINI en un cambio documental autorizado al integrar el plan; no es requisito para seguir planificando.
+
+**Acta:** APP-MINI queda **PLANIFICACIÓN FUNCIONAL/TÉCNICA DOCUMENTADA — LISTA PARA REVISIÓN DE HANDOFF**, no implementada, no certificada y sin autorización para comenzar desarrollo. No se crea documentación rectora ni se impone un gate de catálogo canónico. El responsable conserva la aprobación final de diseño, seguridad y release.
+
+---
+
+# PARTE B — FUNDAMENTOS, DECISIONES PREVIAS Y TRAZABILIDAD
+
+Las secciones 0–65 conservan íntegramente su texto y numeración. Contienen decisiones aprobadas, diagnósticos y propuestas de etapas anteriores; antes de usar cualquier instrucción, cotejar con Parte A. El §67, incluido en Parte A por continuidad del registro, describe un checkpoint de código histórico retirado del alcance documental actual.
+
 ## 0. Objetivo y principios
 
 **APROBADO:** Convertir Mi Vecidya en una aplicación coherente, accesible y fácil para personas sin experiencia tecnológica, y MiniWeb en un constructor visual premium de plantillas y secciones personalizables. Complejidad interna, simplicidad externa. Permitir crear, editar, publicar y mantener periódicamente una página sin programar.
@@ -1896,755 +2715,3 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 4. Registrar aceptación humana de CAT-01, GOV-01 y alcance REL-01 antes de modificar derechos o pagos.
 
 
-## 66. DEC-19 — MiniWeb V2 nuevo desde cero con migración selectiva de legado (2026-10-29; decisión del usuario)
-
-**Decisión aprobada:** MiniWeb V2 es un sistema completo nuevo: **todas las secciones, su estructura, UI, composición, configuración y contrato de publicación se diseñan de cero** conforme a las políticas vigentes y a las variantes visuales Cuadra (Base), Barrio (Pro) y Ciudad (Premium). Reutilizar V1 significa aprovechar capacidades, datos o infraestructura *solo cuando sean útiles y compatibles*, nunca trasladar fielmente las secciones ni conservar su estructura por inercia.
-
-### 66.1 Reutilización por frontera
-
-| Elemento V1 | Política V2 |
-| --- | --- |
-| Componentes visuales de secciones, layouts y templates | **No copiar como secciones V2**; reconstruir diseño y esquema |
-| Datos maestros del negocio, identidad, medios y ofertas | Candidatos a importación/mapeo explícito y validado, sin vinculación permanente obligatoria |
-| Autenticación, tenant guards, permisos, almacenamiento de medios, utilidades seguras y CAS | Reutilización interna selectiva, tras inspección CODE y pruebas focales |
-| Snapshots V1 y URLs públicas actuales | Mantener lectura/servicio legado; permitir edición/migración V2 sin alterar el snapshot histórico |
-| Familias antiguas | Fuente de contenido/mapeo para conversión, **no** plantilla V2 disfrazada |
-| **Horario V1: sección, datos, lógica y vínculo** | **EXCLUIDOS TOTALMENTE de la nueva sección Horario V2**: no importar, no leer como fallback, no sincronizar, no enlazar ni compartir modelo. Horario V2 se crea de cero, con datos nuevos introducidos explícitamente por el usuario |
-
-### 66.2 Adaptación posterior de publicaciones existentes
-
-**Flujo objetivo:** `sitio V1 publicado` → `Crear versión V2 desde publicación` → `seleccionar familia y tier visual autorizado` → `importación selectiva de contenido permitido` → `resolver campos incompatibles` → `editar nuevas secciones V2` → `previsualizar` → `publicar V2 de manera explícita`.
-
-- La conversión crea un **borrador V2 independiente**, con `sourcePublicationId`, `migrationVersion`, reporte de campos importados/omitidos y provenance para auditoría; **no** modifica la publicación V1 ni actualiza silenciosamente el sitio público.
-- Cada sección V2 posee identificadores y schema propios, sin dependencia de estructura DOM, IDs o clases CSS de V1. Un adaptador de una sola ejecución puede leer contenidos V1 **excepto horario** y producir datos V2 normalizados. El render V2 nunca depende del renderer V1.
-- La publicación explícita cambia la versión activa mediante control de revisión/CAS; conservar snapshots anteriores y capacidad de recuperación. Un downgrade o falta de licencia no provoca conversión ni despublicación automática.
-- La importación selectiva debe respetar titularidad tenant, permisos de medios, derechos de publicación, cupo y contenido publicado; registrar conflictos sin sobreescribir trabajo del usuario.
-- **Horario V2:** estado inicial vacío o pendiente de configuración, sin valores precargados, sin sugerencias provenientes del horario V1 y sin vínculo de sincronización; su guardado y validación son nuevos. V1 sigue mostrando sus propios horarios en publicaciones históricas mientras no se publique V2, pero esos horarios nunca alimentan V2.
-
-### 66.3 Plan técnico por checkpoints
-
-1. **V2-SCHEMA:** diseñar desde cero catálogo de secciones y campos V2, independientes de V1; definición de capacidades iguales en Base/Pro/Premium, solo composición visual distinta.
-2. **V2-HOURS:** nueva sección Horario con su propia persistencia, validación, editor y renderer; pruebas que demuestren ausencia de lectura/importación/vínculo con horarios V1.
-3. **V2-ADAPTER:** inventario campo por campo de datos V1 elegibles; conversor opt-in y reporte, con blacklist absoluta de horario.
-4. **V2-EDITOR:** nuevo editor de secciones V2, reutilizando únicamente shell, autenticación y servicios seguros pertinentes; no reutilizar formularios visuales de secciones V1.
-5. **V2-RENDER:** cinco familias nuevas, tres variantes visuales cada una, renderer aislado de V1; pruebas 3×3 por familia, paridad funcional y accesibilidad.
-6. **V2-PUBLISH:** publicación explícita, compatibilidad de snapshots y rollback lógico; pruebas focales de V1 sin regresión, CAS, ownership y cuota.
-7. **V2-MIGRATE-UI:** acción de convertir una publicación antigua desde su edición, con previsualización y confirmación; no migración masiva automática.
-
-### 66.4 Criterios de aceptación obligatorios
-
-- **AC-19A:** ningún componente de sección V1 se registra como sección V2 sin rediseño y nuevo contrato.
-- **AC-19B:** un sitio V1 permanece visual y funcionalmente intacto hasta que su titular confirme publicar V2.
-- **AC-19C:** el adaptador migra únicamente contenido permitido, con reporte y reversibilidad; no duplica contactos, CRM ni entidades de negocio.
-- **AC-19D:** horario V2 comienza sin datos heredados y funciona sin consultas al horario V1. Test de no importación incluso si V1 contiene horarios válidos.
-- **AC-19E:** Cuadra/Barrio/Ciudad ofrecen las mismas secciones y capacidades V2, diferenciadas únicamente por diseño visual y entitlements aprobados.
-- **AC-19F:** el usuario puede elegir una familia nueva al convertir V1, editar el resultado y publicar una nueva versión sin perder su historial.
-
-**Precedencia:** DEC-19 sustituye cualquier instrucción anterior de «reutilizar secciones V1», «extender el editor de secciones existente» o «preservar la sección Horarios V1 en V2». Mantener compatibilidad pública V1 no significa vincular su horario a V2. **GAP-19 cambia de OPEN a SPECIFIED por decisión; implementación y pruebas siguen pendientes.** GAP-21/22 permanecen abiertos hasta diseñar el adaptador y verificar el código.
-
-
-## 67. Primer checkpoint CODE de DEC-19 — PR #197 (2026-10-29)
-
-**Implementación creada en rama independiente desde main:** `feat/miniweb-v2-section-contract-hours-isolation`, PR [#197](https://github.com/hola675/Vecidya/pull/197) **draft**.
-
-**Archivos nuevos:** `app/features/miniweb-v2/sections.ts` (tipos de 12 secciones V2, cinco familias, tres variantes visuales, borrador V2 y nuevo horario vacío con validación), `app/features/miniweb-v2/migrate.ts` (importación voluntaria de campos publicados permitidos y exclusión absoluta de horarios), `tests/unit/miniweb/v2-sections.test.ts` (cuatro tests focales).
-
-**Alcance real:** código puro inicial; no UI, no ruta, no D1, no renderer, no publicación, no migración automática, no cambio del horario legado en producción. Las pruebas están escritas, **no se declara RAN/PASS** sin ejecución de CI o local sobre SHA del PR.
-
-**Trazabilidad:** DEC-19/AC-19C y AC-19D tienen primera implementación parcial; GAP-19 pasa de SPECIFIED a PARTIAL CODE, pendiente de UI y prueba; GAP-21/22 siguen OPEN. Próximos PRs: modelo persistente de Horario V2 separado, pruebas de ausencia de consultas a V1, renderer de secciones nuevas, editor y conversión desde publicación.
-
-
-## 68. Corrección de alcance — PLANIFICACIÓN EXCLUSIVA (2026-10-29)
-
-**Instrucción explícita del responsable:** el alcance de este trabajo es **crear, cerrar y entregar el plan**, no implementar MiniWeb V2. La creación previa de archivos ejecutables fue una desviación. Desde este checkpoint, no se crearán ni editarán archivos de aplicación, migraciones, tests o CI en nombre de esta tarea. El plan puede especificar contratos, pruebas, fases, dependencias y criterios de aceptación para que otros agentes los implementen posteriormente.
-
-**Alcance aprobado de planificación:** catálogo y diseño de secciones V2 completamente nuevas; cinco familias × variantes visuales Base/Pro/Premium para Cuadra/Barrio/Ciudad; funcionalidades comunes; horario nuevo independiente sin lecturas/importaciones/sincronización V1; conversión opt-in de contenido publicado V1 excluyendo horario; arquitectura objetivo, datos, publicación, rollback, seguridad, cuotas, precios, accesibilidad, pruebas focalizadas propuestas, fases, responsables y decisiones humanas.
-
-**Estado honesto:** los archivos de código introducidos en PR #184 durante la desviación son prototipos no certificados y **no constituyen una implementación autorizada**. Deben excluirse del PR de planificación y dejarse a cargo del equipo de implementación en un trabajo futuro autorizado. No declarar cierre técnico, PASS, despliegue ni disponibilidad del producto por existir documentación o prototipos.
-
-**Cierre del plan:** cada hueco se clasifica como (A) resuelto por decisión y contrato, (B) decisión humana pendiente con dueño y fecha, o (C) investigación técnica delegada con criterio de salida. Un plan puede quedar listo para ejecución sin que el código esté implementado. El cierre de planificación requiere matriz de trazabilidad, contratos por sección, dependencias, secuencia de fases, estimaciones relativas, gates de calidad, decisiones y riesgos residuales. Ninguna tarea de implementación se ejecuta desde esta conversación.
-
-
-## 69. Catálogo contractual de secciones MiniWeb V2 — diseño nuevo desde cero
-
-**Estado: SPECIFIED FOR IMPLEMENTATION, no código.** Cada sección V2 tiene contrato propio, independiente de componentes y modelos visuales V1. Todas las secciones están disponibles funcionalmente en Cuadra/Barrio/Ciudad; las variantes Base/Pro/Premium modifican solo presentación. Las cinco familias comparten catálogo y editor; su diferencia es composición, orden inicial y lenguaje visual, nunca bloqueo funcional.
-
-| ID | Sección V2 | Datos editables mínimos | Reglas y criterio de aceptación |
-|---|---|---|---|
-| S01 | Portada / Hero | título, subtítulo, CTA, imagen y alt | CTA con destino válido; imagen opcional; diseño responsive |
-| S02 | Sobre el negocio | titular, descripción, bloques narrativos, imágenes | texto sanitizado; bloques ordenables |
-| S03 | Servicios | elementos con título, descripción, imagen, CTA y orden | vacíos no se publican; no crear entidades CRM duplicadas |
-| S04 | Productos / catálogo | elementos, categoría, imagen, descripción, CTA | sin pagos implícitos ni disponibilidad inventada |
-| S05 | Galería | media, alt, orden, pie | solo media autorizada al negocio; tamaños optimizados |
-| S06 | Contacto | teléfono, email, enlaces, CTA | validar URL/esquemas; no exponer datos privados |
-| S07 | Ubicación / cobertura | dirección pública opcional, ciudad, zona, mapa opt-in | no revelar domicilio sin consentimiento |
-| S08 | Preguntas frecuentes | pares pregunta-respuesta, orden | respuestas visibles sin JS; contenido seguro |
-| S09 | Equipo | perfiles, rol, descripción, fotografía, consentimiento | no publicar información personal sin permiso |
-| S10 | Certificaciones | entidad emisora, título, fecha, documento/imagen opcional | sin badges falsos ni verificación no acreditada |
-| S11 | Testimonios | texto, autor público consentido, contexto | moderación y retiro; sin ratings fabricados |
-| S12 | Horario V2 | zona horaria IANA, siete días, cierres, intervalos, excepciones fechadas, nota | **vacío de origen**, sin importación/consulta/sync/fallback de horarios V1 |
-
-### 69.1 Contrato común de cada instancia
-
-Cada instancia contiene identificador propio V2, tipo de sección, versión de esquema, estado borrador/publicable, posición, visibilidad, contenido tipado y metadatos de edición. Identificadores estables y sin colisiones; orden explícito; validación por tipo; sanitización y permisos de media. El renderer ignora instancias desconocidas sin romper la página y registra el problema para diagnóstico; el editor no elimina contenido desconocido silenciosamente. Una sección sin datos obligatorios no puede publicarse como completa.
-
-### 69.2 Horario V2 — contrato de cero absoluto
-
-- No reutilizar tablas, queries, formularios, componentes, valores predeterminados basados en V1 ni adaptadores de horario legado.
-- Persistencia V2 independiente y tenant-scoped; cada negocio crea sus propios siete días, zona horaria y excepciones. Estado inicial: **sin configurar**; el editor puede ofrecer siete días cerrados como estructura vacía, no como dato importado.
-- Día cerrado no admite intervalos; día abierto exige al menos uno. Formato 24 h; inicio anterior a fin; intervalos no superpuestos, incluso si se introducen desordenados. Turnos nocturnos requieren regla explícita de partición o soporte de cruce de día antes de implementación.
-- Excepciones fechadas tienen prioridad sobre horario semanal; definir precedencia de cierres, festivos y apertura especial. Render público debe mostrar zona horaria y aclarar que el horario puede variar; no inferir «abierto ahora» sin motor de zona horaria probado.
-- AC-HV2-01: negocio nuevo sin V1 guarda y publica horario V2. AC-HV2-02: negocio con horario V1 válido inicia V2 vacío. AC-HV2-03: modificar V1 después no modifica V2. AC-HV2-04: publicar V2 no modifica snapshot V1. AC-HV2-05: horarios superpuestos, zona inválida, días duplicados y excepciones contradictorias fallan validación focal.
-
-### 69.3 Matriz de familias y variantes
-
-| Familia | Composición editorial inicial sugerida | Base/Pro/Premium |
-|---|---|---|
-| Vecidya Default | portada, sobre, servicios, contacto, ubicación, horario | mismas secciones; distinta jerarquía y tratamiento visual |
-| Services Studio | portada, servicios, testimonios, FAQ, contacto, horario | mismas funciones; estética orientada a servicios |
-| Catalog Store | portada, productos, galería, FAQ, contacto, horario | mismas funciones; estética de catálogo |
-| Gastronomy Table | portada, productos, galería, horario, ubicación, contacto | mismas funciones; estética gastronómica |
-| Professional Profile | portada, sobre, certificaciones, equipo, testimonios, contacto | mismas funciones; estética profesional |
-
-Las composiciones son **valores iniciales editables**, no restricciones. Cualquier familia puede añadir, quitar u ordenar cualquiera de las doce secciones. La matriz definitiva de variantes visuales queda sujeta a VIS-01/CAT-01; no introducir capacidades funcionales premium.
-
-### 69.4 Gates de planificación para delegación
-
-**GATE-SCHEMA:** especificación de contenido tipado y evolución de versión para S01–S12. **GATE-HOURS:** aislamiento demostrable V1/V2 y decisiones de nocturnidad/excepciones. **GATE-EDITOR:** estados vacío, error, guardado, preview y accesibilidad. **GATE-RENDER:** matriz cinco familias × tres variantes × tres viewports, sin diferencias funcionales. **GATE-PUBLISH:** preview/publicación explícita, CAS, tenant ownership, snapshot inmutable y rollback. **GATE-MIGRATE:** consentimiento por publicación, importación selectiva documentada, reporte, exclusión absoluta de horario. Todos son criterios para futuros agentes, **no tests ejecutados**.
-
-### 69.5 Huecos abiertos de esta sección
-
-- **B / Producto:** CAT-01 y VIS-01 (dueño: responsable Vecidya); decidir catálogo visual y elegibilidad exacta antes de congelar diseños.
-- **B / Producto:** definir política de turnos nocturnos, excepciones y «abierto ahora» (dueño: responsable Vecidya); bloquear GATE-HOURS hasta resolución.
-- **C / Ingeniería futura:** elección de tablas, transacciones, snapshots y API sin reutilizar horario V1 (dueño: agente de implementación); salida: diseño D1 revisado, no implementación en este PR.
-- **C / Seguridad futura:** política de consentimiento para equipo/testimonios y retención de medios (dueño: implementación + negocio); salida: especificación de autorización y retirada.
-
-
-## 70. Cierre de huecos de diseño — decisiones propuestas para ratificación
-
-**Naturaleza:** decisiones de planificación recomendadas, no aprobaciones humanas ni implementación. Sustituyen ambigüedades técnicas de §69; prevalecen las decisiones comerciales y de gobierno aún pendientes.
-
-### 70.1 Horarios nocturnos, festivos y excepciones (SPECIFIED)
-
-1. El día de la semana se interpreta en la zona IANA del negocio, nunca la del navegador. Formato 24 horas; intervalo normal [inicio, fin), sin incluir el extremo final.
-2. Los turnos que cruzan medianoche se representan con **intervalos partidos entre dos fechas locales**: por ejemplo lunes 22:00–martes 02:00 se almacena como lunes 22:00–24:00 y martes 00:00–02:00. **24:00** es un marcador de fin exclusivo, no una hora de inicio válida. El editor puede aceptar un turno nocturno y proponer el reparto, pero requiere confirmación explícita del usuario.
-3. Las excepciones tienen fecha local y tipo **cerrado**, **horario especial** o **nota informativa**. Precedencia: excepción cerrada > horario especial > horario semanal; la nota no cambia disponibilidad. Una fecha admite como máximo una excepción operativa; duplicados contradictorios se rechazan. Los festivos no se importan automáticamente: el usuario crea o confirma cada excepción.
-4. Un cierre excepcional de martes afecta el tramo que cae en martes incluso si procede de un turno iniciado el lunes. Los intervalos de fecha local se normalizan antes de aplicar precedencia. Cambio DST: se resuelve mediante zona IANA y fecha real; intervalos ambiguos/no existentes se muestran para corrección, nunca se desplazan silenciosamente.
-5. «Abierto ahora» **no es requisito de primera entrega**. Se publica horario declarado con zona horaria y aviso de posibles cambios; se habilitará indicador en fase posterior solo con motor probado en DST, medianoche, excepciones y latencia.
-6. Estado inicial V2: sin configurar. Ninguna lectura/importación/sugerencia desde horario V1. Si el horario no está configurado, la sección pública se oculta; no inventar «cerrado».
-7. Criterios HV2-06–12: turnos nocturnos, límites 00:00/24:00, festivo cerrado, horario especial, DST, excepciones contradictorias y ausencia de inferencia de «abierto ahora» deben contar con casos focales de aceptación.
-
-### 70.2 Editor V2 y publicación (SPECIFIED)
-
-**Flujo de edición:** crear borrador V2 → elegir familia y variante visual permitida → editar instancias S01–S12 → validación por sección → guardar revisión con control de versión CAS → previsualizar snapshot exacto → confirmar publicación → activar nueva versión inmutable → poder revertir a snapshot anterior. «Guardar» nunca significa «publicar». La vista previa se vincula a revisión concreta, no al estado mutable del editor. En caso de conflicto CAS, se preservan ambas versiones y se solicita resolución explícita.
-
-**Estados:** EMPTY, DRAFT, INVALID, READY, PUBLISHING, PUBLISHED, SUPERSEDED, ARCHIVED. Las transiciones y errores tienen mensajes accesibles. El renderer público no accede a borradores ni a credenciales; sirve únicamente snapshot publicado autorizado. La publicación verifica ownership, organización activa, cupo/licencia y versión CAS en servidor, no solo en UI. Las secciones desconocidas se registran como incidencia y no invalidan una publicación V1 existente.
-
-**Aceptación:** editar sin publicar no cambia URL pública; preview y publicación muestran el mismo snapshot; conflicto concurrente no pierde cambios; rollback restaura contenido anterior sin borrar historial; ninguna organización lee/edita/publica otra; al perder licencia se aplica política de visibilidad explícita sin borrado físico automático.
-
-### 70.3 Conversión voluntaria de publicación V1 (SPECIFIED)
-
-Solo se ofrece desde una publicación V1 que pertenece al usuario autorizado. Pantalla de consentimiento informa qué se copiará, qué no y que la publicación original no cambiará. Se elige familia y variante V2; se crea **un borrador nuevo**, no se sobrescribe el V1. Se copia selectivamente identidad pública, textos, contacto público, localización autorizada, medios autorizados y oferta compatible, con mapeo explícito por campo y reporte de omitidos. No se copian horarios V1 bajo ningún nombre, ni datos CRM privados, credenciales, IDs de secciones, estilos ni componentes V1. No se duplican entidades de negocio ni contactos. El borrador conserva ID de procedencia solo para auditoría de conversión, nunca como fuente dinámica de contenido.
-
-**Gates:** consentimiento verificable; mapeo versionado; permisos/medios; idempotencia mediante solicitud identificada; no publicar automáticamente; V1 intacto hasta publicación explícita V2; rollback lógico disponible; pruebas con V1 que tenga horario válido demuestran V2 vacío y ausencia de consultas al horario antiguo.
-
-### 70.4 Matriz visual de diseño (SPECIFIED, pendiente VIS-01)
-
-Las cinco familias comparten las doce secciones y acciones. **Base**: jerarquía tipográfica y bloques simples, navegación y CTAs accesibles. **Pro**: composición editorial avanzada, tarjetas y galería con mayor riqueza visual, sin funcionalidades adicionales. **Premium**: dirección de arte y ritmo visual más distintivos, composiciones de portada y transiciones opcionales respetando reduced-motion, sin funciones adicionales. Las 15 combinaciones (5 familias × 3 variantes) se validan en móvil, tableta y escritorio, además de estados vacío, error y contenido extenso. La aprobación VIS-01 requiere capturas reales y acta de aceptación; las definiciones aquí son criterios para diseñarlas, **no aceptación de capturas inexistentes**.
-
-### 70.5 Fases, responsables y salida (SPECIFIED)
-
-| Fase | Responsable propuesto | Dependencias | Entregable futuro / gate |
-|---|---|---|---|
-| P0 Contratos | Arquitectura + producto | CAT-01, decisión nocturnidad | esquemas S01–S12 y reglas de compatibilidad revisadas |
-| P1 Dominio y persistencia V2 | Backend + seguridad | P0 | D1 aislado, tenancy, CAS, snapshot, pruebas de aislamiento |
-| P2 Editor nuevo | Frontend + accesibilidad | P0, P1 | edición completa, validación, preview y estados |
-| P3 Renderer y familias | Diseño + frontend | P0, VIS-01 | 15 variantes y matriz responsive sin paridad funcional rota |
-| P4 Publicación y rollback | Backend + QA | P1–P3 | snapshot inmutable, ownership, cuotas, rollback |
-| P5 Conversión opt-in | Backend + frontend + QA | P1–P4 | mapeo consentido, auditoría, V1 intacto y horario V2 vacío |
-| P6 Servicios, pagos y lanzamiento | Producto + finanzas + operaciones | COM-01, PAY-01, BILL-02, REL-01, OPS-01 | política comercial aprobada y release autorizado |
-
-Cada fase exige revisión de seguridad, pruebas focales en archivos tocados y evidencia asociada al SHA; no ejecutar suites generales ni modificar CI global por defecto. El responsable humano aprueba decisiones comerciales y despliegue; los agentes no se autoaprueban. No hay estimaciones calendario fiables hasta asignar equipo y capacidad.
-
-### 70.6 Registro de decisiones aún humanas
-
-- **CAT-01:** confirmar cinco familias disponibles en los tres niveles, con paridad funcional (recomendado: sí).
-- **VIS-01:** aceptar las composiciones visuales reales, una vez presentadas.
-- **REL-01:** lanzar inicialmente con licencias administradas y checkout automático después (recomendado).
-- **COM-01/PAY-01/BILL-02:** moneda, tarifas GHL regionales, PSP, jurisdicción, impuestos, impago y condiciones contractuales; sin cifras o cobros públicos antes de aprobación.
-- **GOV-01:** consolidar documentos canónicos o aprobar excepción; recomendación: consolidación con índice y referencias, sin duplicar fuentes.
-- **OPS-01:** nombrar responsables humanos de diseño, seguridad y release.
-- **HV2-PRODUCT:** ratificar partición de turnos nocturnos, excepciones por fecha y no mostrar «abierto ahora» en primera entrega.
-
-**Resultado:** los cinco huecos de diseño enumerados al final de §69 quedan **SPECIFIED** como contratos y propuesta de secuencia. Las aprobaciones listadas siguen **PENDING HUMAN**, nunca CLOSED por silencio. El proyecto sigue en estado de planificación, no implementación.
-
-
-## 71. Acta de decisiones aprobadas por el responsable — 2026-10-29
-
-**Fuente de autoridad:** aprobación explícita del responsable del proyecto en esta conversación: `familias=yes; horario=yes; lanzamiento=manual; pagos=pending`. Este acta **prevalece sobre las menciones de pendiente o recomendado** para las cuatro decisiones concretas aprobadas en §§54, 56, 69 y 70. No supone aprobación de otras decisiones ni autorización de implementación, merge o despliegue.
-
-| Decisión | Estado vinculante | Alcance aprobado |
-|---|---|---|
-| **CAT-01** | **APPROVED** | Las cinco familias `vecidya-default`, `services-studio`, `catalog-store`, `gastronomy-table`, `professional-profile` están disponibles en Cuadra, Barrio y Ciudad; todas ofrecen las mismas secciones y funcionalidades. Base/Pro/Premium solo alteran presentación. |
-| **HV2-PRODUCT** | **APPROVED** | Horario V2 creado desde cero, sin leer/importar/sincronizar V1. Se aprueba el contrato de §70.1: turnos nocturnos partidos por fecha local, excepciones fechadas con precedencia, zona IANA, sin indicador «abierto ahora» en primera entrega. |
-| **REL-01** | **APPROVED** | Primer lanzamiento con **licencias administradas**; checkout y cobro automático quedan para una entrega posterior sujeta a aprobación específica. |
-| **COM-01 / PAY-01 / BILL-02** | **PENDING HUMAN — ratificado** | No se eligen todavía PSP, jurisdicción, tratamiento fiscal, moneda/tarifas GHL regionales, impagos ni condiciones contractuales. No publicar precios regionales no aprobados ni activar cobros automáticos. |
-
-### 71.1 Efectos inmediatos sobre la planificación
-
-- **P0:** CAT-01 y HV2-PRODUCT dejan de bloquear el cierre de contratos; mantener las revisiones técnicas de arquitectura, seguridad y aceptación.
-- **P3:** se pueden diseñar las quince combinaciones visuales sin bloquear funciones por nivel; **VIS-01 sigue pendiente** de revisión y aceptación de diseños reales.
-- **P6:** dividir en **P6A — lanzamiento con licencias administradas** y **P6B — automatización de checkout/cobro**. P6A no depende de tener un PSP elegido, pero sí de la política operativa, comercial y legal aplicable a licencias administradas y de OPS-01. P6B permanece bloqueada por COM-01/PAY-01/BILL-02 y aprobación expresa.
-- La documentación histórica que presenta CAT-01, HV2-PRODUCT o REL-01 como «pendiente» refleja el estado anterior a este acta; **no reabrirlas sin una nueva decisión explícita**.
-
-### 71.2 Pendientes que NO se consideran aprobados
-
-**VIS-01** (aceptación visual real), **COM-01** (tarifas, regiones, monedas y términos), **PAY-01** (proveedor y flujo de pagos), **BILL-02** (facturación, impuestos e impago), **GOV-01** (gobierno documental) y **OPS-01** (responsables de diseño, seguridad y autorización de release). Las decisiones sobre permisos, retención y consentimiento también requieren sus revisiones correspondientes. Ninguna se infiere por silencio.
-
-**Estado del proyecto:** decisiones de producto anteriores aprobadas; el PR #184 continúa siendo **exclusivamente de planificación**. No ejecutar código, migraciones, pruebas ni despliegues como consecuencia de este acta.
-
-
-## 72. Gobierno documental, aceptación visual y operación — cierre de especificaciones
-
-**Alcance:** planificación exclusivamente. Esta sección define propuestas listas para aprobación; no sustituye decisiones humanas GOV-01, VIS-01 ni OPS-01.
-
-### 72.1 GOV-01 — propuesta de gobierno documental (SPECIFIED / APPROVAL PENDING)
-
-**Opción recomendada:** mantener `plans/app-mini/PLAN-V1.md` como única fuente normativa del alcance MiniWeb V2, con anexos de apoyo estrictamente informativos e índice de referencias. Evitar duplicar decisiones vinculantes en múltiples Markdown. Si el límite de documentos canónicos del repositorio obliga a consolidar, mover contenido al documento canónico aprobado sin perder enlaces, historial, identificadores DEC/GAP/AC ni autoría. No borrar ni renombrar documentos sin inventario previo y verificación de referencias entrantes.
-
-**Procedimiento de aceptación GOV-01:** (1) inventario de los cinco archivos del PR y de las reglas documentales vigentes; (2) tabla `documento → propietario → función → autoridad → enlaces`; (3) propuesta de consolidación y redirecciones; (4) aprobación del responsable de gobierno; (5) ejecución por agente autorizado en un trabajo documental posterior. Criterio de salida: una sola definición vigente por decisión y cero enlaces rotos verificados. **No se declara GOV-01 aprobado**.
-
-### 72.2 VIS-01 — matriz de revisión y firma (SPECIFIED / APPROVAL PENDING)
-
-Se exige evidencia visual **real**, no mockups asumidos como capturas del producto. Por cada familia (5) y variante (3), revisar:
-- escritorio ≥1280 px, tableta 768–1024 px y móvil 360–430 px;
-- portada, navegación, contenido largo, sección vacía, contacto, galería, horario con excepción y error de medios;
-- contraste, foco visible, teclado, semántica, textos alternativos, reduced-motion y ausencia de desbordamiento;
-- paridad funcional de las doce secciones en Base, Pro y Premium;
-- no filtración de datos privados ni mensajes que aparenten servicios/cobros no habilitados.
-
-**Evidencia mínima:** matriz de 15 combinaciones × 3 viewports = **45 capturas base**, más escenarios de estado por muestreo trazable; cada entrada registra versión/SHA, fecha, dispositivo, revisor, hallazgos y decisión `accepted | changes_requested | blocked`. No marcar VIS-01 `accepted` hasta aprobación humana de las capturas y correcciones. El diseño puede especificarse antes; la aceptación final exige producto renderizado.
-
-### 72.3 OPS-01 — matriz RACI y autorización de lanzamiento (SPECIFIED / OWNERS PENDING)
-
-| Actividad | Responsable ejecutor propuesto | Aprobador obligatorio | Evidencia |
-|---|---|---|---|
-| Catálogo y alcance | Producto / agente documental | Responsable Vecidya | acta DEC y matriz AC |
-| Diseño visual | Diseño UX/UI | Responsable visual designado | 45 capturas y registro VIS-01 |
-| Modelo de datos y seguridad | Ingeniería backend + seguridad | Responsable técnico/seguridad designado | revisión tenancy, CAS, privacidad |
-| Accesibilidad y QA | QA + frontend | Responsable QA designado | matriz focal y hallazgos |
-| Licencias administradas | Operaciones + soporte | Responsable comercial designado | procedimiento alta/suspensión/reactivación |
-| Publicación y rollback | Ingeniería / operaciones | Responsable de release designado | checklist, ventana, reversión, monitoreo |
-| Tarifas, PSP, fiscalidad | Finanzas/legal | Responsable comercial/legal designado | acta COM-01/PAY-01/BILL-02 |
-
-**Separación de funciones:** quien implementa no aprueba unilateralmente su propia seguridad o release; los agentes pueden preparar evidencias, no otorgar aprobación humana. La ausencia de un aprobador identificado bloquea el gate correspondiente, no el trabajo documental. Los nombres propios quedan vacíos hasta designación explícita.
-
-### 72.4 P6A — operación con licencias administradas (SPECIFIED)
-
-**Sin checkout automático.** Operaciones asigna licencia por propietario de facturación, registra actor, motivo, fecha y evidencia de autorización; el sistema comprueba cuota y entitlements antes de publicar. Definir estados `pending_activation → active → suspended → expired/cancelled`, con política de gracia aún sujeta a revisión comercial. Suspensión impide nuevas publicaciones cuando corresponda, sin eliminar contenido ni efectuar GC automático; el comportamiento de la URL pública debe documentarse y aprobarse antes del lanzamiento. Soporte dispone de procedimiento de corrección de asignaciones, reversión y auditoría.
-
-**Gate de lanzamiento P6A:** decisiones comerciales mínimas aplicables a licencias manuales, OPS-01 con responsables nombrados, VIS-01 aceptado, seguridad y QA firmados, prueba de rollback y monitoreo. El aplazamiento de PAY-01/BILL-02 no autoriza publicar precios o condiciones legales sin revisión.
-
-### 72.5 Matriz de cierre y prioridades
-
-| ID | Estado de planificación | Bloqueo real | Próximo acto |
-|---|---|---|---|
-| CAT-01 | APPROVED | ninguno de producto | usar como contrato |
-| HV2-PRODUCT | APPROVED | ninguno de producto | usar como contrato |
-| REL-01 | APPROVED | ninguno de producto | dividir P6A/P6B |
-| GOV-01 | SPECIFIED / PENDING APPROVAL | gobierno documental | aprobar consolidación o excepción |
-| VIS-01 | SPECIFIED / PENDING EVIDENCE | 45 capturas y firma | preparar diseño; aceptar después |
-| OPS-01 | SPECIFIED / PENDING OWNERS | nombres y autorizaciones | designar responsables |
-| COM-01 | PENDING HUMAN | tarifas, región, moneda, términos | mantener sin precios no aprobados |
-| PAY-01 | PENDING HUMAN | PSP y checkout | posponer a P6B |
-| BILL-02 | PENDING HUMAN | fiscalidad, impagos y facturación | posponer automatización a P6B |
-
-**Criterio de cierre de esta etapa:** GOV-01, VIS-01 y OPS-01 tienen contrato y evidencias exigidas, **no aprobaciones**. Ninguna de las tareas de esta sección constituye implementación, prueba ejecutada ni despliegue.
-
-
-## 73. Inventario verificado del PR y expediente de decisiones GOV-01 / OPS-01
-
-**Fuente:** inventario de archivos cambiados en el PR #184 consultado en GitHub el 2026-10-29. **Alcance:** cinco archivos añadidos, de los cuales tres Markdown y dos recursos de prototipo; no se han modificado aplicaciones, bases de datos ni CI en esta etapa.
-
-| Archivo en PR #184 | Tipo | Función documental propuesta | Autoridad normativa |
-|---|---|---|---|
-| `plans/app-mini/PLAN-V1.md` | Markdown | plan maestro, decisiones, trazabilidad, fases y aceptación | **canónico propuesto**, sujeto a GOV-01 |
-| `plans/app-mini/CONTRATO-VARIANTES-V2.md` | Markdown | especificación de variantes visuales y contratos | anexo subordinado; no duplicar decisiones |
-| `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md` | Markdown | escenarios y contratos de servicios/pagos | anexo subordinado; no activar pagos |
-| `plans/app-mini/prototypes/miniweb-tiers-comparison.html` | HTML | referencia comparativa de diseño | material ilustrativo, no implementación del producto |
-| `plans/app-mini/prototypes/test-miniweb-tiers.mjs` | JS de prototipo | comprobación auxiliar del prototipo | no constituye test de producción ni certificación |
-
-### 73.1 Propuesta operativa GOV-01 (lista para aprobación)
-
-1. **Una autoridad:** decisiones vinculantes en el plan maestro; anexos contienen detalles extensos y remiten al identificador de decisión del maestro. Una contradicción se resuelve por la decisión aprobada más reciente, no por el archivo más nuevo.
-2. **No borrar anexos automáticamente:** preservar los dos Markdown de apoyo como documentación de consulta hasta que se haga inventario de enlaces entrantes y se apruebe consolidación. Los prototipos permanecen marcados como ilustrativos y fuera del alcance de implementación.
-3. **Registro único de decisiones:** ID, estado (`proposed/specified/approved/superseded`), autoridad, fecha, documento fuente, dependencias, evidencia y enlace al reemplazo. Cambios de estado requieren una instrucción humana explícita cuando afecten precio, lanzamiento, permisos o gobierno.
-4. **Regla de mantenimiento:** una sola edición normativa por decisión, actualización de referencias cruzadas y registro de precedencia. Prohibido declarar GOV-01 aprobado por esta propuesta.
-5. **Gate GOV-01:** el responsable del proyecto aprueba la autoridad canónica y el tratamiento de anexos; después un agente documental autorizado verifica el límite de Markdown canónicos y enlaces. Sin ese control, estado `PENDING APPROVAL`.
-
-### 73.2 OPS-01 — asignación pendiente, sin nombres inferidos
-
-Los roles están definidos en §72.3, pero **ninguna persona ha sido designada formalmente**. Se requieren al menos cuatro designaciones o acumulaciones expresamente aceptadas: (1) propietario del producto y decisiones comerciales, (2) aprobador visual, (3) aprobador de seguridad/QA y (4) autorizador de release. Una persona puede asumir varios roles si queda documentado, pero nadie se autoaprueba su propia entrega técnica sin revisión independiente cuando exista riesgo de seguridad.
-
-**Formato de acta futuro:** `rol → persona designada → alcance → suplente opcional → fecha → aceptación`. Hasta entonces OPS-01 sigue `PENDING OWNERS`. La planificación técnica puede continuar; el lanzamiento no.
-
-### 73.3 Próxima cola de planificación y condición de cierre
-
-- **DOC-01:** revisión de consistencia entre los tres Markdown: decisiones CAT-01, HV2-PRODUCT y REL-01 aprobadas deben prevalecer sobre menciones históricas; tarifas/PSP siguen pendientes.
-- **TRACE-01:** matriz `S01–S12 → contrato → validación → seguridad → prueba focal futura → fase → dueño`.
-- **OPS-02:** guion de alta, suspensión, reactivación y soporte de licencias administradas, sin decidir precios ni gracia contractual.
-- **VIS-02:** checklist por familia/variante y plantilla de acta de aceptación para VIS-01, sin afirmar capturas o QA ejecutados.
-
-**Estado:** GOV-01 preparado para decisión, OPS-01 preparado para nombramientos; no están aprobados. Este checkpoint no autoriza editar código, ejecutar prototipos, fusionar el PR ni desplegar.
-
-
-## 74. GOV-01 aprobado y matriz de trazabilidad para entrega a implementación
-
-**Aprobación explícita del responsable (2026-10-29):** GOV-01 **APPROVED**. `PLAN-V1.md` es el **único documento maestro normativo**; `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md` son **anexos subordinados**. En contradicciones prevalecen las decisiones vigentes del maestro, con prioridad a las actas explícitas más recientes. Los prototipos HTML/JS son solo referencia ilustrativa. No se borran ni fusionan anexos por esta decisión; cualquier reorganización futura requiere inventario de enlaces y revisión documental. Esta aprobación no resuelve por sí sola el cumplimiento mecánico del límite de documentos canónicos del repositorio: comprobarlo antes del merge.
-
-### 74.1 Trazabilidad S01–S12 para agentes implementadores (especificación, no ejecución)
-
-| Sección | Validación y privacidad exigidas | Prueba focal futura | Fase responsable |
-|---|---|---|---|
-| S01 Hero | CTA seguro, alt y longitud controlada | CTA inválido y móvil estrecho | P2/P3 |
-| S02 Sobre | sanitización, orden y límites | HTML peligroso y reordenación | P2/P3 |
-| S03 Servicios | identidad/medios autorizados, no duplicar CRM | servicio vacío, orden y ownership | P2/P3 |
-| S04 Catálogo | CTA y categoría válidos, sin precio/disponibilidad inferidos | ítem sin imagen, categoría inválida | P2/P3 |
-| S05 Galería | propiedad del medio, alt, tamaños | medio ajeno y fallo de carga | P2/P3 |
-| S06 Contacto | URL, teléfono/email públicos y permisos | enlace peligroso, dato privado | P2/P3 |
-| S07 Ubicación | consentimiento de dirección pública, opt-in mapa | dirección oculta y mapa sin permiso | P2/P3 |
-| S08 FAQ | texto seguro, accesibilidad sin JS | contenido largo y navegación teclado | P2/P3 |
-| S09 Equipo | consentimiento de perfiles y retirada | perfil sin consentimiento | P2/P3 |
-| S10 Certificaciones | fuente, fecha, no simular verificación | certificación sin respaldo | P2/P3 |
-| S11 Testimonios | autorización, moderación y retirada | testimonio revocado | P2/P3 |
-| S12 Horario V2 | IANA, siete días, excepciones, aislamiento V1 | horario nocturno, DST, no import V1 | P1/P2/P3 |
-
-**Gates transversales:** ownership y tenant isolation; CAS y revisión inmutable; no publicación implícita; cuotas; accesibilidad; permisos de medios; no filtración de datos; reversión lógica; snapshots V1 intactos. Para cada caso futuro registrar SHA, fixture, comando focal, resultado, revisor y evidencia; no afirmar PASS sin ejecución.
-
-### 74.2 Contrato de entregables y secuencia
-
-1. **Paquete de planificación P0:** este maestro, anexos subordinados, catálogo de doce secciones, reglas HV2 y decisiones aprobadas. Se entrega a arquitectura para revisión técnica sin programar desde este PR.
-2. **Paquete de diseño P3:** 15 combinaciones visuales y evidencia VIS-01; la aceptación de diseños reales sigue pendiente.
-3. **Paquete operativo P6A:** procedimiento de licencias administradas, asignación de aprobadores OPS-01, seguridad, QA, rollback y monitoreo. No exige PSP para checkout, pero sí cumplimiento comercial y legal aplicable.
-4. **Paquete comercial P6B:** COM-01, PAY-01, BILL-02 deliberadamente aplazados; no habilitar cobros ni precios no aprobados.
-
-### 74.3 Pendientes después de GOV-01
-
-- **OPS-01:** designar personas para aprobación de producto/comercial, diseño, seguridad/QA y release.
-- **VIS-01:** revisar y aceptar evidencia real de las quince combinaciones.
-- **COM-01, PAY-01, BILL-02:** mantener sin aprobación; no elegir proveedor, jurisdicción, tarifas ni política de impago.
-- **GOV-VERIFY:** comprobar el límite de Markdown canónicos y los enlaces cruzados antes de integrar; aprobación conceptual GOV-01 no equivale a validación de repositorio.
-
-**Estado:** GOV-01 aprobado; matriz TRACE-01 especificada. No implementación, tests ejecutados, merge ni despliegue.
-
-
-## 75. Procedimiento operativo P6A y cierre de preparación OPS-02
-
-**Estado: SPECIFIED, no autorizado para producción.** Esta especificación permite lanzar posteriormente con licencias administradas, conforme a REL-01, sin implementar checkout, procesar pagos o elegir PSP.
-
-### 75.1 Alta y activación manual
-
-1. Operaciones identifica al propietario de facturación y su organización mediante mecanismos existentes; comprueba autorización y ausencia de duplicados.
-2. Registra solicitud con ID, actor solicitante, aprobador comercial, organización, paquete Cuadra/Barrio/Ciudad, cupos aplicables, motivo, fecha y evidencia. **No registrar credenciales ni datos de pago.**
-3. Un operador autorizado verifica la decisión comercial y activa la licencia con vigencia explícita. La operación debe ser idempotente y auditable.
-4. El sistema recalcula entitlements y cuotas de publicación del propietario; la interfaz presenta estado real y confirmación. Una activación no publica automáticamente ningún MiniWeb.
-5. El responsable de soporte dispone de guía para investigar diferencias entre licencia concedida y licencia visible, sin editar datos directamente en producción.
-
-### 75.2 Suspensión, expiración, reactivación y corrección
-
-- **Suspensión:** exige motivo y aprobador; bloquea nuevas acciones sujetas a licencia según la política final. No borra borradores, snapshots ni medios, ni ejecuta GC físico. El comportamiento público de una publicación existente queda **pendiente de política comercial/legal** y no se presupone.
-- **Expiración:** transición basada en vigencia registrada; cualquier periodo de gracia requiere aprobación comercial específica. Sin esa decisión no se inventan días de gracia.
-- **Reactivación:** valida titularidad y autorización, registra antes/después y restaura derechos según licencia vigente; no publica automáticamente.
-- **Corrección:** si una licencia se asignó al propietario equivocado, se abre incidencia, se bloquean efectos adicionales, se documenta compensación y se obtiene revisión de seguridad cuando haya exposición entre tenants. No transferir datos entre organizaciones por simple reasignación de licencia.
-- **Auditoría:** conservar actor, instante, entidad, motivo, estado previo/nuevo, evidencia y resultado, con acceso restringido y política de retención por aprobar.
-
-### 75.3 Pruebas y aceptación futura
-
-Casos focales: alta autorizada, alta duplicada idempotente, actor sin permisos, licencia de otra organización, cuota de tres sitios publicados por propietario, ampliación +3 mediante Cuadra adicional cuando corresponda, suspensión sin borrado, expiración, reactivación, conflicto concurrente, reversión administrativa y no activación accidental de checkout. Los resultados se verifican contra entorno DEV y SHA concreto durante implementación; este plan **no declara pruebas ejecutadas**.
-
-### 75.4 Dependencias que no se cierran por documentación
-
-- **OPS-01:** falta designación nominal y aceptación de los aprobadores.
-- **COM-01:** faltan condiciones de contratación y política de suspensión/visibilidad pública, incluso con licencias manuales.
-- **VIS-01:** faltan capturas reales y firma visual.
-- **GOV-VERIFY:** falta comprobación de reglas de repositorio y referencias antes de merge.
-- **P6B:** PAY-01 y BILL-02 permanecen aplazados por decisión del responsable.
-
-**Resultado:** OPS-02 queda **SPECIFIED**. P6A no queda autorizado hasta resolver los bloqueos aplicables y recibir aprobación humana de lanzamiento.
-
-
-## 76. OPS-01 — autoridad de aprobación designada por el responsable
-
-**Decisión explícita del responsable:** «Yo apruebo», en respuesta a quién aprueba diseño, seguridad y lanzamiento. Se registra al **responsable del proyecto Vecidya** como **aprobador final de diseño visual (VIS-01), revisión de seguridad/QA y autorización de lanzamiento (release)**. No se infiere nombre legal, identidad de cuenta, suplente ni disponibilidad. La designación es una asignación de autoridad, **no aprobación anticipada** de los entregables.
-
-| Gate | Aprobador final | Preparación de evidencia | Estado |
-|---|---|---|---|
-| VIS-01 — diseños reales | Responsable del proyecto | Diseño UX/UI + QA | Aprobador designado; evidencia y aceptación pendientes |
-| SEC-QA — seguridad y calidad | Responsable del proyecto | Ingeniería de seguridad + QA; revisión técnica independiente cuando corresponda | Aprobador designado; auditoría y aceptación pendientes |
-| RELEASE — producción | Responsable del proyecto | Ingeniería + operaciones | Aprobador designado; autorización específica pendiente |
-| OPS-01 — nombramiento de aprobador final | Responsable del proyecto | Acta §76 | **APPROVED en cuanto a autoridad final**; ejecutores y suplentes aún por designar |
-
-**Controles:** ninguna revisión de un agente sustituye la aprobación humana. El responsable decide sobre la evidencia aportada, no sobre supuestos. La aprobación de diseño no autoriza release; la de seguridad no habilita pagos; la aprobación de release requiere confirmación explícita por versión/entorno y checklist. No desplegar, fusionar ni ejecutar código desde esta tarea documental.
-
-**Impacto:** se elimina el bloqueo de «¿quién tiene autoridad final?» en OPS-01. Permanece pendiente asignar ejecutores/revisores técnicos y presentar evidencias para cada gate. COM-01, PAY-01 y BILL-02 siguen pendientes; GOV-01, CAT-01, HV2-PRODUCT y REL-01 continúan aprobados.
-
-
-## 77. Plan de cierre de evidencias — diseño, seguridad y release
-
-**Alcance:** documentos de entrega a futuros agentes. La autoridad de aprobación final corresponde al responsable del proyecto (§76); **ninguna evidencia ni aprobación se presume**.
-
-### 77.1 Paquete VIS-01 para aprobación visual
-
-Cada entrega visual futura deberá contener: identificador de familia, variante Base/Pro/Premium, SHA de implementación, dispositivo y dimensiones, estado del contenido, capturas reales, URL de preview restringida, lista de hallazgos, severidad, corrección y solicitud de decisión. La matriz base es de **5 familias × 3 variantes × 3 viewports = 45** evidencias, ampliada con estados vacío, largo, error, horario nocturno y excepciones. Las pruebas de teclado, contraste y reduced-motion se adjuntan como evidencia separada. El responsable puede aprobar por lote solo si el lote identifica exactamente las combinaciones y excepciones incluidas; silencio o aprobación de una familia no extiende el permiso a otras.
-
-**Plantilla de veredicto:** `VIS-01 / SHA / alcance / accepted|changes_requested|blocked / observaciones / aprobador / fecha`. No afirmar conformidad WCAG formal sin auditoría correspondiente.
-
-### 77.2 Paquete SEC-QA para aprobación técnica
-
-Inventario mínimo de superficies: identidad, organizaciones y roles, límites tenant, borradores y snapshots públicos, medios, conversiones V1→V2, Horario V2, cupos/licencias y operaciones administrativas. Exigir matriz de amenazas con casos de lectura/escritura cruzada, escalada de permisos, publicación por terceros, filtración de datos privados, inyección de contenido/URLs, abuso de subida de medios, replay/idempotencia y concurrencia CAS. Cada riesgo incluye mitigación, prueba focal futura, severidad residual y propietario. La aprobación humana requiere informe técnico y evidencia reproducible; un build verde por sí solo no basta.
-
-**Gates negativos obligatorios:** nunca importar horario V1; no leer borradores desde URL pública; no publicar sin autorización/entitlement; no duplicar cargo ni activar checkout; no modificar snapshots V1; no ejecutar GC físico automático. Los resultados se adjuntarán después de implementar, sin anticipar PASS.
-
-### 77.3 Paquete RELEASE para autorización puntual
-
-Checklist de preproducción: decisiones aplicables aprobadas, SHA exacto, diff revisado, migraciones con rollback probado, respaldo y restauración, permisos y secretos, límites de cuota, snapshots V1, evidencias VIS-01/SEC-QA, smoke DEV focal, observabilidad, responsable de guardia, procedimiento de reversión y comunicación. La autorización expresa debe incluir **SHA + entorno + ventana + alcance**; una autorización para staging no habilita producción. Si cambia el SHA o falla un gate, se vuelve a solicitar aprobación.
-
-**Prohibiciones:** este plan no ejecuta despliegue, no modifica CI, no hace merge, no crea migraciones ni declara QA terminado.
-
-### 77.4 Registro de pendientes de cierre
-
-| ID | Estado actual | Evidencia o decisión requerida | Autoridad |
-|---|---|---|---|
-| GOV-01 | APPROVED | verificación documental previa a merge | responsable del proyecto |
-| OPS-01 autoridad final | APPROVED | ejecutores y revisores técnicos por asignar | responsable del proyecto |
-| VIS-01 | PENDING EVIDENCE | 45 capturas base y accesibilidad | responsable del proyecto |
-| SEC-QA | PENDING EVIDENCE | amenazas, pruebas focales, aislamiento y revisión | responsable del proyecto |
-| RELEASE | NOT AUTHORIZED | SHA/entorno/ventana y gates firmados | responsable del proyecto |
-| COM-01 | PENDING HUMAN | política comercial mínima para P6A | responsable del proyecto |
-| PAY-01/BILL-02 | DEFERRED | proveedor, fiscalidad y facturación automática P6B | responsable del proyecto |
-
-**Resultado de planificación:** paquetes de aprobación VIS-01, SEC-QA y RELEASE definidos; no son entregables ya verificados.
-
-
-## 78. Expediente de entrega a agentes implementadores — planificación cerrada por paquetes
-
-**Objetivo:** descomponer el alcance aprobado en tickets delegables con orden, contratos de entrada/salida y límites de autonomía. Esta sección **no autoriza ejecutar los tickets**.
-
-### 78.1 Reglas obligatorias para cada agente
-
-1. Leer `PLAN-V1.md` como fuente normativa y consultar los dos anexos subordinados; aplicar decisiones vigentes CAT-01, HV2-PRODUCT, REL-01, GOV-01 y autoridad §76.
-2. No reutilizar secciones, componentes, editor, renderer ni horarios MiniWeb V1. Conservar snapshots V1 y limitar el posible reuso a infraestructura/identidad/datos de negocio auditados.
-3. Trabajar con cambios mínimos, aislar tenants, documentar SHA y pruebas **focales**; no modificar CI global ni ejecutar suites generales por defecto.
-4. No decidir precios, PSP, impuestos, jurisdicción, periodos de gracia ni visibilidad pública de licencias suspendidas. Escalar esas cuestiones a COM-01/PAY-01/BILL-02.
-5. No asumir que el usuario aprobó capturas, seguridad o release. Cada gate requiere evidencia y autorización específica. No hacer merge ni desplegar producción sin aprobación explícita.
-
-### 78.2 Backlog delegable y dependencias
-
-| Ticket | Alcance de implementación futuro | Entrada obligatoria | Entregable verificable / aceptación |
-|---|---|---|---|
-| IMP-01 | Diseño técnico de esquemas V2 S01–S12 y tipos versionados | §§69–71, CAT-01/HV2 aprobados | contrato tipado, validación por sección, compatibilidad y revisión técnica |
-| IMP-02 | Persistencia V2, revisiones CAS y snapshots inmutables | IMP-01 | aislamiento tenant, historial, rollback y pruebas de concurrencia |
-| IMP-03 | Editor nuevo desde cero y vista previa por revisión | IMP-01/02 | guardar sin publicar, validación, conflictos y accesibilidad |
-| IMP-04 | Renderer público V2 y seguridad de contenido | IMP-01/02 | solo snapshot publicado, fallbacks seguros, V1 intacto |
-| IMP-05 | Cinco familias × tres variantes visuales | IMP-03/04 | paridad funcional, 45 capturas base y revisión VIS-01 |
-| IMP-06 | Motor Horario V2 independiente | IMP-01/02 | nocturnidad, excepciones, DST, cero lecturas V1 |
-| IMP-07 | Publicación, cuotas, entitlement y rollback | IMP-02/04/06 | ownership, 3 slots por propietario, +3 por Cuadra adicional, CAS |
-| IMP-08 | Conversión voluntaria V1→V2 de datos permitidos | IMP-03/07 | consentimiento, allowlist, auditoría, horarios V2 vacíos |
-| IMP-09 | Licencias administradas P6A y soporte | IMP-02/07, COM-01 mínima | activación/suspensión/reactivación auditables, sin checkout |
-| IMP-10 | Seguridad, accesibilidad y QA de integración focal | IMP-03–09 | expediente SEC-QA, incidencias y evidencias por SHA |
-| IMP-11 | Preparación de release y reversión | IMP-05/10, VIS-01, OPS-01 | checklist y solicitud de autorización, **sin despliegue implícito** |
-| IMP-12 | Pagos automáticos P6B | COM-01/PAY-01/BILL-02 aprobados | ticket bloqueado y fuera del primer lanzamiento |
-
-**Paralelización recomendada:** IMP-01 primero; tras su revisión, IMP-02 y prototipado visual documental en paralelo; IMP-03/04/06 después de los contratos; IMP-05/07 cuando estén listas sus dependencias; IMP-08/09 tras publicación y permisos; IMP-10/11 al final. La asignación real depende de capacidad y revisores.
-
-### 78.3 Contrato de handoff de cada ticket
-
-Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`, `dependencias`, `archivos previstos`, `invariantes de seguridad`, `criterios de aceptación`, `pruebas focales`, `riesgos`, `evidencia`, `responsable ejecutor`, `revisor`, `SHA` y `estado`. Estados permitidos: `planned → ready → in_progress → review → accepted`, además de `blocked`; `accepted` exige evidencia y aprobación correspondiente, nunca inferencia.
-
-### 78.4 Preguntas de bloqueo que un agente debe escalar
-
-- ¿Se permite mostrar una publicación ya activa durante suspensión o expiración? **COM-01 pendiente.**
-- ¿Qué precios, impuestos, PSP o términos se aplican? **COM-01/PAY-01/BILL-02 pendientes.**
-- ¿Quién revisa técnicamente seguridad y quién ejecuta cada paquete? **Ejecutores OPS-01 pendientes; aprobador final ya designado.**
-- ¿Qué diseños concretos quedan aceptados? **VIS-01 pendiente de capturas reales.**
-- ¿Se puede fusionar el PR documental o desplegar? **No sin autorización explícita.**
-
-### 78.5 Definición de cierre de planificación
-
-**PLAN-READY** significa que el backlog y sus dependencias, reglas, decisiones y evidencias exigidas están especificados; **no** significa que existan implementación, tests aprobados, revisión legal o release. Los tickets IMP-01–11 quedan **PLANNED, NOT STARTED**; IMP-12 **BLOCKED/DEFERRED**. No se otorga PLAN-READY definitivo hasta revisar consistencia de los anexos y el límite de documentos canónicos (`GOV-VERIFY`).
-
-
-## 79. Auditoría de lógica, escalabilidad, huecos, dependencias y conexiones (2026-10-29)
-
-**Método y evidencia:** revisión documental del maestro y los dos anexos del PR #184; no auditoría dinámica del código ni pruebas de carga. Hallazgos = riesgos y contratos insuficientemente cerrados, **no fallos demostrados en producción**. Clasificación: **CRÍTICO** puede comprometer aislamiento/contabilidad/publicación; **ALTO** bloquea un contrato de integración; **MEDIO** afecta operabilidad/evolución.
-
-### 79.1 Fronteras y fuentes de verdad
-
-| Dominio | Fuente de verdad prevista | Consumidores / frontera |
-|---|---|---|
-| Identidad, membresía y autorización | plataforma Vecidya, resuelta en servidor | editor, publicación, administración y facturación; nunca IDs de UI confiables |
-| Organización | dominio organizacional Vecidya | perfil público, MiniWeb, licencias y conexión GHL |
-| Billing account y delegaciones | dominio comercial Vecidya | suscripciones, licencias, facturas y consolidado multi-org |
-| Licencia y entitlements | **un único contrato de derechos** en Vecidya | MiniWeb y Mi Vecidya; no crear segunda licencia paralela |
-| Borrador/snapshot MiniWeb V2 | dominio MiniWeb V2 | editor y renderer público; V1 aislado |
-| Horario V2 | sección V2 versionada | editor/snapshot/renderer V2; **nunca** horario V1 |
-| Operación CRM, contactos y pipelines | GHL externo | adaptador de integración; no replicar operación CRM en MiniWeb |
-| Consumo y costes de proveedor | evento externo verificable y ledger comercial Vecidya | conciliación, reportes y futura facturación |
-| Cobros PSP | proveedor por decidir (P6B) | webhooks verificados y libro económico; fuera de P6A |
-
-**Regla arquitectónica:** modular monolith inicialmente, con módulos de dominio y APIs internas estables; no introducir microservicios, colas ni D1 adicionales sin umbral medido. Separar acoplamiento **lógico** aunque se despliegue junto. El editor no consulta directamente GHL ni el ledger; consume contratos Vecidya autorizados.
-
-### 79.2 Hallazgos priorizados y cierre propuesto
-
-| ID | Severidad | Hueco/riesgo detectado en especificación | Contrato o acción de cierre |
-|---|---|---|---|
-| ARC-01 | CRÍTICO | Doble representación potencial de licencia entre MiniWeb y Servicios/Pagos | Definir único `EntitlementService` que deriva derechos de licencia canónica; lecturas consistentes, sin mutaciones duplicadas |
-| ARC-02 | CRÍTICO | Propietario de facturación multi-org vs permisos de miembros de organización | Matriz RBAC/ABAC por acción: `billing_account`, `organization`, rol, licencia, actor; tests cross-tenant |
-| ARC-03 | CRÍTICO | Publicación y consumo de cupos con operaciones concurrentes | Transacción/CAS para reservar cupo y activar snapshot; unicidad por slot, rollback compensado |
-| ARC-04 | ALTO | V1→V2 y publicación podrían producir doble URL/estado ambiguo | Identidad pública estable, puntero activo versionado, conmutación explícita, reversión y caché invalidada |
-| ARC-05 | ALTO | No hay política contractual completa de eventos entre dominios | Outbox transaccional si se introducen eventos asíncronos; entrega al menos una vez, consumidor idempotente, DLQ/reconciliación |
-| ARC-06 | ALTO | Integración GHL requiere mapa robusto location/subaccount→organización | Tabla de correspondencias con unicidad, validación de titular, rotación de credenciales, estado desconectado y reconciliación |
-| ARC-07 | ALTO | Licencias manuales con activación externa pueden quedar a medias | Máquina de estados separa `licensed`, `provisioning`, `active_external`, `failed`; reintentos y compensación |
-| ARC-08 | ALTO | Snapshot y medios pueden crecer sin límites operativos definidos | Presupuesto por tamaño/volumen, límites por tenant, almacenamiento de medios fuera del snapshot, retención/GC por aprobar |
-| ARC-09 | ALTO | El plan de pagos futuros menciona eventos/ledger sin SLA de frescura | `observed_at`, `provider_period`, `reconciled_at`, estados `pending/verified/disputed`, indicador de datos atrasados |
-| ARC-10 | ALTO | Horario V2 nocturno y excepciones exigen semántica DST y UTC inequívoca | Fechas locales + zona IANA, normalización de intervalos y pruebas de transición, sin indicador abierto-ahora inicial |
-| ARC-11 | MEDIO | Dependencia del editor respecto a catálogo/medios puede provocar fallos en cascada | Editor resiliente con estados loading/empty/error, reintentos acotados y última revisión guardada |
-| ARC-12 | MEDIO | No hay objetivos cuantitativos de rendimiento/capacidad aprobados | Definir SLO y presupuesto por operación; medir p95, tasa de error, almacenamiento, coste y concurrencia antes de escalar |
-| ARC-13 | ALTO | Contradicciones históricas entre anexos y decisiones recientes | Precedencia GOV-01: §§66–79 del maestro y actas aprobadas; anexos informativos, auditoría de referencias antes de merge |
-| ARC-14 | ALTO | Licencia suspendida y URL pública sin política comercial definitiva | Bloqueo COM-01 para decisión de visibilidad, gracia y comunicación; no inventar comportamiento |
-| ARC-15 | ALTO | P6A podría mostrar facturas/cargos sin ledger verificado | Etiquetar claramente estimaciones y estados manuales; no afirmar deuda, factura pagada ni consumo conciliado sin evidencia |
-
-### 79.3 Contratos de conexión entre módulos
-
-**Identidad → dominio:** `ActorContext` resuelto en servidor contiene actor, roles, organizaciones autorizadas y permisos; cada acción evalúa recurso concreto, no solo autenticación. Las revocaciones se reflejan en lecturas y escrituras sensibles; tokens de preview tienen caducidad, alcance y no son públicos.
-
-**Licencia → MiniWeb:** interfaz de lectura `getEntitlements(billingAccountId, organizationId, at)` con resultado versionado, origen, cupo, asignaciones y estado; solo el dominio de licencias muta derechos. MiniWeb valida derechos al reservar/publicar y no copia reglas de precio.
-
-**MiniWeb → publicación:** borrador revisionado → validación → reserva atómica de slot → snapshot inmutable → puntero público activo → invalidación de caché; si falla un paso, mantener la publicación anterior y registrar compensación. No se asume transacción distribuida: el diseño físico debe confirmar las garantías reales de D1/Workers.
-
-**Organización → GHL:** adaptador aislado y mapeo explícito de ID de organización a location/subaccount; fallos externos no deben impedir lectura del MiniWeb publicado. Secretos solo en servidor, sin exponer identificadores de proveedor al público.
-
-**GHL → consumo/ledger:** ingesta autenticada, normalización decimal/moneda, idempotencia por `provider + external_event_id`, trazabilidad de periodos y conciliación. No activar cobros por eventos no conciliados. Aplicar margen ×1.20 únicamente sobre costes elegibles definidos; evitar doble recargo de IA.
-
-**Licencias → Mi Vecidya:** mostrar estado contractual y de aprovisionamiento por separado. No usar el estado de GHL como sustituto de licencia ni inferir facturas pagadas por acceso activo.
-
-### 79.4 Escalabilidad: hipótesis y pruebas de capacidad futuras
-
-- **Datos:** índices compuestos por tenant/organización/estado y cursor estable; no cargar todos los negocios, medios o movimientos en una consulta; paginar y proyectar columnas.
-- **Publicación:** servir snapshots cacheables e inmutables, con clave que incluya versión; invalidación de puntero activo al publicar/revertir. Medir latencia de lectura pública y propagación, no asumir consistencia instantánea.
-- **Medios:** objetos externos con ownership, variantes optimizadas y cuota; evitar blobs en D1 o documentos JSON gigantes. Retención y borrado físico solo tras aprobación.
-- **Operación:** reintentos exponenciales con jitter, idempotencia, circuit breaker hacia GHL, dead-letter y conciliación si se adopta procesamiento asíncrono.
-- **Economía:** importes en enteros de unidad menor o decimal exacto, nunca float binario; congelar precio/moneda/tipo de cambio por periodo; ledger append-only con ajustes compensatorios.
-- **Objetivos por definir:** usuarios simultáneos, organizaciones por billing account, MiniWeb publicados, escrituras por segundo, tamaño máximo de snapshot, almacenamiento por organización, p95 y coste operativo. **No inventar SLO ni umbrales de migración.**
-
-### 79.5 Dependencias corregidas
-
-`Identidad/tenancy → modelo organizacional/billing account → licencia canónica/entitlements → esquema V2 → persistencia/CAS → editor + renderer + horario → publicación/cuotas → conversión opt-in → integración GHL + P6A → seguridad/QA + VIS-01 → autorización RELEASE`.
-
-**Carril comercial separado:** `catálogo/contratos → ledger/consumos conciliados → COM-01/PAY-01/BILL-02 → PSP/webhooks/facturas → P6B`. P6B no es requisito para P6A. La conexión con GHL es opcional para servir un MiniWeb publicado; su aprovisionamiento es obligatorio solo para servicios CRM contratados.
-
-**Dependencia humana:** VIS-01 y SEC-QA necesitan evidencia futura; OPS-01 tiene aprobador final designado, pero no ejecutores; COM-01 sigue bloqueando políticas comerciales de suspensión. GOV-01 está aprobado, con GOV-VERIFY pendiente.
-
-### 79.6 Estado de auditoría y decisión recomendada
-
-**Cerrados a nivel de diseño:** mapa de fuentes de verdad, fronteras entre dominios, contratos propuestos de integración y grafo de dependencias. **Pendientes de validación técnica:** garantías transaccionales reales, modelo físico de cuotas, índices, esquema de eventos, límites, SLO y compatibilidad de integración GHL. **Pendientes humanos:** política de suspensión/visibilidad, responsables técnicos, aceptación visual, seguridad y release; pagos e impuestos permanecen aplazados.
-
-**Regla de salida:** no declarar `PLAN-READY` ni permitir implementación sin revisar ARC-01–04 y ARC-13 contra contratos existentes; el resto se convierte en tickets con dueño, evidencia y gate. Esta auditoría documental no acredita pruebas ni certificación de escalabilidad.
-
-
-## 80. Contratos verificables para riesgos críticos y conciliación de anexos
-
-**Alcance de esta auditoría:** lectura documental del maestro y de `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md`. No se han comprobado tablas D1, rutas activas, constraints, API de GHL ni ejecución. Los siguientes contratos son **criterios de diseño** y deben cotejarse con el repositorio antes de codificar.
-
-### 80.1 ARC-01 — un solo motor de derechos
-
-- **Propietario:** dominio comercial/licencias Vecidya. `billing_account` es titular económico; `organization` recibe el servicio; `license` es concesión versionada; `entitlement` es resultado derivado, no una segunda licencia.
-- **Contrato:** `resolveEntitlements(actorContext, billingAccountId, organizationId, at)` devuelve `decision: allow|deny`, `reason`, `license_revision`, `effective_at`, `slots_total`, `slots_used` y asignaciones; la identidad y pertenencia se resuelven en servidor.
-- **Invariante:** una asignación administrativa y una publicación no generan dos derechos distintos; no hay autorización basada en un `billing_account_id` recibido del navegador sin verificación.
-- **Aceptación futura:** tests de licencia duplicada, organización no vinculada, revocación, múltiples organizaciones del mismo titular y ampliación Cuadra +3. Los límites de tres publicaciones por propietario y +3 por Cuadra adicional son reglas del maestro, sujetas a verificación de implementación.
-
-### 80.2 ARC-02 — matriz de acceso multi-tenant
-
-| Actor | Perfil público | Editor de su organización | Publicar con cupo | Consolidado de facturación | Administrar licencia |
-|---|---|---|---|---|---|
-| Visitante | lectura publicada | no | no | no | no |
-| Miembro sin permiso de edición | lectura publicada | no | no | no por defecto | no |
-| Editor autorizado | lectura publicada | sí | solo con permiso explícito | no por defecto | no |
-| Owner/delegado de billing account | lectura publicada | solo si tiene permiso en organización | con permiso y cupo | sí según delegación | según rol autorizado |
-| Operador Vecidya | lectura publicada | solo con autorización administrativa auditada | solo con operación auditada | acceso mínimo por función | según privilegio administrativo |
-
-**Regla:** no confundir ownership comercial con rol de editor; la revocación de delegación de facturación no debe borrar contenido ni otorgar acceso cruzado. Matriz para validar en servidor, no asumir roles existentes con estos nombres.
-
-### 80.3 ARC-03/04 — reserva de slot, publicación y rollback
-
-- **Modelo lógico:** `publication_slot(owner, slot_id, assigned_organization, state, revision)`; `miniweb_snapshot(organization, version, immutable_payload_ref)`; `public_pointer(organization, active_snapshot, revision)`. Son entidades conceptuales, no afirmaciones sobre tablas actuales.
-- **Invariante de cuota:** `active_slots <= granted_slots` por propietario; una publicación nueva requiere reserva/ocupación exclusiva del slot, y el reemplazo de snapshot de una misma publicación **no consume un segundo slot**.
-- **Secuencia segura:** validar identidad/organización/licencia → reservar slot con constraint o transacción compatible → generar snapshot inmutable → verificar versión CAS → activar puntero público → registrar auditoría → invalidar caché. La versión previa continúa servible hasta que la nueva sea visible.
-- **Fallo entre reserva y activación:** liberar reserva temporal mediante compensación idempotente; no contar indefinidamente slots huérfanos. El borrador se conserva. Rollback activa un snapshot previo mediante nueva revisión de puntero y no borra historia.
-- **Aceptación futura:** dos publicaciones simultáneas sobre último slot, doble clic, caída tras reserva, caída tras snapshot, CAS obsoleto, rollback, cambio de owner, expiración de licencia y publicación de otra organización.
-
-### 80.4 ARC-05/06/07/09 — contratos de conexión y reconciliación
-
-**Eventos internos si se introducen:** envelope `event_id`, `event_type`, `schema_version`, `occurred_at`, `tenant_id`, `aggregate_id`, `aggregate_revision`, `correlation_id` y payload mínimo. El consumidor verifica autorización/contexto, deduplica por `event_id`, tolera reordenación y registra errores recuperables; outbox transaccional solo si el flujo realmente se vuelve asíncrono.
-
-**GHL:** mapeo uno-a-uno o regla explícita de multiplicidad entre `organization_id` y `ghl_location_id`, sin inferir por nombres. Alta/revinculación exige prueba de pertenencia, revocación de credenciales y auditoría. Si GHL falla, el MiniWeb publicado sigue disponible; la activación CRM pasa a `pending/failed` y se reconcilia, sin declarar activo un servicio no aprovisionado.
-
-**Consumo:** clave de deduplicación `provider + external_event_id` y, si no existe ID fiable, hash estable de campos de origen con procedimiento de conciliación manual. Estados `received → normalized → verified → reconciled` o `disputed`; cada importe conserva moneda, unidad, periodo, coste original y margen elegible. No generar deuda exigible a partir de evento no verificado.
-
-### 80.5 ARC-08/10/11/12/14/15 — gates restantes
-
-| Riesgo | Gate de cierre técnico o humano |
-|---|---|
-| Medios y crecimiento | presupuesto de bytes, objetos por tenant, variantes, retención, coste y medición real |
-| Horario y DST | fixtures de zonas IANA, madrugada, festivos, excepciones y no-importación V1 |
-| Editor resiliente | persistencia de borrador, errores recuperables y estados de medios/catálogo |
-| Escalabilidad | baseline p50/p95, tasa de error, cardinalidad, concurrencia, coste y umbrales aprobados |
-| Suspensión/visibilidad | COM-01 humana, no inferir política |
-| Ledger y UI comercial | distinguir estimación, registrado, conciliado, facturado y cobrado; no prometer exactitud sin fuente |
-
-### 80.6 Reconciliación de los dos anexos — observaciones concretas
-
-1. **`CONTRATO-VARIANTES-V2.md`, §5**, mantiene una «secuencia de PRs pequeños» como propuesta histórica. **No rige este trabajo documental**, que permanece en una sola rama y PR #184; los tickets IMP-01–12 son futuras unidades delegables y no autorizan crear PRs ahora.
-2. Ese anexo incluye diagnóstico de `registry.ts` V1 y tipos propuestos: **contexto histórico, no autorización para reutilizar editor, secciones, renderer ni horario V1**. Prevalecen §§66, 69–71.
-3. **`SERVICIOS-PAGOS-PLAN-V1.md`, §9/§11.3**, contiene decisiones de lanzamiento pendientes en el momento de redacción: **REL-01 ya fue aprobado para licencias administradas** (§71), mientras COM-01/PAY-01/BILL-02 permanecen pendientes. Cualquier gate del anexo que parezca exigir PSP para P6A se interpreta solo para P6B.
-4. El anexo comercial habla de `billing_account`, `organization_license` y ledger; MiniWeb debe **consumir los derechos canónicos**, no duplicar suscripciones o inventar una cuenta pagadora paralela.
-5. El diagnóstico técnico de ambos anexos es **evidencia documental fechada**, no comprobación del estado de `main` en este turno. Revalidar antes de implementar.
-
-### 80.7 Matriz de cierre real
-
-- **ARC-01/02/03/04:** contratos y criterios de aceptación **SPECIFIED**; pendientes comprobación de modelo físico, constraints y concurrencia.
-- **ARC-05/06/07/09:** conexiones y fallos **SPECIFIED**; pendientes verificación de proveedor y decisiones de integración.
-- **ARC-08/10/11/12:** criterios **SPECIFIED**; pendientes pruebas, límites y métricas reales.
-- **ARC-13:** precedencia documental **RESOLVED BY GOV-01**; aún falta comprobación automática/manual de enlaces y reglas de repositorio.
-- **ARC-14/15:** política comercial y exactitud económica **PENDING HUMAN/INTEGRATION**.
-- **PLAN-READY:** todavía **NO DECLARADO**; la revisión de diseño no equivale a prueba de software.
-
-**Siguiente comprobación documental:** inventario de enlaces entre los tres archivos, revisión de contradicciones normativas residuales y verificación del límite de documentos canónicos antes de solicitar aprobación de merge.
-
-
-## 81. Auditoría documental de referencias, contradicciones y cierre GOV-VERIFY
-
-**Evidencia inspeccionada (2026-10-29):** lectura de los tres Markdown del PR #184. El maestro tiene 277 encabezados Markdown de nivel 1–3 y un enlace Markdown explícito hacia el PR histórico #197; los dos anexos no contienen enlaces Markdown `[texto](destino)`. Esto **no equivale** a una verificación exhaustiva de referencias de texto, rutas en backticks, enlaces de GitHub externos ni reglas CI del repositorio.
-
-### 81.1 Contradicciones y precedencia
-
-| Hallazgo | Ubicación | Diagnóstico | Tratamiento normativo |
-|---|---|---|---|
-| DOC-01 | Anexo variantes §5 | «secuencia de PRs pequeños» podría interpretarse como orden de abrir PRs ahora | Histórica/propuesta: el trabajo documental continúa en **un único PR #184**; los tickets futuros no crean ramas automáticamente |
-| DOC-02 | Anexo variantes §1–4 | Diagnóstico y tipos de MiniWeb V1 podrían confundirse con reuso autorizado | Solo referencia para compatibilidad; §§66/69–71 exigen secciones, editor, renderer y horarios V2 desde cero |
-| DOC-03 | Anexo comercial §9 y §11.3 | REL-01 aparece entre decisiones pendientes | **REL-01 APPROVED**: P6A manual; COM-01/PAY-01/BILL-02 siguen pendientes para sus ámbitos |
-| DOC-04 | Maestro §67 | Menciona trabajo anterior de código y PR #197 | Registro histórico **SUPERSEDED** por §68: prototipos de código retirados del PR #184; #197 cerrado sin merge |
-| DOC-05 | Maestro §§54/56/70 | CAT-01, HV2 y GOV-01 aparecen pendientes en pasajes anteriores | **APPROVED** por §§71/74; §76 asigna autoridad final, no aprueba evidencias futuras |
-| DOC-06 | Anexo comercial | B8 QA/lanzamiento puede leerse como gate del lanzamiento manual | B8 y cobros automáticos corresponden a P6B cuando requieran PSP; P6A mantiene QA de licencias sin PSP |
-| DOC-07 | Todos | Rutas y referencias cruzadas son mayormente texto/backticks, no enlaces verificables | Antes de merge, inventariar rutas y encabezados; no afirmar enlaces válidos por ausencia de Markdown links |
-
-**Regla:** una contradicción histórica no invalida la aprobación más reciente. El lector debe aplicar la jerarquía GOV-01 y las actas fechadas. Cualquier nueva decisión comercial exige aprobación explícita.
-
-### 81.2 Criterios GOV-VERIFY de cierre
-
-1. **Inventario:** contrastar los cinco archivos cambiados en el PR y clasificar tres Markdown (maestro + dos anexos) y dos recursos de prototipo ilustrativo.
-2. **Canonicidad:** confirmar contra las reglas reales del repositorio el límite permitido de documentos canónicos; la aprobación GOV-01 define autoridad pero **no demuestra cumplimiento mecánico**.
-3. **Referencias:** comprobar que las rutas de archivos mencionadas existen en el ref correcto, que no hay enlaces rotos y que los identificadores de decisiones apuntan al acta vigente. El enlace al PR #197 se conserva solo como antecedente cerrado.
-4. **Consistencia:** ejecutar revisión documental focal de DOC-01–07; distinguir frases históricas de decisiones actuales. No modificar los anexos ni sus encabezados por reflejo sin necesidad.
-5. **Cierre:** generar reporte con fecha, SHA, hallazgos, evidencia y veredicto `pass/fail/needs-human`. Solo `pass` verificado permite marcar GOV-VERIFY completado.
-
-**Estado:** **DOC-01–06 RECONCILED NORMATIVELY**, no reescritura de anexos; **DOC-07/GOV-VERIFY PENDING REPOSITORY VALIDATION**. La inspección no ha ejecutado validadores ni comprobado límites CI. No declarar PLAN-READY definitivo todavía.
-
-### 81.3 Entrega final aún pendiente
-
-El expediente de implementación (§78) y los contratos (§§79–80) son suficientes para iniciar revisión técnica futura, **no ejecución autorizada**. Permanecen pendientes: GOV-VERIFY, validación física ARC-01–04, ejecutores técnicos, política comercial mínima P6A, VIS-01, SEC-QA y autorización de release. COM-01/PAY-01/BILL-02 no se dan por aprobados.
-
-
-## 82. GOV-VERIFY — contraste directo con reglas del repositorio (2026-10-29)
-
-**Evidencia CODE/DOC consultada en `main`:** `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md` y `vecidya-platform/app/features/miniweb/registry.ts`; inventario del PR #184 obtenido de GitHub. No se ejecutaron comandos locales ni tests. `main` es un objetivo móvil: repetir comparación de SHA antes del merge.
-
-### 82.1 Inventario exacto del PR #184 (GIT)
-
-1. `plans/app-mini/PLAN-V1.md`: maestro normativo del **plan**.
-2. `plans/app-mini/CONTRATO-VARIANTES-V2.md`: anexo subordinado.
-3. `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md`: anexo subordinado.
-4. `plans/app-mini/prototypes/miniweb-tiers-comparison.html`: prototipo ilustrativo.
-5. `plans/app-mini/prototypes/test-miniweb-tiers.mjs`: auxiliar de prototipo; no evidencia de prueba productiva.
-
-**Resultado:** inventario de cinco rutas **VERIFIED (GIT)**. No se observaron archivos de aplicación entre los cinco cambios listados.
-
-### 82.2 Regla de 20 documentos canónicos
-
-`AGENTS.md` y `GOVERNANCE.md` establecen máximo **20 Markdown canónicos activos** y recuento documental de **16**, registrado en la gobernanza. **Interpretación segura:** no equiparar tres archivos Markdown nuevos con tres canónicos automáticamente. GOV-01 otorga a `PLAN-V1.md` primacía **dentro del expediente APP-MINI**, pero no lo incorpora por sí solo a la tabla global de documentos canónicos de `GOVERNANCE.md`.
-
-**Gate previo al merge:** decidir explícitamente si el maestro entra al catálogo canónico global (y dónde queda registrado); mantener anexos como referencias subordinadas/no canónicas salvo decisión distinta; comprobar recuento actualizado sobre HEAD real. Si se promoviera uno, el recuento teórico sería 17 partiendo de 16, **no un recuento actual verificado**. No editar el catálogo ni afirmar cupo disponible definitivo sin esa comprobación.
-
-### 82.3 Reglas operativas verificadas
-
-- `AGENTS.md` pide pruebas focales y certificación del alcance modificado; suites generales solo si el riesgo transversal lo justifica. Este PR es documental: **no se atribuyen PASS de tests de aplicación**.
-- `GOVERNANCE.md` exige reconciliar `STATUS.md`/`PROJECT_STATE.md` con evidencia de implementación cuando corresponda; el presente expediente no altera el estado de capacidades de producción.
-- Merge condicionado a autorización explícita, checks y ausencia de conflictos; deploy independiente. La excepción de mantener **un único PR documental** es el alcance acordado para este expediente; no prescribe la estrategia de ramas de los futuros tickets de implementación.
-- La fuente de verdad técnica es código/configuración/pruebas, no afirmaciones del plan.
-
-### 82.4 Contraste puntual del MiniWeb V1
-
-`registry.ts` en `main` todavía describe plantillas con `version: 1`, variantes `standard` y familias alternativas `planned`. Esto **sustenta que el diseño V2 de cinco familias × tres variantes no debe presentarse como ya implementado**. La lectura es estática; no demuestra comportamiento desplegado. Se mantiene DEC-19: V2 nuevo y sin reutilizar secciones/horario V1.
-
-### 82.5 Estado GOV-VERIFY
-
-| Comprobación | Resultado | Límite |
-|---|---|---|
-| Archivos cambiados del PR #184 | **VERIFIED** | inventario GitHub de cinco archivos |
-| Existencia de `AGENTS.md`/`GOVERNANCE.md` | **VERIFIED** | lectura en `main` |
-| Regla máximo 20, recuento documentado 16 | **VERIFIED AS POLICY** | recuento real del HEAD no recontado |
-| Un maestro normativo y anexos subordinados | **APPROVED (GOV-01)** | falta decidir promoción al catálogo global |
-| Ausencia de cambios de código en PR | **VERIFIED BY FILE LIST** | no equivale a validación de contenido de prototipos |
-| Integridad de todas las rutas/referencias | **PENDING** | falta inventario completo de referencias en texto |
-| Checks del PR, conflictos y autorización merge | **PENDING** | no se consultaron checks ni se solicitó merge |
-
-**Veredicto:** GOV-VERIFY **PARTIAL**, con política e inventario confirmados. No declarar PLAN-READY completo ni solicitar merge automático. El siguiente paso es verificar rutas citadas, referencias normativas y estado del PR contra el SHA actual, y plantear al responsable la decisión sobre la promoción del maestro al catálogo global.
-
-
-## 83. Corrección explícita del alcance de gobernanza — planes de desarrollo, no documentos rectores
-
-**Aclaración del responsable (2026-10-29):** «Estamos diseñando un plan que vive en la carpeta `plans` y no es documentación rectora del proyecto, sino planes de desarrollo, como el plan de Aprende».
-
-**Decisión aplicada:** `plans/app-mini/PLAN-V1.md` es el **plan maestro dentro del expediente de desarrollo APP-MINI**, no un documento canónico rector de Vecidya ni una entrada que deba promoverse a la tabla de `GOVERNANCE.md`. Los anexos de `plans/app-mini/` siguen subordinados **solo dentro de ese expediente**. `AGENTS.md`, `GOVERNANCE.md`, `PROJECT_STATE.md`, `STATUS.md` y demás documentación rectora mantienen su autoridad para políticas de repositorio, estado técnico y evidencias.
-
-**Corrección a §§74, 81 y 82:** expresiones como «único maestro normativo», «promoción al catálogo global» o «decidir si el maestro entra al catálogo canónico» deben interpretarse exclusivamente en el ámbito del plan APP-MINI. **Se retira como bloqueo y como pregunta al responsable** la promoción al catálogo de Markdown canónicos. El límite de 20 documentos rectores no es un cupo que este expediente deba consumir; la presencia de tres Markdown en `plans/` no los convierte en documentos rectores. Se mantiene únicamente la obligación general de no generar documentación rectora paralela.
-
-**GOV-VERIFY revisado:** verificar que los archivos permanecen en `plans/app-mini/`, que sus referencias internas existen, que las decisiones del plan son consistentes y que no se atribuye implementación al código. **No** exige registro en la tabla canónica ni autorización de promoción. GOV-01 permanece **APPROVED en su alcance correcto: jerarquía interna del expediente**, no jerarquía del repositorio.
-
-**Consecuencia:** el bloqueo documental artificial identificado en §82 queda **RESUELTO por aclaración del responsable**. El siguiente trabajo es revisar referencias y coherencia del plan de desarrollo, siguiendo la separación que ya utiliza el proyecto Aprende, sin alterar gobernanza global ni añadir archivos rectores.
-
-
-## 84. Alineación con el patrón real de `plans/aprende` y cierre del alcance documental
-
-**Fuentes leídas:** `plans/README.md` y `plans/aprende/PLAN-V1.md` en `main` (lectura documental). El índice de `plans/` declara expresamente que contiene planes de trabajo futuros, que no describen funciones implementadas ni autorizan despliegues. Aprende utiliza un plan maestro funcional/técnico con decisiones, evidencia, arquitectura propuesta, seguridad, fases, pruebas focalizadas, aceptación y handoff; la ejecución posterior se registra por separado y requiere autorización.
-
-### 84.1 Contrato de equivalencia con Aprende
-
-| Dimensión del patrón Aprende | Equivalente APP-MINI | Veredicto |
-|---|---|---|
-| Plan en `plans/<producto>/PLAN-V1.md` | `plans/app-mini/PLAN-V1.md` | **ALIGNED** |
-| Decisiones explícitas y evidencia CODE/DOC/PROPUESTA | §§66–83 y actas | **ALIGNED**, conservar estado histórico |
-| Fronteras y permisos | §§69–71, 79–80 | **ALIGNED**, requiere validación física futura |
-| Contratos D1/CAS y migraciones futuras | §§70, 78–80 | **SPECIFIED**, no ejecutados |
-| Fases secuenciales con PR focales | IMP-01–12 (§78) | **ALIGNED** como handoff futuro; no crear PRs en esta planificación |
-| Seguridad, privacidad, QA y aceptación | §§72, 77, 79–80 | **SPECIFIED**, evidencias pendientes |
-| Acta de cierre del plan ≠ certificación de software | §§78–83 | **ALIGNED**, cierre documental condicionado |
-| Índice de `plans/` | solo enumera Aprende en `main` | **GAP de descubribilidad**: añadir enlace APP-MINI al índice **cuando se apruebe integrar el PR**, sin alterar documentación rectora |
-
-### 84.2 Corrección de los gates de planificación
-
-La política global de 20 documentos canónicos **no aplica a estos planes de desarrollo**; se cierra el falso bloqueo de promoción de §§81–82. La obligación de verificar todas las rutas de código citadas **no bloquea por sí sola el cierre del plan**: si una ruta corresponde a una hipótesis de implementación, se registra como verificación focal del ticket IMP correspondiente, como hace Aprende. Solo las rutas del expediente, la jerarquía de fuentes y las decisiones internas deben ser coherentes para entregar el plan.
-
-**Criterio de PLAN-READY DOCUMENTAL:** (a) alcance y no-alcance claros; (b) decisiones aprobadas separadas de pendientes; (c) contratos y riesgos con owner/gate; (d) dependencias y secuencia delegables; (e) pruebas focales definidas, no ejecutadas; (f) autorización de implementación pendiente. Los apartados (a)–(e) se consideran **DOCUMENTED** en §§66–84; (f) **NOT AUTHORIZED**. Por ello, **el expediente es apto para revisión de handoff documental**, sin afirmar que el código esté listo.
-
-### 84.3 Pendientes que viajan al ticket, no generan rondas interminables de plan
-
-- IMP-01/02: cotejar esquema físico, constraints y semántica D1/CAS; resolver ARC-01–04 antes de persistir/publicar.
-- IMP-03–06: validar nuevos componentes, horario DST y evidencia de 45 capturas; VIS-01 humana.
-- IMP-07/09: licencias y cupos atómicos; COM-01 define visibilidad/gracia antes de activar suspensión pública.
-- IMP-08: probar que importación opcional nunca consume horario V1.
-- IMP-10/11: pruebas focales, accesibilidad, seguridad, observabilidad y aprobación de release por SHA.
-- IMP-12: P6B aplazado hasta COM-01/PAY-01/BILL-02.
-- Índice `plans/README.md`: enlazar APP-MINI en un cambio documental autorizado al integrar el plan; no es requisito para seguir planificando.
-
-**Acta:** APP-MINI queda **PLANIFICACIÓN FUNCIONAL/TÉCNICA DOCUMENTADA — LISTA PARA REVISIÓN DE HANDOFF**, no implementada, no certificada y sin autorización para comenzar desarrollo. No se crea documentación rectora ni se impone un gate de catálogo canónico. El responsable conserva la aprobación final de diseño, seguridad y release.
