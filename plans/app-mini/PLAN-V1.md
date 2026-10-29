@@ -123,7 +123,7 @@
 | DEC-01 | **MiniWeb V2 será de una sola página**, compuesta por secciones | Un único documento público por negocio; no crear rutas multipágina, menús de páginas ni contratos `pages[]` en V2 |
 | DEC-02 | **Videos subidos a Vecidya y enlaces externos** | Dos orígenes de medios con validación, autorización, reproductor y tratamiento de privacidad diferenciados; evaluar YouTube/Vimeo como proveedores permitidos, no aprobados individualmente aún |
 | DEC-03 | **Múltiples galerías de imágenes y de videos** en una misma página | Secciones con `instanceId` estable; no indexar solo por tipo; orden, contenido y diseño independientes |
-| DEC-04 | **Distribución progresiva de plantillas por licencia: Cuadra → Barrio → Ciudad** | Cuadra: catálogo esencial; Barrio: catálogo esencial + diseños avanzados; Ciudad: catálogo anterior + catálogo completo. Resolver entitlement en servidor por organización/licencia; conservar render seguro y páginas publicadas ante cambios de licencia; política exacta pendiente de definición |
+| DEC-04 | **Distribución progresiva de plantillas por licencia: Cuadra → Barrio → Ciudad** | Cuadra: catálogo esencial; Barrio: catálogo esencial + diseños avanzados; Ciudad: catálogo anterior + catálogo completo. Resolver entitlement en servidor por organización/licencia; conservar página pública publicada ante downgrade y exigir plantilla autorizada para nuevos cambios de diseño/publicaciones (DEC-07) |
 | DEC-05 | **Historial de versiones y restauración** | Snapshot inmutable por publicación, metadatos autor/fecha/revisión, restauración como **nuevo borrador** y publicación posterior explícita; autorización, retención y cuota por definir |
 
 **Reglas obligatorias derivadas:** nunca autorizar plantillas únicamente desde el frontend; no exponer borradores ni archivos privados en snapshots públicos; la restauración no sobrescribe automáticamente una publicación ni permite acceso entre organizaciones; los enlaces externos deben usar allowlist y protección frente a URLs maliciosas; las subidas deben validar tipo/tamaño y permisos en servidor.
@@ -131,7 +131,7 @@
 **[~] Cuestiones de diseño pendientes de evidencia y/o decisión:**
 1. Horarios V2: confirmar alcance inicial de turnos nocturnos, excepciones y zona horaria; propuesta: incluirlos.
 2. Videos: definir límites por licencia, tamaño, duración, almacenamiento/transcodificación y proveedores externos concretos tras revisar infraestructura/costes.
-3. Plantillas: **jerarquía progresiva aprobada** Cuadra (esenciales), Barrio (+ avanzadas), Ciudad (+ catálogo completo). Pendiente catalogar IDs y diseños concretos, verificar el contrato comercial vigente y definir qué ocurre con diseños publicados si baja o vence la licencia. No inventar precios, cupos ni nuevas prestaciones comerciales.
+3. Plantillas: **jerarquía progresiva aprobada** Cuadra (esenciales), Barrio (+ avanzadas), Ciudad (+ catálogo completo). Pendiente catalogar IDs y diseños concretos, verificar el contrato comercial vigente y aplicar DEC-07 al downgrade y definir por separado expiración/suspensión. No inventar precios, cupos ni nuevas prestaciones comerciales.
 4. Historial: definir cantidad/retención de versiones y permisos de restauración, con costes y auditoría.
 5. Medios: definir cuota operativa por negocio y política de borrado/retención según R2 y licencias.
 
@@ -146,7 +146,24 @@
 - **Backend propuesto:** catálogo versionado con `templateId`, `version`, `minimumLicenseTier` y estado; entitlement efectivo resuelto en servidor a partir de la licencia real de la organización, no de un parámetro cliente. Validar al seleccionar, guardar y publicar; no revelar borradores ni activos ajenos.
 - **Frontend propuesto:** mostrar plantillas disponibles y bloqueadas con explicaciones claras de la licencia necesaria; no ocultar de forma engañosa plantillas ya utilizadas. Previsualización segura sin habilitar publicación no autorizada.
 - **Compatibilidad:** conservar el render de páginas ya publicadas si cambia el entitlement hasta que se apruebe una política de transición; nunca degradar silenciosamente la apariencia, eliminar contenido ni despublicar automáticamente.
-- **Pendiente F0:** mapear nombres/IDs reales y condiciones comerciales de Cuadra/Barrio/Ciudad; decidir política de downgrade, expiración, grandfathering y disponibilidad de preview; verificar que el modelo de licencias permite jerarquía acumulativa. **Esta decisión no autoriza migraciones ni cambios de precio.**
+- **Pendiente F0:** mapear nombres/IDs reales y condiciones comerciales de Cuadra/Barrio/Ciudad; decidir política de expiración/suspensión y disponibilidad de preview; downgrade resuelto en DEC-07; verificar que el modelo de licencias permite jerarquía acumulativa. **Esta decisión no autoriza migraciones ni cambios de precio.**
+
+### DEC-07 — Política de reducción de licencia (APROBADO, 2026-10-28)
+
+**Decisión:** si una organización reduce su licencia (por ejemplo, de Ciudad a Cuadra), **la página pública ya publicada conserva su diseño y contenido sin degradación automática**. Para efectuar **nuevos cambios de diseño o nuevas publicaciones**, el negocio debe elegir una plantilla autorizada por su licencia efectiva. No despublicar ni sustituir automáticamente la plantilla premium anterior.
+
+**Reglas funcionales y de seguridad:**
+1. **Lectura pública:** el snapshot publicado permanece renderizable aunque su `templateId` ya no esté autorizado para nuevas publicaciones; esto no concede acceso al editor premium.
+2. **Borrador y edición:** conservar contenido, medios y versiones históricas. Permitir consultar el estado del sitio y preparar la migración de diseño sin destruir datos; bloquear guardar/aplicar cambios de diseño premium y cualquier nueva publicación mientras el borrador use una plantilla no autorizada. No confundir edición de datos del negocio con una publicación MiniWeb.
+3. **Nueva publicación:** resolver en backend el nivel de licencia **efectivo** de la organización al momento de publicar; validar la plantilla de destino y su estado `available`. Si no está autorizada, rechazar la publicación con error comprensible y acción guiada «Elegir plantilla disponible». La validación del frontend es solo ayuda.
+4. **Restauración:** recuperar una versión histórica como borrador, **sin publicar automáticamente**. Si la versión restaurada usa una plantilla superior, conservar su contenido y exigir cambiar a una plantilla permitida antes de publicar.
+5. **Cambio de plantilla:** proponer mapeo de secciones y contenidos compatibles, vista previa y confirmación explícita. No eliminar contenido incompatible de forma silenciosa; conservar copia recuperable.
+6. **Aislamiento y auditoría:** verificar sesión, organización, rol/permiso, licencia efectiva, pertenencia de recursos y concurrencia; auditar cambios de licencia, intentos de publicación denegados y publicaciones/restauraciones efectivas según política vigente.
+7. **Pruebas focalizadas obligatorias:** downgrade Ciudad→Cuadra con página publicada premium inalterada; rechazo de nueva publicación premium; cambio a Esencial y publicación autorizada; restauración de versión premium sin bypass; aislamiento tenant; carreras entre cambio de licencia y publicación; no regresión de página pública.
+
+**Alcance preciso:** «nuevos cambios de diseño o publicación» no significa borrar, ocultar ni bloquear la visualización de contenido existente. Las actualizaciones de datos de perfil independientes de la publicación MiniWeb deben seguir sus permisos propios. **[~]** F0 debe concretar si hay un modo de edición de contenido sin republicación y el tratamiento de expiración/suspensión por causas distintas del downgrade; esta decisión no define esas políticas.
+
+**Estado:** `APROBADO` como contrato de producto; `[ ]` backend/frontend/tests no implementados. No ejecutar migraciones ni cambios comerciales sin checkpoint aprobado.
 
 ## 11. Gobernanza y handoff
 
@@ -168,7 +185,7 @@
 - `TemplateTier = "cuadra" | "barrio" | "ciudad"`; relación de inclusión acumulativa, validada contra licencias reales del backend, sin confiar en claims del navegador.
 - Cada plantilla tiene ID estable, versión, categoría, miniatura, variantes, requisitos de módulos, estado `planned|available|retired` y nivel mínimo; solo `available` se puede seleccionar/publicar.
 - La plantilla Esencial existente permanece como base de compatibilidad de Cuadra; **no** asignar las cuatro familias planificadas a niveles específicos sin una decisión editorial y pruebas visuales.
-- Resolver entitlement para selección, guardado, preview privado y publicación; preservar el snapshot público anterior ante downgrade y solicitar selección de plantilla permitida antes de nueva publicación **solo si** esa política se aprueba.
+- Resolver entitlement para selección, guardado, preview privado y publicación; preservar el snapshot público anterior ante downgrade y exigir selección de plantilla permitida antes de una nueva publicación (**DEC-07 aprobado**).
 - Sin catálogo comercial actualizado y pruebas de autorización, no habilitar restricciones nuevas en producción. Las páginas existentes no se migran ni degradan silenciosamente.
 
 **[!] Gate comercial F0:** reconciliar `app/content/commercial-detail.ts`, `docs/business/VECIDYA_PRODUCT_CATALOG.md`, páginas de licencias y texto de la interfaz con el catálogo real, sin cambiar precios ni promesas CRM. Solicitar aprobación explícita de la redacción comercial antes de publicar.
@@ -178,10 +195,10 @@
 ## 14. Handoff de siguiente checkpoint
 
 1. Auditar licencias/entitlements, media R2 y snapshots actuales en el HEAD de implementación; listar contratos, rutas y pruebas focales.
-2. Proponer matriz concreta de plantillas y política de downgrade para aprobación.
+2. Proponer matriz concreta de plantillas; implementar DEC-07 solo tras auditar licencia efectiva, snapshots y rutas de publicación.
 3. Aislar PR de contrato/registro antes de introducir UI de plantillas bloqueadas.
 4. No iniciar cambios de producción, D1 remota, merge o deploy sin autorización.
 
 ## 12. Registro de avance
 
-- **2026-10-28 — [x] F0 documental parcial:** contraste CODE de `licenses.tsx` y `registry.ts`; identificada deuda de alineación comercial, sin pruebas ni implementación.\n- **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.\n- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
+- **2026-10-28 — [x] DEC-07:** downgrade aprobado: conservar snapshot público y exigir plantilla autorizada antes de nuevos cambios de diseño/publicación; reglas y pruebas focales especificadas. Sin código, merge ni deploy.\n- **2026-10-28 — [x] F0 documental parcial:** contraste CODE de `licenses.tsx` y `registry.ts`; identificada deuda de alineación comercial, sin pruebas ni implementación.\n- **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.\n- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
