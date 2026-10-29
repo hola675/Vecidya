@@ -1604,3 +1604,73 @@ D-V9-001 a D-V9-026 APPROVED en sus alcances respectivos; D-V9-027 PENDING. **PL
 
 ## Changelog adicional
 - **1.26.0 / 2026-10-29:** D-V9-026 aprobada; control reversible del autoavance contextual, persistencia por evaluación, ocho tareas PLAN-PREF01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 35. Decisión D-V9-027 — guardado temporal y reanudación anónima en el mismo dispositivo (aprobada 2026-10-29)
+**Aprobación expresa:** «guardado temporal y reanudación del diagnóstico anónimo en el mismo dispositivo, con privacidad y retención limitada». Estado APPROVED como política de experiencia y alcance; exclusivamente PLAN_ONLY.
+
+### 35.1. Contrato de continuidad
+1. Permitir que una evaluación **anónima e incompleta** se pause y reanude desde el **mismo dispositivo y contexto de navegador compatible**, sin exigir registro o vínculo con GHL.
+2. Conservar el mínimo estado necesario para continuar de forma coherente: respuestas, preguntas/turnos ya presentados, contador único D-V9-020, consentimiento de extensión y su alcance, hitos D-V9-022, versión del cuestionario, posición o ruta adaptativa y preferencia de avance D-V9-026.
+3. La reanudación **no reinicia** el presupuesto de 24 turnos ordinarios + hasta 5 excepcionales, no repite preguntas contabilizadas por accidente y no concede nuevo consentimiento implícito.
+4. La persistencia debe ser **temporal, con caducidad y eliminación**; el plazo exacto, su punto de inicio y si se renueva con actividad permanecen PENDING de aprobación.
+5. Informar con claridad, antes de almacenar información de entrevista, qué se conserva, durante cuánto tiempo una vez aprobado, limitaciones del dispositivo compartido y cómo eliminarlo; definir la base jurídica/consentimiento aplicable antes de implementar.
+6. Proporcionar acción comprensible para **descartar progreso local** y empezar de nuevo de manera intencional, con confirmación proporcional y sin fingir que elimina copias de servidor que pudieran existir.
+7. Tratar como amenaza principal la exposición de respuestas en **dispositivos compartidos**: evitar mostrar datos sensibles en previsualizaciones, avisar del riesgo y especificar controles de acceso, cifrado y minimización según la arquitectura finalmente elegida.
+8. No afirmar que el almacenamiento es «solo local» ni «cifrado» antes de aprobar y verificar una arquitectura concreta. Documentar alternativas (almacenamiento local, sesión, token, backend) y sus límites reales.
+9. Si el estado está caducado, corrupto, incompatible con la versión editorial o ausente, presentar una salida honesta y recuperable; no reconstruir respuestas ni resultados inventados.
+10. Al reanudar, restaurar idioma, preferencias y hitos sin animaciones de éxito duplicadas; permitir continuar o descartar.
+11. La política de reclamo de informe detallado mediante cuenta D-V9-005 debe diseñarse **separada** del guardado anónimo; no convertir la reanudación en registro obligatorio ni transferir datos sin autorización.
+12. La evaluación debe seguir funcionando cuando el guardado no esté disponible, con aviso claro de que el progreso podría no recuperarse.
+13. Asegurar compatibilidad conceptual con C01–C10, español/inglés, anonimato y separación Vecidya/GHL; no usar datos guardados para marketing por defecto.
+
+### 35.2. Modelo conceptual de estados (no implementación)
+`in_progress` → `saved_temporarily` → `resumable` → `resumed` / `discarded` / `expired` / `unavailable` / `incompatible`. Las etiquetas son ilustrativas y no fijan almacenamiento, API ni política de privacidad.
+
+### 35.3. Decisiones abiertas
+- Plazo exacto de retención, comienzo del cómputo y renovación por actividad.
+- Tipo de almacenamiento y controles de confidencialidad apropiados; protección ante dispositivos compartidos.
+- Tratamiento de respuestas potencialmente sensibles y exclusión de datos innecesarios.
+- Compatibilidad de versiones y migración o descarte de borradores.
+- Diferencia entre descartar datos del dispositivo y eliminación de datos que residan en servidores.
+- Reglas de consentimiento de extensión al reanudar, según alcance y vigencia que se especifiquen.
+- Integración segura con la reclamación de informe D-V9-005 sin vinculación automática.
+
+### 35.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-RES01 | Auditar persistencia, sesiones, privacidad y reanudación existentes V9/QBV2 | Inventario de archivos, contratos y SHA | No asumir implementación |
+| PLAN-RES02 | Definir inventario mínimo de datos de borrador anónimo | Matriz dato×necesidad×sensibilidad×retención | Minimización |
+| PLAN-RES03 | Comparar arquitecturas de guardado en mismo dispositivo | Análisis de riesgos, seguridad y límites reales | Aprobación técnica/privacidad |
+| PLAN-RES04 | Especificar caducidad, limpieza y descarte voluntario | Política versionada con plazo pendiente | Requiere D-V9-028 |
+| PLAN-RES05 | Diseñar UX de pausar, continuar, descartar y caducar | Flujos es/en y mensajes para dispositivo compartido | Accesibilidad |
+| PLAN-RES06 | Definir restauración idempotente de 24+5, hitos y preferencia | Contrato de estados y reanudación | Sin doble conteo |
+| PLAN-RES07 | Documentar compatibilidad editorial y reclamo de informe | Matriz versiones y separación D-V9-005 | Sin vinculación automática |
+| PLAN-RES08 | Preparar pruebas focalizadas futuras de privacidad y recuperación | Casos C01–C10, es/en, errores, expiración y cambio de modo | No ejecutar en PLAN_ONLY |
+
+### 35.5. Criterios de aceptación futuros
+1. Una evaluación anónima puede reanudarse en el mismo dispositivo compatible sin cuenta.
+2. Respuestas y ruta adaptativa se restauran sin inventar datos.
+3. Los turnos ya contabilizados no se vuelven a consumir.
+4. El presupuesto de extensión 24+5 no se reinicia.
+5. No se presume consentimiento nuevo para extensión.
+6. Hitos y modo manual/contextual se restauran coherentemente.
+7. Cambiar es/en no duplica preguntas ni pierde progreso.
+8. El usuario puede descartar el borrador de manera intencional.
+9. El borrador caduca según política aprobada y comprobable.
+10. El aviso explica limitaciones en dispositivos compartidos.
+11. La falta de almacenamiento no impide completar una entrevista en curso.
+12. Corrupción o incompatibilidad producen mensaje honesto y salida segura.
+13. No se promete borrado remoto sin garantía técnica.
+14. No se requiere GHL ni cuenta para la continuidad anónima.
+15. Reclamar informe detallado requiere el flujo seguro independiente D-V9-005.
+16. No se utilizan respuestas anónimas guardadas para marketing por defecto.
+
+### 35.6. Próxima decisión D-V9-028 — duración del borrador anónimo
+Opciones pendientes para **caducidad máxima desde el último guardado válido**, sin renovación silenciosa: **A** 24 horas; **B** 7 días (recomendado provisionalmente por equilibrio entre continuidad y minimización); **C** 30 días. Son alternativas para aprobación, **no plazos validados**. Después habrá que precisar el evento de renovación, avisos y arquitectura antes de implementar.
+
+### 35.7. Estado
+D-V9-001 a D-V9-027 APPROVED en sus alcances respectivos. D-V9-028 PENDING; plazo de retención y arquitectura PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.27.0 / 2026-10-29:** D-V9-027 aprobada; continuidad anónima en mismo dispositivo, privacidad, caducidad pendiente, ocho tareas PLAN-RES01–08, dieciséis criterios de aceptación y próxima decisión. Solo documentación.
