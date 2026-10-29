@@ -1002,3 +1002,63 @@ D-V9-001 a D-V9-016: APPROVED en el alcance de sus respectivas secciones; D-V9-0
 
 ## Changelog adicional
 - **1.17.0 / 2026-10-29:** D-V9-016 aprobada; auditoría 8×10, criterios de validez y neutralidad, diez tareas PLAN-DIM01–10, doce criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 25. Decisión D-V9-017 — evidencia crítica adicional y abstención de nivel (aprobada 2026-10-29)
+**Aprobación expresa:** «solicitar preguntas adicionales solo para evidencia crítica y, si sigue siendo insuficiente, no asignar nivel». Estado APPROVED como comportamiento de producto, exclusivamente documental.
+
+### 25.1. Reglas obligatorias
+1. Antes de asignar un nivel a una dimensión aplicable, verificar suficiencia, pertinencia, consistencia y vigencia de la evidencia conforme a rúbrica versionada aún por aprobar.
+2. Si falta **evidencia crítica** susceptible de obtenerse mediante entrevista, seleccionar la mínima pregunta adicional útil, adaptada al contexto, evitando redundancia, preguntas comerciales obligatorias y repetición de respuestas existentes.
+3. Cada extensión debe registrar internamente dimensión afectada, vacío crítico, pregunta elegida, razón, resultado y consumo del presupuesto de interacción; ofrecer al usuario una explicación breve cuando corresponda.
+4. Respetar D-V9-004: objetivo de hasta **24 interacciones**, con extensiones excepcionales solo justificadas por evidencia crítica. No interpretar la excepción como permiso para una entrevista ilimitada; número máximo, unidad de conteo y reglas de fatiga quedan **PENDING**.
+5. Si la evidencia continúa insuficiente, el resultado de esa dimensión será **«Evidencia insuficiente / Sin nivel asignado»**; no producir nivel tentativo, puntuación cero, promedio imputado, falsa precisión ni clasificación negativa.
+6. Distinguir **no aplicable**, **desconocido**, **contradictorio**, **insuficiente** y **sin respuesta**; ninguno se convierte automáticamente en bajo nivel.
+7. Una dimensión sin nivel no debe contaminar otras dimensiones válidas ni producir un score global artificioso. Las recomendaciones podrán incluir acciones para obtener evidencia, sin fingir diagnóstico concluyente.
+8. Las reglas de suficiencia, selección y abstención deben ser equivalentes en español e inglés y funcionar en C01–C10.
+9. El informe autenticado y resumen anónimo deben indicar el límite de manera comprensible, conforme a D-V9-005/010; la explicación técnica completa queda en trazabilidad interna proporcional y respetuosa con privacidad.
+10. En reevaluación D-V9-012, una dimensión sin nivel solo podrá obtenerlo mediante nueva evidencia suficiente; no por marcar acciones completadas. Comparaciones históricas D-V9-013 omitirán diferencias donde falte nivel comparable.
+
+### 25.2. Contrato conceptual y decisiones pendientes
+- Estados candidatos de evidencia: `sufficient`, `critical_gap`, `insufficient`, `not_applicable`, `contradictory`, `unknown`. Son etiquetas documentales, **no esquema aprobado**.
+- Definir por dimensión: evidencia mínima, señales críticas, condiciones de abstención, prioridad de aclaración, máximo de repreguntas, detección de contradicción y salida segura.
+- Definir unidad exacta de «interacción», presupuesto de extensión, criterio de detención por fatiga y manejo de abandono. Ningún umbral se inventa en esta decisión.
+- La taxonomía final D-V9-016 continúa pendiente; no fijar umbrales de suficiencia definitivos ni calibraciones antes de aprobarla.
+
+### 25.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-EV01 | Auditar reglas reales de suficiencia, salto, repregunta y abstención V9/QBV2 | Inventario de archivos, contratos, rutas y SHA | No asumir cobertura existente |
+| PLAN-EV02 | Definir taxonomía de estados de evidencia y precedencias | Tabla de decisión para suficiente/crítica/insuficiente/no aplicable/contradicción | Aprobación técnica/editorial |
+| PLAN-EV03 | Vincular vacíos críticos con preguntas del núcleo/lotes certificados | Matriz dimensión×evidencia×pregunta es/en | Solo preguntas aprobadas |
+| PLAN-EV04 | Diseñar selección mínima y no redundante de aclaraciones | Pseudocódigo determinista y reglas de parada | Sin bucles ni repreguntas inútiles |
+| PLAN-EV05 | Especificar presupuesto, unidad de interacción, extensiones y fatiga | Política cuantificada pendiente de aprobación | Coherencia con D-V9-004 |
+| PLAN-EV06 | Diseñar resultados sin nivel, explicaciones y recomendaciones de obtención de evidencia | Ejemplos resumen/informe C01–C10 | Sin puntuaciones inventadas |
+| PLAN-EV07 | Diseñar trazabilidad y minimización de datos de decisiones de abstención | Contrato conceptual y permisos | Privacidad/ownership |
+| PLAN-EV08 | Preparar pruebas focalizadas futuras y casos de terminación | Matriz entradas→repreguntas→abstención, con casos límite es/en | No ejecutar en PLAN_ONLY |
+| PLAN-EV09 | Revisar compatibilidad con seguimiento, reevaluación e historial | Reglas para nuevas evidencias y comparación | No inferir mejoras |
+
+### 25.4. Criterios de aceptación futuros
+1. Evidencia suficiente: no se generan preguntas adicionales innecesarias.
+2. Falta crítica resoluble: se plantea una aclaración pertinente y certificada.
+3. Falta no crítica: no se prolonga la entrevista.
+4. Aclaración no respondida: se detiene según política y no se inventa nivel.
+5. Respuestas contradictorias: se intenta aclaración justificada; si no se resuelve, abstención cuando afecte suficiencia.
+6. No aplicable: no se penaliza ni se fuerza repregunta.
+7. Preparación sin clientes: no se obliga a responder métricas de ventas.
+8. Organización sin venta directa: no se exige conversión comercial.
+9. Misma evidencia semántica en es/en: mismo estado de suficiencia y nivel o abstención.
+10. Una dimensión insuficiente no invalida conclusiones sustentadas de otras.
+11. Se respeta presupuesto adaptativo y toda excepción queda justificada.
+12. El historial no muestra tendencia de una dimensión sin comparabilidad suficiente.
+13. La recomendación de buscar evidencia no se convierte en oferta comercial obligatoria.
+14. Ningún camino genera un bucle de repreguntas.
+
+### 25.5. Próxima decisión D-V9-018 — control de duración y fatiga
+Opciones por aprobar: **A** límite rígido de 24 interacciones; **B** objetivo 24, extensión excepcional acotada con aviso y opción de detenerse; **C** objetivo 24, extensión excepcional acotada y consentimiento explícito antes de continuar. D-V9-004/017 ya permiten extensión por evidencia crítica, por lo que **A requeriría revisar esa decisión previa**. La opción C es recomendación, **no aprobada**; faltan unidad de conteo y presupuesto exacto.
+
+### 25.6. Estado
+D-V9-001 a D-V9-017: APPROVED en sus alcances respectivos. D-V9-018 PENDING. Taxonomía y umbrales definitivos PENDING. **PLAN_ONLY**: no código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.18.0 / 2026-10-29:** D-V9-017 aprobada; repreguntas solo por evidencia crítica, abstención de nivel, nueve tareas PLAN-EV01–09, catorce criterios de aceptación y próxima decisión. Solo documentación.
