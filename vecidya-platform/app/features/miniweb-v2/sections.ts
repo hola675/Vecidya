@@ -68,7 +68,16 @@ export function createV2Draft(
 
 export function validateV2Hours(value: V2HoursContent): string[] {
   const errors: string[] = [];
+  const validTime = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
   if (!value.timezone.trim()) errors.push("timezone_required");
+  else {
+    try {
+      new Intl.DateTimeFormat("en-US", { timeZone: value.timezone });
+    } catch {
+      errors.push("invalid_timezone");
+    }
+  }
+  if (value.days.length !== 7) errors.push("seven_days_required");
   const seen = new Set<number>();
   for (const day of value.days) {
     if (!Number.isInteger(day.day) || day.day < 0 || day.day > 6 || seen.has(day.day)) {
@@ -76,11 +85,13 @@ export function validateV2Hours(value: V2HoursContent): string[] {
     }
     seen.add(day.day);
     if (day.closed && day.intervals.length > 0) errors.push("closed_day_has_intervals");
+    if (!day.closed && day.intervals.length === 0) errors.push("open_day_requires_interval");
+    const intervals = [...day.intervals].sort((a, b) => a.opens.localeCompare(b.opens));
     let lastClose = "";
-    for (const interval of day.intervals) {
-      const valid = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
-      if (!valid.test(interval.opens) || !valid.test(interval.closes) || interval.opens >= interval.closes) {
+    for (const interval of intervals) {
+      if (!validTime.test(interval.opens) || !validTime.test(interval.closes) || interval.opens >= interval.closes) {
         errors.push("invalid_interval");
+        continue;
       }
       if (lastClose && interval.opens < lastClose) errors.push("overlapping_intervals");
       lastClose = interval.closes;
