@@ -579,3 +579,28 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Casos de prueba:** doble dispositivo, reset contra operación atrasada, duplicado de operación, purga de recibos, importación con conflicto, licencia caducada con progreso conservado, eliminación de cuenta y bloqueo de producción en E2E.
 
 **Estado:** diseño documental; implementación pendiente.
+
+
+## 26. Puerta de salida de Fase 0 y entrega controlada al agente implementador
+
+**Alcance cerrado para V1:** 48 guías publicadas, seis completas anónimas, 42 con preview pública y cuerpo sujeto a licencia activa Cuadra/Barrio/Ciudad; nueve itinerarios, seis categorías, cuentas exclusivamente por invitación, permiso Aprende individual explícito para colaboradores, progreso/favoritos personales, sincronización segura y separación estricta de GHL/CRM.
+
+**Matriz de aceptación previa al desarrollo:**
+| ID | Criterio verificable | Evidencia exigida |
+| --- | --- | --- |
+| F0-01 | Registro público bloqueado y aceptación de invitación sin acceso automático a guías protegidas | Test focal de auth e invitaciones |
+| F0-02 | Licencia, membresía y grant de la misma organización; búsqueda entre todas las organizaciones del usuario | Tests de entitlement, revocación y multi-organización |
+| F0-03 | 48 previews públicas, seis cuerpos gratuitos y 42 cuerpos protegidos | Tests de catálogo, loader, SSR y JSON |
+| F0-04 | Búsqueda, sitemap, meta, hydration, prefetch y bundle sin filtración | Tests LEAK-01..08 y revisión de artefactos |
+| F0-05 | Progreso personal persiste tras caducidad o salida de organización | Tests de aislamiento por usuario |
+| F0-06 | Reset, reintentos, dos dispositivos y conflictos no reviven checks antiguos | Tests de concurrencia e idempotencia |
+| F0-07 | D1 aditiva local, claves foráneas e índices correctos; sin migración remota | SQL revisado y pruebas D1 local |
+| F0-08 | Itinerarios, responsive y accesibilidad sin regresiones relevantes | QA focalizada Aprende |
+
+**Instrucción para el agente de código:** crear una rama de implementación independiente desde el HEAD autorizado; no desarrollar sobre el PR documental ni mezclar cambios ajenos. Antes de cada bloque, comprobar estado Git y archivos impactados. Realizar cambios mínimos, tests focalizados únicamente para lo modificado y registrar evidencia de comando, resultado y SHA. No ejecutar suites generales de CI por defecto. No modificar GHL/CRM, autorización global de Better Auth, infraestructura remota ni licencias existentes fuera de las integraciones estrictamente necesarias. Mantener la prohibición de registro público. No hacer merge, deploy ni migración remota sin autorización expresa.
+
+**Orden de entregas pequeñas:** (A) manifest editorial con IDs y DTOs públicos + pruebas de no filtración; (B) esquema D1 y grants + pruebas locales; (C) servicio de entitlement + tests multi-organización; (D) loaders seguros + QA pública; (E) progreso, sync e importación + pruebas de conflicto; (F) interfaz, itinerarios y accesibilidad + QA focal. Cada entrega debe poder revisarse en PR sin activar parcialmente contenido protegido.
+
+**Decisiones aún abiertas antes de ejecutar:** (1) formato final de IDs editoriales y alias de slug; (2) retención de recibos sync y política de purga; (3) política de organizaciones sin fila de lifecycle; (4) autorizados a conceder grants Aprende; (5) consolidación de tablas secundarias de preferencias; (6) estrategia de publicación atómica para no exponer las 42 guías durante el cambio. Resolver cada una contra código y pruebas antes del bloque correspondiente, sin inventar comportamientos.
+
+**Evaluación de estado:** el plan documental de Fase 0 tiene criterios de salida definidos, pero **Fase 0 no se declara técnicamente aprobada**: faltan pruebas ejecutadas y validación de las decisiones abiertas. No hay autorización de implementación, merge ni despliegue.
