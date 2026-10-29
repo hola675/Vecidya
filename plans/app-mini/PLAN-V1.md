@@ -1963,3 +1963,58 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 **Estado honesto:** los archivos de código introducidos en PR #184 durante la desviación son prototipos no certificados y **no constituyen una implementación autorizada**. Deben excluirse del PR de planificación y dejarse a cargo del equipo de implementación en un trabajo futuro autorizado. No declarar cierre técnico, PASS, despliegue ni disponibilidad del producto por existir documentación o prototipos.
 
 **Cierre del plan:** cada hueco se clasifica como (A) resuelto por decisión y contrato, (B) decisión humana pendiente con dueño y fecha, o (C) investigación técnica delegada con criterio de salida. Un plan puede quedar listo para ejecución sin que el código esté implementado. El cierre de planificación requiere matriz de trazabilidad, contratos por sección, dependencias, secuencia de fases, estimaciones relativas, gates de calidad, decisiones y riesgos residuales. Ninguna tarea de implementación se ejecuta desde esta conversación.
+
+
+## 69. Catálogo contractual de secciones MiniWeb V2 — diseño nuevo desde cero
+
+**Estado: SPECIFIED FOR IMPLEMENTATION, no código.** Cada sección V2 tiene contrato propio, independiente de componentes y modelos visuales V1. Todas las secciones están disponibles funcionalmente en Cuadra/Barrio/Ciudad; las variantes Base/Pro/Premium modifican solo presentación. Las cinco familias comparten catálogo y editor; su diferencia es composición, orden inicial y lenguaje visual, nunca bloqueo funcional.
+
+| ID | Sección V2 | Datos editables mínimos | Reglas y criterio de aceptación |
+|---|---|---|---|
+| S01 | Portada / Hero | título, subtítulo, CTA, imagen y alt | CTA con destino válido; imagen opcional; diseño responsive |
+| S02 | Sobre el negocio | titular, descripción, bloques narrativos, imágenes | texto sanitizado; bloques ordenables |
+| S03 | Servicios | elementos con título, descripción, imagen, CTA y orden | vacíos no se publican; no crear entidades CRM duplicadas |
+| S04 | Productos / catálogo | elementos, categoría, imagen, descripción, CTA | sin pagos implícitos ni disponibilidad inventada |
+| S05 | Galería | media, alt, orden, pie | solo media autorizada al negocio; tamaños optimizados |
+| S06 | Contacto | teléfono, email, enlaces, CTA | validar URL/esquemas; no exponer datos privados |
+| S07 | Ubicación / cobertura | dirección pública opcional, ciudad, zona, mapa opt-in | no revelar domicilio sin consentimiento |
+| S08 | Preguntas frecuentes | pares pregunta-respuesta, orden | respuestas visibles sin JS; contenido seguro |
+| S09 | Equipo | perfiles, rol, descripción, fotografía, consentimiento | no publicar información personal sin permiso |
+| S10 | Certificaciones | entidad emisora, título, fecha, documento/imagen opcional | sin badges falsos ni verificación no acreditada |
+| S11 | Testimonios | texto, autor público consentido, contexto | moderación y retiro; sin ratings fabricados |
+| S12 | Horario V2 | zona horaria IANA, siete días, cierres, intervalos, excepciones fechadas, nota | **vacío de origen**, sin importación/consulta/sync/fallback de horarios V1 |
+
+### 69.1 Contrato común de cada instancia
+
+Cada instancia contiene identificador propio V2, tipo de sección, versión de esquema, estado borrador/publicable, posición, visibilidad, contenido tipado y metadatos de edición. Identificadores estables y sin colisiones; orden explícito; validación por tipo; sanitización y permisos de media. El renderer ignora instancias desconocidas sin romper la página y registra el problema para diagnóstico; el editor no elimina contenido desconocido silenciosamente. Una sección sin datos obligatorios no puede publicarse como completa.
+
+### 69.2 Horario V2 — contrato de cero absoluto
+
+- No reutilizar tablas, queries, formularios, componentes, valores predeterminados basados en V1 ni adaptadores de horario legado.
+- Persistencia V2 independiente y tenant-scoped; cada negocio crea sus propios siete días, zona horaria y excepciones. Estado inicial: **sin configurar**; el editor puede ofrecer siete días cerrados como estructura vacía, no como dato importado.
+- Día cerrado no admite intervalos; día abierto exige al menos uno. Formato 24 h; inicio anterior a fin; intervalos no superpuestos, incluso si se introducen desordenados. Turnos nocturnos requieren regla explícita de partición o soporte de cruce de día antes de implementación.
+- Excepciones fechadas tienen prioridad sobre horario semanal; definir precedencia de cierres, festivos y apertura especial. Render público debe mostrar zona horaria y aclarar que el horario puede variar; no inferir «abierto ahora» sin motor de zona horaria probado.
+- AC-HV2-01: negocio nuevo sin V1 guarda y publica horario V2. AC-HV2-02: negocio con horario V1 válido inicia V2 vacío. AC-HV2-03: modificar V1 después no modifica V2. AC-HV2-04: publicar V2 no modifica snapshot V1. AC-HV2-05: horarios superpuestos, zona inválida, días duplicados y excepciones contradictorias fallan validación focal.
+
+### 69.3 Matriz de familias y variantes
+
+| Familia | Composición editorial inicial sugerida | Base/Pro/Premium |
+|---|---|---|
+| Vecidya Default | portada, sobre, servicios, contacto, ubicación, horario | mismas secciones; distinta jerarquía y tratamiento visual |
+| Services Studio | portada, servicios, testimonios, FAQ, contacto, horario | mismas funciones; estética orientada a servicios |
+| Catalog Store | portada, productos, galería, FAQ, contacto, horario | mismas funciones; estética de catálogo |
+| Gastronomy Table | portada, productos, galería, horario, ubicación, contacto | mismas funciones; estética gastronómica |
+| Professional Profile | portada, sobre, certificaciones, equipo, testimonios, contacto | mismas funciones; estética profesional |
+
+Las composiciones son **valores iniciales editables**, no restricciones. Cualquier familia puede añadir, quitar u ordenar cualquiera de las doce secciones. La matriz definitiva de variantes visuales queda sujeta a VIS-01/CAT-01; no introducir capacidades funcionales premium.
+
+### 69.4 Gates de planificación para delegación
+
+**GATE-SCHEMA:** especificación de contenido tipado y evolución de versión para S01–S12. **GATE-HOURS:** aislamiento demostrable V1/V2 y decisiones de nocturnidad/excepciones. **GATE-EDITOR:** estados vacío, error, guardado, preview y accesibilidad. **GATE-RENDER:** matriz cinco familias × tres variantes × tres viewports, sin diferencias funcionales. **GATE-PUBLISH:** preview/publicación explícita, CAS, tenant ownership, snapshot inmutable y rollback. **GATE-MIGRATE:** consentimiento por publicación, importación selectiva documentada, reporte, exclusión absoluta de horario. Todos son criterios para futuros agentes, **no tests ejecutados**.
+
+### 69.5 Huecos abiertos de esta sección
+
+- **B / Producto:** CAT-01 y VIS-01 (dueño: responsable Vecidya); decidir catálogo visual y elegibilidad exacta antes de congelar diseños.
+- **B / Producto:** definir política de turnos nocturnos, excepciones y «abierto ahora» (dueño: responsable Vecidya); bloquear GATE-HOURS hasta resolución.
+- **C / Ingeniería futura:** elección de tablas, transacciones, snapshots y API sin reutilizar horario V1 (dueño: agente de implementación); salida: diseño D1 revisado, no implementación en este PR.
+- **C / Seguridad futura:** política de consentimiento para equipo/testimonios y retención de medios (dueño: implementación + negocio); salida: especificación de autorización y retirada.
