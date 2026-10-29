@@ -482,3 +482,39 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Decisiones técnicas antes de migrar:** política de conflicto exacta, retención de operaciones, tratamiento de guía retirada, almacenamiento de alias de slug, y si versiones por guía bastan o se requieren versiones por agregado. Primero pruebas de contrato; después migraciones aditivas D1 local; ninguna modificación remota sin autorización.
 
 **Estado:** diseño documental de Fase 0, no implementación.
+
+
+## 22. Fase 0 — contrato de seguridad: catálogo público y cuerpos protegidos
+
+**Código inspeccionado:** `app/routes/knowledge.tsx`, `app/routes/learn-article.tsx`, `app/content/learn-publication.ts`, `app/routes/sitemap.ts`, `app/routes.ts`. Inspección estática, sin ejecución.
+
+**Hallazgos:**
+- `knowledge.tsx` filtra búsquedas contra título, extracto **y cuerpo completo** (secciones, párrafos y bloques), aunque devuelve solo campos resumidos. Cuando se protejan 42 guías, esto podría convertirse en un canal de inferencia del contenido protegido si no se separan índices.
+- `learn-article.tsx` entrega `{article,readingMinutes}` desde el loader, con todas las secciones; `meta` usa título e introducción. Hoy no comprueba licencias, porque Aprende V1 todavía no está implementado.
+- `learn-publication.ts` devuelve objetos `LearnArticle` completos para publicaciones; filtra borradores pero no derechos de acceso. No debe reutilizarse como DTO público sin proyección explícita.
+- `sitemap.ts` lista rutas de todas las guías publicadas mediante `getPublicLearnArticles`; una URL de preview pública puede aparecer en sitemap sin que el cuerpo protegido sea accesible.
+
+**Contrato propuesto:**
+1. `PublicGuideSummary`: `slug`, `category`, `title`, `excerpt`, `image`, `imageAlt`, `isFree`, `estimatedMinutes`, `publicationState`; solo campos aprobados editorialmente como públicos. Nunca `sections`, `blocks`, respuestas, textos internos ni estructura protegida. Evitar `...article` y usar allowlist.
+2. `PublicGuidePreview`: campos del resumen más `intro` y texto de muestra explícitamente aprobado para publicación; no derivar automáticamente de secciones protegidas. El estado de acceso para visitantes no debe exponer datos de usuario.
+3. `AuthorizedGuideBody`: cuerpo completo con `sectionId` estable y `contentRevision`, solo tras evaluación de `guide.isFree || hasLearnEntitlement(session.user.id)` en el servidor para esa petición. Guía retirada/borrador: 404, salvo flujo editorial explícito fuera de alcance.
+4. `GET /aprende`: búsqueda pública solo sobre campos del `PublicGuideSummary` y taxonomía pública. No buscar en cuerpos protegidos ni permitir deducir coincidencias privadas mediante conteos o ranking. Índice de búsqueda completo solo si existe autorización y se filtra su salida de forma segura; V1 puede limitarse a índice público para todos.
+5. `GET /aprende/:slug`: misma URL para guía gratuita, preview protegida y cuerpo autorizado. La carga inicial determina estado en servidor. No enviar cuerpo protegido en loader, SSR, hidratación, `defer`, prefetch, meta, JSON-LD, logs ni datos de error de la vista bloqueada. No basta con ocultar el DOM por CSS.
+6. `sitemap.xml`: mantener solo rutas de guías publicadas con preview apta para indexación. No incluir rutas de API privadas ni borradores. Las 42 previews pueden indexarse si su contenido público es suficientemente útil y aprobado.
+7. **Caché:** previews y resúmenes son públicos y pueden usar caché compartida con política explícita. Respuestas con cuerpo autorizado: `Cache-Control: private, no-store`; `Vary: Cookie` si aplica; no almacenar en caché compartida ni Service Worker. Al revocar licencia/permiso, siguiente solicitud de cuerpo debe reevaluar derechos.
+8. **Separación de contenido:** en módulos de servidor puede existir el corpus completo, pero nunca serializarlo accidentalmente. Evaluar importación y bundling para que el corpus protegido no quede embebido en JS público; prueba de artefactos de build.
+9. **CTAs:** guía bloqueada muestra valor de la licencia Cuadra/Barrio/Ciudad, con navegación a información comercial; sin checkout automático ni alta pública. Cuenta solo por invitación.
+
+**Pruebas focalizadas de seguridad:**
+- `LEAK-01`: visitante anónimo recibe resumen y preview, pero ningún texto exclusivo del cuerpo de una de las 42 guías en HTML, JSON, SSR/hidratación o bundle cliente.
+- `LEAK-02`: búsqueda por frase exclusiva de sección protegida no devuelve esa guía ni modifica conteos de resultados.
+- `LEAK-03`: guía gratuita sí entrega cuerpo completo anónimamente.
+- `LEAK-04`: licencia suspendida, organización suspendida, miembro retirado o permiso revocado dejan de obtener cuerpo desde siguiente solicitud.
+- `LEAK-05`: caché pública no comparte respuestas autorizadas entre usuarios; verificar cabeceras y caché de borde.
+- `LEAK-06`: sitemap, meta, JSON-LD, sugerencias, relacionados y errores no incluyen contenido protegido.
+- `LEAK-07`: prefetch y navegación cliente no evaden autorización.
+- `LEAK-08`: cambio de organización activa no mezcla derechos entre organizaciones.
+
+**Secuencia de implementación futura:** primero DTOs con allowlist y tests de no filtración; después entitlement; luego loader de lectura y búsqueda; finalmente UX. No abrir las 42 guías a través del loader antiguo durante migración.
+
+**Estado:** Fase 0 documentada parcialmente; sin implementación ni despliegue.
