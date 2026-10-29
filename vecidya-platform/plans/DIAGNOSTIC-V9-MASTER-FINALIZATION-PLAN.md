@@ -1332,3 +1332,77 @@ D-V9-001 a D-V9-022: APPROVED en sus alcances; D-V9-023 PENDING. **PLAN_ONLY**: 
 
 ## Changelog adicional
 - **1.22.0 / 2026-10-29:** D-V9-022 aprobada; progreso adaptativo por hitos, estados y límites de representación, ocho tareas PLAN-MILE01–08, catorce criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 31. Decisión D-V9-023 — acompañamiento cercano, motivador y elegante (aprobada 2026-10-29)
+**Aprobación expresa:** «acompañamiento cercano, motivador y elegante, con mensajes contextuales variados y microanimaciones sutiles». Estado APPROVED como dirección de voz, tono y movimiento; exclusivamente PLAN_ONLY.
+
+### 31.1. Principios de voz y tono
+1. La voz de Vecidya será **cercana, clara, motivadora y profesional**, sin infantilizar, tutear de forma intrusiva, exagerar logros ni convertir la entrevista en un juego.
+2. Los mensajes acompañan **hechos verificables del flujo**: respuesta recibida, tema cubierto, cambio de enfoque, aclaración crítica, pausa, reanudación y cierre. Nunca simulan conclusiones del motor ni prometen resultados.
+3. Variar el microcopy por contexto y evitar repeticiones consecutivas; definir reglas de frecuencia, prioridades, silencio y fallback para que la interfaz no interrumpa cada respuesta con texto innecesario.
+4. Reconocer el esfuerzo de responder sin elogios automáticos sobre la calidad del negocio. Evitar culpa, presión, urgencia ficticia, promesas de «mejor puntuación» y persuasión para aceptar extensiones o registrarse.
+5. Mensajes como «ya casi terminamos» solo se permiten si el estado adaptativo sustenta proximidad al cierre; «tenemos suficiente información» solo si la evidencia realmente lo confirma.
+6. «No sé», «Prefiero omitir» y contradicciones reciben acompañamiento neutral y orientación útil, no reproches.
+7. Mantener **equivalencia de intención y naturalidad** en español e inglés; no exigir traducción literal de expresiones coloquiales. Revisar vocabulario de negocio, claridad y accesibilidad editorial.
+8. La personalidad pertenece a **Vecidya**, no a GHL ni a un proveedor externo; no incorporar ventas encubiertas al acompañamiento.
+
+### 31.2. Sistema conceptual de microanimaciones
+- **Respuesta registrada:** feedback visual breve, estable y reversible si se edita.
+- **Transición de pregunta:** cambio suave sin bloquear el foco ni el control del usuario.
+- **Hito cubierto:** señal discreta y comprensible por texto; sin confundir cobertura con mejora de madurez.
+- **Cambio de tema:** transición espacial o de énfasis consistente, no espectáculo.
+- **Aclaración excepcional:** presentación serena del motivo y consentimiento explícito, sin animaciones persuasivas.
+- **Carga/error/reanudación:** estados honestos, sin simular procesamiento ni progreso inexistente.
+- Preferir movimiento funcional y ligero; documentar límites de duración, frecuencia, rendimiento y contraste **antes** de implementarlo. Respetar movimiento reducido, teclado, lectores de pantalla, foco y dispositivos de recursos limitados.
+
+### 31.3. Biblioteca de microcopy candidata (no aprobada palabra por palabra)
+| Momento verificable | Español (ejemplo) | English (example) | Restricción |
+| --- | --- | --- | --- |
+| Inicio | Vamos a conocer mejor tu negocio. | Let's get to know your business. | No prometer duración exacta |
+| Respuesta registrada | Gracias, seguimos con el siguiente aspecto. | Thanks, let's look at the next area. | No afirmar mejora |
+| Cambio de tema | Ahora veremos cómo conectas con tu público. | Next, let's explore how you connect with your audience. | Solo si aplica |
+| Hito cubierto | Ya revisamos un aspecto importante. | We've covered an important area. | Evidencia de cobertura |
+| Omisión | Podemos continuar con lo que sí conoces. | We can continue with what you know. | Sin presión |
+| Aclaración crítica | Hay un detalle que nos ayudaría a precisar el resultado. | One detail could help us make the result more precise. | Solo si crítico |
+| Cerca del cierre | Estamos revisando los últimos detalles. | We're reviewing the final details. | Solo si verificable |
+| Extensión consentida | Podemos hacer unas preguntas adicionales o finalizar aquí. | We can ask a few more questions or finish here. | Consentimiento antes de preguntar |
+| Resultado parcial | Algunas áreas necesitan más información para evaluarse. | Some areas need more information to be assessed. | Sin nivel inventado |
+Esta tabla es un **borrador editorial**; no constituye textos certificados ni implica que cada mensaje deba mostrarse siempre.
+
+### 31.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-TONE01 | Auditar tono, textos, animaciones y componentes actuales V9/QBV2 | Inventario de archivos, estados y SHA | No asumir calidad existente |
+| PLAN-TONE02 | Definir guía de voz Vecidya para entrevista es/en | Manual de tono, términos, prohibiciones y ejemplos | Aprobación editorial |
+| PLAN-TONE03 | Crear biblioteca versionada de microcopy por evento y condición | Matriz mensaje×estado×idioma×frecuencia | Sin mensajes falsos |
+| PLAN-TONE04 | Diseñar política de variedad, repetición, silencio y prioridades | Tabla determinista de selección y fallback | Sin fatiga de mensajes |
+| PLAN-TONE05 | Especificar lenguaje de movimiento y feedback funcional | Guía de microinteracciones, reduced motion y rendimiento | Accesibilidad |
+| PLAN-TONE06 | Documentar integración desacoplada de motor y UI | Contrato de eventos de presentación | Sin alterar scoring |
+| PLAN-TONE07 | Preparar revisión UX bilingüe y pruebas focalizadas futuras | Casos C01–C10, teclado, lector, errores y reanudación | No ejecutar en PLAN_ONLY |
+| PLAN-TONE08 | Definir criterios de aceptación editorial y visual premium | Checklist de claridad, consistencia, sobriedad y no manipulación | Validación humana pendiente |
+
+### 31.5. Criterios de aceptación futuros
+1. Mensajes cálidos y profesionales, sin infantilización ni entusiasmo excesivo.
+2. Cada texto depende de un evento real y un contexto aplicable.
+3. Mensajes consecutivos no se repiten mecánicamente.
+4. El sistema puede permanecer en silencio cuando otro mensaje distraería.
+5. No anuncia «casi terminado» con evidencia crítica o ramas pendientes inciertas.
+6. No confunde un hito cubierto con madurez mejorada.
+7. «No sé» y omisiones reciben tratamiento neutral.
+8. Consentimiento para hasta cinco turnos adicionales sin presión.
+9. Español e inglés expresan intención equivalente y natural.
+10. Movimiento reducido conserva toda la información y las funciones.
+11. Animaciones no bloquean foco, respuesta ni navegación.
+12. Errores y reanudación no simulan avances o celebraciones duplicadas.
+13. Cambiar microcopy o animaciones no modifica evidencia, niveles ni prioridades.
+14. El acompañamiento funciona sin servicios Vecidya, Aprende ni GHL.
+
+### 31.6. Próxima decisión D-V9-024 — formato de presentación de preguntas
+Opciones pendientes: **A**, una pregunta por pantalla con transición fluida; **B**, grupos cortos de preguntas por tema; **C**, formato híbrido adaptativo: una pregunta principal por vista y agrupación únicamente de campos breves inseparables (recomendado provisionalmente). **Ninguna opción aprobada**. Debe preservarse la unidad de interacción D-V9-020 y evitar agrupar artificialmente preguntas para eludir 24+5.
+
+### 31.7. Estado
+D-V9-001 a D-V9-023: APPROVED en sus alcances respectivos; D-V9-024 PENDING. Textos y animaciones definitivos PENDING de revisión editorial/UX. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.23.0 / 2026-10-29:** D-V9-023 aprobada; guía de tono, biblioteca candidata es/en, sistema de microanimaciones, ocho tareas PLAN-TONE01–08, catorce criterios de aceptación y siguiente decisión. Solo documentación.
