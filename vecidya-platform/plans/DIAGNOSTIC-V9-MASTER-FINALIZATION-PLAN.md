@@ -2659,3 +2659,14 @@ No añadir ambas al banco hasta verificar que una ruta concreta las necesita, qu
 
 ## Changelog adicional
 - **1.48.0 / 2026-10-29:** ocho propuestas contrastadas con banco existente; dos borradores prioritarios y preferencia por reutilización para evitar inflar entrevistas. Solo documentación.
+
+## 57. Priorización editorial del banco V9 (PLAN_ONLY)
+
+Revisión documental de la matriz editorial V9: `q2_food_menu_visibility` y `q2_ecommerce_cart_followup` requieren revisión semántica prioritaria; la ausencia de contacto autorizado no equivale a falta de seguimiento. `q2_demand_trend` y `q2_capacity_signal` también requieren revisión semántica. `q2_monetization`, `q2_regularity`, `q2_buyer_recipient_relation` y `q2_reputation_flow` figuran como `copy_revised`, lo cual no acredita aprobación humana.
+
+Clasificar cada pregunta y opción del banco ensamblado como **KEEP** (conservar), **REVISE** (mejorar), **REPLACE** (sustituir con migración), **ADD** (agregar por hueco demostrado) o **HOLD** (pendiente). Antes de ADD, comprobar reutilización y cobertura, preservar entrevista adaptativa de 24+5 y documentar evidencia, opciones neutras, versiones y textos ES/EN. Las 77 preguntas declaradas aún no constituyen un inventario independiente verificado.
+
+**Estado:** protocolo documental definido; revisión exhaustiva y aprobaciones pendientes. Sin cambios de código ni pruebas.
+
+## Changelog adicional
+- **1.49.0 / 2026-10-29:** priorización editorial y clasificación KEEP/REVISE/REPLACE/ADD/HOLD; solo plan.
