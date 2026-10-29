@@ -426,7 +426,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿La IA puede responder a clientes sin revisión?", answer: "Depende del riesgo y del alcance. Empieza con límites estrictos y una fuente autorizada; una persona debe revisar las decisiones o compromisos importantes." },
             { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con datos anonimizados o sintéticos cuando sea posible." },
             { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
-            { question: "¿Cómo se cobra el consumo de IA?", answer: "Depende de la modalidad acordada. Puede incluir una tarifa de la función y costos variables de IA, canales o telefonía; confirma en la cotización si tokens o minutos generan cargos aparte y cuáles son los límites. No presupongas una tarifa única." },
+            { question: "¿Cómo se cobra el consumo de IA?", answer: "Según modalidad: tarifa de función y consumos variables. Confirma si tokens (unidades de texto procesado) o minutos de telefonía se cobran aparte, límites de uso y supervisión; no hay una tarifa universal." },
           ],
         }],
       },
