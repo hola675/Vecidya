@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-
+import assert from "node:assert/strict";
+import { test } from "node:test";
 import {
   getMiniWebVisualVariant,
   isMiniWebVisualTierSufficient,
@@ -7,27 +7,25 @@ import {
   MINIWEB_VISUAL_VARIANTS,
 } from "./visual-variants";
 
-describe("APP-MINI-V2A registro de variantes visuales", () => {
-  it("conserva tres variantes con identidad y composición distintas", () => {
-    expect(MINIWEB_VISUAL_VARIANT_KEYS).toEqual(["base", "pro", "premium"]);
-    expect(MINIWEB_VISUAL_VARIANTS.base.minimumTier).toBe("cuadra");
-    expect(MINIWEB_VISUAL_VARIANTS.pro.minimumTier).toBe("barrio");
-    expect(MINIWEB_VISUAL_VARIANTS.premium.minimumTier).toBe("ciudad");
-    expect(new Set(MINIWEB_VISUAL_VARIANT_KEYS.map((key) => MINIWEB_VISUAL_VARIANTS[key].composition.hero)).size).toBe(3);
-  });
+test("V2A: tres variantes con composiciones diferentes", () => {
+  assert.deepEqual(MINIWEB_VISUAL_VARIANT_KEYS, ["base", "pro", "premium"]);
+  assert.equal(MINIWEB_VISUAL_VARIANTS.base.minimumTier, "cuadra");
+  assert.equal(MINIWEB_VISUAL_VARIANTS.pro.minimumTier, "barrio");
+  assert.equal(MINIWEB_VISUAL_VARIANTS.premium.minimumTier, "ciudad");
+  assert.equal(new Set(MINIWEB_VISUAL_VARIANT_KEYS.map((key) => MINIWEB_VISUAL_VARIANTS[key].composition.hero)).size, 3);
+});
 
-  it("rechaza variantes desconocidas sin herencia de propiedades del prototipo", () => {
-    expect(getMiniWebVisualVariant("base")?.key).toBe("base");
-    expect(getMiniWebVisualVariant("standard")).toBeNull();
-    expect(getMiniWebVisualVariant("__proto__")).toBeNull();
-    expect(getMiniWebVisualVariant("constructor")).toBeNull();
-  });
+test("V2A: claves desconocidas y heredadas no se aceptan", () => {
+  assert.equal(getMiniWebVisualVariant("base")?.key, "base");
+  assert.equal(getMiniWebVisualVariant("standard"), null);
+  assert.equal(getMiniWebVisualVariant("__proto__"), null);
+  assert.equal(getMiniWebVisualVariant("constructor"), null);
+});
 
-  it("compara correctamente el orden de niveles sin conceder derechos", () => {
-    expect(isMiniWebVisualTierSufficient("cuadra", "cuadra")).toBe(true);
-    expect(isMiniWebVisualTierSufficient("cuadra", "barrio")).toBe(false);
-    expect(isMiniWebVisualTierSufficient("barrio", "ciudad")).toBe(false);
-    expect(isMiniWebVisualTierSufficient("ciudad", "barrio")).toBe(true);
-    expect(isMiniWebVisualTierSufficient("ciudad", "cuadra")).toBe(true);
-  });
+test("V2A: comparación de niveles visuales", () => {
+  assert.equal(isMiniWebVisualTierSufficient("cuadra", "cuadra"), true);
+  assert.equal(isMiniWebVisualTierSufficient("cuadra", "barrio"), false);
+  assert.equal(isMiniWebVisualTierSufficient("barrio", "ciudad"), false);
+  assert.equal(isMiniWebVisualTierSufficient("ciudad", "barrio"), true);
+  assert.equal(isMiniWebVisualTierSufficient("ciudad", "cuadra"), true);
 });
