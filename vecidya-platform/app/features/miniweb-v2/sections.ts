@@ -78,7 +78,7 @@ export function validateV2Hours(value: V2HoursContent): string[] {
     if (day.closed && day.intervals.length > 0) errors.push("closed_day_has_intervals");
     let lastClose = "";
     for (const interval of day.intervals) {
-      const valid = /^([01]\\d|2[0-3]):[0-5]\\d$/;
+      const valid = /^([01][0-9]|2[0-3]):[0-5][0-9]$/;
       if (!valid.test(interval.opens) || !valid.test(interval.closes) || interval.opens >= interval.closes) {
         errors.push("invalid_interval");
       }
