@@ -837,6 +837,19 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado de cierre:** DEC-01–16 aprobadas según sus respectivos alcances. La aprobación de estas decisiones **no** implica que el plan completo esté implementado ni que se hayan verificado límites de infraestructura o datos actuales. Próxima fase: inventario de rutas, servicios, esquemas y pruebas existentes para PR-M1, luego implementación focal sin merge/deploy no autorizado.
 
+
+## 35. Puerta de entrada PR-M1 — navegación y estado de solo lectura (2026-10-29)
+
+**Alcance permitido del primer PR de código:** implementar únicamente la estructura Mi Vecidya y el selector de organización, con estados MiniWeb **solo lectura**, sin modificar schema, pagos, licencias, publicaciones, media ni código de agentes ajenos. No declarar nombres de rutas existentes sin inspeccionarlos.
+
+**Preflight obligatorio antes de editar:** leer `AGENTS.md` y gobernanza; inspeccionar rutas `app/routes`, loaders/autenticación, selector/contexto de organización, componentes y tests existentes; confirmar rama de trabajo, HEAD y archivos tocados por otros agentes. Crear rama de implementación independiente de esta rama documental y del PR #184, para no mezclar diseño con código.
+
+**Entregables acotados:** shell de navegación, organización activa accesible, estado publicado/borrador/congelado/desactivado **derivado de API autorizada**, estados vacíos/error/carga, accesibilidad móvil y teclado. Si un estado no está respaldado por backend real, marcarlo como no disponible; no simular licencia ni cupos como efectivos.
+
+**Criterios focales:** usuario sin organización; selector entre dos organizaciones autorizadas; rechazo de organización ajena; cambio de organización sin filtración de estado anterior; estado no disponible cuando API no informa; navegación móvil/teclado. Ejecutar únicamente tests relacionados con componentes/rutas alterados y typecheck focal cuando aplique; registrar comando y SHA.
+
+**No incluido:** editor F7, escritor V2, ampliaciones Cuadra, pago, publicación, restore, video, nueva plantilla, cambios CI globales, merge o despliegue. Si el preflight encuentra conflictos de otros agentes, pausar el archivo conflictivo y continuar con tareas independientes.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
