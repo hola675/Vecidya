@@ -2372,3 +2372,81 @@ Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`
 ### 78.5 Definición de cierre de planificación
 
 **PLAN-READY** significa que el backlog y sus dependencias, reglas, decisiones y evidencias exigidas están especificados; **no** significa que existan implementación, tests aprobados, revisión legal o release. Los tickets IMP-01–11 quedan **PLANNED, NOT STARTED**; IMP-12 **BLOCKED/DEFERRED**. No se otorga PLAN-READY definitivo hasta revisar consistencia de los anexos y el límite de documentos canónicos (`GOV-VERIFY`).
+
+
+## 79. Auditoría de lógica, escalabilidad, huecos, dependencias y conexiones (2026-10-29)
+
+**Método y evidencia:** revisión documental del maestro y los dos anexos del PR #184; no auditoría dinámica del código ni pruebas de carga. Hallazgos = riesgos y contratos insuficientemente cerrados, **no fallos demostrados en producción**. Clasificación: **CRÍTICO** puede comprometer aislamiento/contabilidad/publicación; **ALTO** bloquea un contrato de integración; **MEDIO** afecta operabilidad/evolución.
+
+### 79.1 Fronteras y fuentes de verdad
+
+| Dominio | Fuente de verdad prevista | Consumidores / frontera |
+|---|---|---|
+| Identidad, membresía y autorización | plataforma Vecidya, resuelta en servidor | editor, publicación, administración y facturación; nunca IDs de UI confiables |
+| Organización | dominio organizacional Vecidya | perfil público, MiniWeb, licencias y conexión GHL |
+| Billing account y delegaciones | dominio comercial Vecidya | suscripciones, licencias, facturas y consolidado multi-org |
+| Licencia y entitlements | **un único contrato de derechos** en Vecidya | MiniWeb y Mi Vecidya; no crear segunda licencia paralela |
+| Borrador/snapshot MiniWeb V2 | dominio MiniWeb V2 | editor y renderer público; V1 aislado |
+| Horario V2 | sección V2 versionada | editor/snapshot/renderer V2; **nunca** horario V1 |
+| Operación CRM, contactos y pipelines | GHL externo | adaptador de integración; no replicar operación CRM en MiniWeb |
+| Consumo y costes de proveedor | evento externo verificable y ledger comercial Vecidya | conciliación, reportes y futura facturación |
+| Cobros PSP | proveedor por decidir (P6B) | webhooks verificados y libro económico; fuera de P6A |
+
+**Regla arquitectónica:** modular monolith inicialmente, con módulos de dominio y APIs internas estables; no introducir microservicios, colas ni D1 adicionales sin umbral medido. Separar acoplamiento **lógico** aunque se despliegue junto. El editor no consulta directamente GHL ni el ledger; consume contratos Vecidya autorizados.
+
+### 79.2 Hallazgos priorizados y cierre propuesto
+
+| ID | Severidad | Hueco/riesgo detectado en especificación | Contrato o acción de cierre |
+|---|---|---|---|
+| ARC-01 | CRÍTICO | Doble representación potencial de licencia entre MiniWeb y Servicios/Pagos | Definir único `EntitlementService` que deriva derechos de licencia canónica; lecturas consistentes, sin mutaciones duplicadas |
+| ARC-02 | CRÍTICO | Propietario de facturación multi-org vs permisos de miembros de organización | Matriz RBAC/ABAC por acción: `billing_account`, `organization`, rol, licencia, actor; tests cross-tenant |
+| ARC-03 | CRÍTICO | Publicación y consumo de cupos con operaciones concurrentes | Transacción/CAS para reservar cupo y activar snapshot; unicidad por slot, rollback compensado |
+| ARC-04 | ALTO | V1→V2 y publicación podrían producir doble URL/estado ambiguo | Identidad pública estable, puntero activo versionado, conmutación explícita, reversión y caché invalidada |
+| ARC-05 | ALTO | No hay política contractual completa de eventos entre dominios | Outbox transaccional si se introducen eventos asíncronos; entrega al menos una vez, consumidor idempotente, DLQ/reconciliación |
+| ARC-06 | ALTO | Integración GHL requiere mapa robusto location/subaccount→organización | Tabla de correspondencias con unicidad, validación de titular, rotación de credenciales, estado desconectado y reconciliación |
+| ARC-07 | ALTO | Licencias manuales con activación externa pueden quedar a medias | Máquina de estados separa `licensed`, `provisioning`, `active_external`, `failed`; reintentos y compensación |
+| ARC-08 | ALTO | Snapshot y medios pueden crecer sin límites operativos definidos | Presupuesto por tamaño/volumen, límites por tenant, almacenamiento de medios fuera del snapshot, retención/GC por aprobar |
+| ARC-09 | ALTO | El plan de pagos futuros menciona eventos/ledger sin SLA de frescura | `observed_at`, `provider_period`, `reconciled_at`, estados `pending/verified/disputed`, indicador de datos atrasados |
+| ARC-10 | ALTO | Horario V2 nocturno y excepciones exigen semántica DST y UTC inequívoca | Fechas locales + zona IANA, normalización de intervalos y pruebas de transición, sin indicador abierto-ahora inicial |
+| ARC-11 | MEDIO | Dependencia del editor respecto a catálogo/medios puede provocar fallos en cascada | Editor resiliente con estados loading/empty/error, reintentos acotados y última revisión guardada |
+| ARC-12 | MEDIO | No hay objetivos cuantitativos de rendimiento/capacidad aprobados | Definir SLO y presupuesto por operación; medir p95, tasa de error, almacenamiento, coste y concurrencia antes de escalar |
+| ARC-13 | ALTO | Contradicciones históricas entre anexos y decisiones recientes | Precedencia GOV-01: §§66–79 del maestro y actas aprobadas; anexos informativos, auditoría de referencias antes de merge |
+| ARC-14 | ALTO | Licencia suspendida y URL pública sin política comercial definitiva | Bloqueo COM-01 para decisión de visibilidad, gracia y comunicación; no inventar comportamiento |
+| ARC-15 | ALTO | P6A podría mostrar facturas/cargos sin ledger verificado | Etiquetar claramente estimaciones y estados manuales; no afirmar deuda, factura pagada ni consumo conciliado sin evidencia |
+
+### 79.3 Contratos de conexión entre módulos
+
+**Identidad → dominio:** `ActorContext` resuelto en servidor contiene actor, roles, organizaciones autorizadas y permisos; cada acción evalúa recurso concreto, no solo autenticación. Las revocaciones se reflejan en lecturas y escrituras sensibles; tokens de preview tienen caducidad, alcance y no son públicos.
+
+**Licencia → MiniWeb:** interfaz de lectura `getEntitlements(billingAccountId, organizationId, at)` con resultado versionado, origen, cupo, asignaciones y estado; solo el dominio de licencias muta derechos. MiniWeb valida derechos al reservar/publicar y no copia reglas de precio.
+
+**MiniWeb → publicación:** borrador revisionado → validación → reserva atómica de slot → snapshot inmutable → puntero público activo → invalidación de caché; si falla un paso, mantener la publicación anterior y registrar compensación. No se asume transacción distribuida: el diseño físico debe confirmar las garantías reales de D1/Workers.
+
+**Organización → GHL:** adaptador aislado y mapeo explícito de ID de organización a location/subaccount; fallos externos no deben impedir lectura del MiniWeb publicado. Secretos solo en servidor, sin exponer identificadores de proveedor al público.
+
+**GHL → consumo/ledger:** ingesta autenticada, normalización decimal/moneda, idempotencia por `provider + external_event_id`, trazabilidad de periodos y conciliación. No activar cobros por eventos no conciliados. Aplicar margen ×1.20 únicamente sobre costes elegibles definidos; evitar doble recargo de IA.
+
+**Licencias → Mi Vecidya:** mostrar estado contractual y de aprovisionamiento por separado. No usar el estado de GHL como sustituto de licencia ni inferir facturas pagadas por acceso activo.
+
+### 79.4 Escalabilidad: hipótesis y pruebas de capacidad futuras
+
+- **Datos:** índices compuestos por tenant/organización/estado y cursor estable; no cargar todos los negocios, medios o movimientos en una consulta; paginar y proyectar columnas.
+- **Publicación:** servir snapshots cacheables e inmutables, con clave que incluya versión; invalidación de puntero activo al publicar/revertir. Medir latencia de lectura pública y propagación, no asumir consistencia instantánea.
+- **Medios:** objetos externos con ownership, variantes optimizadas y cuota; evitar blobs en D1 o documentos JSON gigantes. Retención y borrado físico solo tras aprobación.
+- **Operación:** reintentos exponenciales con jitter, idempotencia, circuit breaker hacia GHL, dead-letter y conciliación si se adopta procesamiento asíncrono.
+- **Economía:** importes en enteros de unidad menor o decimal exacto, nunca float binario; congelar precio/moneda/tipo de cambio por periodo; ledger append-only con ajustes compensatorios.
+- **Objetivos por definir:** usuarios simultáneos, organizaciones por billing account, MiniWeb publicados, escrituras por segundo, tamaño máximo de snapshot, almacenamiento por organización, p95 y coste operativo. **No inventar SLO ni umbrales de migración.**
+
+### 79.5 Dependencias corregidas
+
+`Identidad/tenancy → modelo organizacional/billing account → licencia canónica/entitlements → esquema V2 → persistencia/CAS → editor + renderer + horario → publicación/cuotas → conversión opt-in → integración GHL + P6A → seguridad/QA + VIS-01 → autorización RELEASE`.
+
+**Carril comercial separado:** `catálogo/contratos → ledger/consumos conciliados → COM-01/PAY-01/BILL-02 → PSP/webhooks/facturas → P6B`. P6B no es requisito para P6A. La conexión con GHL es opcional para servir un MiniWeb publicado; su aprovisionamiento es obligatorio solo para servicios CRM contratados.
+
+**Dependencia humana:** VIS-01 y SEC-QA necesitan evidencia futura; OPS-01 tiene aprobador final designado, pero no ejecutores; COM-01 sigue bloqueando políticas comerciales de suspensión. GOV-01 está aprobado, con GOV-VERIFY pendiente.
+
+### 79.6 Estado de auditoría y decisión recomendada
+
+**Cerrados a nivel de diseño:** mapa de fuentes de verdad, fronteras entre dominios, contratos propuestos de integración y grafo de dependencias. **Pendientes de validación técnica:** garantías transaccionales reales, modelo físico de cuotas, índices, esquema de eventos, límites, SLO y compatibilidad de integración GHL. **Pendientes humanos:** política de suspensión/visibilidad, responsables técnicos, aceptación visual, seguridad y release; pagos e impuestos permanecen aplazados.
+
+**Regla de salida:** no declarar `PLAN-READY` ni permitir implementación sin revisar ARC-01–04 y ARC-13 contra contratos existentes; el resto se convierte en tickets con dueño, evidencia y gate. Esta auditoría documental no acredita pruebas ni certificación de escalabilidad.
