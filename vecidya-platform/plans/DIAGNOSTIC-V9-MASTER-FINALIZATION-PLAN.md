@@ -448,3 +448,50 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbri
 
 ## Changelog adicional
 - **1.7.0 / 2026-10-29:** D-V9-006 aprobada; contrato de recomendación, tareas PLAN-A01–A08, criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 15. Decisión D-V9-007 — Aprende contextual y biblioteca opcional (aprobada 2026-10-29)
+**Aprobación expresa:** «integración contextual de recursos Aprende en el plan de acción y biblioteca opcional separada». Estado APPROVED para el diseño del producto; NO autoriza código.
+
+### 15.1. Alcance funcional aprobado
+- **Recomendación contextual:** cada brecha u oportunidad del diagnóstico puede acompañarse de recursos de Aprende que estén publicados, sean accesibles y resulten pertinentes para la acción concreta. La acción debe ser útil incluso sin recurso.
+- **Exploración opcional:** ofrecer acceso separado a la biblioteca Aprende, sin condicionar finalización, puntuación, consulta del resumen anónimo ni informe detallado autenticado.
+- **Separación:** V9 determina evidencia, madurez, prioridades y acciones. Aprende es una fuente externa de contenido educativo, no un componente del scoring. Lecturas, progreso, login o métricas de Aprende no alteran resultados de V9.
+- **No inventar contenido:** si no existe recurso adecuado o el catálogo no está disponible, conservar la acción, omitir el enlace y registrar un hueco de contenido; nunca fabricar rutas, títulos o publicaciones.
+- **Coherencia con D-V9-005:** la presencia de recursos educativos no debe filtrar información reservada del informe autenticado en el resumen anónimo. Definir exactamente qué acciones/recursos aparecen en cada vista en el contrato de presentación.
+
+### 15.2. Contrato propuesto V9→Aprende, sujeto a inspección del repositorio
+El agente futuro debe inspeccionar primero el esquema real y definir un adaptador con identidad estable del recurso, URL canónica verificada, estado publicado/accesible, versión o fecha de verificación, etiquetas/temas y relación explícita con la brecha. Estos son **requisitos semánticos**, no afirmación de que existan campos homónimos en Aprende. El adaptador no debe modificar datos de Aprende, crear recursos automáticamente ni convertir el catálogo en dependencia de ejecución del motor.
+
+### 15.3. Tareas documentales para especificación ejecutable
+| ID | Instrucción al futuro agente | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-L01 | Auditar plan, rutas, modelos y publicación reales de Aprende en HEAD; distinguir PR fusionado de producto certificado | Inventario de archivos, contratos, estados y fuentes con SHA | Ningún campo o enlace supuesto |
+| PLAN-L02 | Definir el contrato mínimo de lectura y adaptador V9→Aprende | Esquema versionado y tabla de correspondencia con campos reales | Sin importaciones de motor hacia progreso/login de Aprende |
+| PLAN-L03 | Diseñar reglas de elegibilidad por evidencia, acción, tema y etapa | Matriz brecha→acción→recurso y casos sin coincidencia | Cada enlace justificado y publicado |
+| PLAN-L04 | Diseñar fallbacks para catálogo vacío, recurso retirado, URL rota y fallo de consulta | Tabla condición→comportamiento→registro de hueco | Informe y acciones siguen disponibles |
+| PLAN-L05 | Definir vista contextual y acceso a biblioteca separada, en anónimo y autenticado | Especificación UX y permisos, sin cambios en Aprende | No exposición de informe privado |
+| PLAN-L06 | Diseñar actualización de catálogo y control de versiones sin afectar resultados históricos | Política de frescura, resolución de enlaces y trazabilidad | No reescribir scoring histórico |
+| PLAN-L07 | Especificar pruebas focalizadas futuras | Casos publicado/no publicado, acceso, URL inválida, vacío, cambio de versión y falta de red | Sin pruebas ejecutadas durante PLAN_ONLY |
+
+### 15.4. Criterios de aceptación futuros
+1. Recurso publicado y pertinente: aparece asociado a una acción concreta, con explicación.
+2. Recurso no publicado o inaccesible: no se recomienda ni se enlaza.
+3. Catálogo vacío/fallo: diagnóstico, prioridades y acciones permanecen completos y coherentes.
+4. Recurso despublicado tras diagnóstico: no se promete un enlace válido sin verificar vigencia; conservar trazabilidad histórica.
+5. Contenido educativo no pertinente: no aparece solo por llenar una sección.
+6. Usuario anónimo: biblioteca opcional no exige registro para consultar recursos realmente públicos; no filtra informe detallado.
+7. Usuario autenticado: acceso a informe detallado no cambia la elegibilidad educativa de una misma acción, salvo permisos legítimos del recurso.
+8. Consumo o progreso de Aprende: no cambia puntuaciones ni evidencia de V9.
+
+### 15.5. Fronteras y decisiones aún abiertas
+La aprobación no autoriza modificar Aprende, su esquema, su catálogo o sus permisos. Verificar primero qué existe. Quedan pendientes: reglas exactas de correspondencia, cantidad de recursos por acción, orden, caducidad/verificación, UX y alcance de recursos visibles en resumen anónimo.
+
+### 15.6. Próxima decisión D-V9-008 — papel de servicios Vecidya
+(A) servicios y licencias únicamente en un apartado comercial separado; (B) propuestas comerciales opcionales asociadas a acciones pertinentes, siempre diferenciadas de las acciones gratuitas; (C) ambos: referencias opcionales contextualizadas y sección independiente de soluciones Vecidya, sin afectar scoring, prioridades ni acceso. Requiere aprobación del responsable y revisión de catálogo real.
+
+### 15.7. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbrido APPROVED; D-V9-004 adaptativo 24 APPROVED; D-V9-005 resumen anónimo/informe con cuenta APPROVED; D-V9-006 prioridades multicriterio APPROVED; D-V9-007 Aprende contextual+biblioteca opcional APPROVED; D-V9-008 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.8.0 / 2026-10-29:** D-V9-007 aprobada; contrato conceptual Aprende, tareas PLAN-L01–L07, criterios de aceptación y siguiente decisión. Solo documentación.
