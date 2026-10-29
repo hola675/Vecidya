@@ -2229,3 +2229,29 @@ La matriz conceptual 8×10 requiere inventario real del banco y contraste con C0
 
 ## Changelog adicional
 - **1.36.0 / 2026-10-29:** auditoría focal documental de mapeos de evidencia y roles direct/supporting/contextual; no código, tests, CI ni despliegue.
+
+## 45. CONSOL-01 / TAX-G2 — trazabilidad del banco candidato (2026-10-29)
+**Estado: PARCIAL, PLAN_ONLY.** Lectura directa de archivos de la rama maestra V9:
+- `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`: banco candidato, selectores de nicho, reglas QBV2 y taxonomía compartida; declara no alterar el flujo público.
+- `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`: banco de 77 preguntas según aserción del propio módulo; sustituciones de preguntas genéricas por especializadas.
+- `qa03b/v9-editorial-review-matrix.ts` blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`: matriz por pregunta y opción con roles de evidencia, flags y revisión humana.
+- `qa03b/v9-editorial-graph-audit.ts` blob `89bce38ab69d1b5c12d5a339fb8de923894da1c9`: auditoría sintáctica; advierte expresamente que dependencias sintácticas no prueban alcanzabilidad.
+**Hallazgo:** la candidata sigue usando `QuestionDefinitionV2`, `qbv2-rules` y componentes del banco QBV2. No certificar autonomía V9.
+
+### Casos prioritarios para revisión humana
+| Pregunta o grupo | Riesgo | Validación documental siguiente |
+| --- | --- | --- |
+| `q2_food_menu_visibility` | `not_applicable` puede confundirse con oferta aún no publicada | Distinguir no aplicable de no publicado en C08 |
+| `q2_ecommerce_cart_followup` | Sin permiso para contactar no equivale a seguimiento deficiente | Revisar neutralidad en C07 |
+| `q2_demand_trend` | Mezcla ventas, clientes, citas y pedidos | Variantes por C02/C05/C06 |
+| `q2_capacity_signal` | Mezcla capacidad y resultado | Separar contexto operativo de evidencia digital |
+| `q2_buyer_recipient_relation` | Pagador y beneficiario distintos | C05 y B2B |
+| `q2_reputation_flow` | Referencias públicas frente a mensajes privados | Evitar penalización por no tener reseñas |
+| `q2_appointments_rebooking` y sustituta dental | Riesgo de duplicidad u omisión | Comprobar exclusión y alcanzabilidad C06 |
+| `q2_presence_offer_clarity` y sustitutas de gastronomía/agencia | Riesgo de pérdida de cobertura genérica | Verificar elegibilidad, fallback y C08/C10 |
+
+### Gates
+TAX-G2 **PARCIAL**: se identificaron fuentes y casos, pero falta inventario exhaustivo de 77 preguntas, opciones y variantes por dimensión con evidencia. TAX-G3 **PENDIENTE**: no se ha ejecutado recorrido del grafo ni demostrado cobertura C01–C10 o presupuesto 24+5. No aprobar taxonomía, puntuación, banco ni autonomía. Próximo entregable: matriz de inventario exhaustiva y análisis de alcanzabilidad documentales, sin pruebas ni código.
+
+## Changelog adicional
+- **1.37.0 / 2026-10-29:** trazabilidad focal del banco candidato, dependencias QBV2, sustituciones especializadas y ocho grupos de revisión editorial. Solo documentación.
