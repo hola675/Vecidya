@@ -1,6 +1,6 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / FASES 1–5 INTEGRADAS; FASE 6 IMPLEMENTADA EN PR #193, SIN PUBLICAR · **Propietario de ejecución:** agente designado por el usuario.
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / FASES 1–6 INTEGRADAS; FASE 7 EN CERTIFICACIÓN TÉCNICA LOCAL, GATES DE LANZAMIENTO ABIERTOS · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
 **Alcance original de planificación:** únicamente documentación en `plans/`. La implementación posterior fue autorizada por el usuario y se ejecuta en checkpoints de aplicación aislados; no implica autorización de deploy ni cambios D1 remotos.
 
@@ -25,8 +25,8 @@
 | Fase 3 — catálogo, previews y retorno | [x] Integrada por PR #186 | Filtros/etiquetas, retorno allowlisted y activación manual; QA y CI PASS |
 | Fase 4 — progreso y favoritos D1 | [x] Integrada por PR #187 | Migración `0032`, progreso personal, favoritos, reset epoch; Worker/D1, QA y CI PASS |
 | Fase 5 — sincronización y anonimato | [x] Integrada por PR #190 | Migración `0033`, sync idempotente, importación con consentimiento y cola temporal; Worker/D1 y CI PASS; producción pendiente de revisión de retención |
-| Fase 6 — itinerarios y UX | [~] Implementada por PR #193; sin publicar | Progreso compartido por guía en nueve itinerarios, recomendaciones editoriales, ocultar/restaurar, repaso opcional y QA responsive/teclado |
-| Fase 7 — certificación y lanzamiento | [ ] Sin implementación | Evidencia focal, autorización de merge/deploy |
+| Fase 6 — itinerarios y UX | [x] Integrada por PR #193 en `main@3fdc17cc`; sin publicar | Progreso compartido por guía en nueve itinerarios, recomendaciones editoriales, ocultar/restaurar, repaso opcional y QA responsive/teclado |
+| Fase 7 — certificación y preparación de lanzamiento | [~] Certificación técnica local parcial | Worker/D1, privacidad de bundle, SEO, 48 guías y cuatro viewports pasan; falta revisión de seguridad independiente, aceptación editorial 6/42, retención, lector de pantalla y zoom 200 %. No habilita despliegue |
 
 **Lectura rápida:** §0 instrucciones; §§1–7 requisitos y contratos; §8 fases; §§9–16 validaciones, decisiones y PR; §17 bitácora; §§18–29 evidencias y decisiones ampliadas; §30 handoff. **En caso de discrepancia, las decisiones posteriores explícitas (§§19,25,27–29) refinan las propuestas anteriores, pero nunca sustituyen una decisión APROBADO sin confirmación del usuario.**
 
@@ -44,7 +44,7 @@
 - **Importación anónima:** §3.2.19 planteaba fusión automática al crear cuenta, mientras §§19,21,25 exigen consentimiento. Se adopta la regla más protectora: **consentimiento explícito antes de toda importación**, tanto cuenta nueva invitada como existente; requiere confirmación de producto antes de implementarse.
 - **Sincronización:** §3.2.17 menciona fusionar operaciones independientes, pero §§25 y 29 proponen rechazo de versiones obsoletas por guía. Para V1, **conflicto explícito por versión** es la política provisional; optimizar fusiones independientes solo con pruebas de causalidad.
 - **Orden de PR:** §16 describe ocho checkpoints y §30 agrupa cuatro PR de implementación. Son **dos niveles de granularidad**, no calendarios incompatibles: mantener gates D0–D8 aunque se agrupen entregas únicamente con autorización.
-- **Cierre:** §17 mantenía «Fases 0–7 no iniciadas», aunque hubo inspección estática. Interpretar Fase 0 como **trabajo documental avanzado sin validación ejecutada**; Fases 1–7 continúan sin iniciar.
+- **Cierre:** §17 mantenía «Fases 0–7 no iniciadas», aunque hubo inspección estática. Interpretar Fase 0 como **trabajo documental avanzado sin validación ejecutada**; el estado vigente de Fases 1–7 se registra en la matriz inicial y §17.
 
 ---
 
@@ -413,13 +413,14 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-29 | Fase 3: catálogo, preview y retorno | INTEGRADA | PR #186 en `main@9b39ffde`; 1.756 unitarias, QA responsive, typecheck/build/diff-check y CI PASS |
 | 2026-10-29 | Fase 4: progreso y favoritos personales | INTEGRADA | PR #187 en `main@67c2d1fa`; `0032`, Worker/D1 E2E, aislamiento, reset epoch, favoritos tras revocación, unitarias, QA, typecheck/build y CI PASS |
 | 2026-10-29 | Fase 5: sync, anónimo y offline temporal | INTEGRADA / PRODUCCIÓN PENDIENTE | PR #190 en `main@3d91f15d`; `0033`, cola/consentimiento/logout y POST transaccional; Worker/D1 dos dispositivos, replay/reset, cola 5/5 y tres workflows CI PASS. Sin D1 remota ni deploy; retención de recibos pendiente de revisión legal/operativa |
-| 2026-10-29 | Fase 6: itinerarios y UX | IMPLEMENTADA / PR #193 | Sin nueva migración; progreso de guías compartido en nueve rutas, sugerencia determinista, restauración de recientes y repaso opcional; unitarias 3/3, Worker/D1, QA Playwright responsive/teclado, typecheck/build y diff-check PASS; sin deploy |
+| 2026-10-29 | Fase 6: itinerarios y UX | INTEGRADA / PR #193; sin publicar | `main@3fdc17cc`; sin nueva migración; progreso de guías compartido en nueve rutas, sugerencia determinista, restauración de recientes y repaso opcional; unitarias 3/3, Worker/D1, QA Playwright responsive/teclado, typecheck/build y diff-check PASS; sin deploy |
+| 2026-10-29 | Fase 7: certificación técnica local | PARCIAL; lanzamiento bloqueado | D1 `0000–0033`, FK integrity, entitlement/revocación, bundle de 114 assets/2.074 fragmentos, 81 unitarias, QA pública 48 guías/9 rutas/4 viewports, typecheck/build/Drizzle y CI PR #193 PASS. AccessLint no pudo iniciarse en Windows; lector de pantalla y zoom real pendientes. Revisión editorial 6/42 y retención legal/operativa pendientes; sin deploy ni D1 remota |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Fase 7 | NO INICIADA | Certificación final y gates independientes de contenido, retención, seguridad y accesibilidad |
+| — | Fase 7 | EN CURSO — CERTIFICACIÓN LOCAL PARCIAL | Cierre requiere revisión de seguridad independiente, aceptación editorial de 6/42, política legal/operativa de retención, lector de pantalla y zoom 200 %; cualquier despliegue y migración remota conserva autorización específica |
 
-**Siguiente checkpoint:** Fase 7 de certificación, una vez integrada la Fase 6. Antes de producción deben resolverse la selección editorial 6/42 y la revisión legal/operativa de retención; no se ha desplegado ni aplicado migración de forma remota.
+**Siguiente checkpoint:** resolver los gates abiertos de la Fase 7. Antes de producción deben aceptarse editorialmente las seis guías gratuitas y la clasificación 6/42, aprobarse retención/borrado de recibos y completarse las revisiones independientes de seguridad y accesibilidad. La validación de esta rama no implica despliegue ni migración D1 remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
@@ -734,7 +735,7 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 
 **Decisión de producto confirmada por el usuario:** exclusivamente el rol `owner` de una organización puede conceder y revocar el permiso Aprende de sus colaboradores. No basta `admin`, ni ser titular de `billing_account`, ni seleccionar la organización activa. La verificación debe utilizar membresía organizacional real del actor y del destinatario en la misma organización. El propietario puede leer guías protegidas con licencia activa sin necesitar grant propio. Esta decisión sustituye formulaciones anteriores de «propietario o gestor autorizado».
 
-**Estado de cierre:** `PLAN V1 CERRADO PARA IMPLEMENTACIÓN` significa requisitos, dependencias, contratos propuestos, gates y alcance definidos; **NO** significa código implementado, pruebas pasadas, PR fusionado ni despliegue. La inspección estática de Fase 0 y la preparación documental se marcan `[x]`; las verificaciones que requieren ejecución pasan a gates del PR correspondiente. Las fases 1–7 siguen `[ ]`.
+**Estado del plan:** `PLAN V1 CERRADO PARA IMPLEMENTACIÓN` significa requisitos, dependencias, contratos y alcance definidos; no equivale a producto publicado. Las fases 1–6 están integradas en `main@3fdc17cc`; la Fase 7 tiene certificación técnica local parcial, con gates editoriales, legales, de seguridad independiente y aceptación accesible aún abiertos. El detalle de evidencia y límites está en §17 y `docs/TESTING.md`.
 
 ### Matriz final de asuntos antes llamados bloqueos
 
@@ -772,6 +773,6 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 - [ ] Validación editorial definitiva de las seis guías (gate de implementación).
 - [ ] Diagnóstico de lifecycle/datos legacy, comprobación CSRF y pruebas de entitlement (gate de implementación).
 - [ ] Revisión de retención/privacidad y pruebas de sincronización (gate de implementación).
-- [ ] Implementación, pruebas focales, integración y lanzamiento autorizados (fases futuras).
+- [~] Fases 1–6 implementadas e integradas; certificación técnica local parcial de Fase 7. Faltan los gates de revisión editorial, legal/operativa, seguridad independiente y accesibilidad manual; el lanzamiento no está autorizado por haber pasado pruebas locales.
 
 **Resultado:** no se requieren nuevas rondas generales de planificación para comenzar el PR 1. Los pendientes son comprobaciones acotadas y decisiones operativas vinculadas al PR que las necesite. Cualquier decisión editorial/legal no demostrada se mantiene visible, sin fingir que está aprobada. El plan de la aplicación de usuario se tratará por separado en otro chat; no forma parte de este alcance.
