@@ -1073,6 +1073,76 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado:** contrato de arquitectura propuesto con base en código inspeccionado; sin prototipos gráficos, cambios de aplicación, tests, merge ni deploy.
 
+
+## 42. F6 — Especificación de composición Base / Pro / Premium (PROPUESTA, 2026-10-29)
+
+**Alcance:** un mismo negocio de servicios locales y exactamente el mismo contenido en tres niveles visuales (§40). Este documento es especificación de layout para revisión, no mockup aprobado ni código.
+
+### Invariantes compartidos
+- Secciones disponibles: hero, acerca, servicios, productos, galería, horarios, ubicación, FAQ y contacto, más otras cuando estén técnicamente disponibles. Cada sección se puede habilitar, ocultar o reordenar con las mismas reglas en los tres tiers; no hay funciones reservadas por plan.
+- Contenido semántico y fuentes de datos idénticos. Plantilla y variante solo modifican presentación, jerarquía, tipografía, espaciado, disposición y transiciones permitidas.
+- CTA de contacto identificable, encabezados jerárquicos, enlaces accesibles, foco visible, contraste adecuado, carga diferida de medios y respeto de `prefers-reduced-motion`.
+- MiniWeb pública responsiva en móvil/tableta/escritorio; edición únicamente en tableta/escritorio (DEC-17).
+
+### Cuadra / Base — `services-studio:base` (conceptual)
+- **Hero:** bloque dividido de dos columnas en escritorio (texto 55% / foto 45%); una columna en móvil, texto y CTA antes de la imagen si el contenido lo permite.
+- **Servicios:** tarjetas uniformes, rejilla de hasta tres columnas en escritorio, dos en tableta si cabe, una en móvil.
+- **Galería:** cuadrícula homogénea de miniaturas con proporción consistente; detalle accesible cuando exista soporte real.
+- **FAQ/contacto:** acordeón o lista semántica sin depender de JavaScript para mostrar contenido esencial; contacto visible al final.
+- **Identidad:** colores de marca controlados, tipografía clara, márgenes y radios consistentes. Debe sentirse profesional y terminado, nunca demo.
+
+### Barrio / Pro — `services-studio:pro` (conceptual)
+- **Hero:** composición asimétrica con imagen dominante y panel de contenido; el orden de lectura DOM sigue siendo lógico.
+- **Servicios:** rejilla editorial de tarjetas con tamaños alternados, sin dar mayor importancia a servicios por su posición arbitraria.
+- **Galería:** mosaico con una imagen destacada y miniaturas secundarias; preserva todos los activos y textos alternativos.
+- **FAQ/contacto:** composición a dos zonas en escritorio, con contacto destacado sin ocultar FAQ.
+- **Identidad:** escalas tipográficas y espaciado más expresivos, sin introducir contenido ni secciones exclusivas.
+
+### Ciudad / Premium — `services-studio:premium` (conceptual)
+- **Hero:** composición editorial inmersiva con fotografía protagonista, texto de alto contraste y CTA permanente; evitar texto ilegible sobre medios.
+- **Servicios:** narrativa visual con bloques alternados y tratamientos tipográficos distintivos; no transformar datos en imágenes de texto.
+- **Galería:** secuencia editorial con ritmos y tamaños diferenciados, navegación y orden accesibles.
+- **FAQ/contacto:** cierre de página con CTA fuerte y datos completos; FAQ sigue visible y utilizable.
+- **Identidad:** sistema de marca coherente de mayor sofisticación; microtransiciones opcionales y reducidas cuando el usuario lo prefiera, sin penalizar rendimiento.
+
+### Wireframes textuales del mismo contenido (orden ilustrativo)
+```text
+CUADRA · BASE (desktop)           BARRIO · PRO (desktop)           CIUDAD · PREMIUM (desktop)
+┌──────────────────────────┐      ┌──────────────────────────┐      ┌──────────────────────────┐
+│ Logo          Contacto   │      │ Logo  Servicios Contacto│      │ Logo   Navegación    CTA│
+├──────────────┬───────────┤      ├──────────┬───────────────┤      ├──────────────────────────┤
+│ Título       │ Foto      │      │ Foto     │ Título        │      │   Imagen editorial      │
+│ Texto + CTA  │           │      │ grande   │ Texto + CTA   │      │   Título / CTA legible  │
+├──────────────┴───────────┤      ├──────────┴───────────────┤      ├──────────────────────────┤
+│ Servicio 1 │ 2 │ 3 │ 4   │      │ Servicio 1 grande │ 2,3,4│      │ Servicios en bloques    │
+├──────────────────────────┤      ├──────────────────────────┤      │ alternados / narrativos │
+│ Galería uniforme         │      │ Galería mosaico          │      ├──────────────────────────┤
+├──────────────────────────┤      ├──────────────────────────┤      │ Galería editorial       │
+│ Horario / Ubicación      │      │ Horario / Ubicación      │      │ Horario / Ubicación     │
+│ FAQ / Contacto           │      │ FAQ / Contacto destacado│      │ FAQ / Contacto / CTA    │
+└──────────────────────────┘      └──────────────────────────┘      └──────────────────────────┘
+```
+**Nota:** los wireframes son esquemáticos y no especifican medidas finales; el orden de servicios y módulos lo determina el usuario, no el nivel de licencia. No se fija un orden distinto en el DOM por tier.
+
+### Tokens de composición propuestos (sujetos a auditoría del CSS existente)
+- `density`: `comfortable | editorial | immersive`.
+- `heroComposition`: `split | asymmetric | immersive`.
+- `serviceLayout`: `uniform-grid | editorial-grid | narrative`.
+- `galleryLayout`: `uniform-grid | mosaic | editorial-sequence`.
+- `typographyPreset`: claves cerradas auditadas, no fuentes arbitrarias ni CSS del usuario.
+- `motionPreset`: `none | subtle` (optativo, accesible); no requiere animaciones para distinguir niveles.
+
+Estos son **valores de diseño**, no un esquema de base de datos aprobado. El motor debe mapear `templateKey + variantKey` a presets tipados y versionados; no persistir estilos arbitrarios.
+
+### Revisión pendiente antes de implementación
+1. Inventariar estilos y tokens actuales para elegir nombres compatibles.
+2. Diseñar versión tablet y móvil de cada composición, con la misma información y orden lógico.
+3. Validar visualmente las diferencias con un negocio de gastronomía y otro de catálogo para evitar sesgo de servicios.
+4. Revisar accesibilidad, peso de medios, datos ausentes y textos largos en cada variante.
+5. Aprobar diseños y luego implementar un renderer compartido con variantes, sin duplicar funcionalidades.
+
+**Estado:** tres composiciones especificadas como propuesta; sin mockups gráficos, cambios de código, tests o despliegues.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
