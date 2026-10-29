@@ -1952,3 +1952,14 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 **Alcance real:** código puro inicial; no UI, no ruta, no D1, no renderer, no publicación, no migración automática, no cambio del horario legado en producción. Las pruebas están escritas, **no se declara RAN/PASS** sin ejecución de CI o local sobre SHA del PR.
 
 **Trazabilidad:** DEC-19/AC-19C y AC-19D tienen primera implementación parcial; GAP-19 pasa de SPECIFIED a PARTIAL CODE, pendiente de UI y prueba; GAP-21/22 siguen OPEN. Próximos PRs: modelo persistente de Horario V2 separado, pruebas de ausencia de consultas a V1, renderer de secciones nuevas, editor y conversión desde publicación.
+
+
+## 68. Corrección de alcance — PLANIFICACIÓN EXCLUSIVA (2026-10-29)
+
+**Instrucción explícita del responsable:** el alcance de este trabajo es **crear, cerrar y entregar el plan**, no implementar MiniWeb V2. La creación previa de archivos ejecutables fue una desviación. Desde este checkpoint, no se crearán ni editarán archivos de aplicación, migraciones, tests o CI en nombre de esta tarea. El plan puede especificar contratos, pruebas, fases, dependencias y criterios de aceptación para que otros agentes los implementen posteriormente.
+
+**Alcance aprobado de planificación:** catálogo y diseño de secciones V2 completamente nuevas; cinco familias × variantes visuales Base/Pro/Premium para Cuadra/Barrio/Ciudad; funcionalidades comunes; horario nuevo independiente sin lecturas/importaciones/sincronización V1; conversión opt-in de contenido publicado V1 excluyendo horario; arquitectura objetivo, datos, publicación, rollback, seguridad, cuotas, precios, accesibilidad, pruebas focalizadas propuestas, fases, responsables y decisiones humanas.
+
+**Estado honesto:** los archivos de código introducidos en PR #184 durante la desviación son prototipos no certificados y **no constituyen una implementación autorizada**. Deben excluirse del PR de planificación y dejarse a cargo del equipo de implementación en un trabajo futuro autorizado. No declarar cierre técnico, PASS, despliegue ni disponibilidad del producto por existir documentación o prototipos.
+
+**Cierre del plan:** cada hueco se clasifica como (A) resuelto por decisión y contrato, (B) decisión humana pendiente con dueño y fecha, o (C) investigación técnica delegada con criterio de salida. Un plan puede quedar listo para ejecución sin que el código esté implementado. El cierre de planificación requiere matriz de trazabilidad, contratos por sección, dependencias, secuencia de fases, estimaciones relativas, gates de calidad, decisiones y riesgos residuales. Ninguna tarea de implementación se ejecuta desde esta conversación.
