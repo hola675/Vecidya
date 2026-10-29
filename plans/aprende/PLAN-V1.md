@@ -622,3 +622,21 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Pruebas focalizadas nuevas:** unicidad de 48 `guideId`, `sectionId` por guía, revisiones válidas, seis gratuitas por categoría, ausencia de aliases duplicados, invariancia de progreso tras reordenamiento y cambio de slug, revisiones con nuevas secciones, no filtración de cuerpos en respuestas y artefactos cliente.
 
 **Pendiente:** el agente de implementación debe generar y revisar el manifiesto completo de IDs con el equipo editorial antes de congelarlo; no inventar equivalencias de secciones. Esta sección no cambia todavía contenido ni código.
+
+
+## 28. Política de concesión y ciclo de vida de organizaciones (propuesta de cierre)
+
+**Código inspeccionado:** `server/auth/authorization.server.ts`, `server/auth/session.server.ts`, `db/queries/organization.server.ts`, `db/queries/licensing.server.ts`, `db/schema/licensing.ts` y `app/routes/api-organization-authorization.ts`.
+
+**Hallazgos:** la matriz global de permisos actual permite a owner/admin gestionar miembros, pero no define `learn.full_access`. `requireMembership` y `getActiveOrganization` rechazan explícitamente lifecycle `suspended`, aunque toleran ausencia de fila. Las licencias usan estados pending/active/suspended/cancelled y el billing owner no demuestra titularidad de una organización. La consulta de membresías permite buscar todas las organizaciones del usuario.
+
+**Política específica Aprende propuesta (sin alterar autorización global):**
+1. Acceso a cuerpo protegido para un usuario invitado y autenticado si existe **alguna** organización donde coincidan: membresía actual, lifecycle `active`, licencia Cuadra/Barrio/Ciudad con estado `active` y vigencia temporal, y rol `owner` o grant Aprende explícito asociado a la membresía actual. `admin` sin grant no basta. No usar `activeOrganizationId` como límite.
+2. Para Aprende, lifecycle inexistente, pendiente, invitado o suspendido **no** satisface entitlement (fail closed). Antes de activar, auditar organizaciones antiguas sin fila y resolver migración de datos sin conceder permisos implícitos.
+3. Solo `owner` de la organización podrá crear/revocar grant Aprende de colaboradores en V1. No basta ser propietario de `billing_account`. El grant se vincula a `member.id`, default denegado y cascada al retirar miembro; al reinvitar se necesita un grant nuevo.
+4. Endpoint propio de administración de grants, con sesión, comprobación de owner en organización indicada, validación de destino miembro de esa misma organización, protección CSRF según patrón existente, auditoría y respuesta sin datos de otras organizaciones. No ampliar allowlist de Better Auth ni habilitar signup público.
+5. Revocación de grant, salida de organización, suspensión o caducidad de licencia: bloquear inmediatamente nuevos cuerpos protegidos y respuestas cacheadas; mantener progreso/favoritos personales y vistas previas públicas.
+
+**Pruebas focalizadas:** owner con licencia activa; admin sin grant; admin/member con grant; invitado no aceptado; grant de otra organización; usuario multi-org con solo una elegible; cambio de organización activa; lifecycle ausente/pendiente/suspendido; licencia expirada/suspendida; grant eliminado; miembro retirado y reinvitado; owner billing distinto de owner organizacional; revocación sin caché compartida.
+
+**Pendiente de validación:** verificar si existen organizaciones legacy sin lifecycle y cómo regularizarlas; confirmar el patrón CSRF/auditoría de rutas actuales; definir retención de recibos sync. Esta es una política documental propuesta, no código aplicado.
