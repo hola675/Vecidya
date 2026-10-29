@@ -1538,3 +1538,69 @@ D-V9-001 a D-V9-025 APPROVED en sus alcances respectivos; D-V9-026 PENDING. **PL
 
 ## Changelog adicional
 - **1.25.0 / 2026-10-29:** D-V9-025 aprobada; reglas de avance contextual, matriz de tipos de entrada, ocho tareas PLAN-AUTO01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 34. Decisión D-V9-026 — control reversible del avance contextual (aprobada 2026-10-29)
+**Aprobación expresa:** «avance contextual por defecto, con opción de desactivarlo y preferencia conservada durante la entrevista». Estado APPROVED; exclusivamente PLAN_ONLY.
+
+### 34.1. Contrato de preferencia y control
+1. Iniciar la entrevista con el **avance contextual habilitado por defecto**, según D-V9-025: automático únicamente en selección única inequívoca, reversible y registrada; manual en selección múltiple, texto libre, datos sensibles y validaciones complejas.
+2. Ofrecer un control **descubrible y accesible** «Prefiero avanzar manualmente» que desactive el autoavance sin obligar a contestar una pregunta adicional ni interrumpir el flujo.
+3. Permitir **volver a activar** el avance contextual durante la entrevista; el ajuste es reversible y no modifica respuestas ni evidencias.
+4. Conservar la preferencia en navegación, cambio de idioma, pausa, recarga y reanudación de la **misma evaluación**, sujeto a la política de persistencia/privacidad que se apruebe. No presumir sincronización entre dispositivos o evaluaciones distintas.
+5. Cambiar la preferencia no consume una interacción D-V9-020 ni altera el presupuesto global de **24 + hasta 5** turnos D-V9-019.
+6. La preferencia nunca habilita autoavance en tipos de respuesta que D-V9-025 exige confirmar manualmente, ni elude validación, consentimiento de extensión o controles sensibles.
+7. Aplicar el cambio de modo de forma predecible: no disparar navegación retroactiva ni autoavance de una respuesta ya seleccionada por el mero hecho de activar el ajuste.
+8. Mostrar el estado actual del modo con etiqueta comprensible, foco y semántica accesibles; no depender de color, animación o iconografía para entenderlo.
+9. Respetar `prefers-reduced-motion` y tecnología asistiva; si el autoavance contextual no puede realizarse de manera segura, priorizar control manual sin pérdida de funcionalidad.
+10. Registrar solo la información mínima necesaria para restaurar el modo dentro de la evaluación; definir caducidad y consentimiento de almacenamiento en el diseño de privacidad, sin inventar retención.
+11. Mantener textos naturales y equivalentes en español e inglés; no presentar el modo manual como inferior o más lento de forma culpabilizante.
+12. El control de avance es puramente de **presentación/interacción** y no altera rutas adaptativas, suficiencia de evidencia, scoring, recomendaciones, hitos de cobertura ni servicios GHL.
+
+### 34.2. Estados conceptuales (sin implementación)
+- `contextual_enabled` (predeterminado).
+- `manual_selected` (usuario desactiva autoavance).
+- `contextual_reenabled` (usuario revierte su preferencia).
+- `restored_preference` (se reanuda la misma evaluación con modo conservado).
+- `manual_safety_fallback` (contexto de accesibilidad, validación o error impide autoavance seguro).
+
+Los nombres son ilustrativos; no constituyen un esquema ni una API aprobada.
+
+### 34.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-PREF01 | Auditar preferencias, navegación y persistencia de entrevista V9/QBV2 | Inventario de archivos, estados y SHA | No asumir implementación |
+| PLAN-PREF02 | Diseñar ubicación, etiquetas y estados del control de modo | Flujos UX móvil/escritorio y es/en | Accesibilidad |
+| PLAN-PREF03 | Especificar contrato de preferencia reversible por evaluación | Tabla de transiciones y restauración | Sin navegación retroactiva |
+| PLAN-PREF04 | Definir precedencia entre preferencia y restricciones D-V9-025 | Matriz tipo de respuesta × modo × seguridad | Nunca autoavance prohibido |
+| PLAN-PREF05 | Documentar persistencia mínima, pausa y reanudación | Contrato conceptual y decisiones de privacidad pendientes | Sin asumir sincronización global |
+| PLAN-PREF06 | Integrar mensajes, hitos y animaciones D-V9-021–023 | Reglas de presentación sin acoplar al motor | Sin scoring afectado |
+| PLAN-PREF07 | Preparar pruebas focalizadas futuras de cambio de modo y accesibilidad | Matriz es/en, C01–C10, fallos y 24+5 | No ejecutar en PLAN_ONLY |
+| PLAN-PREF08 | Definir criterios editoriales de claridad y control del usuario | Checklist UX y validación humana pendiente | Sin presión hacia autoavance |
+
+### 34.4. Criterios de aceptación futuros
+1. Una evaluación nueva empieza con avance contextual habilitado.
+2. El usuario puede desactivarlo sin salir de la pregunta actual.
+3. Con modo manual, una selección única requiere «Continuar».
+4. El usuario puede reactivar el modo contextual.
+5. Reactivarlo no provoca salto inesperado sobre la pregunta actual.
+6. Selecciones múltiples y texto libre siguen siendo manuales en ambos modos.
+7. Datos sensibles y validaciones complejas no autoavanzan.
+8. El cambio de preferencia no consume turno ni duplica respuestas.
+9. Navegar atrás y editar conserva preferencia y contador.
+10. Reanudar la misma evaluación restaura el modo elegido cuando existe estado persistido válido.
+11. Cambio es/en conserva modo y ofrece etiquetas equivalentes.
+12. Errores de red no provocan avance ni pérdida de preferencia confirmada.
+13. El control funciona con teclado, lector de pantalla y movimiento reducido.
+14. Consentimiento de extensión 24+5 sigue siendo explícito e independiente del modo.
+15. Hitos y resultados no cambian por seleccionar manual o contextual.
+16. No se requiere cuenta, CRM ni GHL para elegir modo durante una entrevista anónima.
+
+### 34.5. Próxima decisión D-V9-027 — pausa y reanudación del diagnóstico anónimo
+Opciones pendientes: **A** solo reanudar en la misma pestaña mientras permanezca abierta; **B** reanudar en el mismo dispositivo durante un período limitado con almacenamiento local y aviso claro (recomendado provisionalmente, sujeto a privacidad); **C** ofrecer enlace o código temporal de reanudación entre dispositivos con medidas de seguridad adicionales. Ninguna opción aprobada. Definir retención, protección, revocación y compatibilidad con el flujo de reclamar resultados D-V9-005 antes de implementar.
+
+### 34.6. Estado
+D-V9-001 a D-V9-026 APPROVED en sus alcances respectivos; D-V9-027 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.26.0 / 2026-10-29:** D-V9-026 aprobada; control reversible del autoavance contextual, persistencia por evaluación, ocho tareas PLAN-PREF01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
