@@ -999,6 +999,50 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado:** estrategia de catálogo propuesta; sin mockups finales, tests, implementación ni despliegue.
 
+
+## 40. F6 — Prueba de diferenciación visual: una familia, tres niveles (diseño de referencia, 2026-10-29)
+
+**Objetivo:** comprobar que Cuadra ($39), Barrio ($59) y Ciudad ($89) se distinguen por diseño sin restringir contenido ni módulos (DEC-18). **Propuesta de prototipo:** familia `servicios locales`, elegida solo para comparar tres presentaciones del **mismo negocio y los mismos datos**; no se aprueba automáticamente una nueva plantilla ni un nombre comercial.
+
+### Dataset único de comparación (ficticio; no publicar como negocio real)
+- Nombre de ejemplo: `Estudio Norte`, categoría `Servicios locales`.
+- Mismos campos en los tres diseños: logo, portada, descripción, 4 servicios, 6 fotos, horarios, ubicación, contacto, 4 preguntas frecuentes y CTA de contacto.
+- Mismos derechos: editar, ordenar, añadir secciones y galerías, personalizar identidad, previsualizar y publicar si la licencia/estado lo permiten.
+- Medir diferencias de presentación sin agregar ni retirar contenido entre versiones.
+
+| Dimensión | Cuadra · Base | Barrio · Pro | Ciudad · Premium |
+| --- | --- | --- | --- |
+| Hero | Imagen + texto y CTA claros; composición estable | Hero asimétrico con capas y tipografía editorial | Hero de dirección artística más distintiva, composición inmersiva sin ocultar CTA |
+| Servicios | Tarjetas uniformes y legibles | Rejilla modular con jerarquía visual | Composición editorial variable, manteniendo orden y accesibilidad |
+| Galería | Cuadrícula responsiva | Composición mixta con énfasis visual | Secuencia narrativa con formatos destacados y navegación accesible |
+| Identidad | Tokens de marca y fuentes seguras | Combinaciones tipográficas/espaciado más expresivas | Sistema visual cohesivo y refinado, no efectos decorativos gratuitos |
+| Horarios, FAQ, contacto | Completos y visibles | Igualmente completos, distinta presentación | Igualmente completos, distinta presentación |
+| Responsive | Móvil, tableta y escritorio | Móvil, tableta y escritorio | Móvil, tableta y escritorio |
+| Accesibilidad, SEO, rendimiento | Requisitos comunes | Requisitos comunes | Requisitos comunes |
+
+### Reglas del experimento visual
+1. Comparar las tres versiones lado a lado con contenido idéntico; no introducir ventajas funcionales disfrazadas de estilo.
+2. Evaluar lectura en móvil (MiniWeb público), tableta y escritorio; editor solo tableta/escritorio según DEC-17.
+3. Comprobar que cada composición es realizable mediante tokens/variantes tipadas del renderer V2, sin HTML/CSS/JS arbitrarios.
+4. No asumir que `services-studio` ya implementa las tres versiones; las variantes Pro/Premium requieren diseño, renderer y tests propios.
+5. Someter las tres propuestas a revisión visual antes de producir el catálogo; las referencias externas o imágenes de inspiración no son diseños entregados.
+6. No mezclar la diferenciación de plantillas con derechos CRM, límites de cupos o cobros nuevos.
+
+### Criterios de aceptación visual propuestos
+- Cuadra se percibe como sitio terminado, profesional y apto para vender servicios, no como prueba gratuita.
+- Barrio ofrece diferencia de composición evidente sin depender de módulos exclusivos.
+- Ciudad ofrece identidad visual superior reconocible incluso con el mismo contenido.
+- Ninguna versión pierde información, rompe navegación móvil o empeora contraste/teclado.
+- Cambiar de Cuadra a Barrio/Ciudad mantiene datos y referencias de medios; cambiar a un tier inferior conserva snapshot público histórico según DEC-07 hasta nueva publicación válida.
+
+### Entregables siguientes
+- Wireframes comparativos de la misma página en tres niveles.
+- Inventario de tokens/componentes reales y su correspondencia con cada composición.
+- Especificación `templateFamily + templateKey + variantKey + minimumTemplateTier`, diferenciada del esquema V1 y de los módulos.
+- Matriz de casos de prueba focales para preview, cambios de variante, permisos y compatibilidad de snapshots.
+
+**Estado:** prueba de diferenciación documentada como propuesta. No se han generado mockups finales, ni implementado variantes, ni ejecutado tests/deploy.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
