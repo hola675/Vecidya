@@ -1486,3 +1486,77 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 **F9 se considera entregado** solo con componentes integrados, pruebas y evidencia de producción aprobada. No usar “plan cerrado” como sinónimo de “producto terminado”.
 
 **Estado a este corte:** matriz de aceptación documentada; aprobaciones VIS-01, REL-01, COM-01, GOV-01 y OPS-01 pendientes. V2-D obtuvo CI SUCCESS y PR #194 listo para revisión, sin merge.
+
+
+## 55. Contrato de pantallas Mi Vecidya y editor (especificación F1/F7, 2026-10-29)
+
+**Naturaleza:** alcance y aceptación de producto; los componentes V2 aquí descritos son objetivos, no pantallas ya implementadas. Reutilizar rutas y permisos reales tras contraste con main actualizado; no crear endpoints basándose únicamente en esta tabla.
+
+| Pantalla / estado | Datos mínimos | Acción principal | Estado vacío/error | Control servidor |
+| --- | --- | --- | --- | --- |
+| Inicio Mi Vecidya | Organización activa, MiniWeb, licencia, capacidad y próximos pasos | Continuar configuración | Sin organización: onboarding; error: reintento | Sesión y organización autorizada |
+| Selector de organizaciones | Lista de organizaciones accesibles y rol | Cambiar contexto | Sin acceso: no exponer datos de terceros | Revalidar cada operación; selector no concede permisos |
+| Mi negocio | Identidad, categoría, dirección, contacto, horarios | Guardar perfil | Campos incompletos con guía; validación explícita | business-profile:update |
+| MiniWeb resumen | URL pública, borrador, versión publicada, estado, variante, cuota | Abrir editor / publicar | Sin publicación: vista previa y guía | Lectura de licencia/capacidad por titular |
+| Editor simple | Secciones, contenido, portada, orden y vista previa | Guardar borrador | Módulo sin contenido: placeholder no publicable cuando obligatorio | Guardado autenticado, validación V2 |
+| Editor avanzado | Instancias repetibles, composición, variantes, SEO y ajustes permitidos | Configurar y previsualizar | Variante no disponible: explicar licencia, no ocultar contenido | Entitlement visual efectivo y validación de variante |
+| Historial | Versiones inmutables, fecha, actor y estado | Restaurar a borrador | Sin versiones: estado inicial; conflicto: recargar | Organización autorizada; CAS y auditoría |
+| Licencias y capacidad | Planes activos del titular, publicaciones ocupadas y ampliaciones | Consultar detalle / solicitar ampliación | Sin licencia: explicar bloqueo sin crear derecho | Cuenta facturación real, no membresía |
+| Servicios y pagos | Suscripciones, consumos, facturas y movimientos **solo cuando existan** | Ver detalle o solicitar servicio | Sin PSP: indicar pago no habilitado, nunca simular cobro | Permiso económico explícito |
+
+**Estados globales:** loading, vacío, error recuperable, sin permiso, conflicto de revisión, suspensión de edición, sin licencia, licencia insuficiente, desactivación admin, servicio externo no disponible. Toda operación mutante debe ofrecer resultado inequívoco y no depender exclusivamente de estado visual.
+
+**Dispositivos:** /app e /internal bloquean acciones en móvil; editor escritorio con secciones/lienzo/inspector y tableta con paneles secuenciales. La vista previa móvil es una simulación en dispositivo permitido; la MiniWeb pública permanece responsive.
+
+**Navegación:** Inicio → Mi negocio → MiniWeb (resumen, editor, historial) → Licencias/capacidad → Servicios/pagos; solo mostrar accesos autorizados. La ocultación de navegación nunca reemplaza el control servidor.
+
+### 55.1 Criterios de diseño pendientes de aprobación
+
+- Jerarquía final, densidad, iconografía, composición y estados de pantallas privadas.
+- Microcopy de bloqueos por licencia y cuotas, con acciones de resolución no engañosas.
+- Aceptación visual de variantes por familia, incluyendo ausencia de imágenes, textos largos y negocios de distinta categoría.
+- Definir propietario de la aprobación visual; no declarar aprobado por inclusión en el plan.
+
+## 56. Matriz de plantillas por familia y entregables reales (F6, 2026-10-29)
+
+**Invariante DEC-18:** todas las familias y todos los niveles visuales usan el mismo conjunto de módulos técnicamente disponibles. Ninguna familia ni tier reserva productos, servicios, FAQ, horarios, galerías o medios por precio.
+
+| Familia | Template key | Baseline confirmado | Objetivo Base | Objetivo Pro | Objetivo Premium |
+| --- | --- | --- | --- | --- | --- |
+| General / Esencial | `vecidya-default` | available, variante legacy standard | Composición base accesible | Dirección editorial distinta | Composición premium distinta |
+| Servicios | `services-studio` | planned | Hero dividido, servicios en tarjetas | Hero asimétrico, mosaico | Hero editorial, narrativa de contenido |
+| Comercio / Catálogo | `catalog-store` | planned | Fichas claras y filtros solo si están implementados para todos | Rejilla editorial y énfasis de producto | Composición de catálogo premium |
+| Gastronomía | `gastronomy-table` | planned | Menú, horarios, ubicación y CTA claros | Jerarquía gastronómica editorial | Fotografía y narrativa premium |
+| Profesional | `professional-profile` | planned | Presentación, servicios, confianza y contacto | Perfil editorial | Dirección de marca premium |
+
+**La distribución de claves por licencia del DEC-12 es un objetivo histórico que debe leerse junto a DEC-18:** si se mantiene un acceso exclusivo a ciertas familias por plan, entraría en tensión con el principio de funcionalidades iguales y la disponibilidad de diseños adecuados para cada sector en Cuadra. **No cambiar silenciosamente la matriz aprobada**: registrar para decisión si cada familia debe tener Base accesible desde Cuadra y reservar solo variantes Pro/Premium a Barrio/Ciudad. Hasta entonces, no anunciar disponibilidad de plantillas planned.
+
+### 56.1 Definition of Done por variante visual
+
+1. Existe renderer real versionado, no solo entrada de catálogo.
+2. Mantiene exactamente las mismas secciones y acciones que Base; sin capacidades de pago implícitas.
+3. Tiene composición distintiva perceptible más allá de color/fuente.
+4. Soporta móvil 390px, tableta 768px y escritorio 1440px; sin scroll horizontal ni CTA oculto.
+5. Funciona con texto largo, medios faltantes, varias galerías y orden variable de módulos.
+6. Cumple navegación de teclado, foco visible, semántica y movimiento reducido.
+7. Pruebas focales y capturas reales revisadas, sin afirmar certificación WCAG no realizada.
+8. Estado `available` solo tras aceptación y compatibilidad con snapshots V1/V2.
+
+### 56.2 Gate de decisión sobre acceso por familia
+
+**CAT-01 (pendiente de aprobación):** opción recomendada: **cada una de las cinco familias dispone de Base para Cuadra; Barrio desbloquea Pro y Ciudad Premium en todas las familias**. Se mantiene el catálogo progresivo de implementaciones, pero no se interpreta como prohibición funcional por sector. Requiere ajustar explícitamente DEC-12, el registry y los mensajes comerciales una vez aprobado. Hasta entonces prevalece DEC-12 sin inventar permisos nuevos.
+
+## 57. Backlog de integración por dependencias y evidencias (2026-10-29)
+
+| Bloque | Trabajo mínimo antes de integración | Evidencia obligatoria | Exclusiones |
+| --- | --- | --- | --- |
+| Contratos V2-A/B/C/D | Revisar cambios aislados, resolver imports y permisos, revalidar SHA tras rebase | CI exacto + tests focales + typecheck/build | Merge automático |
+| Renderer V2-E | Render por instanceId, V1 sin regresión, hero único, repetibles | 2 galerías, IDs únicos, snapshot fixture V1 | Cambios a GHL |
+| Datos F2B | Snapshot V2, CAS, restauración no destructiva | Conflicto concurrente, rollback, integridad | Migrar histórico destructivamente |
+| Cupos F2A | Ledger de publicaciones y ampliaciones Cuadra | 3 iniciales, +3 por Cuadra, traslado y sobrecupo | Reusar license CRM como cupo extra |
+| App F1/F7 | Navegación, permisos, editor y preview | Tablet/desktop, móvil bloqueado, sin acceso cruzado | Rehacer auth |
+| Visual F3/F4/F5/F6 | Identidad, galerías, horarios, variantes | Matriz visual real y regresión focal | Activar módulos inexistentes |
+| Publicación F8 | Validación de licencia, cuota y versión, admin deactivate | CAS, idempotencia, 404 y sitemap | Deploy sin autorización |
+| QA F9 | Matriz de regresión acotada, métricas, reversión | Informe por SHA y entorno, aceptación responsable | Certificar solo por diseño |
+
+**Riesgos abiertos:** divergencia DEC-12/DEC-18 (CAT-01), tarifas no verificadas (COM-01), aceptación visual (VIS-01), gobernanza documental (GOV-01), alcance de pagos (REL-01). No establecer fecha de lanzamiento sin resolver la ruta crítica y capacidad de ejecución.
