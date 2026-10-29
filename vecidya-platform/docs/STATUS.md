@@ -1,3 +1,7 @@
+## APP-MINI-V2B — lector dual aislado (2026-10-29)
+
+**CODE/GIT:** rama `feat/app-mini-v2b-dual-reader` basada en `main=67c2d1f`, con lector V1/V2 separado y pruebas focales. No se modifica el validador V1, renderer, licencias, publicación ni DB. **TEST:** escritos, no ejecutados todavía. V2-A sigue en PR #188 sin merge. No desplegado.
+
 # Estado de implementación
 
 ## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
