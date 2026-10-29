@@ -1,7 +1,7 @@
 export default {
   "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo": {
     "guideId": "5d3c5d91-79af-44ff-9d5e-5cb8faafcf8f",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa CRM en el trabajo diario",
@@ -40,7 +40,7 @@ export default {
   },
   "como-probar-un-asistente-de-ia-con-supervision-humana": {
     "guideId": "9c755b4b-1641-4ec7-afe4-6c48e24974ec",
-    "contentRevision": 1,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Empieza por una tarea pequeña",
@@ -67,6 +67,10 @@ export default {
         "sectionId": "8e6b80f1-7a5f-487a-a295-8cd295f682fa"
       },
       {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "26312c03-bfc9-4998-8810-871234837b3d"
+      },
+      {
         "heading": "Fuentes y alcance",
         "sectionId": "9fa8ebe5-56ba-4407-a0aa-b427672a8338"
       }
@@ -75,7 +79,7 @@ export default {
   },
   "que-puede-hacer-una-inteligencia-artificial-por-un-negocio": {
     "guideId": "cfd22264-e86a-461a-b723-664ec8c6cf44",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa usar IA en un negocio",
@@ -149,7 +153,7 @@ export default {
   },
   "como-mantener-actualizada-y-confiable-tu-presencia-digital": {
     "guideId": "cd2c6641-3706-42dd-8b86-476decd41bc4",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás",
@@ -176,7 +180,7 @@ export default {
         "sectionId": "709d92d6-9c1c-43d2-a765-f74072ab4182"
       },
       {
-        "heading": "Qué puedes hacer ahora",
+        "heading": "Preguntas frecuentes y qué puedes hacer ahora",
         "sectionId": "4dd0f025-4cd5-4f48-a95c-d087bef755e0"
       },
       {
@@ -227,7 +231,7 @@ export default {
   },
   "como-probar-y-supervisar-automatizaciones-sin-perder-datos": {
     "guideId": "c031c503-15ad-4049-bbea-a1c941a0526a",
-    "contentRevision": 1,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Primero prueba la regla, no la confianza",
@@ -254,6 +258,10 @@ export default {
         "sectionId": "8502c90f-5ffc-4aa4-84de-7a9758f11035"
       },
       {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "f1aff2e5-9107-4678-b026-a16cd5c8abca"
+      },
+      {
         "heading": "Fuentes y alcance",
         "sectionId": "f568308d-6f5a-454e-a287-93ed38ba33c1"
       }
@@ -262,7 +270,7 @@ export default {
   },
   "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio": {
     "guideId": "c02764b0-bcd2-4056-bef4-6cd0d8049d23",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué significa automatizar",
@@ -344,7 +352,7 @@ export default {
   },
   "dns-https-y-correo-como-se-conecta-tu-dominio": {
     "guideId": "1ca461b3-ed97-429e-b781-0735dc7bdb0a",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Piensa en el dominio como una dirección con varias rutas",
@@ -371,7 +379,7 @@ export default {
         "sectionId": "03130cc2-4ee9-4a10-900e-c605f53f51ed"
       },
       {
-        "heading": "Qué puedes hacer ahora",
+        "heading": "Preguntas frecuentes y qué puedes hacer ahora",
         "sectionId": "0d9addcd-dab5-4d0a-aa55-7660057f3232"
       },
       {
@@ -453,7 +461,7 @@ export default {
   },
   "analitica-web-que-medir-en-tu-negocio": {
     "guideId": "4ca7ef53-39fc-4a4c-a291-dcd3d1020af5",
-    "contentRevision": 1,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Empieza por una pregunta, no por un tablero",
@@ -478,6 +486,10 @@ export default {
       {
         "heading": "Mide con privacidad proporcional",
         "sectionId": "ed3144ba-9260-4ac9-a9e5-ec909e2feb04"
+      },
+      {
+        "heading": "Preguntas frecuentes",
+        "sectionId": "8468c437-4a4e-4600-ba0f-7313a044f1e5"
       },
       {
         "heading": "Fuentes y alcance",
@@ -531,7 +543,7 @@ export default {
   },
   "perfil-empresa-google-completar-y-mantener-actualizado": {
     "guideId": "c163fcb6-0a35-4140-8ac7-74b5bb7fe3bc",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -554,7 +566,7 @@ export default {
         "sectionId": "53fdc937-1178-491f-a909-b82be6dcc020"
       },
       {
-        "heading": "Errores frecuentes y una rutina de mantenimiento",
+        "heading": "Preguntas frecuentes y rutina de mantenimiento",
         "sectionId": "9efc4e36-b550-4cd6-ac1b-43ecbc63097a"
       },
       {
@@ -570,7 +582,7 @@ export default {
   },
   "organizar-consultas-mensajes-llamadas-formularios": {
     "guideId": "cb0b397f-f72e-439f-aa87-dd5fe8d746b8",
-    "contentRevision": 1,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -601,7 +613,7 @@ export default {
         "sectionId": "1e8a6271-c170-4cfb-8d66-3fea2eddcad2"
       },
       {
-        "heading": "Qué puedes poner en marcha hoy",
+        "heading": "Preguntas frecuentes y qué puedes poner en marcha hoy",
         "sectionId": "0a22bf94-5c7b-4f60-9920-b58c7afd974d"
       }
     ],
@@ -609,7 +621,7 @@ export default {
   },
   "preparar-respuestas-publicaciones-ia-sin-perder-control": {
     "guideId": "1fb99aa7-e9fb-4bec-bc88-207e357a743e",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -636,7 +648,7 @@ export default {
         "sectionId": "b0679a2d-591f-43d2-852d-9624c711b41a"
       },
       {
-        "heading": "Errores frecuentes y límites de la IA",
+        "heading": "Preguntas frecuentes y límites de la IA",
         "sectionId": "b00ce1a3-91f4-46c9-bdd7-837f4b6cdc5b"
       },
       {
@@ -1077,7 +1089,7 @@ export default {
   },
   "datos-de-clientes-que-puedes-pedir-y-como-protegerlos": {
     "guideId": "3f7d5162-b722-41a7-856b-e16533ba07cc",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Tu objetivo: pedir solo los datos necesarios",
