@@ -1318,6 +1318,19 @@ Se comprobó por lectura del código que la comparación anterior omitía una se
 
 **Precisión del estado:** el harness está **creado, no ejecutado**. Sigue pendiente la transferencia del HTML exacto al navegador de prueba y una revisión visual de capturas; no se declara PASS, WCAG ni aceptación de diseño. El PR #184 sigue abierto y no se modificó `vecidya-platform`.
 
+
+## 50. F6 — Corrección de layout Pro y harness ejecutable con Chromium del sistema (2026-10-29)
+
+**Cambios versionados:**
+- `plans/app-mini/prototypes/miniweb-tiers-comparison.html`, commit `9197c369533b1c5c04173337683a626ad6edff80`: en el breakpoint `max-width:800px` la variante Pro fuerza una única columna y orden de lectura texto→imagen, evitando depender de la posición explícita desktop.
+- `plans/app-mini/prototypes/test-miniweb-tiers.mjs`, commit `282fc8d63b59f2cb61fa1806539295644e2fa14b`: `pathToFileURL` para abrir archivos locales en distintas plataformas y `CHROMIUM_PATH` opcional para usar Chromium del sistema sin instalar un navegador Playwright gestionado.
+
+**Comprobación del entorno:** Chromium del sistema `/usr/bin/chromium` abrió una página HTML de prueba con Playwright Python. Esta comprobación demuestra que el navegador puede arrancar; **no demuestra que el prototipo haya pasado la matriz**.
+
+**Bloqueo de la matriz real:** el HTML del PR es legible desde el conector GitHub, pero `curl` desde el contenedor no resuelve `raw.githubusercontent.com`; todavía no se dispone de una copia verificada del artefacto exacto en el contenedor para ejecutar los nueve escenarios. No inventar PASS ni capturas. El harness JavaScript también requiere que el módulo `playwright` esté instalado en el entorno Node que lo ejecute.
+
+**Siguiente paso concreto:** facilitar la transferencia autorizada del archivo exacto a la carpeta local del test (o ejecutar el test desde un checkout de la rama en un equipo con acceso al repositorio). Ejecutar `CHROMIUM_PATH=/usr/bin/chromium node test-miniweb-tiers.mjs` donde corresponda, revisar nueve capturas y corregir únicamente fallos reproducibles. No tocar CI, producto, CRM ni despliegue.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
