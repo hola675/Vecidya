@@ -2322,3 +2322,36 @@ Para cada C01–C10, documentar al menos una trayectoria representativa y casos 
 
 ## Changelog adicional
 - **1.39.0 / 2026-10-29:** especificación TAX-G2/TAX-G3, funciones existentes y criterios de evidencia y rutas; solo documentación.
+
+## 48. CONSOL-01 — ficha de opciones críticas y rutas de sustitución (2026-10-29)
+**Estado:** revisión estática parcial, no certificación. PLAN_ONLY. Fuentes: `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`; `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`; `qa03b/v9-editorial-review-matrix.ts` blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`.
+
+### Opciones y evidencias inspeccionadas
+| ID | Opciones / semántica comprobada | Evidencia candidata | Revisión requerida |
+| --- | --- | --- | --- |
+| `q2_food_menu_visibility` | `clear=established`, `partial=partial`, `unclear=weak`, `not_applicable=not_applicable`, `unknown=uncertainty` | clarity_positioning / direct | «Todavía no muestro la oferta» no implica que sea realmente no aplicable; distinguir `not_published` de `not_applicable` con migración versionada |
+| `q2_dental_care_continuation` | `proactive=established`, `partial=partial`, `reactive=weak`, `not_applicable=not_applicable`, `unknown=uncertainty` | relationship_recurrence / direct | No exigir continuidad a tratamientos de una sola visita |
+| `q2_marketing_agency_scope_clarity` | `clear=established`, `partial=partial`, `unclear=weak`, `not_applicable=not_applicable`, `unknown=uncertainty` | clarity_positioning / direct | Diferenciar servicios no presentados de servicios no aplicables |
+| `q2_ecommerce_cart_visibility` | `yes=established`, `no=missing`, `unknown=uncertainty` | measurement_optimization / supporting | Visibilidad del carrito no acredita identificación ni permiso de contacto |
+| `q2_ecommerce_cart_followup` v2 | `always=established`, `sometimes=partial`, `rarely=weak`, `no_authorized_contact=not_applicable`, `unknown=uncertainty` | relationship_recurrence / direct | Revisar exclusión legítima y no penalizar falta de permiso |
+| `q2_startup_demand_signal` | `evidenceMigration=pending`, sin `evidenceV3` | ninguna evidencia aprobada | Interés, prueba y venta no equivalentes; no puntuar |
+| `q2_ecommerce_repeat_purchase` | `evidenceMigration=pending`, sin `evidenceV3` | ninguna evidencia aprobada | No inferir recurrencia digital de repetición de compras |
+| `q2_hospitality_flow_type` | `evidenceMigration=pending`, sin `evidenceV3` | contexto de modalidad | No confundir reservas de restaurante con citas profesionales |
+
+### Rutas condicionadas, no certificadas
+1. Sustitución dental: requiere `operating`, historial de clientes, nicho dentista, arquetipo citas y objetivo/fricción pertinentes. La pregunta genérica `q2_appointments_rebooking` recibe puerta inversa `not(dentalSpecialistEligible)`.
+2. Sustitución gastronomía/agencia: requiere operación e historial, nicho concreto, objetivo `explain` y presencia digital declarada; la genérica `q2_presence_offer_clarity` recibe `not(foodSpecialistEligible) AND not(agencySpecialistEligible)`.
+3. Ecommerce: `q2_ecommerce_cart_followup` solo se plantea si `q2_ecommerce_cart_visibility=yes`; `no_authorized_contact` preserva exclusión neutral.
+4. Preparación: `q2_startup_demand_signal` está disponible por estado `preparing` pero pendiente de evidencia; no cuenta como nivel certificado.
+Estas son condiciones leídas en código; **no** se ha probado alcanzabilidad, presupuesto ni ausencia de duplicados en una sesión real.
+
+### Decisiones bloqueadas
+- No cambiar automáticamente `not_applicable` a `not_published` sin decisión editorial y versión de opción.
+- No reutilizar scores QBV2 para V9 sin separar evidencia y contratos.
+- No aprobar nivel de madurez a partir de `pending` o `supporting` aislado.
+- No declarar TAX-G2/TAX-G3 completados: falta inventario de todas las opciones y rutas C01–C10.
+
+**Siguiente entrega:** revisión documental de rutas genéricas para C02/C03/C05/C10 y tabla de cobertura por dimensión con evidencia directa alcanzable, no solo mapeada.
+
+## Changelog adicional
+- **1.40.0 / 2026-10-29:** fichas de ocho preguntas críticas con estados de opción, cuatro rutas condicionadas y decisiones editoriales bloqueadas. Solo documentación.
