@@ -2683,3 +2683,19 @@ Clasificar cada pregunta y opción del banco ensamblado como **KEEP** (conservar
 
 ## Changelog adicional
 - **1.50.0 / 2026-10-29:** contrato documental de expansión del catálogo independiente del presupuesto adaptativo de entrevista; sin implementación.
+
+## 59. VAR-G1 — variantes editoriales equivalentes y rotación estable (2026-10-29)
+**PLAN_ONLY. Nueva decisión de producto:** incorporar desde ahora el contrato de variantes, pero producir y certificar el contenido después de cerrar el banco de preguntas, las evidencias y las rutas. Hasta cuatro formulaciones por pregunta (incluida la base), no cuatro preguntas distintas. No imponer cuatro cuando una sola sea más precisa.
+
+**Invariantes:** mismo `questionId`, versión semántica, objetivo, población, periodo temporal, supuesto de elegibilidad, opciones y `option.value`, evidencia y scoring; variar únicamente la formulación certificada de `prompt` y, si procede, `hint`. Si una variante añade condiciones como «sin hablar contigo», exige otra fuente de prueba o cambia lo que mide, **no es equivalente** y debe revisarse como pregunta/versionado independiente.
+
+**Localización:** variantes emparejadas y revisadas ES/EN; no basta traducción literal. Selección estable al entrar en la pregunta, persistida en el borrador local de la sesión como índice no identificable; al retroceder, reanudar o editar, conservar formulación mientras no cambie la versión del banco. En nueva sesión puede rotarse de manera local sin identificador de persona ni rastreo entre dispositivos. Sin variantes distintas de respuestas ni cambios de evidencia según el texto mostrado.
+
+**Interacciones:** una pregunta mostrada = una interacción, independientemente de cuántas variantes existan. No presentar varias formulaciones consecutivas para eludir 24+5; no reescribir la pregunta en pantalla durante la respuesta.
+
+**Orden:** (1) inventario completo y TAX-G2; (2) banco final KEEP/REVISE/REPLACE/ADD/HOLD; (3) redactar 1–4 variantes por pregunta priorizada; (4) revisión cognitiva y equivalencia ES/EN; (5) futuro selector determinista/estable y pruebas focales tras autorización. El contrato no certifica variantes actuales ni autoriza código.
+
+**Gate:** tabla por pregunta con textos ES/EN, `variantId`, dimensión, contexto, prueba de equivalencia, revisión humana y versión. Si falla equivalencia, dejar variante en HOLD.
+
+## Changelog adicional
+- **1.51.0 / 2026-10-29:** contrato de hasta cuatro variantes editoriales equivalentes por pregunta, rotación estable y fase posterior al cierre del banco; solo documentación.
