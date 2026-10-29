@@ -12,7 +12,7 @@
 
 **APROBADO:** Vecidya gestiona presencia digital, perfiles, MiniWeb, medios, publicación y configuración de su aplicación. GHL conserva sus funciones CRM; no duplicar CRM, automatizaciones ni contactos de GHL. Usar **licencia**, no membresía. Sin datos comerciales inventados.
 
-**PROPUESTA:** Objetivo WCAG 2.2 AA, enfoque mobile-first, SSR, rendimiento medido, componentes semánticos, teclado, movimiento reducido, contraste verificable, privacidad, autorización server-side por organización, progresión de divulgación y diseño consistente por tokens. Evitar HTML/CSS/JS arbitrarios de usuarios.
+**PROPUESTA:** Objetivo WCAG 2.2 AA, enfoque responsive diferenciado por superficie según DEC-17 (§36), SSR, rendimiento medido, componentes semánticos, teclado, movimiento reducido, contraste verificable, privacidad, autorización server-side por organización, progresión de divulgación y diseño consistente por tokens. Evitar HTML/CSS/JS arbitrarios de usuarios.
 
 ## 1. Baseline verificado y riesgos
 
@@ -874,6 +874,56 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 **Pruebas focales:** acceso móvil a `/app` y `/internal` muestra bloqueo sin exponer datos; tableta vertical/horizontal y escritorio acceden con permisos válidos; editor puede previsualizar MiniWeb en móvil desde tableta/escritorio; MiniWeb pública se renderiza y utiliza correctamente en móvil/tableta/escritorio; rutas públicas ajenas no sufren regresiones.
 
 **Estado:** política aprobada y documentada; no se ha implementado ni probado todavía el bloqueo.
+
+
+## 37. F1/F6/F7 — Blueprint visual por superficie y plantilla (2026-10-29)
+
+**Naturaleza:** propuesta de diseño detallada, NO mockups finales aprobados ni código. DEC-17 prevalece sobre cualquier mención histórica de `mobile-first` en este plan: `/app` y `/internal` son para **tableta y escritorio exclusivamente**; las MiniWeb públicas sí son responsive en móvil, tableta y escritorio.
+
+### Sistema de experiencia compartido
+- **App / Internal:** ancho útil para tabletas, navegación lateral colapsable, encabezado contextual, tarjetas de estado, paneles de trabajo y formularios con etiquetas visibles; densidad moderada y jerarquía clara. En móvil, reemplazar la experiencia por aviso neutro sin acciones operativas.
+- **MiniWeb público:** navegación de pocas opciones, CTA principal inequívoco, secciones ordenadas y lectura rápida; prioridad a contenido real del negocio, imágenes optimizadas, contacto accesible y rendimiento móvil.
+- **Editor F7 (solo app):** escritorio con tres áreas (secciones / lienzo / inspector); tableta con paneles colapsables o pestañas, sin exigir drag-and-drop. El selector de preview móvil no habilita edición desde un teléfono.
+- **Tokens propuestos:** familias de espaciado, radios, tipografía, color semántico, estados de foco y elevación; mantener consistencia con tokens reales del repositorio, sin introducir otro design system antes de inventariar el existente.
+
+### F1 — Inventario de pantallas objetivo
+| Pantalla | Bloques principales | Acción primaria | Estados obligatorios |
+| --- | --- | --- | --- |
+| Inicio | organización activa, resumen perfil, MiniWeb, licencia/cupos, tareas | Continuar configuración / Editar MiniWeb | sin organización, sin licencia, publicado, borrador, congelado |
+| Mi negocio | identidad, categoría, descripción, contacto, ubicación, horarios | Guardar datos del negocio | incompleto, válido, error de guardado, sin permiso |
+| MiniWeb | plantilla, estado público, borrador, acceso editor, historial | Editar / Revisar publicación | nunca publicado, publicado, desactivado, cambios sin publicar |
+| Biblioteca | activos por tipo, búsqueda, uso en secciones, cuota real | Seleccionar / Subir si autorizado | vacío, procesando, fallido, sin cuota, no autorizado |
+| Configuración | cuenta, organización, permisos, integraciones según soporte | Guardar configuración | sin permiso, validación, error, éxito confirmado |
+| Aprende/Soporte | contenidos y ayuda contextual existentes | Consultar recurso | sin contenido, carga, error |
+
+**Regla de UX:** el selector de organización es visible y mantiene contexto; toda pantalla revalida permiso y titularidad en servidor. No mostrar cifras de consumo/cupos que el backend no pueda justificar.
+
+### F6 — Identidad visual de las cinco plantillas
+| Clave real | Nombre / nivel mínimo DEC-12 | Composición visual objetivo | Componentes destacados |
+| --- | --- | --- | --- |
+| `vecidya-default` | Esencial / Cuadra | Cabecera limpia, hero informativo, secciones en flujo vertical | identidad, servicios breves, horario, contacto |
+| `services-studio` | Servicios / Cuadra | Hero con propuesta de valor, tarjetas de servicios y CTA visible | servicios, galería de trabajos, FAQ, contacto |
+| `catalog-store` | Catálogo / Barrio | Portada de catálogo, cuadrícula de productos, categorías visuales | productos, galería, disponibilidad sin checkout inventado |
+| `gastronomy-table` | Gastronomía / Barrio | Imagen editorial, menú/secciones, horarios y ubicación destacados | productos/menú, fotos, horario, ubicación |
+| `professional-profile` | Profesional / Ciudad | Presentación de credenciales, servicios, trayectoria y contacto | about, servicios, certificaciones solo cuando módulo esté disponible |
+
+**Importante:** las cinco composiciones son objetivos de diseño; actualmente solo `vecidya-default` está disponible. No mostrar certificaciones, testimonios o equipo como funcionales mientras sus módulos sigan `planned`. Ninguna plantilla debe suponer checkout, reservas o CRM nativos no existentes.
+
+### Contratos visuales por tamaño
+- **MiniWeb móvil:** contenido en una columna salvo galerías que admitan 2 columnas legibles; navegación compacta accesible, CTA visible sin tapar contenido, imágenes adaptativas, controles táctiles y foco.
+- **MiniWeb tableta:** composiciones de una/dos columnas según contenido, medios con proporciones estables, navegación legible.
+- **MiniWeb escritorio:** secciones con anchura máxima, rejillas y espacios generosos, sin líneas de texto excesivamente largas.
+- **Editor tableta:** panel de secciones e inspector alternables, lienzo sin reducción ilegible, controles de orden por botones; no usar viewport de teléfono como modo de trabajo.
+- **Bloqueo app/internal móvil:** pantalla de acceso no disponible, sin contenido operativo. Determinación técnica por validar para no confundir tableta vertical con teléfono grande ni escritorio estrecho.
+
+### Entregables que faltan para cerrar diseño visual
+1. Auditoría del sistema de diseño actual y componentes reutilizables del repositorio.
+2. Wireframes revisables para las seis pantallas de F1 y los estados vacíos/bloqueados.
+3. Diseños de las cinco plantillas con variantes móvil/tableta/escritorio y controles de accesibilidad.
+4. Matriz final componente ↔ módulo V2 ↔ tier ↔ permiso ↔ API, sin prometer módulos `planned`.
+5. Aprobación visual explícita antes de construir el catálogo nuevo; DEC-11 aprueba el **concepto del editor**, no estas composiciones de plantilla.
+
+**Estado:** blueprint propuesto y documentado, sin renders, tests, implementación ni despliegue.
 
 ## 12. Registro de avance
 
