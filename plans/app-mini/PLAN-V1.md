@@ -2077,3 +2077,28 @@ Cada fase exige revisión de seguridad, pruebas focales en archivos tocados y ev
 - **HV2-PRODUCT:** ratificar partición de turnos nocturnos, excepciones por fecha y no mostrar «abierto ahora» en primera entrega.
 
 **Resultado:** los cinco huecos de diseño enumerados al final de §69 quedan **SPECIFIED** como contratos y propuesta de secuencia. Las aprobaciones listadas siguen **PENDING HUMAN**, nunca CLOSED por silencio. El proyecto sigue en estado de planificación, no implementación.
+
+
+## 71. Acta de decisiones aprobadas por el responsable — 2026-10-29
+
+**Fuente de autoridad:** aprobación explícita del responsable del proyecto en esta conversación: `familias=yes; horario=yes; lanzamiento=manual; pagos=pending`. Este acta **prevalece sobre las menciones de pendiente o recomendado** para las cuatro decisiones concretas aprobadas en §§54, 56, 69 y 70. No supone aprobación de otras decisiones ni autorización de implementación, merge o despliegue.
+
+| Decisión | Estado vinculante | Alcance aprobado |
+|---|---|---|
+| **CAT-01** | **APPROVED** | Las cinco familias `vecidya-default`, `services-studio`, `catalog-store`, `gastronomy-table`, `professional-profile` están disponibles en Cuadra, Barrio y Ciudad; todas ofrecen las mismas secciones y funcionalidades. Base/Pro/Premium solo alteran presentación. |
+| **HV2-PRODUCT** | **APPROVED** | Horario V2 creado desde cero, sin leer/importar/sincronizar V1. Se aprueba el contrato de §70.1: turnos nocturnos partidos por fecha local, excepciones fechadas con precedencia, zona IANA, sin indicador «abierto ahora» en primera entrega. |
+| **REL-01** | **APPROVED** | Primer lanzamiento con **licencias administradas**; checkout y cobro automático quedan para una entrega posterior sujeta a aprobación específica. |
+| **COM-01 / PAY-01 / BILL-02** | **PENDING HUMAN — ratificado** | No se eligen todavía PSP, jurisdicción, tratamiento fiscal, moneda/tarifas GHL regionales, impagos ni condiciones contractuales. No publicar precios regionales no aprobados ni activar cobros automáticos. |
+
+### 71.1 Efectos inmediatos sobre la planificación
+
+- **P0:** CAT-01 y HV2-PRODUCT dejan de bloquear el cierre de contratos; mantener las revisiones técnicas de arquitectura, seguridad y aceptación.
+- **P3:** se pueden diseñar las quince combinaciones visuales sin bloquear funciones por nivel; **VIS-01 sigue pendiente** de revisión y aceptación de diseños reales.
+- **P6:** dividir en **P6A — lanzamiento con licencias administradas** y **P6B — automatización de checkout/cobro**. P6A no depende de tener un PSP elegido, pero sí de la política operativa, comercial y legal aplicable a licencias administradas y de OPS-01. P6B permanece bloqueada por COM-01/PAY-01/BILL-02 y aprobación expresa.
+- La documentación histórica que presenta CAT-01, HV2-PRODUCT o REL-01 como «pendiente» refleja el estado anterior a este acta; **no reabrirlas sin una nueva decisión explícita**.
+
+### 71.2 Pendientes que NO se consideran aprobados
+
+**VIS-01** (aceptación visual real), **COM-01** (tarifas, regiones, monedas y términos), **PAY-01** (proveedor y flujo de pagos), **BILL-02** (facturación, impuestos e impago), **GOV-01** (gobierno documental) y **OPS-01** (responsables de diseño, seguridad y autorización de release). Las decisiones sobre permisos, retención y consentimiento también requieren sus revisiones correspondientes. Ninguna se infiere por silencio.
+
+**Estado del proyecto:** decisiones de producto anteriores aprobadas; el PR #184 continúa siendo **exclusivamente de planificación**. No ejecutar código, migraciones, pruebas ni despliegues como consecuencia de este acta.
