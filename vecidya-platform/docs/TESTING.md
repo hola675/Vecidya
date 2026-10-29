@@ -1,3 +1,7 @@
+## APP-MINI-V2A — pruebas focales pendientes (2026-10-29)
+
+Archivo: `tests/unit/miniweb-visual-variants.test.ts`. Casos: tres composiciones y niveles, rechazo de claves desconocidas/heredadas, comparación ordenada de tiers. Ejecutar desde `vecidya-platform/`: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-visual-variants.test.ts`; después `pnpm run typecheck`, `pnpm run build`, `git diff --check`. **No se han ejecutado**: falta checkout de repo y dependencias en entorno accesible. No atribuir PASS.
+
 # Pruebas
 
 ## APRENDE-PLAN-V1 — experiencia de descubrimiento y retorno (2026-10-29; local)
