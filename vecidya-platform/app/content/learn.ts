@@ -310,6 +310,15 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Debo revisar cada respuesta durante el piloto?", answer: "Al inicio, revisa cada respuesta antes de usarla con una persona. Mantén revisión humana para precios, condiciones y decisiones importantes, aunque amplíes las pruebas." },
+          { question: "¿Qué hago si el asistente inventa un dato?", answer: "Pausa el piloto, comprueba la fuente y corrige límites o instrucciones. Repite el caso y otros parecidos antes de reanudar; no envíes la respuesta dudosa." },
+          { question: "¿Qué información uso para probarlo?", answer: "Prefiere datos sintéticos o información pública confirmada. No copies conversaciones ni datos personales sin autorización y sin revisar las condiciones del proveedor." },
+        ] }],
+      },
+      {
         heading: "Fuentes y alcance",
         paragraphs: [
           "Estas referencias ayudan a identificar riesgos y controles de una prueba de IA. No garantizan resultados ni sustituyen requisitos legales locales.",
@@ -679,9 +688,13 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Qué puedes hacer ahora",
+        heading: "Preguntas frecuentes y qué puedes hacer ahora",
         paragraphs: [],
-        blocks: [{
+        blocks: [{ type: "faq", items: [
+          { question: "¿Cada cuánto debo revisar mis canales digitales?", answer: "Elige una frecuencia que puedas cumplir y revisa también después de cambios de horario, servicios, ubicación o contacto. No hay un intervalo único para todos los negocios." },
+          { question: "¿Qué hago si dos canales muestran información distinta?", answer: "Confirma el dato con la persona responsable y una fuente interna vigente. Corrige los canales afectados y vuelve a probar cómo los ve una persona visitante." },
+          { question: "¿Puedo publicar cualquier reseña que me envíen?", answer: "Usa testimonios reales con permiso y sin exponer datos privados. No inventes reseñas ni atribuyas frases a personas que no las autorizaron." },
+        ] }, {
           type: "summary",
           items: [
             "Haz una lista de los canales que realmente mantienes y asigna quién actualiza cada uno.",
@@ -976,6 +989,15 @@ export const learnArticles: LearnArticle[] = [
             "Conserva el proceso manual y revisa preferencias, datos y efectos antes de ampliar.",
           ],
         }],
+      },
+      {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Cómo pruebo una automatización sin contactar a clientes?", answer: "Usa datos de ensayo y un entorno o canal de prueba. Desactiva envíos, cobros y otras acciones externas; confirma que ningún caso de prueba alcance a una persona real." },
+          { question: "¿Qué conviene vigilar después de activarla?", answer: "Revisa ejecuciones correctas y fallidas, reintentos, duplicados y casos que pasan a revisión. Conserva solo los datos necesarios para investigar errores." },
+          { question: "¿Qué hago si empieza a repetir una acción?", answer: "Pausa el flujo, usa el proceso manual acordado y comprueba qué ocurrió antes de reactivarlo. Corrige el caso y prueba de nuevo con datos controlados." },
+        ] }],
       },
       {
         heading: "Fuentes y alcance",
@@ -1423,9 +1445,13 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Qué puedes hacer ahora",
+        heading: "Preguntas frecuentes y qué puedes hacer ahora",
         paragraphs: [],
-        blocks: [{
+        blocks: [{ type: "faq", items: [
+          { question: "¿Puedo cambiar DNS sin afectar la web o el correo?", answer: "Depende de los registros y servicios actuales. Guarda la configuración, identifica quién mantiene web y correo y sigue los valores de sus proveedores; no reemplaces registros que no entiendas." },
+          { question: "¿Qué hace un registro MX?", answer: "Indica qué servicio recibe el correo del dominio. La web puede funcionar con otro proveedor; confirma los registros necesarios con quien administra el correo." },
+          { question: "¿El candado HTTPS demuestra que un sitio es confiable?", answer: "No. HTTPS protege la conexión y verifica el certificado para el dominio; no demuestra que el negocio sea legítimo ni que su oferta sea segura." },
+        ] }, {
           type: "summary",
           items: [
             "Dibuja por separado dominio, DNS, web y correo y anota quién controla cada pieza.",
@@ -1848,6 +1874,15 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Qué debería medir primero?", answer: "Empieza con una pregunta que pueda cambiar una decisión. Elige una señal del sitio y un resultado que puedas comprobar, como consultas atendidas, y define cómo se cuentan." },
+          { question: "¿Más visitas significan más clientes?", answer: "No necesariamente. Una visita, un clic, una consulta y una venta son acciones distintas; revisa el recorrido y confirma los resultados fuera del tablero." },
+          { question: "¿Debo identificar a cada visitante?", answer: "No si la pregunta puede responderse con datos agregados. Reduce la recolección y verifica las reglas de privacidad y consentimiento aplicables a tu caso." },
+        ] }],
+      },
+      {
         heading: "Fuentes y alcance",
         paragraphs: [
           "Las definiciones dependen del producto de analítica. Estas referencias ayudan a comprobar qué registra Google Analytics y qué consideraciones de privacidad publica su proveedor.",
@@ -2035,7 +2070,7 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Errores frecuentes y una rutina de mantenimiento",
+        heading: "Preguntas frecuentes y rutina de mantenimiento",
         paragraphs: ["Un dato impreciso puede hacer perder una llamada o provocar un desplazamiento innecesario. Una revisión breve después de cada cambio importante ayuda a corregirlo."],
         blocks: [{ type: "steps", label: "Revisa mensualmente y después de cambios", items: [
           { title: "Comprueba elegibilidad", detail: "Consulta las normas antes de crear una ficha o añadir otra ubicación." },
@@ -2048,6 +2083,10 @@ export const learnArticles: LearnArticle[] = [
           "Actualiza horarios, servicios, fotos y avisos; responde reseñas sin revelar datos.",
           "Comprueba que la información coincida con la web.",
           "No prometas posiciones ni resultados.",
+        ] }, { type: "faq", items: [
+          { question: "¿Qué información conviene comprobar primero?", answer: "Confirma elegibilidad y revisa nombre, categoría, horario, zona o ubicación y formas de contacto con información real. Las reglas de Google pueden cambiar; consulta la ayuda oficial vigente." },
+          { question: "¿Debo compartir la contraseña para que alguien ayude?", answer: "No compartas credenciales. Usa los permisos de acceso que ofrece la plataforma y concede solo el nivel necesario a personas de confianza." },
+          { question: "¿Puedo responder una reseña con datos del cliente?", answer: "Responde con cortesía sin confirmar información privada ni detalles del servicio. Mantén la conversación sobre datos personales en un canal apropiado." },
         ] }],
       },
       {
@@ -2142,9 +2181,13 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{ type: "callout", tone: "caution", title: "Una consulta no autoriza promociones", text: "El teléfono compartido para recibir una respuesta no demuestra permiso para una campaña comercial." }],
       },
       {
-        heading: "Qué puedes poner en marcha hoy",
+        heading: "Preguntas frecuentes y qué puedes poner en marcha hoy",
         paragraphs: [],
-        blocks: [{ type: "sources", items: [
+        blocks: [{ type: "faq", items: [
+          { question: "¿Debo copiar la conversación completa al registro común?", answer: "No por defecto. Guarda el contexto mínimo para responder y la referencia al mensaje original; limita el acceso y evita datos sensibles que no hagan falta." },
+          { question: "¿Responder una consulta permite enviar promociones después?", answer: "No automáticamente. Mantén separada la respuesta solicitada del permiso para marketing y sigue las reglas del canal y la jurisdicción." },
+          { question: "¿Cómo evitamos que dos personas respondan lo mismo?", answer: "Asigna una persona responsable, un estado visible y una próxima acción. Antes de contestar, revisa el registro compartido y el canal original." },
+        ] }, { type: "sources", items: [
           { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
           { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido sobre marketing directo; el ICO indica que su guía PECR está en revisión tras cambios legales. Los requisitos dependen de la jurisdicción." },
         ] }, { type: "summary", items: [
@@ -2222,13 +2265,17 @@ export const learnArticles: LearnArticle[] = [
         ] }],
       },
       {
-        heading: "Errores frecuentes y límites de la IA",
+        heading: "Preguntas frecuentes y límites de la IA",
         paragraphs: ["Un texto fluido aún puede equivocarse. La IA no conoce cambios recientes ni lo que puedes cumplir: confirma cada afirmación."],
         blocks: [{ type: "list", items: [
           "Pedir algo «atractivo» sin objetivo ni límites.",
           "Copiar hechos, citas, enlaces o condiciones sin verificarlos.",
           "Compartir detalles de clientes que no hacen falta.",
           "Enviar o publicar automáticamente sin aprobación humana.",
+        ] }, { type: "faq", items: [
+          { question: "¿Puedo pegar mensajes de clientes en una herramienta de IA?", answer: "No por defecto. Usa ejemplos sintéticos o datos públicos; revisa permisos, condiciones del proveedor y necesidad antes de procesar información personal." },
+          { question: "¿Puedo publicar directamente el texto generado?", answer: "Trátalo como borrador. Comprueba hechos, enlaces, precios, fechas, tono y privacidad; una persona responsable debe aprobarlo antes de enviarlo o publicarlo." },
+          { question: "¿Cómo evito que la IA complete datos que no conoce?", answer: "Proporciona datos confirmados e indica que señale lo que falta en vez de inferirlo. Aun así, verifica cada afirmación con la fuente original." },
         ] }, { type: "summary", items: [
           "Define tarea, público, tono y datos aprobados.",
           "Pide que marque lo pendiente y no invente datos.",

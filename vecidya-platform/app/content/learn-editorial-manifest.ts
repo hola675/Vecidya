@@ -40,7 +40,7 @@ export default {
   },
   "como-probar-un-asistente-de-ia-con-supervision-humana": {
     "guideId": "9c755b4b-1641-4ec7-afe4-6c48e24974ec",
-    "contentRevision": 2,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Empieza por una tarea pequeña",
@@ -149,7 +149,7 @@ export default {
   },
   "como-mantener-actualizada-y-confiable-tu-presencia-digital": {
     "guideId": "cd2c6641-3706-42dd-8b86-476decd41bc4",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás",
@@ -227,7 +227,7 @@ export default {
   },
   "como-probar-y-supervisar-automatizaciones-sin-perder-datos": {
     "guideId": "c031c503-15ad-4049-bbea-a1c941a0526a",
-    "contentRevision": 2,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Primero prueba la regla, no la confianza",
@@ -344,7 +344,7 @@ export default {
   },
   "dns-https-y-correo-como-se-conecta-tu-dominio": {
     "guideId": "1ca461b3-ed97-429e-b781-0735dc7bdb0a",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Piensa en el dominio como una dirección con varias rutas",
@@ -453,7 +453,7 @@ export default {
   },
   "analitica-web-que-medir-en-tu-negocio": {
     "guideId": "4ca7ef53-39fc-4a4c-a291-dcd3d1020af5",
-    "contentRevision": 2,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Empieza por una pregunta, no por un tablero",
@@ -531,7 +531,7 @@ export default {
   },
   "perfil-empresa-google-completar-y-mantener-actualizado": {
     "guideId": "c163fcb6-0a35-4140-8ac7-74b5bb7fe3bc",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -570,7 +570,7 @@ export default {
   },
   "organizar-consultas-mensajes-llamadas-formularios": {
     "guideId": "cb0b397f-f72e-439f-aa87-dd5fe8d746b8",
-    "contentRevision": 2,
+    "contentRevision": 3,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",
@@ -609,7 +609,7 @@ export default {
   },
   "preparar-respuestas-publicaciones-ia-sin-perder-control": {
     "guideId": "1fb99aa7-e9fb-4bec-bc88-207e357a743e",
-    "contentRevision": 1,
+    "contentRevision": 2,
     "sections": [
       {
         "heading": "Qué aprenderás y cómo practicarlo",

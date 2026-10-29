@@ -3,8 +3,8 @@
 ## 2026-10-29 — APRENDE-PLAN-V1 — paquete local de revisión humana y auditoría
 
 - Define perfiles hipotéticos de cobertura y roles humanos con criterios, evidencia y decisiones separadas para contenido y clasificación de acceso. No representa entrevistas, personas reales ni aprobaciones.
-- Auditoría estructural local del catálogo: 48 guías, 6 categorías, 9 itinerarios, 387 IDs de sección, fuentes HTTPS y seis candidatas 6/42; ocho guías carecen de FAQ. Ajusta estado de vigencia de referencias NIST/ICO y precisión de la descripción de costos IA en ocho guías, que pasan a revisión 2.
-- Sin cambios de publicación, deploy, D1 remota o firma editorial. Los gates humanos permanecen abiertos.
+- Auditoría estructural local del catálogo: 48 guías, 6 categorías, 9 itinerarios, 387 IDs de sección, fuentes HTTPS y seis candidatas 6/42; se redactan tres FAQ para cada una de las ocho guías que carecían de ellas. Cuatro guías quedan en `contentRevision: 3` y cuatro en `2` tras cambios de fuentes, costos y preguntas frecuentes.
+- El usuario confirma que revisará las seis candidatas gratuitas; su lectura y aceptación todavía no constan. FAQ nuevas, clasificación 6/42, revisión legal/operativa, seguridad y accesibilidad manual permanecen pendientes. Sin publicación, deploy, D1 remota ni firma editorial.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 7 (certificación local parcial)
 
