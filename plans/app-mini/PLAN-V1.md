@@ -1717,3 +1717,55 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 | GAP-13 | SPECIFIED, aprobación pendiente | REL-01, COM-01, PAY-01 y BILL-02 abiertos |
 
 **Próximo trabajo seguro:** R4 gobernanza/release y conciliación editorial de contradicciones históricas; luego ejecutar pruebas visuales reales y registrar decisiones humanas. No marcar estos huecos VERIFIED por especificarlos.
+
+
+## 61. R4 — gobernanza documental, integración y release seguro (2026-10-29)
+
+**Estado:** especificación de cierre; no se ha ejecutado merge, deploy, migración ni rollback. La aprobación de responsables es humana y no se infiere del éxito de CI.
+
+### 61.1 GAP-14 — canon documental y trazabilidad
+
+**Fuente de verdad por dominio:**
+- `PLAN-V1.md`: decisiones de producto, fases, matriz de aceptación y registro de huecos.
+- `CONTRATO-VARIANTES-V2.md`: esquema de variantes y secuencia de checkpoints; su adenda §6 prevalece sobre nombres históricos.
+- `SERVICIOS-PAGOS-PLAN-V1.md`: SKU, precio proveedor, markup y ciclo económico.
+- `STATUS.md`, `PROJECT_STATE.md`, `ROADMAP.md` y `TESTING.md` del repositorio: estado operacional, release y evidencia de pruebas según su ubicación canónica real en main.
+
+**Acción requerida antes de merge:** inventariar todos los Markdown canónicos y su límite de 20; decidir GOV-01 (consolidar estos tres documentos en menos archivos o aprobar excepción explícita), actualizar índice y enlaces sin duplicar políticas. No borrar documentos de otras áreas para hacer espacio.
+
+**Control editorial:** cada decisión con ID, fecha, estado (aprobada/propuesta/sustituida), origen, efectos y pruebas. Cuando texto histórico contradiga DEC-17/18, marcarlo `HISTÓRICO / SUPERADO` o añadir referencia de precedencia; no eliminar rastros de decisiones. Comprobar links relativos, encabezados, IDs duplicados y tablas Markdown mediante chequeo focal del diff.
+
+### 61.2 GAP-15 — responsabilidad, integración y operación
+
+| Rol de aceptación | Responsabilidad | Estado |
+| --- | --- | --- |
+| Product owner | Aprobar CAT-01, REL-01 y alcance de entrega | Pendiente de designación/confirmación |
+| Diseño UX/UI | Aprobar VIS-01 y matriz de capturas | Pendiente |
+| Seguridad / datos | Aprobar aislamiento multi-tenant, R2, migraciones y rollback | Pendiente |
+| Comercial / finanzas | Aprobar COM-01, PAY-01, BILL-02 y catálogo | Pendiente |
+| Responsable técnico de release | Autorizar integración y despliegue, verificar observabilidad y reversión | Pendiente |
+
+**Checklist por PR:** branch aislado desde main vigente; diff acotado; sin cambios accidentales de otros agentes; contratos compatibles; tests focalizados de módulos afectados; typecheck/build cuando aplique; CI del SHA exacto; descripción de migraciones, riesgos, feature flags y rollback; aprobación explícita para merge.
+
+**Secuencia de integración propuesta:** V2-A → V2-B → V2-C → V2-D, revalidando tras cada integración; V2-E renderer; F2A/F2B; F1/F3/F4/F5/F7; F6; F8; F9. No asumir que los PRs aislados ya forman un conjunto coherente.
+
+### 61.3 Runbook mínimo de lanzamiento y reversión
+
+**Preflight:** confirmar rama y SHA, backup/export de D1 y referencias R2 según herramientas realmente disponibles, inventario de migraciones aditivas, feature flags V2 apagados, secretos y bindings, rutas V1, permisos de rollback y estado de Workers. Verificar salud HTTP del entorno destino, no solo build local.
+
+**Despliegue controlado:** aplicar migraciones aprobadas en orden y con compatibilidad V1; desplegar versión inactiva o gated; verificar lectura V1, aislamiento multi-tenant, guardado de borrador, licencia/cupo, publicación V2 en cuenta de prueba, medios, 404 admin, noindex y sitemap. Activar progresivamente solo tras evidencia y aprobación.
+
+**Observabilidad:** registrar errores por ruta, fallos de autorización, CAS/conflictos, cuotas, variantes inválidas, latencia, tamaño de snapshots, fallos de R2 y resultados de publicación. No incluir PII, tokens ni contenido privado en logs.
+
+**Reversión:** apagar feature flag V2 y regresar al último Worker conocido bueno; preservar migraciones aditivas y snapshots nuevos, sin DROP destructivo ni restauración que borre datos de usuarios. Validar que V1 sigue sirviendo sitios históricos y que no quedan publicaciones huérfanas. Si la migración no es reversible, documentar rollback lógico/forward-fix antes de producción.
+
+**Stop conditions:** fuga cross-tenant, cobro duplicado, corrupción de snapshot, borrado de medios históricos, variante sin derecho, sobrecupo por carrera o regresión de V1: detener activación, preservar evidencia, revertir tráfico V2 y abrir incidente.
+
+### 61.4 Gate de cierre
+
+| Hueco | Estado tras R4 | Para VERIFIED |
+| --- | --- | --- |
+| GAP-14 | SPECIFIED | Conteo real de Markdown, decisión GOV-01, índice y validación focal |
+| GAP-15 | SPECIFIED | Responsables designados, simulacro de rollback y evidencia HTTP por SHA |
+
+**Pendiente:** inventario real de Markdown, reconciliación editorial y designación humana. R4 completa la especificación, **no** la verificación de los huecos.
