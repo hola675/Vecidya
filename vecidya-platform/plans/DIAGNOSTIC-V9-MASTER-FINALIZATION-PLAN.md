@@ -389,3 +389,62 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 modelo
 
 ## Changelog adicional
 - **1.6.0 / 2026-10-29:** D-V9-005 aprobada; contratos de vistas, transición de identidad, seguridad, tareas PLAN-I01–I07 y decisión siguiente. Documentación exclusivamente.
+
+
+## 14. Decisión D-V9-006 — priorización explicable multicriterio (aprobada 2026-10-29)
+**Aprobación expresa:** «priorización explicable combinando impacto, urgencia, esfuerzo y objetivos del negocio». Estado APPROVED para producto, no para algoritmo ni código.
+
+### 14.1. Principio de priorización
+Cada acción propuesta debe tener evidencia asociada, brecha u oportunidad concreta, beneficio digital potencial, urgencia contextual, esfuerzo estimado cuando sea justificable y alineación con los objetivos declarados. Ninguno de los cuatro factores se presenta como hecho comprobado cuando solo es inferencia. Las recomendaciones gratuitas o ejecutables internamente deben poder ocupar cualquier prioridad; contratar Vecidya, usar MiniWeb, Vecindario, Aprende o GHL no mejora la clasificación por sí mismo.
+
+### 14.2. Contrato funcional propuesto (campos sujetos a validación técnica)
+- Identidad estable de recomendación y versión de regla/catálogo.
+- Referencias a evidencias y dimensiones aplicables.
+- Descripción del problema u oportunidad y acción concreta.
+- Impacto esperado: categoría y justificación; no promesa cuantificada.
+- Urgencia: categoría y causa verificable.
+- Esfuerzo: categoría, supuestos, recursos/dependencias y estado desconocido si no puede estimarse.
+- Objetivos: identificadores declarados por el usuario y explicación de alineación.
+- Prioridad final, explicación legible, incertidumbre y regla de desempate.
+- Tipo de salida: acción autónoma/gratuita, recurso Aprende verificado, servicio Vecidya opcional u otra alternativa pertinente; enlace solo si está verificado.
+
+### 14.3. Reglas y excepciones que debe detallar el plan
+1. No ordenar únicamente por impacto, facilidad o intención comercial: considerar los cuatro factores y hacer visible su razonamiento.
+2. No inventar pesos, porcentajes, ROI, precios ni umbrales. Elaborar propuesta de calibración, contrastarla con casos reales y solicitar aprobación.
+3. Si un factor es desconocido, conservar la incertidumbre; definir fallback explícito sin convertir desconocido en cero.
+4. Separar acciones imprescindibles para corregir riesgos digitales de oportunidades opcionales; validar qué significa «urgente» por escenario.
+5. Tratar dependencias: una acción habilitadora puede preceder a otra de mayor impacto, con explicación.
+6. Evitar recomendaciones contradictorias, repetidas o no aplicables a preparación, pausa, organizaciones sin venta directa y actividades híbridas.
+7. La presentación anónima y el informe con cuenta deben derivarse de la misma evaluación y orden de prioridades; solo cambia el detalle visible.
+8. Si Aprende o el catálogo comercial carecen de recursos pertinentes, conservar la acción autónoma y registrar hueco de catálogo, sin enlaces inventados.
+
+### 14.4. Tareas documentales para el futuro agente
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-A01 | Inventariar reglas y fuentes actuales de recomendaciones, servicios, licencias y Aprende | Matriz origen→regla→destino→estado de publicación | Sin suponer contratos existentes |
+| PLAN-A02 | Definir escalas semánticas de impacto, urgencia, esfuerzo y alineación | Diccionario con ejemplos y casos desconocidos | Validación de producto |
+| PLAN-A03 | Proponer algoritmo determinista, ponderación, dependencias y desempates | Pseudocódigo versionado y ejemplos calculados | Aprobación explícita de calibración |
+| PLAN-A04 | Diseñar trazabilidad de evidencia y explicaciones | Contrato de recomendación con referencias y versiones | Ninguna prioridad sin explicación |
+| PLAN-A05 | Definir filtros de aplicabilidad y deduplicación | Matriz por escenario C01–C10 | Sin contradicciones ni ventas ficticias |
+| PLAN-A06 | Diseñar neutralidad comercial y alternativas gratuitas | Reglas de separación evaluación→acción→oferta | Servicios no alteran prioridad |
+| PLAN-A07 | Diseñar presentación de acciones en resumen anónimo e informe autenticado | Ejemplos de ambas vistas sobre un mismo resultado | Consistencia de prioridades |
+| PLAN-A08 | Especificar pruebas focalizadas futuras y calibración editorial | Casos entrada→ranking→explicación, empates, incertidumbre y fallbacks | Reproducibilidad sin ejecutar ahora |
+
+### 14.5. Casos de aceptación futuros
+- Emprendimiento sin ventas: una acción de preparación digital puede ser prioritaria sin estimar ingresos.
+- Negocio activo con contacto inaccesible: urgencia justificada puede superar una mejora estética de alto impacto potencial.
+- Organización sin venta directa: objetivos de participación o acceso no se convierten en métricas comerciales.
+- Recomendaciones con impacto similar: dependencias y esfuerzo pueden decidir el orden, con explicación.
+- Falta información de esfuerzo: no asumir «fácil» ni «difícil» sin evidencia.
+- Recurso Aprende no publicado: omitir enlace y conservar recomendación útil.
+- Servicio Vecidya disponible: no altera la puntuación ni adelanta una recomendación por ser comercial.
+- Dos ejecuciones con mismas respuestas, versiones y reglas: mismo orden y explicaciones.
+
+### 14.6. Próxima decisión D-V9-007 — integración de Aprende
+Elegir si V9 (A) propone automáticamente recursos de Aprende publicados y pertinentes dentro del plan de acción; (B) ofrece un apartado de aprendizaje opcional separado; o (C) combina recomendaciones contextuales con una biblioteca opcional, sin condicionar el diagnóstico ni el acceso a resultados. Requiere verificar el contrato real de Aprende y aprobación del responsable.
+
+### 14.7. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbrido APPROVED; D-V9-004 adaptativo 24 APPROVED; D-V9-005 resumen anónimo/informe con cuenta APPROVED; D-V9-006 multicriterio APPROVED; D-V9-007 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.7.0 / 2026-10-29:** D-V9-006 aprobada; contrato de recomendación, tareas PLAN-A01–A08, criterios de aceptación y siguiente decisión. Solo documentación.
