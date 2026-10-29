@@ -68,3 +68,23 @@ Fuentes: `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece3084
 
 ### Changelog
 - **1.4.0 / 2026-10-29:** seis preguntas focales de claridad clasificadas por contexto y evidencia; distinción entre cobertura C02 candidata y hueco C08 no resuelto.
+
+## Fase 6 — inventario focal de aprendizaje y mejora digital
+
+Fuente: `qa03b/bank.ts`, blob `b4772d73e1d8b5044ba2011088db978c364097f0`.
+
+| Pregunta | Elegibilidad declarada | Evidencia | Riesgo / decisión |
+| --- | --- | --- | --- |
+| `q2_measurement_rate_estimate` | operating + historial | measurement_optimization directa | Habla de consultas/pedidos convertidos en compra; no es universal para nonprofit |
+| `q2_measurement_result_recording` | operating + historial + respuesta `unknown` a tasa | measurement_optimization directa | Recupera evidencia sobre registro, no inventa tasa |
+| `q2_measurement_review_cycle` | operating + historial | measurement_optimization directa | Pregunta revisión y decisiones; puede solaparse con práctica |
+| `q2_measurement_practice` | operating | measurement_optimization directa | Últimos tres meses; incluye participantes, beneficiarios y aportes; no exige software |
+
+**Conclusión focal:** C05 organización operativa sin ventas dispone de una pregunta candidata neutral respecto a ingresos: `q2_measurement_practice`. La elegibilidad por `operating` no demuestra por sí sola que el selector la muestre ni que alcance suficiencia. C03 pausado queda fuera de estas cuatro condiciones si no es `operating`; verificar evidencia histórica apropiada o abstención. C02 preparando tampoco debe recibir métricas de ventas realizadas.
+
+**Riesgo de redundancia:** `q2_measurement_review_cycle` y `q2_measurement_practice` preguntan ambas por revisar resultados y decidir mejoras. Auditar si aportan evidencias independientes antes de permitir que ambas consuman presupuesto o cuenten doble. Priorizar la pregunta transversal `q2_measurement_practice` cuando corresponda; no eliminar ni cambiar versiones sin revisión.
+
+**Gate siguiente:** recorrer los ocho ejes por C01–C10, documentar qué evidencia es directa, de apoyo, neutral o ausente y demostrar selección bajo 24+5. Ninguna cobertura se declara certificada por inspección estática.
+
+### Changelog
+- **1.5.0 / 2026-10-29:** cuatro preguntas de medición contrastadas, candidato transversal C05 y posible redundancia documentados.
