@@ -2,11 +2,11 @@
  * Prueba focal del prototipo MiniWeb V2.
  * Requiere Playwright instalado en el entorno que ejecuta este archivo.
  * Ejecutar desde el directorio del prototipo:
- *   node test-miniweb-tiers.mjs
+ *   node test-miniweb-tiers.mjs\n *   CHROMIUM_PATH=/usr/bin/chromium node test-miniweb-tiers.mjs
  * Usa el HTML local real; no hay red, deploy, cambios en CI ni dependencias nuevas.
  */
 import { chromium } from "playwright";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { dirname, join } from "node:path";
 import { mkdir } from "node:fs/promises";
 
@@ -23,11 +23,11 @@ let browser;
 let failures = 0;
 try {
   await mkdir(output, { recursive: true });
-  browser = await chromium.launch({ headless: true });
+  browser = await chromium.launch({ headless: true, ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: process.env.CHROMIUM_PATH ? ["--no-sandbox"] : [] });
   const page = await browser.newPage({ reducedMotion: "reduce" });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto(new URL(`file://${file}`).href);
+  await page.goto(pathToFileURL(file).href);
   const baseline = await page.locator("#preview").innerText();
   for (const size of sizes) {
     await page.setViewportSize({ width: size.width, height: size.height });
