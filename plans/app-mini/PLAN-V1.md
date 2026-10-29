@@ -654,6 +654,47 @@ type MiniWebConfigV2 = {
 
 **Estado:** especificación funcional documentada; no hay nuevas pantallas, tests ni despliegue de F1/F7 en este checkpoint.
 
+
+## 30. DEC-11 — Dirección UX del editor aprobada y contratos F3–F5 (2026-10-29)
+
+**APROBADO por el usuario:** dirección visual y funcional propuesta en §29: editor con barra superior, lista de secciones, lienzo central y panel de propiedades; modos **Simple** y **Avanzado**, previsualización escritorio/tableta/móvil, accesibilidad y diseño responsivo. La aprobación se refiere al **concepto de experiencia**, no a píxeles finales, assets, cambios comerciales ni funcionalidades ya implementadas. Mantener validaciones en servidor, misma fuente de datos entre modos y no confundir vista previa con publicación.
+
+### F3 — Identidad visual y cabecera
+- Modelo conceptual: `brand.logoAssetId`, `brand.iconAssetId`, `cover.assetId`, `cover.focalPoint{x,y}`, `cover.overlay`, `brand.colorTokens`; el contrato persistido se decidirá tras revisar tablas/medios actuales, sin duplicar fuente de verdad.
+- Logo, icono y portada tienen controles y contenedores **independientes**. Cambiar portada nunca elimina ni desplaza el logo; icono/favicons no sustituyen logo.
+- Portada: selección desde biblioteca autorizada, recorte/posición focal con preview móvil y escritorio, fallback sin imagen y texto accesible; sin exigir dimensiones no medidas.
+- Identidad: nombre y descripción del perfil como datos estructurados, paleta con contraste comprobable, tipografía de catálogo permitido y CTA configurable solo con destinos seguros.
+- El renderer publicado lee exclusivamente snapshot autorizado; edición de identidad en borrador no modifica la página pública hasta publicar. Las modificaciones de perfil fuera de MiniWeb conservan sus reglas existentes.
+
+### F4 — Galerías, imágenes y videos
+- Módulos repetibles V2 `gallery` con `instanceId` y modalidad `image`/`video`/mixta validada; cada instancia tiene título opcional, orden, disposición y selección propia de medios. Duplicar una sección **no** duplica archivos físicos ni transfiere propiedad.
+- Subida de imagen/video: autorización por organización, tipo MIME real, tamaño/duración y límites a definir por coste/infraestructura, cuarentena/validación según proveedor y estado de procesamiento; nunca mostrar video fallido como publicado.
+- Video externo: URL HTTPS y proveedor allowlist configurable, validación de ID canónico, iframe con permisos mínimos y privacidad; YouTube/Vimeo son **candidatos**, no proveedores aprobados automáticamente.
+- Separar `assetId` de `instanceId`; referencias históricas y snapshot público se conservan. Eliminar del borrador no ejecuta borrado físico; retención/GC requiere política expresa y pruebas.
+- Presentación: carrusel o cuadrícula accesible, texto alternativo en imágenes, subtítulos/transcripción cuando corresponda, control de reproducción, sin autoplay con sonido y carga diferida.
+
+### F5 — Horarios avanzados
+- Horario semanal estructurado por día con 0..N intervalos, estado cerrado, intervalos no solapados y zona horaria IANA del negocio.
+- Intervalos nocturnos: definir semántica explícita `endsNextDay` o normalización a fecha siguiente; validar cruces con el día posterior y DST. No interpretar `22:00–02:00` como error ni como apertura 20 horas.
+- Excepciones fechadas: cierres especiales, festivos, horario excepcional y precedencia sobre semana estándar; distinguir `cerrado` de `sin información`.
+- UI simple: horario habitual por día, duplicar a otros días, cerrado y vista previa. UI avanzada: múltiples turnos, nocturnos, excepciones y zona horaria con explicación clara.
+- Guardado y publicación: validar intervalos y zona en servidor; snapshot contiene interpretación estable; no inferir «abierto ahora» si faltan datos o zona horaria válida.
+
+### Pruebas focalizadas y puertas de salida
+| Área | Aceptación | Evidencia exigida al implementar |
+| --- | --- | --- |
+| F3 | Logo y portada independientes; fallback; preview móvil | Componentes + snapshot |
+| F3 | Paleta/CTA seguros y contrastes accesibles | Validadores + accesibilidad |
+| F4 | Dos galerías del mismo tipo independientes | Registry V2 + persistencia |
+| F4 | URL externa maliciosa o asset ajeno rechazados | API + autorización |
+| F4 | Media histórica no desaparece al editar borrador | Publicación + referencias |
+| F5 | Turnos múltiples/nocturnos y excepciones coherentes | Validación + zona/DST |
+| F5 | Sin datos no implica cerrado/abierto | Render público |
+| F1/F7 | Editor Simple/Avanzado conserva mismo borrador | Estado + CAS |
+| F1/F7 | Móvil permite mover secciones sin drag | Accesibilidad |
+
+**Dependencias abiertas:** catálogo visual real y distribución de templates por tier (§28 es propuesta), límites económicos de video, proveedor externo permitido, cuotas/retención de media y versiones, y política de horarios frente a datos legacy. No inventar aprobación para estos puntos. **Estado:** dirección UX aprobada, especificación F3–F5 documentada, implementación/pruebas no iniciadas en este checkpoint.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
