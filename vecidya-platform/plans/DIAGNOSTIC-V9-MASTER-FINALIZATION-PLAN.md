@@ -936,3 +936,69 @@ D-V9-001 a D-V9-015: APPROVED según sus respectivas secciones; D-V9-016 PENDING
 
 ## Changelog adicional
 - **1.16.0 / 2026-10-29:** D-V9-015 aprobada; estrategia de núcleo/lotes, inventario editorial, tareas PLAN-E01–E09, doce criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 24. Decisión D-V9-016 — auditar y ajustar las ocho dimensiones candidatas contra C01–C10 (aprobada 2026-10-29)
+**Aprobación expresa:** «auditar y ajustar las ocho dimensiones candidatas contra C01–C10, y aprobar posteriormente la taxonomía definitiva». Estado APPROVED como **método de revisión**, no como aprobación de ninguna dimensión ni de sus pesos. Exclusivamente PLAN_ONLY.
+
+### 24.1. Base candidata, no taxonomía aprobada
+1. `clarity_positioning`: claridad de propuesta, audiencia y diferenciación.
+2. `digital_foundation`: fundamentos de presencia digital pertinentes al contexto.
+3. `discovery`: capacidad de ser encontrado por audiencias relevantes.
+4. `trust_reputation`: señales digitales de credibilidad y confianza.
+5. `conversion_access`: facilidad de contacto, acceso o siguiente acción apropiada; no equivale necesariamente a venta.
+6. `relationship_recurrence`: continuidad de relación y comunicación digital; no exige compras repetidas.
+7. `measurement_optimization`: observación y aprendizaje sobre resultados digitales, proporcional a la etapa.
+8. `digital_readiness`: capacidad realista de adoptar y sostener mejoras digitales; evitar confundir recursos disponibles con madurez conseguida.
+Estas definiciones son hipótesis editoriales para contrastar con el repositorio y los escenarios, no rúbricas certificadas.
+
+### 24.2. Criterios obligatorios de auditoría
+- **Validez de constructo:** cada dimensión mide una capacidad digital definida, no facturación, tamaño, presupuesto, antigüedad ni adopción de proveedores.
+- **Separación:** detectar preguntas/evidencias duplicadas, doble conteo, causalidad circular y solapamientos entre fundamentos, descubrimiento, confianza, acceso, relaciones y preparación.
+- **Cobertura:** cruzar cada dimensión con C01–C10, distinguir aplicable/no aplicable/desconocido/evidencia insuficiente y justificar excepciones.
+- **Neutralidad de etapa y modelo:** sin penalización automática por carecer de web, CRM, anuncios, ecommerce, clientes o ventas cuando no corresponde.
+- **Observabilidad:** especificar evidencia mínima, contradicciones, límites de inferencia y explicaciones breves comprensibles.
+- **Independencia comercial:** ninguna dimensión depende de GHL, compra de servicios Vecidya o consumo de Aprende.
+- **Equivalencia bilingüe:** nombres, definiciones, preguntas y rúbricas es/en con significado equivalente.
+- **Comparabilidad histórica:** cambios de dimensiones, fusiones y divisiones requieren mapeo versionado; no asumir equivalencia de resultados previos.
+- **Calibración posterior:** no definir pesos, umbrales numéricos ni score global hasta aprobación expresa de taxonomía, evidencias y metodología.
+
+### 24.3. Matriz de revisión exigida
+Por cada candidata y escenario C01–C10 documentar: aplicabilidad razonada; objetivo de medición; evidencia observable; preguntas/variantes vinculadas; riesgo de sesgo; posibles solapamientos; vacíos; tratamiento de desconocido/no aplicable; nivel de confianza; recomendación **mantener / redefinir / fusionar / dividir / retirar / incorporar dimensión nueva**. Registrar referencias a archivos y SHA de HEAD auditado, y decisión editorial humana posterior. La matriz **no** queda rellenada ni validada por esta aprobación.
+
+### 24.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-DIM01 | Inventariar definiciones, claves, preguntas, reglas y consumidores actuales V9/QBV2 | Mapa por dimensión con archivos y SHA | No confundir candidato con aprobado |
+| PLAN-DIM02 | Definir rúbrica conceptual y límites de cada dimensión candidata | Ocho fichas con constructo, evidencia y exclusiones | Revisión editorial |
+| PLAN-DIM03 | Cruzar dimensiones con C01–C10 | Matriz 8×10 de aplicabilidad, evidencias y brechas | Sin rutas huérfanas |
+| PLAN-DIM04 | Identificar solapamientos y doble conteo | Matriz de intersecciones y propuesta de separación | Evitar pesos prematuros |
+| PLAN-DIM05 | Evaluar neutralidad de etapa, sector, tamaño y ausencia de ventas | Casos negativos y tratamiento de no aplicable | D-V9-001/002 |
+| PLAN-DIM06 | Proponer cambios justificados de taxonomía | Opciones mantener/fusionar/dividir/redefinir/añadir/retirar, con impactos | Requiere nueva aprobación explícita |
+| PLAN-DIM07 | Diseñar mapeo de versiones y comparabilidad histórica | Contrato conceptual de correspondencia y ruptura | D-V9-013 |
+| PLAN-DIM08 | Revisar glosario y rúbricas es/en | Matriz de equivalencia bilingüe | D-V9-014 |
+| PLAN-DIM09 | Preparar matriz de pruebas focalizadas futuras | Casos C01–C10 × dimensión × unknown/no aplicable | Sin ejecutar en PLAN_ONLY |
+| PLAN-DIM10 | Documentar gate de aprobación de taxonomía final | Acta de decisión, identificadores/versiones y pendientes | Bloquea pesos/calibración |
+
+### 24.5. Criterios de aceptación futuros
+1. Cada dimensión retenida posee definición no circular, evidencia observable y exclusiones explícitas.
+2. C01–C10 disponen de cobertura suficiente sin obligar a aplicar todas las dimensiones.
+3. Ninguna dimensión penaliza ausencia de clientes en prelaunch o pausa por sí sola.
+4. Una organización sin venta directa puede evaluarse sin conversiones comerciales obligatorias.
+5. El mismo indicador no suma dos veces sin justificación aprobada.
+6. Ausencia de CRM, web o anuncios no implica automáticamente baja madurez.
+7. Evidencia desconocida no se interpreta como evidencia negativa.
+8. Una dimensión fusionada/dividida no se compara numéricamente con su predecesora sin política validada.
+9. Los conceptos y rúbricas son equivalentes en español e inglés.
+10. La recomendación de cambio distingue propuesta de aprobación.
+11. No se fijan pesos, umbrales ni calibraciones antes de aprobar la taxonomía.
+12. El inventario del repositorio identifica exactamente qué reglas actuales deben reemplazarse en una futura implementación, sin modificarlas ahora.
+
+### 24.6. Próxima decisión D-V9-017 — tratamiento de evidencia insuficiente
+Opciones pendientes: **A**, resultado cualitativo provisional por dimensión con advertencia explícita; **B**, marcar «sin evidencia suficiente» y no asignar nivel a esa dimensión; **C**, solicitar preguntas adicionales solo para evidencias críticas y, si siguen faltando, marcar «sin evidencia suficiente» sin inventar nivel. Se recomienda evaluar C por coherencia con D-V9-003/004, pero **no está aprobada**. No alterar el presupuesto adaptativo sin definición adicional.
+
+### 24.7. Estado
+D-V9-001 a D-V9-016: APPROVED en el alcance de sus respectivas secciones; D-V9-017 PENDING. Taxonomía definitiva **PENDING**. **PLAN_ONLY**: no implementar código, ejecutar pruebas, cambiar CI, fusionar ni desplegar.
+
+## Changelog adicional
+- **1.17.0 / 2026-10-29:** D-V9-016 aprobada; auditoría 8×10, criterios de validez y neutralidad, diez tareas PLAN-DIM01–10, doce criterios de aceptación y siguiente decisión. Solo documentación.
