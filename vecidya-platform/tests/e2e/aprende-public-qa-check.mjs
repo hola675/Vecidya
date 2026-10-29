@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
 import { learnArticles, learnCategories, learnPathways } from "../../app/content/learn.ts";
-import { getPublicLearnArticles, getPublicLearnPathways } from "../../app/content/learn-publication.ts";
+import { getLearnGuideAccess, getPublicLearnArticles, getPublicLearnPathways } from "../../app/content/learn-publication.ts";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
 // APRENDE-PUBLIC-QA-01 runs only against a loopback dev server. It does not
@@ -181,7 +181,17 @@ try {
     }
 
     if (width === 390 || width === 1366) {
-      const sample = publicArticles.find((article) => article.slug === "correo-profesional-dominio-registros-mx-txt") ?? publicArticles[0];
+      const licensedSample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "licensed");
+      assert(licensedSample, "Debe existir al menos una guía licenciada para verificar su preview.");
+      await activePage.goto(new URL("/aprende/" + licensedSample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+      assert.equal(await activePage.locator("main h1").textContent(), licensedSample.title);
+      assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + licensedSample.slug);
+      assert.equal(await activePage.locator(".learn-article-preview").count(), 1, "Guía licenciada sin sesión debe mostrar preview.");
+      assert.equal(await activePage.locator(".learn-article-toc").count(), 0, "Preview no muestra índice de contenido protegido.");
+      assert.equal((await activePage.content()).includes(licensedSample.sections[0].heading), false, "HTML e hidratación no contienen encabezados protegidos.");
+      assert(await activePage.getByRole("link", { name: "Ver licencias Vecidya" }).isVisible());
+
+      const sample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "always_free") ?? publicArticles[0];
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);

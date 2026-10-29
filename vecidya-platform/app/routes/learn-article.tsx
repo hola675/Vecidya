@@ -18,10 +18,14 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (!access) throw new Response("Artículo no encontrado", { status: 404 });
   if (access === "licensed") {
     const { env } = context.get(cloudflareContext);
+    if (!env.BETTER_AUTH_SECRET) {
+      return { preview: toPublicLearnGuideSummary(article), needsLogin: true };
+    }
     const session = await getSession(env, request);
+    if (!session) return { preview: toPublicLearnGuideSummary(article), needsLogin: true };
     const database = createDatabase(env.DB);
-    if (!await canReadLearnGuideBody(database, session?.user.id ?? null, article.slug)) {
-      return { preview: toPublicLearnGuideSummary(article), needsLogin: !session };
+    if (!await canReadLearnGuideBody(database, session.user.id, article.slug)) {
+      return { preview: toPublicLearnGuideSummary(article), needsLogin: false };
     }
   }
 
@@ -50,7 +54,16 @@ export function headers({ errorHeaders, loaderHeaders }: Route.HeadersArgs) {
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  if (!loaderData?.article) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
+  if (!loaderData) return publicMeta("Artículo no encontrado", "El artículo que buscas no está disponible.", "/aprende", "noindex, nofollow");
+  if (loaderData.preview) {
+    const { preview } = loaderData;
+    return [
+      ...publicMeta(preview.title, preview.excerpt, `/aprende/${preview.slug}`).filter((tag) => !("property" in tag && tag.property === "og:type")),
+      { property: "og:type", content: "article" },
+      { property: "article:section", content: preview.category },
+      { property: "og:image:alt", content: preview.imageAlt },
+    ];
+  }
   const { article } = loaderData;
   return [
     ...publicMeta(article.title, article.intro, `/aprende/${article.slug}`, article.editorialDraft ? "noindex, nofollow" : undefined).filter((tag) => !("property" in tag && tag.property === "og:type")),
