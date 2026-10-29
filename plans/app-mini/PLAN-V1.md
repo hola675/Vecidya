@@ -62,6 +62,39 @@
 
 ---
 
+## MATRIZ DE ARRANQUE POR AGENTE — LECTURA SIN AMBIGÜEDADES
+
+**Uso:** seleccionar el ticket antes de tocar código. Cada fila exige lectura de contratos vigentes, identificación de dependencias y evidencia futura; ninguna fila autoriza implementación desde este PR.
+
+| Ticket | Leer primero | Prohibición o riesgo dominante | Entrega futura de aceptación |
+|---|---|---|---|
+| IMP-01 | §§66, 69–71, 80 | reutilizar tipos/secciones V1 | esquema V2 y validadores S01–S12 |
+| IMP-02 | §§79–80 | confundir CAS de borrador con cuota global | transacciones, índices y concurrencia probados |
+| IMP-03 | §§69–70, 78 | editor V1 renombrado o borrador público | editor V2 nuevo, preview aislada |
+| IMP-04 | §§66, 69, 80 | romper snapshots V1 o filtrar borrador | renderer V2 por snapshot publicado |
+| IMP-05 | §§71–72, 77 | capacidades distintas por precio | 15 combinaciones, 45 capturas y VIS-01 |
+| IMP-06 | §§66, 69–71, 80 | cualquier lectura/fallback de horario V1 | fixtures DST, noche, festivos y excepciones |
+| IMP-07 | §§75, 79–80 | doble slot, autorización solo en cliente | cuota atómica y rollback |
+| IMP-08 | §§66, 70, 80 | importación automática u horarios V1 | consentimiento, allowlist y auditoría |
+| IMP-09 | §§71, 75, 80 | checkout implícito o suspensión no aprobada | operación manual auditable; COM-01 aplicable |
+| IMP-10 | §§72, 77, 79–80 | declarar PASS por documentación | informe focal por SHA y revisión SEC-QA |
+| IMP-11 | §§76–78 | confundir aprobación del plan con release | autorización expresa por SHA/entorno |
+| IMP-12 | §71 y anexo comercial | implementar PSP sin PAY-01/BILL-02 | **BLOQUEADO, fuera de P6A** |
+
+### Protocolo ante contradicción
+
+1. Citar **ambas** secciones o fuentes exactas y la decisión que parece entrar en conflicto.
+2. Separar **hecho de código verificado**, **decisión humana aprobada**, **contrato propuesto** e **historial superado**.
+3. Si existe resolución explícita posterior, aplicarla y registrar la referencia; si no, **detener únicamente el ticket afectado**, no toda la planificación.
+4. No resolver contradicciones cambiando silenciosamente alcance, tarifas, datos, permisos, migraciones o dependencias.
+5. Entregar informe mínimo `ticket | fuente A | fuente B | riesgo | propuesta | aprobación requerida`.
+
+### Criterio de entrega a un agente
+
+El agente debe poder responder antes de implementar: **qué cambia, qué no cambia, de quién son los datos, qué autoriza cada acción, cómo se publica o revierte, qué prueba focal lo demuestra y qué aprobación falta**. Si una respuesta depende de evidencia del código, inspeccionarla en el checkpoint de implementación; no rellenarla por inferencia del plan.
+
+---
+
 # PARTE A — CONTRATOS VIGENTES Y ENTREGA A AGENTES
 
 Las secciones 66–84 se presentan primero para que la ejecución futura parta del contrato vigente. **La posición no cambia su ID ni eleva propuestas a decisiones aprobadas.**
