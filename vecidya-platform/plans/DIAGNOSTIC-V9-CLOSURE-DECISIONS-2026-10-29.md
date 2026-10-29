@@ -18,3 +18,20 @@ Fuentes leídas en la rama: `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c
 
 ### Changelog
 - **1.1.0 / 2026-10-29:** contratos focales C02/C03/C05/C10 y criterios de cierre de cobertura; sin código ni pruebas.
+
+## Fase 3 — rutas especializadas verificadas por lectura de código
+
+Fuente: `qa03b/specialty-branches-wave1.ts`, blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`.
+
+**Odontología:** `q2_dental_care_continuation` exige historial activo, nicho `dentist`, arquetipo `appointments` y (`goal=stop_losing` o `friction=follow_up`). La pregunta genérica de repetición de citas recibe exclusión por la misma elegibilidad.
+
+**Restauración:** `q2_food_menu_visibility` exige historial activo, nicho `restaurant/cafe/food_truck`, `goal=explain` y presencia digital `reliable_presence/partial_presence`.
+
+**Agencia de marketing:** `q2_marketing_agency_scope_clarity` exige historial activo, nicho `marketing_agency`, `goal=explain`, comprador `b2b/mixed` y presencia digital `reliable_presence/partial_presence`.
+
+Las dos últimas especializaciones excluyen la pregunta genérica de claridad solo si la condición especializada aplica. **Riesgo a resolver:** C08 restaurante sin menú y sin presencia digital suficiente no recibe automáticamente la especialización; corresponde determinar si la pregunta genérica ofrece evidencia pertinente o si hace falta otra ruta. No asumir que `not_applicable` demuestra madurez baja. **Riesgo C06:** citas sin historial activo no cumplen puerta odontológica; validar ruta genérica apropiada. **C10:** nicho desconocido mantiene prevista la ruta genérica, sin certificación de ejecución.
+
+**Gate de cierre:** documentar para cada condición verdadera/falsa/unknown el conjunto de preguntas elegibles y excluidas, sin doble conteo de evidencia, con posibilidad de corregir respuestas. Inspección estática solamente: no se han ejecutado pruebas.
+
+### Changelog
+- **1.2.0 / 2026-10-29:** condiciones exactas de tres especializaciones y huecos focales C06/C08/C10.
