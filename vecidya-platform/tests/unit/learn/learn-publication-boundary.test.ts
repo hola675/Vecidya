@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { learnArticles, learnPathways } from "../../../app/content/learn";
-import { getPublicLearnArticle, getPublicLearnArticles, getPublicLearnGuideSummaries, getPublicLearnPathways, matchesPublicLearnGuideSummary } from "../../../app/content/learn-publication";
+import { getLearnEditorialIdentity, LEARN_ALWAYS_FREE_SLUGS, getPublicLearnArticle, getPublicLearnArticles, getPublicLearnGuideSummaries, getPublicLearnPathways, matchesPublicLearnGuideSummary } from "../../../app/content/learn-publication";
 
 test("el catálogo completo aprobado se expone y conserva el conteo", () => {
   const publicArticles = getPublicLearnArticles(learnArticles);
@@ -26,8 +26,27 @@ test("la frontera editorial sigue bloqueando un borrador aunque el catálogo est
 test("el DTO del catálogo público no incluye el cuerpo ni campos derivados de las secciones", () => {
   const source = learnArticles[0];
   const summary = getPublicLearnGuideSummaries([source])[0];
-  assert.deepEqual(Object.keys(summary).sort(), ["category", "editorialDraft", "excerpt", "image", "imageAlt", "slug", "title"]);
+  assert.deepEqual(Object.keys(summary).sort(), ["access", "category", "contentRevision", "editorialDraft", "excerpt", "guideId", "image", "imageAlt", "slug", "title"]);
   assert.equal(JSON.stringify(summary).includes(source.sections[0].paragraphs[0]), false);
+});
+
+test("el manifiesto editorial asigna IDs opacos únicos y clasifica exactamente 6/42", () => {
+  const summaries = getPublicLearnGuideSummaries(learnArticles);
+  assert.equal(summaries.filter((guide) => guide.access === "always_free").length, 6);
+  assert.equal(summaries.filter((guide) => guide.access === "licensed").length, 42);
+  assert.deepEqual(new Set(LEARN_ALWAYS_FREE_SLUGS), new Set([
+    "como-empezar-a-digitalizar-un-negocio-desde-cero",
+    "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio",
+    "que-puede-hacer-una-inteligencia-artificial-por-un-negocio",
+    "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
+    "dominio-hosting-sitio-web-como-funcionan",
+    "como-organizar-tareas-y-responsables-en-tu-equipo",
+  ]));
+  assert.equal(new Set(summaries.map((guide) => guide.guideId)).size, 48);
+  assert(summaries.every((guide) => Number.isInteger(guide.contentRevision) && guide.contentRevision > 0));
+  const sectionIds = learnArticles.flatMap((article) => getLearnEditorialIdentity(article).sections.map((section) => section.sectionId));
+  assert.equal(sectionIds.length, 387);
+  assert.equal(new Set(sectionIds).size, sectionIds.length);
 });
 
 test("la búsqueda pública del catálogo no devuelve guías por texto exclusivo del cuerpo", () => {

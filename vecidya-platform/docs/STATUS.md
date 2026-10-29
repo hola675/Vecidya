@@ -2,9 +2,9 @@
 
 ## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
 
-**Fase 1 en progreso; no activa el modelo 6/42.** CODE: el loader del índice proyecta ahora cada guía publicada a un DTO allowlist sin secciones, y la búsqueda usa solo título, extracto y categoría. Esto evita que una consulta revele qué artículo contiene una frase del cuerpo. El detalle de artículo sigue con el comportamiento público vigente; no se ha incorporado aún guard de licencia ni permiso Aprende.
+**Fase 1 en progreso; el modelo 6/42 está clasificado en código, pero no activa restricciones.** CODE: el loader del índice proyecta cada guía publicada a un DTO allowlist sin secciones, y la búsqueda usa solo título, extracto y categoría. El manifiesto editorial fija IDs UUID para 48 guías y 387 secciones, revisión inicial `1` y acceso `always_free` para las seis candidatas del plan (42 `licensed`). El detalle de artículo sigue con el comportamiento público vigente; todavía no hay guard de licencia ni permiso Aprende. La clasificación no acredita aceptación editorial final de gratuidad ni de revisiones.
 
-**RAN local:** `learn-publication-boundary.test.ts` 6/6 PASS; `pnpm run test:e2e:aprende-public` PASS (48 rutas, 6 categorías, 9 itinerarios, 320/390/768/1366 px); `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. La revisión editorial final de las seis guías, el manifiesto de IDs/revisiones y las pruebas de filtración para el cuerpo completo siguen pendientes antes de continuar con la activación de acceso.
+**RAN 2026-10-28:** `learn-publication-boundary.test.ts` 7/7 PASS; `pnpm run test:e2e:aprende-public` PASS (48 guías, 6 categorías, 9 itinerarios, 320/390/768/1366 px); `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El E2E encontró que los UUID de sección requieren selector CSS por atributo, ahora corregido. Aún se requieren revisión editorial final de las seis candidatas y pruebas de filtración del cuerpo completo antes de cerrar Fase 1 y habilitar restricciones.
 
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 

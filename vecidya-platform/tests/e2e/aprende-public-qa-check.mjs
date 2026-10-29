@@ -187,7 +187,7 @@ try {
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
       assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
       const toc = await activePage.locator(".learn-article-toc a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
-      for (const href of toc) assert.equal(await activePage.locator(href).count(), 1, "TOC con ancla rota: " + href);
+      for (const href of toc) assert.equal(await activePage.locator(`[id="${href.slice(1)}"]`).count(), 1, "TOC con ancla rota: " + href);
       const image = activePage.locator(".learn-article-image");
       assert((await image.getAttribute("alt"))?.trim(), "Falta alt descriptivo.");
       assert(await image.evaluate(async (node) => { await node.decode().catch(() => {}); return node.naturalWidth > 0; }), "Imagen de artículo sin cargar.");

@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — identidad editorial y catálogo público (2026-10-28)
+
+`learn-publication-boundary.test.ts`: **7/7 PASS**; verifica la distribución provisional 6/42, unicidad de 48 guideId y 387 sectionId, revisiones positivas y DTO sin cuerpo. `pnpm run test:e2e:aprende-public` **PASS** con 48 guías, 6 categorías, 9 itinerarios y viewports 320/390/768/1366. `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El runner requirió `BASE_URL=http://127.0.0.1:5173` porque `localhost` resolvió a IPv6 mientras el servidor estaba enlazado a loopback IPv4. No se certifica acceso protegido: el loader de artículo conserva su comportamiento vigente y la clasificación aún es metadata editorial.
+
 ## APP-PLATFORM-ADMIN-ORGS — release 0.9.0 (2026-10-28)
 
 `pnpm run typecheck` y `pnpm run build`: **PASS**. GitHub Actions en commit `03fc96bcba6f07fdd44f832bcffe922120d9dd80`: `quality`, `Playwright desktop/mobile + publication guard` y `Typecheck, build and unit regression` **PASS**. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión por falta de secreto Auth de desarrollo. Con una clave efímera local, Cloudflare Vite reportó timeout al construir `Request.cf`; el flujo autenticado quedó sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` aplicada a D1 de producción y release desplegado; evidencia HTTP fechada en `ENVIRONMENTS.md`. No se abrieron sesiones ni se verificaron rutas autenticadas en producción.

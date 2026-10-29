@@ -1,4 +1,33 @@
 import type { LearnArticle } from "./learn";
+import editorialManifest from "./learn-editorial-manifest";
+
+type EditorialGuide = {
+  guideId: string;
+  contentRevision: number;
+  access: "always_free" | "licensed";
+  sections: readonly { heading: string; sectionId: string }[];
+};
+
+const editorialGuides = editorialManifest as Record<string, EditorialGuide>;
+
+/** Clasificación central derivada del manifiesto editorial versionado. */
+export const LEARN_ALWAYS_FREE_SLUGS = Object.entries(editorialGuides)
+  .filter(([, entry]) => entry.access === "always_free")
+  .map(([slug]) => slug);
+
+export function getLearnEditorialIdentity(article: LearnArticle) {
+  const entry = editorialGuides[article.slug];
+  if (!entry) throw new Error(`Falta identidad editorial para Aprende: ${article.slug}`);
+  if (entry.sections.length !== article.sections.length) {
+    throw new Error(`Cambió la estructura de secciones sin actualizar el manifiesto: ${article.slug}`);
+  }
+  const sections = article.sections.map((section) => {
+    const identity = entry.sections.find((candidate) => candidate.heading === section.heading);
+    if (!identity) throw new Error(`Falta sectionId para «${section.heading}» en ${article.slug}`);
+    return { ...section, sectionId: identity.sectionId };
+  });
+  return { ...article, guideId: entry.guideId, contentRevision: entry.contentRevision, sections };
+}
 
 export function getPublicLearnArticles(articles: readonly LearnArticle[]): LearnArticle[] {
   return articles.filter((article) => article.editorialDraft !== true);
@@ -14,6 +43,9 @@ export function getPublicLearnArticle(
 
 /** Public catalog data only: never serialize article body content from the index route. */
 export type PublicLearnGuideSummary = {
+  guideId: string;
+  contentRevision: number;
+  access: "always_free" | "licensed";
   slug: string;
   title: string;
   category: string;
@@ -24,7 +56,12 @@ export type PublicLearnGuideSummary = {
 };
 
 export function toPublicLearnGuideSummary(article: LearnArticle): PublicLearnGuideSummary {
+  const identity = editorialGuides[article.slug];
+  if (!identity) throw new Error(`Falta identidad editorial para Aprende: ${article.slug}`);
   return {
+    guideId: identity.guideId,
+    contentRevision: identity.contentRevision,
+    access: identity.access,
     slug: article.slug,
     title: article.title,
     category: article.category,

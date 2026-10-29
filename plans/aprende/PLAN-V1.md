@@ -408,13 +408,13 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
-| 2026-10-28 | Fase 1: DTO allowlist del catálogo y búsqueda por metadatos | EN PROGRESO / PARCIAL | rama `feat/aprende-v1-content-access`; prueba focal 6/6, QA pública local, typecheck/build PASS; sin clasificación 6/42, IDs, guard ni publicación |
+| 2026-10-28 | Fase 1: DTO allowlist, clasificación provisional e identidad editorial | EN PROGRESO / PARCIAL | PR #183 y checkpoint en curso; manifiesto CODE de 48 guideId, 387 sectionId, revisión 1 y clasificación 6/42; prueba focal 7/7 y QA público, typecheck/build PASS; sin guard ni publicación |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
 | — | Resto de Fase 1 y fases 2–7 | NO INICIADAS | validación editorial y gates de cada fase pendientes |
 
-**Siguiente checkpoint:** completar Fase 1 con IDs y revisiones editoriales estables, cierre de la selección gratuita y pruebas de no filtración; conservar el acceso público vigente hasta que el guard de licencia esté implementado y certificado. Fases posteriores y cualquier despliegue mantienen sus gates independientes.
+**Siguiente checkpoint:** validar el manifiesto con pruebas, completar pruebas de no filtración del cuerpo y resolver el cierre editorial de gratuidad antes de considerar Fase 1 terminada. Conservar el acceso público vigente hasta que el guard de licencia esté implementado y certificado. Fases posteriores y cualquier despliegue mantienen sus gates independientes.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)

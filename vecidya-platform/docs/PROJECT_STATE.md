@@ -1,4 +1,4 @@
-**Actualización APRENDE-PLAN-V1 (2026-10-28):** primer cambio local en la Fase 1 limita el DTO y la búsqueda del catálogo al contenido editorial de resumen; pruebas focales y QA pública local PASS. El modelo de acceso 6/42, IDs estables, guard del cuerpo y su publicación no están implementados. Evidencia y bloqueos en `STATUS.md` y `ROADMAP.md`.
+**Actualización APRENDE-PLAN-V1 (2026-10-28):** en el checkpoint en curso de Fase 1, el manifiesto añade UUID estables para 48 guías y 387 secciones, revisión inicial y clasificación provisional 6 `always_free` / 42 `licensed`. El DTO del catálogo incluye solo metadata allowlist más ID, revisión y etiqueta de acceso; la vista completa usa los sectionId estables para anclas. Esta clasificación aún no bloquea el cuerpo ni confirma aprobación editorial final. Ver evidencia pendiente de ejecución y alcance en `STATUS.md` y `TESTING.md`.
 
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
