@@ -1225,6 +1225,40 @@ Estos son **valores de diseño**, no un esquema de base de datos aprobado. El mo
 
 **Próxima puerta:** revisar el HTML visualmente y comparar si Barrio/Ciudad ofrecen valor perceptible frente a Cuadra. Si se aprueba la dirección, convertir el prototipo en componentes tipados reutilizables y pruebas focales, manteniendo snapshots legacy.
 
+
+## 46. F6 — Puerta de revisión visual y accesibilidad del prototipo (2026-10-29)
+
+**Artefacto bajo revisión:** `plans/app-mini/prototypes/miniweb-tiers-comparison.html`. Se completaron cuatro respuestas FAQ del dataset de ejemplo en commit `88ae3598924e4d44caf93742d860c0653562527a`; siguen siendo contenido ficticio, no datos de clientes.
+
+### Checklist focal para revisión manual en navegador
+| Caso | Qué verificar | Criterio de aceptación |
+| --- | --- | --- |
+| Alternar Base/Pro/Premium | Botones del selector y `aria-pressed` | Cambia solo la presentación, no el texto ni la cantidad de secciones |
+| Cuadra en móvil | Hero, tarjetas, galería, CTA, contacto | Sin scroll horizontal ni información oculta; aspecto comercial completo |
+| Barrio en móvil | Hero asimétrico que se apila, mosaico simplificado | Orden de lectura coherente y tarjetas legibles |
+| Ciudad en móvil | Hero editorial y contraste sobre fondos | CTA legible, texto no superpuesto, jerarquía preservada |
+| Tableta vertical | Rejillas y composición de hero | Sin columnas demasiado estrechas; MiniWeb pública usable |
+| Escritorio | Diferencia de composición entre niveles | Pro y Premium perceptiblemente distintos, no solo color |
+| Teclado | Tab/Enter/Espacio, foco y salto al contenido | Todas las acciones alcanzables sin ratón |
+| Texto largo y sin imágenes | Simular datos ausentes y descripciones extensas | Sin desbordamiento ni secciones vacías engañosas |
+| Movimiento reducido | Preferencia del sistema | Sin movimiento obligatorio |
+| Contenido idéntico | Comparar cuatro servicios, seis imágenes ficticias, cuatro FAQ, horarios, ubicación y contacto | Ningún tier añade o elimina capacidades |
+| Enlace de contacto | Destino `#contacto` | Navegación interna funciona; no simula envío real |
+| Semántica de galería | Seis marcadores visuales de prueba | Antes de producción reemplazar por imágenes reales con `alt` apropiado |
+
+### Diferencias entre prototipo y producto
+- Los marcadores visuales CSS no prueban optimización de imágenes, formatos, ratios reales ni focal point.
+- La sección FAQ del prototipo es texto estático, **no** un componente conectado al CMS.
+- Los botones de nivel son solo selector de preview, **no** validan licencias.
+- El prototipo no incluye aún todos los módulos V2: la prueba de paridad completa de secciones corresponde al renderer posterior.
+- Los breakpoints del HTML son de demostración; la política DEC-17 de bloquear `/app`/`/internal` móvil es una implementación separada.
+- La revisión manual y pruebas de navegador **siguen pendientes**; no afirmar WCAG, rendimiento ni aceptación visual hasta medirlos.
+
+### Decisión de continuación
+No activar plantillas Pro/Premium en producción antes de: (1) aprobación visual de las tres composiciones; (2) contrato tipado de variantes y derechos; (3) compatibilidad de snapshots V1/V2; (4) pruebas focales y revisión de accesibilidad. Continuar con catálogo y componentes sin tocar pagos/CRM ni PRs ajenos.
+
+**Estado:** checklist y límites del prototipo documentados; revisión manual pendiente.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
