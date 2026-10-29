@@ -1377,3 +1377,58 @@ El código vigente y la documentación canónica reportan producción 0.9.0 con 
 - **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.
 - **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.
 - **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
+
+
+## 53. Consolidación ejecutiva del plan maestro — corte verificable (2026-10-29)
+
+**Propósito:** convertir los apartados 0–52 y el plan de Servicios/Pagos en una ruta única de ejecución sin reabrir decisiones aprobadas. Este apartado no declara completados componentes no publicados ni sustituye los contratos detallados anteriores.
+
+### 53.1 Baseline y trazabilidad de implementación
+
+- **Producción:** MiniWeb V1 y Mi Vecidya existentes; MiniWeb V2 aún no integrado ni desplegado.
+- **PR #184:** plan documental abierto en borrador; requiere conciliación con gobernanza y validación visual.
+- **PR #188 V2-A:** registro y tipos de variantes, CI certificado, listo para revisión, no fusionado.
+- **PR #189 V2-B:** lector dual V1/V2, CI certificado, listo para revisión, no fusionado.
+- **PR #191 V2-C:** política pura de derechos visuales, CI certificado, listo para revisión, no fusionado.
+- **PR #194 (rama técnica denominada V2-D):** lector de licencias D1 por cuenta de facturación, cinco tests focales escritos; CI del último SHA pendiente de certificación en este corte, PR borrador. **Conflicto de nombre:** el contrato del §51 llama V2-D al renderer. Renombrar el siguiente checkpoint de renderer como **V2-E** en la ejecución, sin reescribir retrospectivamente los PR existentes; desplazar los siguientes checkpoints a V2-F (editor) y V2-G (QA visual). Los IDs F0–F9 de fases de producto permanecen intactos.
+- Ningún PR de esta lista ha sido fusionado. Un PASS de CI no prueba integración entre PR ni despliegue.
+
+### 53.2 Decisiones congeladas y alcance
+
+**APROBADO:** DEC-06–18 y DEC-BILL-01 en sus apartados respectivos, especialmente DEC-08 (capacidad inicial 3 y ampliación solo Cuadra), DEC-10 (máximo nivel visual por titular), DEC-12 (cinco claves objetivo, cuatro aún planned), DEC-17 (app/internal sin móvil), DEC-18 (funcionalidad MiniWeb completa en Cuadra). Los precios de licencia son USD 39/59/89 por mes. El recargo GHL aprobado es **coste nativo verificable × 1,20** y no se aplica automáticamente a licencias, honorarios propios u otros proveedores.
+
+**LÍMITE ARQUITECTÓNICO:** Vecidya administra identidad, organizaciones, licencias, MiniWeb, derechos, catálogo y facturación propia; GHL opera CRM y servicios externos contratados. Nunca derivar permisos de edición/publicación de membresía de GHL ni duplicar pipelines, contactos o cobros de GHL como fuente de verdad.
+
+### 53.3 Secuencia ejecutable y puertas de salida
+
+| Orden | Checkpoint | Entrega verificable | Gate focal mínimo |
+| --- | --- | --- | --- |
+| 0 | F0 cierre | Plan reconciliado con docs canónicos; inventario de dependencias y decisiones pendientes | diff-check documental y aprobación de dirección visual |
+| 1 | V2-A/B/C | Tipos, reader V1/V2 y política visual pura | CI del SHA exacto y revisión de contratos |
+| 2 | V2-D licencias | Lector D1 server-only, cuenta exacta y solo status active | aislamiento entre cuentas, estados, typecheck/build |
+| 3 | V2-E renderer | Instancias repetibles por instanceId, hero único, variantes con contenido equivalente | dos galerías, DOM IDs únicos, V1 intacto |
+| 4 | F2A/F2B | Cupos por titular, ampliaciones Cuadra separadas, borradores y snapshots V2 inmutables | concurrencia, downgrade, sobregiro y migración no destructiva |
+| 5 | F1/F3/F4/F5/F7 | Navegación Mi Vecidya, identidad, medios/galerías, horarios y editor simple/avanzado | permisos, tablet/desktop, guard móvil, accesibilidad y autosave seguro |
+| 6 | F6 | Cinco familias de plantillas, con variantes realmente renderizadas y valor visual tangible | misma funcionalidad en todos los tiers; matriz visual 3×3 por familia habilitada |
+| 7 | F8 | Publicación, rollback/restauración, historial y controles admin | CAS, idempotencia, 404 desactivado, congelación y recuperación |
+| 8 | F9 | QA integral focal por cambio, observabilidad, seguridad y release | matriz de aceptación, rollback ensayado, aprobación explícita de despliegue |
+
+**Regla de ejecución:** checkpoints pequeños desde main actualizado, PR aislado, pruebas focalizadas y typecheck/build cuando corresponda; no modificar CI general ni mezclar trabajo de otros agentes. No fusionar ni desplegar sin autorización independiente.
+
+### 53.4 Servicios y pagos: carril coordinado, no bloqueo del motor visual
+
+El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. Se comparte `billing_account`, organizaciones y control de acceso, pero **la ejecución de MiniWeb V2 no espera al checkout automático**. Los servicios económicos solo se publicarán o cobrarán tras tarifas GHL verificadas y versionadas, políticas de impuestos/redondeo, conciliación y autorización del titular. No afirmar que existen facturas, pasarela, cobros o consumos integrados cuando solo hay diseño.
+
+**Propuesta operativa (no decisión comercial nueva):** primera entrega técnica de Mi Vecidya/MiniWeb V2 con licencias administradas; activar pagos automáticos en release separado tras su certificación. Si se exige cobro automático en el primer release, replanificar la ruta crítica B1–B7 y sus pruebas antes de aprobar fecha.
+
+### 53.5 Pendientes para declarar PLAN CERRADO
+
+1. **Aprobación visual:** ejecutar el HTML real `prototypes/miniweb-tiers-comparison.html` en Playwright, 390×844, 768×1024 y 1440×900 × tres tiers; revisar nueve capturas, contraste, teclado, overflow, textos largos y equivalencia de módulos. La existencia del harness no constituye PASS.
+2. **Catálogo real:** diseñar y aceptar visualmente cinco familias y sus variantes Base/Pro/Premium antes de anunciar disponibilidad. Solo Esencial está `available` en el baseline inspeccionado.
+3. **Especificación de interfaces:** cerrar pantallas, estados vacíos/error/carga, permisos por rol y comportamiento de edición tableta/escritorio; no confundir prototipos con componentes productivos.
+4. **Contratos transversales:** definir explícitamente fuente autoritativa D1 de derechos, chequeos de autorización server-side, versionado de snapshots, cuotas y concurrencia, reglas de restauración y fallos seguros.
+5. **Economía:** validar tarifas GHL actuales por región, impuestos, costes variables, moneda, PSP, conciliación y reglas de activación; las cifras ilustrativas del plan comercial no son precios cobrables aprobados.
+6. **Gobernanza documental:** consolidar #184 con índice y límite de Markdown canónicos (máximo 20 o excepción explícita), actualizar STATUS/ROADMAP/TESTING y eliminar contradicciones de secuencia antes del merge.
+7. **Release:** definir responsables de aceptación, evidencia focal por checkpoint, métricas, procedimiento de rollback, checklist de privacidad/seguridad y autorización explícita para producción.
+
+**Criterio de cierre del plan:** los siete puntos anteriores deben quedar con decisión o evidencia verificable y sin contradicciones. **Estado a este corte: PLAN MAESTRO CONSOLIDADO, AÚN NO CERRADO.** No inventar porcentaje de avance global: diseño documental, código aislado y producto entregado tienen denominadores distintos.
