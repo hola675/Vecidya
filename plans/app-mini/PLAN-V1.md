@@ -631,7 +631,7 @@ type MiniWebConfigV2 = {
 ### F7 — Modelo de interacción responsiva
 - **Escritorio:** panel de secciones, lienzo central, inspector lateral; barra de acciones fija sin cubrir contenido.
 - **Tableta:** paneles colapsables y lienzo con ancho de vista previa seleccionable.
-- **Móvil:** lienzo primero, edición por panel inferior o pantalla dedicada; guardar/publicar accesibles; evitar que teclado o controles oculten botones. No exigir arrastrar para reordenar.
+- **Móvil:** requisito histórico sustituido por DEC-17 (§36): el editor dentro de `/app` está bloqueado en móviles. La previsualización móvil se controla desde tableta/escritorio.
 - **Guardado:** mostrar `Sin cambios`, `Cambios sin guardar`, `Guardando`, `Guardado`, `Conflicto`, `Error`; no llamar `Guardado` a un cambio solo local.
 - **Salir con cambios:** confirmación accesible; recuperación de borrador solo cuando existe persistencia verificada, no prometer autosave no implementado.
 
@@ -691,7 +691,7 @@ type MiniWebConfigV2 = {
 | F5 | Turnos múltiples/nocturnos y excepciones coherentes | Validación + zona/DST |
 | F5 | Sin datos no implica cerrado/abierto | Render público |
 | F1/F7 | Editor Simple/Avanzado conserva mismo borrador | Estado + CAS |
-| F1/F7 | Móvil permite mover secciones sin drag | Accesibilidad |
+| F1/F7 | Tableta permite mover secciones sin drag | Accesibilidad |
 
 **Dependencias abiertas:** catálogo visual real y distribución de templates por tier (§28 es propuesta), límites económicos de video, proveedor externo permitido, cuotas/retención de media y versiones, y política de horarios frente a datos legacy. No inventar aprobación para estos puntos. **Estado:** dirección UX aprobada, especificación F3–F5 documentada, implementación/pruebas no iniciadas en este checkpoint.
 
@@ -849,6 +849,31 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 **Criterios focales:** usuario sin organización; selector entre dos organizaciones autorizadas; rechazo de organización ajena; cambio de organización sin filtración de estado anterior; estado no disponible cuando API no informa; navegación móvil/teclado. Ejecutar únicamente tests relacionados con componentes/rutas alterados y typecheck focal cuando aplique; registrar comando y SHA.
 
 **No incluido:** editor F7, escritor V2, ampliaciones Cuadra, pago, publicación, restore, video, nueva plantilla, cambios CI globales, merge o despliegue. Si el preflight encuentra conflictos de otros agentes, pausar el archivo conflictivo y continuar con tareas independientes.
+
+
+## 36. DEC-17 — Política de dispositivos por superficie (APROBADA, 2026-10-29)
+
+**Instrucción explícita del titular:** las aplicaciones **`/app` (Mi Vecidya)** y **`/internal` (administración interna)** son exclusivamente para **tableta y escritorio**. Su uso desde **móviles debe estar bloqueado**. En cambio, las **MiniWeb públicas** deben funcionar en **móvil, tableta y escritorio**.
+
+### Alcance y precedencia
+- **`/app` y `/internal`:** no ofrecer ni ejecutar interfaces operativas móviles. En móviles, mostrar una pantalla informativa de acceso no disponible que indique utilizar tableta o escritorio; sin navegación, formularios, acciones, editor ni información privada del panel.
+- **MiniWeb público:** experiencia responsive completa en los tres tipos de dispositivo, incluyendo navegación, galerías, contacto, horarios, accesibilidad y rendimiento móvil.
+- **Editor F7:** forma parte de `/app`; por tanto, **solo tableta y escritorio**. Se anulan los requisitos anteriores de editar, reordenar o publicar desde móvil en §29–30. Las vistas previas **simulan** móvil, tableta y escritorio, pero la vista previa móvil se controla desde un editor en tableta/escritorio.
+- **API y seguridad:** el bloqueo visual por tamaño de pantalla no sustituye autorización, autenticación ni controles de tenant. No confiar en el user-agent como frontera de seguridad; evitar acceso a funciones operativas desde el frontend móvil y mantener permisos de servidor para todas las mutaciones.
+- **Detección:** definir e implementar una regla consistente y comprobable para móvil vs tableta (ancho efectivo/capacidad de interfaz) sin bloquear accidentalmente tabletas en orientación vertical ni escritorios con ventana estrecha; la regla exacta se validará antes de codificar.
+- **No extender el bloqueo** a páginas públicas como `/`, `/servicios`, `/vecindario`, `/vecindario/[slug]` ni a las MiniWeb públicas.
+
+### Actualizaciones de aceptación
+| Superficie | Móvil | Tableta | Escritorio |
+| --- | --- | --- | --- |
+| `/app` Mi Vecidya | **Bloqueado** | Permitido | Permitido |
+| `/internal` | **Bloqueado** | Permitido | Permitido |
+| Editor MiniWeb dentro de `/app` | **Bloqueado** | Permitido | Permitido |
+| MiniWeb pública | **Permitido** | Permitido | Permitido |
+
+**Pruebas focales:** acceso móvil a `/app` y `/internal` muestra bloqueo sin exponer datos; tableta vertical/horizontal y escritorio acceden con permisos válidos; editor puede previsualizar MiniWeb en móvil desde tableta/escritorio; MiniWeb pública se renderiza y utiliza correctamente en móvil/tableta/escritorio; rutas públicas ajenas no sufren regresiones.
+
+**Estado:** política aprobada y documentada; no se ha implementado ni probado todavía el bloqueo.
 
 ## 12. Registro de avance
 
