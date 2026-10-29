@@ -1902,3 +1902,77 @@ D-V9-001 a D-V9-030 APPROVED en sus alcances respectivos. D-V9-031 PENDING; gran
 
 ## Changelog adicional
 - **1.30.0 / 2026-10-29:** D-V9-030 aprobada; persistencia estructurada mínima, guardado opcional de texto libre con aviso específico y exclusión, nueve tareas PLAN-DATA01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 39. Decisión D-V9-031 — preferencia global reversible de texto libre con exclusiones individuales (aprobada 2026-10-29)
+**Aprobación expresa:** «preferencia global explícita y reversible para guardar texto libre, con opción de excluir respuestas individuales». Estado APPROVED; exclusivamente PLAN_ONLY.
+
+### 39.1. Contrato de consentimiento y exclusión
+1. El guardado persistente de texto libre en el borrador anónimo empieza **desactivado por defecto**. Requiere una **acción afirmativa expresa** tras aviso específico y comprensible; no usar consentimiento implícito ni casillas premarcadas.
+2. Una preferencia global permite **autorizar o desactivar** el guardado de texto libre durante la entrevista, sin exigir decisión repetida por cada campo.
+3. Aun con autorización global activa, cada respuesta libre tendrá un control accesible para **excluirla individualmente** del borrador. La exclusión prevalece sobre la autorización global.
+4. El usuario puede **revocar** la autorización global en cualquier momento. La revocación desactiva guardados posteriores y exige retirar del borrador los textos libres previamente persistidos, sujeto a garantías técnicas verificables y comunicación honesta de límites.
+5. Desactivar la exclusión individual solo podrá habilitar guardado de ese campo si la autorización global sigue activa y el contenido no está prohibido por reglas de minimización.
+6. El texto excluido puede utilizarse en la **entrevista activa**, pero no debe persistirse para reanudación. Si se pierde al cerrar, el usuario recibirá información clara; no se inventarán respuestas al restaurar.
+7. **Nunca** guardar credenciales, contraseñas, secretos, tokens o datos sensibles innecesarios, incluso con permiso global e inclusión individual.
+8. El aviso y el control deben diferenciar claramente **uso durante la evaluación** de **almacenamiento local para continuar después**, sin inducir a autorizar.
+9. Los cambios de preferencia y exclusión no cuentan como turnos de pregunta D-V9-020; no alteran el límite 24+5, hitos, madurez, evaluación, ranking ni recomendaciones.
+10. Las preferencias y exclusiones pertinentes deben restaurarse con el borrador válido, respetando D-V9-027–030; la restauración nunca convierte una respuesta excluida en almacenada.
+11. Persistir solo el **mínimo metadato** necesario para recordar la decisión de privacidad y exclusiones, evitando conservar contenido libre como metadato, historial de versiones, logs o telemetría.
+12. Aplicar los siete días desde el último guardado válido confirmado, sin respaldo de borrador en servidor; la eliminación y caducidad se rigen por D-V9-028–029.
+13. No vincular el permiso de texto libre a consentimiento comercial, GHL, creación de cuenta o reclamación de informe detallado.
+14. La ubicación del control, su semántica exacta, el tratamiento de cambios de exclusión después de introducir texto y la granularidad de limpieza se diseñarán y validarán antes de implementar; no presumir garantías aún no verificadas.
+
+### 39.2. Precedencia conceptual
+| Preferencia global | Exclusión individual | Contenido admisible | ¿Persistir texto? |
+| --- | --- | --- | --- |
+| Desactivada | Cualquiera | Sí | No |
+| Activada | Sí | Sí | No |
+| Activada | No | Sí | Sí, con guardado confirmado |
+| Activada | No | No (secreto o dato innecesario) | No |
+| Revocada | Cualquiera | Cualquiera | No; limpiar textos previamente guardados según contrato |
+La tabla define intención de producto, no comportamiento ya implementado.
+
+### 39.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-CONS01 | Inventariar campos de texto libre y rutas de persistencia V9/QBV2 | Matriz campo×riesgo×flujo y SHA | Sin asumir implementación |
+| PLAN-CONS02 | Especificar preferencia global, exclusiones y precedencia | Contrato de estados/transiciones | Privacidad por defecto |
+| PLAN-CONS03 | Diseñar avisos, controles y revocación es/en | Flujos UX móvil/escritorio y microcopy | Accesibilidad |
+| PLAN-CONS04 | Definir borrado de textos al revocar o excluir | Política de limpieza y límites verificables | No prometer borrado físico absoluto |
+| PLAN-CONS05 | Auditar telemetría, cachés y persistencia indirecta | Modelo de amenazas y controles | Sin copias encubiertas |
+| PLAN-CONS06 | Diseñar reanudación con textos ausentes y evidencia crítica | Matriz de recuperación y 24+5 | D-V9-017–020 |
+| PLAN-CONS07 | Separar permisos de borrador, procesamiento activo y reclamación de informe | Diagrama de datos y consentimiento | D-V9-005; sin GHL |
+| PLAN-CONS08 | Preparar pruebas focalizadas futuras de revocación y exclusión | Matriz global×individual×estado×error | No ejecutar en PLAN_ONLY |
+| PLAN-CONS09 | Revisar accesibilidad, comprensión y ausencia de patrones manipulativos | Checklist editorial bilingüe | Validación humana |
+
+### 39.4. Criterios de aceptación futuros
+1. El guardado de texto libre comienza desactivado.
+2. La autorización global requiere una acción afirmativa informada.
+3. El usuario puede autorizar sin aceptar marketing ni crear cuenta.
+4. Una exclusión individual prevalece sobre el permiso global.
+5. Texto excluido no aparece en el borrador restaurado.
+6. El usuario puede revocar el permiso global.
+7. Revocación detiene persistencias futuras de texto libre.
+8. Revocación elimina del borrador los textos libres previos conforme a garantías verificadas.
+9. Revocar no borra silenciosamente la respuesta activa sin advertencia.
+10. La reactivación global no anula automáticamente exclusiones individuales.
+11. Datos prohibidos no se guardan aunque el usuario autorice.
+12. Preferencias se restauran sin recuperar texto excluido.
+13. La entrevista sigue siendo utilizable con texto libre no persistente.
+14. No se generan copias indirectas en logs, analytics o telemetría.
+15. Cambio de preferencia no consume turnos ni modifica puntuación.
+16. La caducidad de siete días sigue aplicándose al borrador.
+17. No existe respaldo del borrador anónimo en servidor.
+18. El control es comprensible en es/en y accesible por teclado/lector.
+19. La recuperación de evidencia crítica respeta 24+5 y consentimiento.
+20. Los resultados finales y la reclamación de informe tienen política independiente.
+
+### 39.5. Próxima decisión D-V9-032 — aviso sobre pérdida de texto libre al reanudar
+Alternativas pendientes: **A** aviso general una sola vez al configurar privacidad; **B** aviso contextual solo al excluir una respuesta libre; **C** aviso general breve más señal contextual discreta en campos excluidos y recordatorio al reanudar si faltan textos (recomendado). Ninguna opción aprobada; debe evitar mensajes repetitivos y no crear interacciones contables.
+
+### 39.6. Estado
+D-V9-001 a D-V9-031 APPROVED en sus alcances respectivos; D-V9-032 PENDING. Microcopy y contratos técnicos finales PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.31.0 / 2026-10-29:** D-V9-031 aprobada; permiso global reversible y exclusiones individuales, precedencia, nueve tareas PLAN-CONS01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
