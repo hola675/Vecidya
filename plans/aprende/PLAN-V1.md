@@ -518,3 +518,28 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Secuencia de implementación futura:** primero DTOs con allowlist y tests de no filtración; después entitlement; luego loader de lectura y búsqueda; finalmente UX. No abrir las 42 guías a través del loader antiguo durante migración.
 
 **Estado:** Fase 0 documentada parcialmente; sin implementación ni despliegue.
+
+
+## 23. Fase 0 — inventario real de migraciones y pruebas focalizadas
+
+**Inspección del repositorio (solo lectura):**
+- Directorio `vecidya-platform/db/migrations/`: secuencia existente desde `0000_init_platform_meta.sql` hasta `0030_business-profile-tiktok-youtube.sql`, con `meta/_journal.json`. **No reservar aún `0031`** sin verificar HEAD de la rama de implementación y contenido del journal: puede haber migraciones concurrentes.
+- `tests/unit/learn/`: `learn-curriculum.test.ts`, `learn-management-03.test.ts`, `learn-publication-boundary.test.ts`; también `tests/unit/learn-content.test.ts` y `learn-catalog-integrity.test.ts`.
+- `tests/unit/invitations/`: `invitation-rules.test.ts`, `team-labels.test.ts`; `tests/unit/auth/`: `authorization-harness-diagnostics.test.ts`, `organization-http-surface.test.ts`.
+- `tests/unit/licensing/calculator.test.ts`, `tests/ci/licensing-contract.test.mjs`, `tests/e2e/aprende-public-qa-check.mjs`.
+- `package.json` incluye `test:e2e:aprende-public`, `test:unit`, `typecheck` y `build`. **La existencia de scripts no prueba que pasen.** No se ejecutó ninguno durante esta revisión.
+
+**Política de ejecución aprobada:** usar solo pruebas focalizadas de archivos modificados, sin lanzar toda la suite ni CI general en cada iteración; `typecheck` y `build` cuando la modificación los justifique. Mantener cambios fuera de GHL/CRM. Antes de modificar el esquema, verificar scripts reales de migración, journal y mecanismos de rollback sobre D1 local aislada. No modificar D1 remota ni producción.
+
+**Secuencia de trabajo recomendada para agente de implementación:**
+1. Congelar contratos y tests focalizados del catálogo público y privacidad de payloads (LEAK-01..08); preservar comportamiento existente de guías gratuitas.
+2. Definir esquema D1 aditivo de grants, progreso y operaciones, con claves foráneas, índices, borrado y migración local verificada; evitar acoplarse a tablas de formación organizacional.
+3. Crear consulta de entitlement con tests focalizados de licencia, membresía, rol y organización suspendida; sin alterar el sistema general de permisos.
+4. Migrar loader de catálogo y lectura a DTO públicos y cuerpo autorizado, con tests de SSR/hidratación y build.
+5. Implementar progreso y sincronización con tests de concurrencia, reset e idempotencia.
+6. Integrar UI, itinerarios y accesibilidad; ejecutar QA focalizada Aprende.
+7. Entregar evidencias por commit/PR y checklist para autorización explícita de merge/deploy.
+
+**Condiciones de aceptación de Fase 0:** esquema y journal revisados; tests existentes leídos (no solo inventariados); contrato de endpoints y autorización cerrado; estrategia de conflictos definida; amenazas de filtración cubiertas por tests; lista de rutas/archivos impactados y plan de rollback. Hasta entonces Fase 0 continúa abierta.
+
+**Estado:** inventario confirmado; pruebas no ejecutadas; ninguna migración ni código modificado.
