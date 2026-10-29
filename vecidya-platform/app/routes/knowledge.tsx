@@ -2,16 +2,11 @@ import { Link } from "react-router";
 
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
-import { getPublicLearnPathways } from "../content/learn-publication";
-import { getPublicLearnArticles } from "../content/learn-publication";
+import { getPublicLearnGuideSummaries, getPublicLearnPathways, matchesPublicLearnGuideSummary } from "../content/learn-publication";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { publicListingRobots } from "../lib/public-seo";
 
 import type { Route } from "./+types/knowledge";
-
-function searchable(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("es");
-}
 
 function learnHref(category: string | null, search: string) {
   const params = new URLSearchParams();
@@ -26,47 +21,25 @@ export function loader({ request }: Route.LoaderArgs) {
   const search = (params.get("q") ?? "").trim().slice(0, 100);
   const requestedCategory = params.get("tema");
   const category = learnCategories.find((topic) => topic.name === requestedCategory)?.name ?? null;
-  const needle = searchable(search);
-  const publicArticles = getPublicLearnArticles(learnArticles);
+  const publicArticles = getPublicLearnGuideSummaries(learnArticles);
   const articles = publicArticles
     .filter((article) => {
       if (category && article.category !== category) return false;
-      if (!needle) return true;
-      const summary = [
-        article.title,
-        article.intro,
-        article.excerpt,
-        article.category,
-        ...article.enPocasPalabras,
-        ...article.sections.flatMap((section) => [
-          section.heading,
-          ...section.paragraphs,
-          ...(section.bullets ?? []),
-          ...((section.blocks ?? []).flatMap((block) =>
-            Object.values(block).flatMap((value) =>
-              typeof value === "string"
-                ? [value]
-                : Array.isArray(value)
-                  ? value.map((item) => typeof item === "string" ? item : JSON.stringify(item))
-                  : [],
-            ),
-          )),
-        ]),
-      ].join(" ");
-      return searchable(summary).includes(needle);
+      return matchesPublicLearnGuideSummary(article, search);
     })
     .map(({ slug, title, excerpt, image, category: articleCategory, editorialDraft }) => ({
-      slug, title, excerpt, image, category: articleCategory, editorialDraft: editorialDraft ?? false,
+      slug, title, excerpt, image, category: articleCategory, editorialDraft,
     }));
   const topics = learnCategories.map((topic) => ({
     ...topic,
-    count: publicArticles.filter((article) => article.category === topic.name).length,
+    count: learnArticles.filter((article) => article.editorialDraft !== true && article.category === topic.name).length,
   }));
-  const pathways = getPublicLearnPathways(learnPathways, publicArticles).map((path) => ({
+  const publishedArticles = learnArticles.filter((article) => article.editorialDraft !== true);
+  const pathways = getPublicLearnPathways(learnPathways, publishedArticles).map((path) => ({
     title: path.title,
     description: path.description,
     guides: path.slugs.map((slug) => {
-      const guide = publicArticles.find((article) => article.slug === slug);
+      const guide = publishedArticles.find((article) => article.slug === slug);
       if (!guide) throw new Error("Guía pública del itinerario no encontrada: " + slug);
       return { slug: guide.slug, title: guide.title, editorialDraft: false };
     }),

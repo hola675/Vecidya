@@ -80,6 +80,8 @@ La primera extensión de operaciones cubre **organización de tareas**, **movimi
 
 ## APRENDE — mapa educativo empresarial pendiente (investigación 2026-10-20)
 
+**APRENDE-PLAN-V1, checkpoint inicial de Fase 1 (2026-10-28):** el catálogo `/aprende` usa una proyección pública allowlist y búsqueda limitada a título, extracto y categoría. Unitarias focales 6/6, QA pública local 48/48 rutas, 6 categorías, 9 itinerarios y cuatro viewports; typecheck/build/diff-check PASS. No se aplican todavía IDs/revisiones ni clasificación 6/42; la selección gratuita sigue pendiente de validación editorial. El loader del artículo conserva su acceso público actual; el cambio no implementa ni afirma guard de licencia. Ver `STATUS.md` y `TESTING.md`.
+
 **Audiencia transversal:** negocios pequeños, empresas con departamentos, organizaciones con sedes, grupos con varias marcas o entidades; también profesionales y organizaciones sin fines de lucro cuando las recomendaciones sean aplicables. El aprendizaje se adapta a la complejidad de la tarea, permisos, equipo y datos, sin asumir que todos parten de cero ni que todos necesitan contratar software.
 
 **Ruta incorporada como borrador en rama dependiente:** coordinación de sedes y negocios, permisos y responsables, selección de herramientas y comparación responsable de indicadores. Antes de incorporarla definitivamente se requiere revisión editorial/fuentes y certificación técnica sin interferir con `feat/aprende-editorial-02`.

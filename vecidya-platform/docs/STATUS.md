@@ -1,5 +1,11 @@
 # Estado de implementación
 
+## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
+
+**Fase 1 en progreso; el modelo 6/42 está clasificado en código, pero no activa restricciones.** CODE: el loader del índice proyecta cada guía publicada a un DTO allowlist sin secciones, y la búsqueda usa solo título, extracto y categoría. El manifiesto editorial fija IDs UUID para 48 guías y 387 secciones, revisión inicial `1` y acceso `always_free` para las seis candidatas del plan (42 `licensed`). El detalle de artículo sigue con el comportamiento público vigente; todavía no hay guard de licencia ni permiso Aprende. La clasificación no acredita aceptación editorial final de gratuidad ni de revisiones.
+
+**RAN 2026-10-28:** `learn-publication-boundary.test.ts` 7/7 PASS; `pnpm run test:e2e:aprende-public` PASS (48 guías, 6 categorías, 9 itinerarios, 320/390/768/1366 px); `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El E2E encontró que los UUID de sección requieren selector CSS por atributo, ahora corregido. Aún se requieren revisión editorial final de las seis candidatas y pruebas de filtración del cuerpo completo antes de cerrar Fase 1 y habilitar restricciones.
+
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 
 `platform_admin` activo recibe el directorio global de organizaciones en el selector de `/app`; seleccionar una abre `/app/platform/organizations/:id` sin cambiar la organización activa de Better Auth. Las rutas `/app/platform/*` reutilizan las guardas, acciones allowlisted y auditorías de plataforma existentes para operar ciclo de vida, roles no-owner, servicios, licencia, capacitación y MiniWeb. Mi negocio incluye TikTok y YouTube; la migración aditiva `0030` se aplicó a D1 de producción y el release `0.9.0` está desplegado. GitHub CI pasó en PR #180; no se ejecutaron certificaciones manuales por instrucción del usuario. El HTTP anónimo de `/` verificó versión y copyright; no se verificaron rutas autenticadas de producción. Las acciones de owner-transfer/eliminación permanecen fuera de alcance.

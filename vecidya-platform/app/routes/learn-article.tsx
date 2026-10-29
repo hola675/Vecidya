@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 
 import { learnArticles } from "../content/learn";
-import { getPublicLearnArticle, getPublicLearnArticles } from "../content/learn-publication";
+import { getLearnEditorialIdentity, getPublicLearnArticle, getPublicLearnArticles } from "../content/learn-publication";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 
 import type { LearnBlock } from "../content/learn";
@@ -19,7 +19,7 @@ export function loader({ params }: Route.LoaderArgs) {
   ].join(" ");
   const words = readingText.trim().split(/\s+/u).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(words / 200));
-  return { article, readingMinutes };
+  return { article: getLearnEditorialIdentity(article), readingMinutes };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -122,13 +122,13 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
             <div className="learn-article-rail">
               <nav className="learn-article-toc" aria-label="Índice del artículo">
                 <strong>En esta guía</strong>
-                <ol>{article.sections.map((section, index) => <li key={section.heading}><a href={`#section-${index + 1}`}>{section.heading}</a></li>)}</ol>
+                <ol>{article.sections.map((section) => <li key={section.sectionId}><a href={`#${section.sectionId}`}>{section.heading}</a></li>)}</ol>
               </nav>
               <Link className="learn-article-rail-link" to="/aprende">Explorar todas las guías <span aria-hidden="true">→</span></Link>
             </div>
             <div id="contenido" className="learn-article-body">
-              {article.sections.map((section, index) => (
-                <section id={`section-${index + 1}`} key={section.heading}>
+              {article.sections.map((section) => (
+                <section id={section.sectionId} key={section.sectionId}>
                   <h2>{section.heading}</h2>
                   {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   {section.bullets && <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}

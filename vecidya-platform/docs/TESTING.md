@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — identidad editorial y catálogo público (2026-10-28)
+
+`learn-publication-boundary.test.ts`: **7/7 PASS**; verifica la distribución provisional 6/42, unicidad de 48 guideId y 387 sectionId, revisiones positivas y DTO sin cuerpo. `pnpm run test:e2e:aprende-public` **PASS** con 48 guías, 6 categorías, 9 itinerarios y viewports 320/390/768/1366. `pnpm run typecheck`, `pnpm run build` y `git diff --check` **PASS**. El runner requirió `BASE_URL=http://127.0.0.1:5173` porque `localhost` resolvió a IPv6 mientras el servidor estaba enlazado a loopback IPv4. No se certifica acceso protegido: el loader de artículo conserva su comportamiento vigente y la clasificación aún es metadata editorial.
+
 ## APP-PLATFORM-ADMIN-ORGS — release 0.9.0 (2026-10-28)
 
 `pnpm run typecheck` y `pnpm run build`: **PASS**. GitHub Actions en commit `03fc96bcba6f07fdd44f832bcffe922120d9dd80`: `quality`, `Playwright desktop/mobile + publication guard` y `Typecheck, build and unit regression` **PASS**. No se ejecutaron pruebas de certificación manuales por instrucción del usuario. Un primer GET anónimo al Worker local respondió 500 antes de resolver la sesión por falta de secreto Auth de desarrollo. Con una clave efímera local, Cloudflare Vite reportó timeout al construir `Request.cf`; el flujo autenticado quedó sin validar en runtime local. No se consultaron secretos ni se usó una sesión real. Migración `0030` aplicada a D1 de producción y release desplegado; evidencia HTTP fechada en `ENVIRONMENTS.md`. No se abrieron sesiones ni se verificaron rutas autenticadas en producción.
@@ -69,6 +73,12 @@ No se ejecutaron pruebas automatizadas por indicación del usuario. La inspecci�
 La revisión aprobó las 18 guías previamente en borrador: objetivo/alcance, claridad, resumen, estructura, ejemplo hipotético, definiciones/pasos/FAQ, imagen/alt, enlaces relacionados y fuentes con alcance declarado. Unitarias focales: 51/51 PASS; typecheck/build y Playwright local: PASS. En el HEAD sincronizado `3350bed9`, integrado en `main@367b03ec`, `Aprende quality` run `40360164171`, `Aprende public QA` run `40360164331` y `Main integration quality` run `40360164020` terminaron PASS; el último incluye typecheck, build, regresión Diagnóstico/Aprende y suite unitaria completa. El workflow público usó Chromium y subió el artefacto de capturas/reporte.
 
 **Fuentes — RAN local 2026-10-26:** `node scripts/audit-learn-links.mjs` inspeccionó 73 URL de siete módulos: 16 respuestas 404 automatizadas y 12 no concluyentes (403/timeout); el resto respondió 200 o redirección. El DOI NIST AI 600-1 dio falso 404 automatizado aunque NIST publica registro y PDF. Se reemplazó una URL archivada de CISA en una de las guías aprobadas por la página vigente de recursos para pequeñas y medianas empresas. Las demás referencias 404 pertenecen a artículos preexistentes y requieren un checkpoint posterior de saneamiento. Los 403/timeouts no se clasifican como rotos sin corroboración.
+
+## APRENDE-PLAN-V1 — DTO público y búsqueda del catálogo (2026-10-28)
+
+**RAN local:** `tests/unit/learn/learn-publication-boundary.test.ts` 6/6 PASS con Node 24.22.1. `pnpm run test:e2e:aprende-public` PASS contra Worker local: 48 rutas publicadas, 6 categorías, 9 itinerarios, listado y guías en 320/390/768/1366 px. Typecheck, build y `git diff --check` PASS. El build mantiene avisos existentes de secretos de desarrollo ausentes y imports dinámicos inefectivos; no se leyeron secretos.
+
+La prueba nueva comprueba que el DTO del índice no contiene secciones y que una frase exclusiva del cuerpo no sirve para encontrar una guía. No valida todavía el modelo 6/42 ni la protección del loader de detalle.
 
 ## APRENDE-PUBLIC-QA-01 — certificación pública no destructiva (2026-10-26; PR #143 integrado)
 
