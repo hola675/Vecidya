@@ -1,3 +1,7 @@
+## APP-MINI-V2C — pruebas focales
+
+Ejecutar exclusivamente `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-visual-entitlements.test.ts` para el nuevo módulo. Casos: Cuadra/Base, Barrio/Pro, Ciudad/Premium, máximo tier activo, aislamiento de propietarios, inactivas, fail-closed e inmutabilidad. **Pendiente evidencia de ejecución del último SHA.**
+
 # Pruebas
 
 ## APRENDE-PLAN-V1 — progreso personal (Fase 4; en curso)
