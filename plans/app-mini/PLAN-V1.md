@@ -2599,3 +2599,16 @@ El expediente de implementación (§78) y los contratos (§§79–80) son sufici
 | Checks del PR, conflictos y autorización merge | **PENDING** | no se consultaron checks ni se solicitó merge |
 
 **Veredicto:** GOV-VERIFY **PARTIAL**, con política e inventario confirmados. No declarar PLAN-READY completo ni solicitar merge automático. El siguiente paso es verificar rutas citadas, referencias normativas y estado del PR contra el SHA actual, y plantear al responsable la decisión sobre la promoción del maestro al catálogo global.
+
+
+## 83. Corrección explícita del alcance de gobernanza — planes de desarrollo, no documentos rectores
+
+**Aclaración del responsable (2026-10-29):** «Estamos diseñando un plan que vive en la carpeta `plans` y no es documentación rectora del proyecto, sino planes de desarrollo, como el plan de Aprende».
+
+**Decisión aplicada:** `plans/app-mini/PLAN-V1.md` es el **plan maestro dentro del expediente de desarrollo APP-MINI**, no un documento canónico rector de Vecidya ni una entrada que deba promoverse a la tabla de `GOVERNANCE.md`. Los anexos de `plans/app-mini/` siguen subordinados **solo dentro de ese expediente**. `AGENTS.md`, `GOVERNANCE.md`, `PROJECT_STATE.md`, `STATUS.md` y demás documentación rectora mantienen su autoridad para políticas de repositorio, estado técnico y evidencias.
+
+**Corrección a §§74, 81 y 82:** expresiones como «único maestro normativo», «promoción al catálogo global» o «decidir si el maestro entra al catálogo canónico» deben interpretarse exclusivamente en el ámbito del plan APP-MINI. **Se retira como bloqueo y como pregunta al responsable** la promoción al catálogo de Markdown canónicos. El límite de 20 documentos rectores no es un cupo que este expediente deba consumir; la presencia de tres Markdown en `plans/` no los convierte en documentos rectores. Se mantiene únicamente la obligación general de no generar documentación rectora paralela.
+
+**GOV-VERIFY revisado:** verificar que los archivos permanecen en `plans/app-mini/`, que sus referencias internas existen, que las decisiones del plan son consistentes y que no se atribuye implementación al código. **No** exige registro en la tabla canónica ni autorización de promoción. GOV-01 permanece **APPROVED en su alcance correcto: jerarquía interna del expediente**, no jerarquía del repositorio.
+
+**Consecuencia:** el bloqueo documental artificial identificado en §82 queda **RESUELTO por aclaración del responsable**. El siguiente trabajo es revisar referencias y coherencia del plan de desarrollo, siguiendo la separación que ya utiliza el proyecto Aprende, sin alterar gobernanza global ni añadir archivos rectores.
