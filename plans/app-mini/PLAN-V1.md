@@ -1279,6 +1279,17 @@ No activar plantillas Pro/Premium en producción antes de: (1) aprobación visua
 
 **Estado:** revisión de fuente efectuada; prueba visual automatizada **bloqueada por transferencia del artefacto al navegador**, sin falsos PASS. PR #184 continúa abierto y sin merge/deploy.
 
+
+## 47. F6 — Paridad de contenido y semántica del prototipo (2026-10-29)
+
+**Corrección aplicada al prototipo HTML aislado:** commit `4a991202ce5d5f857f7e8eb5a6497d5d85471287` en `plans/app-mini/prototypes/miniweb-tiers-comparison.html`.
+
+Se comprobó por lectura del código que la comparación anterior omitía una sección «Acerca de» y combinaba FAQ con contacto. El prototipo ahora incluye secciones independientes de **hero, acerca del negocio, cuatro servicios, galería de seis marcadores, cuatro preguntas frecuentes, horarios/ubicación y contacto**. Los tres niveles comparten un solo DOM; el selector cambia `data-tier`, por lo que el contenido no se duplica ni se omite según nivel.
+
+**Revisión focal aún requerida:** abrir el HTML en navegador y validar responsive, foco, lectura con teclado, contraste, enlaces internos y comportamiento con textos extensos. La inspección del código no equivale a prueba visual ni a auditoría WCAG. Los medios son marcadores de posición; no se ha validado un negocio real ni el motor V2.
+
+**Siguiente paso de implementación:** una vez aprobada la composición, convertir la maqueta en componentes React/CSS aislados con datos tipados; mantener el registro `available` y los permisos sin cambios hasta pasar pruebas focales y revisión visual.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
