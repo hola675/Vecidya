@@ -1432,3 +1432,57 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 7. **Release:** definir responsables de aceptación, evidencia focal por checkpoint, métricas, procedimiento de rollback, checklist de privacidad/seguridad y autorización explícita para producción.
 
 **Criterio de cierre del plan:** los siete puntos anteriores deben quedar con decisión o evidencia verificable y sin contradicciones. **Estado a este corte: PLAN MAESTRO CONSOLIDADO, AÚN NO CERRADO.** No inventar porcentaje de avance global: diseño documental, código aislado y producto entregado tienen denominadores distintos.
+
+
+## 54. Matriz de aceptación funcional y dependencias críticas (2026-10-29)
+
+**Estado:** especificación ejecutable propuesta; no equivale a pruebas ejecutadas ni a aprobación visual. Esta matriz concreta el §53 sin modificar decisiones aprobadas.
+
+### 54.1 Criterios de aceptación por superficie
+
+| Superficie | Escenario verificable | Criterio de salida | Dependencia |
+| --- | --- | --- | --- |
+| Mi Vecidya /app | Usuario con varias organizaciones | Cambio de organización no filtra datos ajenos ni cambia titular de facturación | Autorización Better Auth y D1 |
+| Mi Vecidya /app | Teléfono | Mostrar aviso no operativo, sin formularios ni acciones de administración; no bloquear MiniWeb público | DEC-17 |
+| Mi Vecidya /app | Tableta/escritorio | Navegación, estados vacío/carga/error y foco por teclado utilizables | F1, diseño visual |
+| Editor MiniWeb | Configuración V1 publicada | Lectura/render idénticos, sin migración ni sobrescritura automática | V2-B |
+| Editor MiniWeb | Dos galerías | Instancias, orden e IDs DOM independientes, con hero único primero | V2-E |
+| Editor MiniWeb | Cambio de variante | El contenido y todos los módulos siguen disponibles en Cuadra/Barrio/Ciudad | DEC-18, F6 |
+| Editor MiniWeb | Usuario sin permiso o licencia | Servidor rechaza guardado/publicación aunque se manipule el cliente | V2-C/D, permisos |
+| Editor MiniWeb | Licencia reducida | Mantiene publicación histórica, pero deniega republish con variante no autorizada | DEC-07 |
+| MiniWeb público | Tres anchos de pantalla | Sin desbordamiento horizontal, CTA y contacto legibles, foco y semántica conservados | F6, F9 |
+| MiniWeb público | Desactivación administrativa | HTTP 404 neutro, noindex y exclusión de sitemap, sin filtrar causa privada | DEC-14 |
+| Publicador | Dos escritores concurrentes | Solo una revisión válida se publica; el conflicto no destruye snapshot | F8, CAS |
+| Historial | Restauración de versión anterior | Crea borrador nuevo; conserva historial y exige licencia vigente al republicar | F2B, F8 |
+| Capacidad | Primeras tres publicaciones del titular | Permitidas con al menos una licencia activa y autorización organizacional | DEC-08 |
+| Capacidad | Cuarta publicación sin ampliación | Denegada en servidor; Barrio/Ciudad no suman cupos | DEC-08 |
+| Capacidad | Cuadra adicional vigente | Suma exactamente tres plazas al mismo titular, sin nueva licencia CRM implícita | F2A |
+| Servicios/Pagos | Miembro de organización no delegado | No puede consultar importes ni medios de pago de otra organización | B2, permisos |
+| Servicios/Pagos | Consumo GHL fraccionario | Multiplica coste verificado ×1,20 con precisión decimal; redondea al nivel de línea | DEC-BILL-01, B1 |
+| Servicios/Pagos | Tarifa no verificada | No publica precio ni genera cargo automático; muestra pendiente de cotización | B1, B7 |
+| Servicios/Pagos | Suscripción IA compartida | No duplica cuota al habilitar voz y conversación | B0–B4 |
+
+### 54.2 Orden de dependencias y aislamiento de agentes
+
+1. **Base estable:** revisar y fusionar PRs certificados solo con autorización; resolver conflictos con main por orden A→B→C→D, revalidando SHA resultante si hay rebase. No considerar los cuatro PR como integrados antes de hacerlo.
+2. **Núcleo MiniWeb:** V2-E renderer y F2A/F2B modelo/capacidad, con ramas separadas y contratos compartidos revisados antes de tocar el publicador.
+3. **Experiencia:** F1/F3/F4/F5/F7 pueden desarrollarse en paralelo por superficies y módulos, pero deben consumir contratos versionados y no modificar las mismas rutas simultáneamente.
+4. **Catálogo:** F6 requiere evidencia visual real, variantes renderizadas y contenido equivalente; ninguna plantilla `planned` se presenta como `available` sin aceptación.
+5. **Publicación y entrega:** F8 solo tras autorización/capacidad y snapshots; F9 exige pruebas focales, integración y procedimiento de rollback.
+6. **Economía:** B1→B7 corre en carril independiente. No introducir migraciones de cobro ni habilitar pagos en la entrega MiniWeb por accidente.
+
+### 54.3 Decisiones que sí requieren aprobación humana
+
+- **VIS-01:** aprobar o corregir las composiciones Base/Pro/Premium tras revisar las nueve capturas reales; sin esta aceptación no se declara finalizado F6.
+- **REL-01:** decidir si el primer lanzamiento incluye únicamente licencias administradas o también checkout/cobro automático. **Propuesta por defecto:** pagos automáticos en una segunda entrega, sin considerarlo aprobado por silencio.
+- **COM-01:** aprobar tarifas GHL por región/moneda y términos de venta antes de publicarlas o cobrarlas; cifras ilustrativas no bastan.
+- **GOV-01:** resolver la incorporación del plan documental al límite de Markdown canónicos (consolidación o excepción).
+- **OPS-01:** designar responsable de aceptación visual, revisión de seguridad y autorización de despliegue; no asumir que el agente puede aprobarse a sí mismo.
+
+### 54.4 Condiciones para cerrar F0 sin confundirlo con entregar F9
+
+**F0 se considera definido** cuando existen contratos coherentes de datos/permisos, matriz de aceptación trazable, dependencias y secuencia sin conflictos, inventario de decisiones pendientes y gobernanza documental reconciliada. La aceptación visual final puede seguir siendo un gate de F6 y las tarifas reales un gate de B1/B7, siempre que estén explícitamente marcadas como tales.
+
+**F9 se considera entregado** solo con componentes integrados, pruebas y evidencia de producción aprobada. No usar “plan cerrado” como sinónimo de “producto terminado”.
+
+**Estado a este corte:** matriz de aceptación documentada; aprobaciones VIS-01, REL-01, COM-01, GOV-01 y OPS-01 pendientes. V2-D obtuvo CI SUCCESS y PR #194 listo para revisión, sin merge.
