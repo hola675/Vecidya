@@ -29,3 +29,9 @@ test("V2B: rechaza entrada no JSON y módulos excesivos", () => {
   assert.equal(parseMiniWebReadConfigurationJson("{"), null);
   assert.equal(parse({ ...v2, modules: [hero, ...Array.from({ length: 32 }, (_, i) => ({ ...gallery, instanceId: `gallery-${i}`, sortOrder: i + 1 }))] }), null);
 });
+
+test("V2B: no acepta módulos planned ni tipos fuera del registro", () => {
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, type: "articles" }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, type: "team" }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, type: "__proto__" }] }), null);
+});
