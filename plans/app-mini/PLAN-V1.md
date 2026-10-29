@@ -2520,3 +2520,36 @@ Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`
 - **PLAN-READY:** todavía **NO DECLARADO**; la revisión de diseño no equivale a prueba de software.
 
 **Siguiente comprobación documental:** inventario de enlaces entre los tres archivos, revisión de contradicciones normativas residuales y verificación del límite de documentos canónicos antes de solicitar aprobación de merge.
+
+
+## 81. Auditoría documental de referencias, contradicciones y cierre GOV-VERIFY
+
+**Evidencia inspeccionada (2026-10-29):** lectura de los tres Markdown del PR #184. El maestro tiene 277 encabezados Markdown de nivel 1–3 y un enlace Markdown explícito hacia el PR histórico #197; los dos anexos no contienen enlaces Markdown `[texto](destino)`. Esto **no equivale** a una verificación exhaustiva de referencias de texto, rutas en backticks, enlaces de GitHub externos ni reglas CI del repositorio.
+
+### 81.1 Contradicciones y precedencia
+
+| Hallazgo | Ubicación | Diagnóstico | Tratamiento normativo |
+|---|---|---|---|
+| DOC-01 | Anexo variantes §5 | «secuencia de PRs pequeños» podría interpretarse como orden de abrir PRs ahora | Histórica/propuesta: el trabajo documental continúa en **un único PR #184**; los tickets futuros no crean ramas automáticamente |
+| DOC-02 | Anexo variantes §1–4 | Diagnóstico y tipos de MiniWeb V1 podrían confundirse con reuso autorizado | Solo referencia para compatibilidad; §§66/69–71 exigen secciones, editor, renderer y horarios V2 desde cero |
+| DOC-03 | Anexo comercial §9 y §11.3 | REL-01 aparece entre decisiones pendientes | **REL-01 APPROVED**: P6A manual; COM-01/PAY-01/BILL-02 siguen pendientes para sus ámbitos |
+| DOC-04 | Maestro §67 | Menciona trabajo anterior de código y PR #197 | Registro histórico **SUPERSEDED** por §68: prototipos de código retirados del PR #184; #197 cerrado sin merge |
+| DOC-05 | Maestro §§54/56/70 | CAT-01, HV2 y GOV-01 aparecen pendientes en pasajes anteriores | **APPROVED** por §§71/74; §76 asigna autoridad final, no aprueba evidencias futuras |
+| DOC-06 | Anexo comercial | B8 QA/lanzamiento puede leerse como gate del lanzamiento manual | B8 y cobros automáticos corresponden a P6B cuando requieran PSP; P6A mantiene QA de licencias sin PSP |
+| DOC-07 | Todos | Rutas y referencias cruzadas son mayormente texto/backticks, no enlaces verificables | Antes de merge, inventariar rutas y encabezados; no afirmar enlaces válidos por ausencia de Markdown links |
+
+**Regla:** una contradicción histórica no invalida la aprobación más reciente. El lector debe aplicar la jerarquía GOV-01 y las actas fechadas. Cualquier nueva decisión comercial exige aprobación explícita.
+
+### 81.2 Criterios GOV-VERIFY de cierre
+
+1. **Inventario:** contrastar los cinco archivos cambiados en el PR y clasificar tres Markdown (maestro + dos anexos) y dos recursos de prototipo ilustrativo.
+2. **Canonicidad:** confirmar contra las reglas reales del repositorio el límite permitido de documentos canónicos; la aprobación GOV-01 define autoridad pero **no demuestra cumplimiento mecánico**.
+3. **Referencias:** comprobar que las rutas de archivos mencionadas existen en el ref correcto, que no hay enlaces rotos y que los identificadores de decisiones apuntan al acta vigente. El enlace al PR #197 se conserva solo como antecedente cerrado.
+4. **Consistencia:** ejecutar revisión documental focal de DOC-01–07; distinguir frases históricas de decisiones actuales. No modificar los anexos ni sus encabezados por reflejo sin necesidad.
+5. **Cierre:** generar reporte con fecha, SHA, hallazgos, evidencia y veredicto `pass/fail/needs-human`. Solo `pass` verificado permite marcar GOV-VERIFY completado.
+
+**Estado:** **DOC-01–06 RECONCILED NORMATIVELY**, no reescritura de anexos; **DOC-07/GOV-VERIFY PENDING REPOSITORY VALIDATION**. La inspección no ha ejecutado validadores ni comprobado límites CI. No declarar PLAN-READY definitivo todavía.
+
+### 81.3 Entrega final aún pendiente
+
+El expediente de implementación (§78) y los contratos (§§79–80) son suficientes para iniciar revisión técnica futura, **no ejecución autorizada**. Permanecen pendientes: GOV-VERIFY, validación física ARC-01–04, ejecutores técnicos, política comercial mínima P6A, VIS-01, SEC-QA y autorización de release. COM-01/PAY-01/BILL-02 no se dan por aprobados.
