@@ -594,6 +594,66 @@ type MiniWebConfigV2 = {
 
 **Estado:** inventario y contrato objetivo documentados; cuatro plantillas siguen `planned`; ninguna implementación ni prueba nueva realizada.
 
+
+## 29. F7/F1 — Contrato funcional del editor y navegación Mi Vecidya (diseño, 2026-10-29)
+
+**Objetivo:** convertir F1 y F7 en historias implementables sin alterar contratos de licencias, facturación ni publicación. Una única página MiniWeb V2 por organización (DEC-01), con módulos y composición independientes, editor simple por defecto y controles avanzados progresivos.
+
+### F1 — Estructura de navegación y estados
+- **Inicio Mi Vecidya:** organización activa, estado del perfil, MiniWeb publicado/borrador/congelado/desactivado, licencia y cupos compartidos del titular, acciones principales y tareas pendientes; no inventar métricas de tráfico.
+- **Selector de organización:** cambia el contexto de trabajo sin cambiar automáticamente titular de facturación. La API revalida membresía y permiso para cada recurso; nunca usar solo el ID de URL o estado local como autorización.
+- **Navegación objetivo:** `Inicio`, `Mi negocio`, `MiniWeb`, `Servicios y pagos`, `Aprende`, `Soporte`. La disponibilidad de cada entrada depende de permiso real; no duplicar funciones operativas del CRM.
+- **Estados visibles:** sin organización, perfil incompleto, sin licencia base, cupos agotados, MiniWeb sin publicar, borrador con cambios, publicado, congelado por vencimiento/suspensión (DEC-09), desactivado por admin y error de carga. Cada estado presenta acción segura y motivo.
+
+### F7 — Superficies del editor
+| Zona | Contenido | Comportamiento |
+| --- | --- | --- |
+| Barra superior | Organización, estado, revisión, Guardar, Vista previa, Publicar | Publicar requiere validación final server-side; no prometer publicación hasta confirmación |
+| Panel Secciones | Lista de módulos, añadir, duplicar si repeatable, mover, ocultar, eliminar del borrador | `instanceId` estable; hero no se elimina ni se mueve de primer lugar |
+| Lienzo | Render fiel de borrador con selección y guías visuales | Vista escritorio/tableta/móvil; selección no altera datos |
+| Inspector Contenido | Texto, imágenes, enlaces, datos de contacto, galerías, video, horarios | Controles tipados, sanitización y propiedad de medios |
+| Inspector Diseño | Layout, paleta, tipografía, espacios, fondo, alineación, composición | Solo tokens/variantes permitidos por esquema y tier; no CSS/JS libre |
+| Inspector Avanzado | Visibilidad, accesibilidad, SEO permitido, ajustes por dispositivo cuando proceda | No ofrecer controles que el renderer no soporte |
+| Panel Historial | Versiones publicadas, fecha, autor, previsualizar, restaurar a borrador | Restaurar no publica ni borra versión actual |
+
+**Modo simple:** preguntas y controles orientados al negocio, con vista previa en vivo, ajustes esenciales y CTA claros. **Modo avanzado:** inspector de composición, módulos, variantes y propiedades tipadas; alternar modo no debe perder datos ni cambiar permisos.
+
+### Acciones y restricciones
+1. **Guardar:** persiste borrador únicamente, mediante revisión/CAS; conflicto muestra comparación o recarga segura, nunca sobrescritura silenciosa.
+2. **Vista previa:** render aislado de borrador; no expone URLs privadas ni concede permiso de publicación.
+3. **Publicar:** pantalla de revisión con cambios, validación de licencia/cupo/tier DEC-08/10, estado DEC-09 y confirmación; snapshot público cambia solo tras commit exitoso.
+4. **Deshacer/rehacer:** historial de edición de sesión con límites medidos; no reemplaza historial de versiones publicadas.
+5. **Eliminar módulo:** elimina de borrador, no del snapshot público ni del R2 de inmediato. Para galería duplicada, eliminar una instancia no afecta otras.
+6. **Cambio de plantilla:** previsualizar mapeo y elementos incompatibles; conservar copia recuperable; bloquear publicación premium no autorizada sin degradar snapshot vigente.
+7. **Estado congelado:** permite consultar MiniWeb publicado e historial, pero no guardar, editar ni publicar; la desactivación por no renovación solo aparece en administración con permiso explícito.
+8. **Accesibilidad:** acciones mover arriba/abajo además de drag-and-drop; navegación teclado; foco visible; etiquetas; anuncios de error/guardado; controles táctiles adecuados; soporte de zoom y reduced motion.
+
+### F7 — Modelo de interacción responsiva
+- **Escritorio:** panel de secciones, lienzo central, inspector lateral; barra de acciones fija sin cubrir contenido.
+- **Tableta:** paneles colapsables y lienzo con ancho de vista previa seleccionable.
+- **Móvil:** lienzo primero, edición por panel inferior o pantalla dedicada; guardar/publicar accesibles; evitar que teclado o controles oculten botones. No exigir arrastrar para reordenar.
+- **Guardado:** mostrar `Sin cambios`, `Cambios sin guardar`, `Guardando`, `Guardado`, `Conflicto`, `Error`; no llamar `Guardado` a un cambio solo local.
+- **Salir con cambios:** confirmación accesible; recuperación de borrador solo cuando existe persistencia verificada, no prometer autosave no implementado.
+
+### F1/F7 — Matriz de historias y pruebas focales
+| Historia | Criterio de aceptación | Prueba focal |
+| --- | --- | --- |
+| Cambiar organización | Solo datos del negocio autorizado; permisos y cupos correctos | Aislamiento tenant y navegación |
+| Crear MiniWeb | Borrador con hero obligatorio y plantilla permitida | Validación registry |
+| Reordenar módulos | IDs estables, hero primero, orden continuo | Ordenación y persistencia |
+| Duplicar galería | Dos instancias independientes con medios propios | V2 repeatable |
+| Editar identidad | Portada y logo no se pisan; responsive | Componentes F3 |
+| Editar horarios | Días/intervalos válidos, zona horaria coherente | Validación F5 |
+| Guardar y publicar | Borrador no altera público; CAS y entitlements en commit | API F8 |
+| Restaurar versión | Copia a borrador, publicación anterior intacta | Historial F2B |
+| Licencia vencida | Publicación visible, controles de edición bloqueados | DEC-09 |
+| Sin derecho premium | Vista previa explicativa, publicación rechazada | DEC-07/10 |
+| Móvil sin drag | Reordenar y editar mediante botones y panel accesible | UX teclado/táctil |
+
+**Dependencias de implementación:** F1 puede comenzar con rutas y estados tipados sin editar publicaciones; F7 requiere F2B para `instanceId`, F2A/DEC-10 para permisos, F3–F5 para controles reales y F8 para commit. No construir un editor visual que guarde un esquema que el servidor todavía no entiende.
+
+**Estado:** especificación funcional documentada; no hay nuevas pantallas, tests ni despliegue de F1/F7 en este checkpoint.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
