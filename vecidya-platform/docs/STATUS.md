@@ -1,3 +1,7 @@
+## APP-MINI-V2A — candidato no validado (2026-10-29)
+
+**CODE/GIT:** rama `feat/app-mini-v2a-variant-registry`, PR #188 (draft). `app/features/miniweb/visual-variants.ts` define tres variantes y comparación pura de niveles; `tests/unit/miniweb-visual-variants.test.ts` añade tres pruebas focales. No se conectó con registro V1, UI, permisos, DB ni publicaciones. **RAN:** no ejecutado; checkout de GitHub no accesible por DNS desde el entorno actual, por lo que faltan pruebas, typecheck y build. No integrar ni publicar hasta validar.
+
 # Estado de implementación
 
 ## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
