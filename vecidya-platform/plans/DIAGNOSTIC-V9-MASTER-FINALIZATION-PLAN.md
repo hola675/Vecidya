@@ -2435,3 +2435,45 @@ El plan de revisión editorial queda especificado, pero **ningún gate E-01–E-
 
 ## Changelog adicional
 - **1.42.0 / 2026-10-29:** criterios de certificación E-01–E-07, interpretación de grados y prioridades editoriales, límites de auditoría sintáctica. Solo documentación.
+
+## 50. CONSOL-01 / TAX-G3 — matriz de suficiencia por dimensión y escenario (2026-10-29)
+**PLAN_ONLY. Matriz de hipótesis para auditoría, NO cobertura certificada.** Referencias verificadas: `qbv2-coverage.ts` blob `16cae5010bf2584fe89e906d85733f9a56b5c8e2`; `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`; `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/recovery-wave2.ts` blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`.
+
+### Convención estricta
+`D` = al menos una pregunta con mapeo **direct** observada en código bajo condición concreta; NO significa que la ruta se alcance. `S` = evidencia **supporting** observada. `C` = solo contexto observado. `?` = evidencia no verificada. `—` = no aplicabilidad **por decidir**, nunca declarar automáticamente. Las celdas no equivalen a madurez ni a suficiencia.
+
+### Evidencia focal comprobada
+| Escenario y dimensión | Pregunta | Lectura estática | Condición / reserva |
+| --- | --- | --- | --- |
+| C02 claridad | `q2_startup_problem_clarity`, `q2_startup_offer_readiness` | D | `operational_status=preparing`; no garantiza ruta |
+| C02 claridad | `q2_startup_validation_evidence` | S | Apoyo; no sustituye evidencia directa |
+| C02 descubrimiento | `q2_startup_demand_signal` | ? | `pending`, sin `evidenceV3` |
+| C03 todas | anclas `has_customers`, `operational_status` | C | Estado `paused` no equivale a madurez baja |
+| C05 acceso | `q2_nonprofit_donation_clarity` | D | Solo `operating` y soporte `donations/mixed` |
+| C05 tipo de apoyo | `q2_nonprofit_support_type` | C | `pending`; no puntuar |
+| C07 conversión | `q2_ecommerce_checkout_friction` | D | `operating` + historial + arquetipo ecommerce |
+| C07 medición | `q2_ecommerce_cart_visibility` | S | Ver carrito no demuestra consentimiento |
+| C07 relación | `q2_ecommerce_cart_followup` | D | Exige visibilidad `yes`; opción neutral sin permiso |
+| C08 claridad | `q2_food_menu_visibility` | D | Nicho conocido, `goal=explain`, presencia parcial/fiable; `not_applicable` discutido |
+| C06 relación | `q2_dental_care_continuation` | D | Solo nicho dental y condiciones especializadas |
+| C10 clasificación | selectores sectoriales `other/unknown` | C | No inferir nicho; fallback no ejecutado |
+
+### Matriz 8×10 de certificación actual
+Todas las 80 celdas de suficiencia efectiva siguen **NO DEMOSTRADAS (ND)**, incluso donde se observa evidencia D/S/C: la evaluación requiere ruta alcanzable, respuestas interpretables, abstención, presupuesto y revisión editorial bilingüe. Esta declaración evita convertir un mapeo estático en cobertura validada.
+
+| Dimensión | C01 | C02 | C03 | C04 | C05 | C06 | C07 | C08 | C09 | C10 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| clarity_positioning | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| digital_foundation | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| discovery | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| trust_reputation | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| conversion_access | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| relationship_recurrence | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| measurement_optimization | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+| digital_readiness | ND | ND | ND | ND | ND | ND | ND | ND | ND | ND |
+
+### Criterio de cierre TAX-G3
+Por celda: (1) pertinencia al escenario, (2) pregunta concreta y regla, (3) trayectoria alcanzable, (4) opción neutral correcta, (5) evidencia directa suficiente o abstención justificada, (6) coste de interacciones ≤24, excepcional ≤29 con consentimiento, (7) versión y texto es/en aprobados. Si falta cualquiera, registrar ND; no inventar puntuación ni forzar preguntas. Próximo trabajo: trazas documentales focales de C02/C03/C05/C10 y priorización de vacíos.
+
+## Changelog adicional
+- **1.42.0 / 2026-10-29:** matriz explícita de 80 celdas no certificadas y evidencias focales D/S/C por escenario, con criterio de cierre verificable. Solo documentación.
