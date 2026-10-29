@@ -297,7 +297,7 @@
 **Entregables:** matriz de decisiones DEC-01–08; inventario de endpoints, tablas, permisos y snapshots; contrato de cupos por cuenta; política de referencias de medios; matriz de riesgos y compatibilidad. **Salida:** ninguna ambigüedad impide implementar el núcleo. Las decisiones comerciales aún abiertas se aíslan detrás de reglas conservadoras y no se publican como hechos.
 
 ### F1 — Mi Vecidya: navegación y experiencia
-**Entregables:** shell móvil/escritorio, selector de organización con contexto persistente, panel de estado, rutas de MiniWeb y negocio, vacíos/errores/carga accesibles. **Salida:** usuario cambia de organización sin fuga de datos y encuentra edición/publicación en máximo dos pasos de navegación. Pruebas focales de rutas, permisos y componentes.
+**Entregables (DEC-17 prevalece: /app solo tableta/escritorio; móvil público sí):** shell tableta/escritorio, selector de organización con contexto persistente, panel de estado, rutas de MiniWeb y negocio, vacíos/errores/carga accesibles. **Salida:** usuario cambia de organización sin fuga de datos y encuentra edición/publicación en máximo dos pasos de navegación. Pruebas focales de rutas, permisos y componentes.
 
 ### F2A — Licencias y capacidad MiniWeb
 **Contrato aprobado:** bloque base único de 3 MiniWeb si existe al menos una licencia activa Cuadra/Barrio/Ciudad; Barrio y Ciudad no suman bloques; solo Cuadras de ampliación explícitas añaden 3 cada una. CRM Barrio/Ciudad exclusivo de la organización asignada.
@@ -311,16 +311,16 @@
 
 ### F4 — Medios, videos y galerías
 **Evidencia CODE:** DELETE marca is_active=0 con CAS, no borra R2; ruta pública entrega solo medios referenciados en snapshot actual, aun si están inactivos; cuota suma también inactivos; caché compartida hasta 86400 s.
-**Entregables:** galerías múltiples por instanceId; subida y validación de archivos; URLs de video externas con proveedores permitidos; orden independiente; referencias históricas; política de retención y GC seguro. **Salida:** borrar del borrador no rompe publicación; restore histórico detecta faltantes; ningún asset de otro tenant es accesible; cuota no se libera ficticiamente.
+**Entregables (DEC-15 prevalece):** galerías múltiples por instanceId; subida y validación de archivos; URLs de video externas con proveedores permitidos; orden independiente; referencias históricas; política de retención documentada sin GC físico automático en V2 inicial. **Salida:** borrar del borrador no rompe publicación; restore histórico detecta faltantes; ningún asset de otro tenant es accesible; cuota no se libera ficticiamente.
 
 ### F5 — Horarios
 **Entregables:** editor semanal claro, días cerrados, validación de intervalos y presentación compacta en perfil público. **Salida:** misma interpretación entre formulario, snapshot y página publicada; casos límite cubiertos.
 
 ### F6 — Plantillas y niveles
-**Entregables:** Cuadra esencial, Barrio avanzado, Ciudad completo, vista previa responsiva y enforcement en servidor. **Salida:** no se habilitan plantillas premium por modificar payload; downgrade mantiene snapshot publicado (DEC-07). **DEC-10 aprobada:** el nivel visual máximo Cuadra/Barrio/Ciudad se comparte entre todas las organizaciones autorizadas del mismo billing_account, aunque no tengan CRM propio. El CRM permanece exclusivamente en su organización licenciada. Validar nivel visual compartido en servidor, sin sumar cupos por Barrio/Ciudad.
+**Entregables (DEC-18 prevalece):** Base/Pro/Premium solo visuales, con funcionalidad completa en Cuadra, vista previa responsiva y enforcement en servidor. **Salida:** no se habilitan plantillas premium por modificar payload; downgrade mantiene snapshot publicado (DEC-07). **DEC-10 aprobada:** el nivel visual máximo Cuadra/Barrio/Ciudad se comparte entre todas las organizaciones autorizadas del mismo billing_account, aunque no tengan CRM propio. El CRM permanece exclusivamente en su organización licenciada. Validar nivel visual compartido en servidor, sin sumar cupos por Barrio/Ciudad.
 
 ### F7 — Editor simple/avanzado
-**Entregables:** ordenación de secciones, edición inline, ajustes progresivos, deshacer cambios de borrador y vista previa fiel. **Salida:** un usuario sin conocimientos técnicos completa un MiniWeb desde móvil; guardado y validaciones no alteran publicación.
+**Entregables:** ordenación de secciones, edición inline, ajustes progresivos, deshacer cambios de borrador y vista previa fiel. **Salida (corregida por DEC-17):** un usuario sin conocimientos técnicos completa un MiniWeb desde tableta/escritorio; guardado y validaciones no alteran publicación.
 
 ### F8 — Publicación, historial y restauración
 **Entregables:** revisión final, validación de licencia/cupo/plantilla, publicación atómica, historial de versiones, restore a borrador y republicación explícita. **Salida:** ningún cambio de borrador altera página pública; concurrencia de cupos y versiones rechaza operaciones conflictivas; rollback operativo documentado.
