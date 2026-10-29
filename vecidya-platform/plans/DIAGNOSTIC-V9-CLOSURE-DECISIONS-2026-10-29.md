@@ -48,3 +48,23 @@ En el banco base, `q2_presence_digital_base` aplica a actividad `active/prelaunc
 
 ### Changelog
 - **1.3.0 / 2026-10-29:** contraste estático C08 de pregunta genérica y especializada; hueco de claridad condicionado por presencia, pendiente de auditoría integral.
+
+## Fase 5 — inventario focal de claridad de propuesta
+
+Fuentes: `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`; `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`.
+
+| ID | Contexto visible en fuente | Evidencia V9 | Observación |
+| --- | --- | --- | --- |
+| `q2_startup_problem_clarity` | `operational_status=preparing` | `clarity_positioning`, directa | Problema y audiencia; no presupone ventas |
+| `q2_startup_validation_evidence` | `preparing` | `clarity_positioning`, apoyo | Conversaciones/pruebas no equivalen a ventas |
+| `q2_startup_offer_readiness` | `preparing` | `clarity_positioning`, directa | Oferta potencial, no capacidad comercial demostrada |
+| `q2_food_menu_visibility` | Historial activo, nicho comida, objetivo explicar y presencia suficiente | `clarity_positioning`, directa | Excluye C08 sin presencia suficiente |
+| `q2_marketing_agency_scope_clarity` | Historial activo, agencia B2B y presencia suficiente | `clarity_positioning`, directa | Sustitución especializada condicional |
+| `q2_presence_offer_clarity` | Actividad active/prelaunch y presencia reliable/partial según `materialAppliesWhen` | Mapeo por verificar en banco histórico | No cubre por sí sola ausencia de presencia |
+
+**Conclusión limitada:** C02 tiene tres candidatas de claridad con evidencia explícita, sujetas a alcanzabilidad y presupuesto. C08 sin presencia no queda resuelto por las dos preguntas de claridad digital inspeccionadas. No se ha demostrado que estas seis sean todas las preguntas del catálogo que aportan claridad: falta revisar el mapeo histórico y el ensamblaje completo. Tampoco se ha ejecutado el selector.
+
+**Criterio de decisión:** antes de crear pregunta nueva C08, comprobar si existe una pregunta de claridad independiente del canal. Si no existe, proponer una pregunta neutral sobre capacidad de explicar oferta por cualquier medio, con `not_applicable` y `unknown` bien diferenciados, sin obligar a publicar web o menú. Mantener propuesta en HOLD hasta auditoría y aprobación.
+
+### Changelog
+- **1.4.0 / 2026-10-29:** seis preguntas focales de claridad clasificadas por contexto y evidencia; distinción entre cobertura C02 candidata y hueco C08 no resuelto.
