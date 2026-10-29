@@ -133,3 +133,30 @@ Un mapeo V3 existente **no garantiza** que la pregunta sea seleccionada ni que u
 ### Changelog
 
 - v1.4.0: cotejo de mapeos V3 de las tres preguntas generales de presencia y consecuencias focales C03/C05/C08.
+
+
+## Cotejo focal de claridad y acceso — v1.5.0
+
+Fuentes: `qbv2-reviewed-evidence.ts` (blob `d3bb5edc0b504dd0257a73fccadf38dbc777540e`), `qa03b/specialty-candidate-bank.ts` (blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b`), `qa03b/recovery-wave2.ts` (blob `59fe5898cc98ba243b4c898b027dd22f2c1153c9`).
+
+### Claridad de oferta: C08
+
+El catálogo R3 contiene mapeos directos de `clarity_positioning` para `q2_presence_offer_clarity`, `q2_retail_product_visibility` y `q2_professional_intake_flow`. El piloto QA03B añade `q2_startup_problem_clarity` y `q2_startup_offer_readiness`, también directos, pero **ambos requieren `preparing`**, por lo que no son sustitutos para un restaurante ya operativo. `q2_presence_offer_clarity` exige presencia digital fiable/parcial. Las otras dos preguntas R3 requieren cotejo de elegibilidad final antes de declarar sustitución; sus nombres o dimensiones no bastan para inferir cobertura.
+
+**Decisión C08:** HOLD focal. No reutilizar una pregunta de startup para un restaurante operativo ni atribuir a presencia/contacto la semántica de claridad de oferta.
+
+### Acceso y participación: C05
+
+`q2_nonprofit_donation_clarity` y `q2_nonprofit_membership_lifecycle` tienen mapeo directo de `conversion_access`, pero guardias de `donations/mixed` y `membership_dues/mixed`, respectivamente. Una organización sin esos modelos no debe recibir estas preguntas por defecto ni perder puntos por no responderlas.
+
+El catálogo R3 también contiene evidencia `conversion_access` en `q2_service_response_speed` y `q2_appointments_booking_friction`; su pertinencia para participación comunitaria **no está demostrada** y debe contrastarse con guardias y significado de las respuestas.
+
+**Decisión C05:** HOLD focal. No equiparar captación de clientes, citas, donaciones o cuotas con participación comunitaria sin evidencia contextual.
+
+### Condición común
+
+Un mapeo a una dimensión es necesario, pero no suficiente: comprobar guardias, selección, semántica de la respuesta y presupuesto. Ninguna pregunta nueva queda aprobada. No hubo ejecución de tests ni trazas.
+
+### Changelog
+
+- v1.5.0: cotejo focal de candidatos de `clarity_positioning` y `conversion_access`, descartando sustituciones no justificadas.
