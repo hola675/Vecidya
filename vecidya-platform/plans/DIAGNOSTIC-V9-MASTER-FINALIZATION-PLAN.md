@@ -495,3 +495,57 @@ D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbri
 
 ## Changelog adicional
 - **1.8.0 / 2026-10-29:** D-V9-007 aprobada; contrato conceptual Aprende, tareas PLAN-L01–L07, criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 16. Decisión D-V9-008 — servicios Vecidya contextuales y sección independiente (aprobada 2026-10-29)
+**Aprobación expresa:** «servicios Vecidya opcionales y contextuales, más sección independiente de soluciones». Estado APPROVED para diseño de producto; NO autoriza implementación.
+
+### 16.1. Separación de responsabilidades
+- **Diagnóstico V9:** evalúa madurez digital, identifica evidencias y prioriza acciones; independiente de catálogo comercial, ventas, licencias, GHL y contratación.
+- **Aprende:** ofrece recursos educativos pertinentes para ejecutar acciones autónomamente, según D-V9-007.
+- **Vecidya:** puede presentar ayuda profesional **opcional**, claramente identificada como comercial, si una acción priorizada tiene correspondencia verificable con un servicio vigente.
+- **Exploración independiente:** incluir acceso separado al catálogo de soluciones Vecidya sin condicionar entrevista, resumen anónimo, informe autenticado ni biblioteca Aprende.
+- **Frontera GHL:** distinguir servicios propios de Vecidya, capacidades integradas y servicios externos; GHL no es requisito de diagnóstico, puntuación, identidad, informe o plan de acción.
+
+### 16.2. Reglas obligatorias
+1. Calcular evaluación, aplicabilidad, prioridades y acciones **antes** de asociar servicios; el enriquecimiento comercial es posterior y no retroalimenta scoring ni ranking.
+2. Mostrar siempre la acción y, cuando exista, una vía autónoma o educativa pertinente; no convertir un servicio pagado en única solución por defecto.
+3. Etiquetar con claridad oferta comercial, proveedor, alcance y condiciones verificadas; no inventar precios, licencias, disponibilidad, resultados o integraciones.
+4. Vincular oferta solo si su cobertura coincide con una brecha sustentada y una acción aplicable; evitar recomendaciones genéricas o venta por ausencia de evidencia.
+5. No ocultar acciones ni alterar prioridades cuando no haya servicio correspondiente o el catálogo esté inaccesible.
+6. No confundir «servicio disponible en catálogo» con «servicio recomendado para este negocio» ni «solución Vecidya» con funcionalidad nativa de GHL.
+7. Aplicar permisos del resultado: resumen anónimo no revela evidencias o datos reservados del informe detallado; sección pública de servicios no expone datos del diagnóstico.
+8. La ausencia de web, CRM, campañas o clientes no genera por sí sola una oportunidad comercial; aplicar reglas de contexto D-V9-001/002.
+
+### 16.3. Contrato conceptual de asociación acción→solución (por verificar)
+El agente futuro debe inspeccionar el catálogo real y proponer una interfaz desacoplada con identificador estable, tipo/proveedor, nombre público, descripción y URL canónica verificadas, estado vigente/publicable, capacidades cubiertas, restricciones y versión. La relación debe incluir ID de acción, evidencia pertinente, motivo de correspondencia y carácter opcional. Los campos son requisitos semánticos propuestos, **no afirmación de esquema existente**. Precios, licencias, bundles y disponibilidad requieren fuentes vigentes; omitir si no se pueden confirmar.
+
+### 16.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-S01 | Auditar servicios publicados, licencias, rutas y contratos reales de Vecidya, y sus límites frente a GHL | Inventario por fuente/ruta/SHA y matriz de propiedad | No inventar servicios ni confundir proveedores |
+| PLAN-S02 | Definir taxonomía de capacidades y reglas de correspondencia acción→solución | Matriz con evidencia y contraejemplos | Ninguna oferta por coincidencia superficial |
+| PLAN-S03 | Diseñar adaptador comercial de solo lectura posterior al ranking | Contrato versionado y flujo de datos unidireccional | Scoring/ranking inmutables |
+| PLAN-S04 | Definir UX de oferta contextual, alternativa autónoma y sección independiente | Especificación de vistas anónima/autenticada y biblioteca | Separación visual y semántica |
+| PLAN-S05 | Definir vigencia, verificación de enlaces, precios/condiciones y fallback | Política de fuente y tabla de errores | No prometer información no verificada |
+| PLAN-S06 | Especificar privacidad, consentimientos y frontera de datos hacia GHL/CRM | Diagrama de datos y autorizaciones, incl. casos negativos | Sin envío automático de respuestas |
+| PLAN-S07 | Diseñar pruebas focalizadas futuras de neutralidad comercial y separación | Matriz casos con/sin servicio, cambio catálogo y GHL ausente | Misma evaluación y prioridades |
+
+### 16.5. Casos de aceptación futuros
+1. Dos usuarios con idénticas respuestas pero distinto acceso al catálogo reciben idéntica evaluación y ranking.
+2. Servicio pertinente y vigente: se muestra opcionalmente, con motivo y etiqueta comercial.
+3. Servicio retirado o URL inválida: desaparece la oferta, no la acción.
+4. Ningún servicio coincide: el informe conserva plan de acción autónomo.
+5. GHL no disponible: diagnóstico y plan de acción siguen funcionando.
+6. Organización sin ventas: no se empuja CRM o embudo de ventas sin pertinencia.
+7. Resumen anónimo: no filtra evidencias privadas por parámetros de oferta o URLs.
+8. Catálogo de servicios separado: se puede explorar sin completar el diagnóstico.
+
+### 16.6. Próxima decisión D-V9-009 — objetivos que declara el usuario
+Elegir cómo capturar y utilizar objetivos del negocio: (A) seleccionar 1–3 objetivos al inicio y permitir corregirlos; (B) inferir objetivos desde respuestas, confirmándolos antes del plan; (C) combinación de selección inicial opcional, sugerencias contextuales y confirmación antes de priorizar. **Ninguna opción está aprobada**. También queda pendiente definir catálogo de objetivos y tratamiento de organizaciones sin ventas.
+
+### 16.7. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 híbrido APPROVED; D-V9-004 adaptativo 24 APPROVED; D-V9-005 resumen anónimo/informe con cuenta APPROVED; D-V9-006 prioridades multicriterio APPROVED; D-V9-007 Aprende contextual+biblioteca opcional APPROVED; D-V9-008 servicios Vecidya contextuales+sección independiente APPROVED; D-V9-009 PENDING. **PLAN_ONLY**.
+
+## Changelog adicional
+- **1.9.0 / 2026-10-29:** D-V9-008 aprobada; neutralidad comercial, separación GHL, tareas PLAN-S01–S07, criterios de aceptación y próxima decisión. Exclusivamente documentación.
