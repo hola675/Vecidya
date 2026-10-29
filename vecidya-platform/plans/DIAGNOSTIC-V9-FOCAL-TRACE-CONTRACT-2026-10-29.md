@@ -261,3 +261,16 @@ El plan está listo para decidir **qué comprobar**, pero todavía **no** para d
 ### Changelog
 
 - v1.8.0: puerta única de autorización, límites de pruebas focales y secuencia de cierre verificable.
+
+
+## Autorización recibida y bloqueo de ejecución — v1.9.0
+
+El usuario autorizó expresamente ejecutar las pruebas focalizadas **C03, C05, C07 y C08** con las restricciones de v1.8.0. Estado: `AUTHORIZED_NOT_EXECUTED`.
+
+**Comprobación del entorno en esta sesión:** no existe un checkout de Vecidya en el directorio de trabajo disponible; `git ls-remote https://github.com/hola675/Vecidya.git HEAD` falló por DNS (`Could not resolve host: github.com`). El conector GitHub disponible permite leer/escribir contenido y consultar ejecuciones, pero no iniciar una ejecución nueva de workflow. No se ha ejecutado test, selector ni traza; no hay PASS/FAIL válido.
+
+**Reanudación segura:** ejecutar en un entorno con checkout de la rama `feat/diagnostic-v9-lex-graph-p1b` únicamente los tests focales de C03/C05/C07/C08, conservar SHA y salida, y registrar evidencias aquí. No sustituir esa ejecución por inferencias estáticas ni disparar CI general.
+
+### Changelog
+
+- v1.9.0: autorización explícita registrada; bloqueo ambiental y ausencia de resultados declarados.
