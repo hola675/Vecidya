@@ -2051,3 +2051,80 @@ D-V9-001 a D-V9-032 APPROVED en sus alcances respectivos; D-V9-033 PENDING. Micr
 
 ## Changelog adicional
 - **1.32.0 / 2026-10-29:** D-V9-032 aprobada; comunicación general/contextual y recordatorio de texto libre ausente, nueve tareas PLAN-NOTICE01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 41. Decisión D-V9-033 — arquitectura simple: borrador local 7 días y D1 solo para analítica anónima agregada (aprobada 2026-10-29)
+**Instrucción expresa del propietario:** evitar ramificaciones y complejidad como V8; conservar respuestas localmente siete días; usar Cloudflare D1 únicamente para analítica anónima de diagnósticos incompletos y demás información útil para mejorar el diagnóstico; **sin datos de dispositivo ni personales**. Esta decisión **reemplaza la propuesta anterior de D-V9-033 sobre repreguntar evidencia crítica**, que queda SIN APROBAR; no interpretarla como aprobación tácita.
+
+### 41.1. Regla arquitectónica única
+- **Navegador:** borrador anónimo, respuestas estructuradas y estado mínimo; texto libre sujeto a D-V9-030–032; retención de **7 días desde último guardado válido** D-V9-028; sin respaldo del borrador en servidor D-V9-029.
+- **Cloudflare D1:** **exclusivamente analítica anónima agregada** del uso y calidad del diagnóstico V9, incluyendo inicios, finalizaciones, abandonos/incompletos, etapas y preguntas con dificultades, para mejorar contenido, flujo y experiencia. No contiene borradores ni respuestas individuales.
+- **Prohibido en D1 para esta analítica:** nombres, correos, teléfonos, direcciones, IP, user-agent, huellas de navegador/dispositivo, cookies de seguimiento, IDs persistentes de sesión o usuario, tokens de reanudación, texto libre, respuestas crudas, historiales individuales de preguntas o cualquier dato que permita reconstruir una entrevista o vincularla a una persona o dispositivo.
+- **No enviar respuestas** a D1, ni directa ni indirectamente a través de telemetría, logs, errores o claves dimensionales de alta cardinalidad. Separar el procesamiento estrictamente necesario para evaluación y resultados del almacenamiento de analítica.
+- La palabra «anónimo» exige **revisión real de riesgo de reidentificación**: un registro por sesión sin nombre puede ser seudónimo, no anónimo. Favorecer agregados por períodos y categorías de baja cardinalidad, umbrales mínimos de publicación, supresión de grupos pequeños y límites de granularidad. No afirmar anonimato absoluto sin validación.
+- **Diagnósticos incompletos:** medir abandono mediante contadores agregados de hitos/eventos permitidos, sin almacenar un identificador que rastree a una persona durante toda la entrevista. Definir un método estadístico honesto para distinguir abandono de interrupción temporal o reanudación, con sesgos y límites explícitos. No prometer conteos exactos de personas únicas.
+- Evitar multiplicar decisiones UX por cada evento: un **contrato de eventos mínimo, versionado y auditable**, orientado a decisiones concretas de mejora. No reintroducir el modelo complejo V8.
+- Respetar minimización, base jurídica, avisos y controles de privacidad aplicables. No confundir ausencia de datos personales en tablas D1 con ausencia automática de datos personales en infraestructura, solicitudes o registros operativos; estos últimos requieren auditoría y políticas independientes.
+- La analítica es de **producto Vecidya**, no de CRM, publicidad, perfilado individual ni GHL. No cruzar métricas con cuentas, leads o informes individuales.
+- No definir por ahora tablas, SQL, Workers, endpoints, herramientas ni código; las elecciones técnicas requieren revisión posterior del agente futuro y autorización de implementación.
+
+### 41.2. Métricas conceptuales permitidas (siempre agregadas y revisadas)
+| Métrica | Utilidad | Restricción |
+| --- | --- | --- |
+| Diagnósticos iniciados por período | Adopción | Contador de eventos, no personas únicas |
+| Diagnósticos completados por período | Finalización | Sin IDs individuales |
+| Progresión por hitos/etapas | Identificar fricción | Solo grupos suficientes |
+| Preguntas mostradas / respondidas / omitidas por código editorial | Mejorar claridad | Sin respuesta elegida ni texto |
+| Errores de validación por categoría general | Detectar UX deficiente | Sin valores de entrada ni mensajes crudos |
+| Uso del modo manual/contextual por período | Ajustar experiencia | Agregado, sin trayectoria individual |
+| Interrupciones detectables de forma fiable | Analizar incompletos | No equiparar automáticamente con abandono definitivo |
+| Reanudaciones por período | Medir utilidad de continuidad | Sin vincular sesiones ni deduplicar usuarios |
+| Extensión 24+5: ofrecida/aceptada/rechazada | Evaluar fricción | Contadores, sin razones personales |
+**No** guardar secuencias de respuestas, segmentos minúsculos, combinaciones de atributos raros ni dimensiones que revelen perfiles individuales. La definición de eventos y sus garantías aún requiere auditoría.
+
+### 41.3. Simplificación y decisiones reemplazadas
+- Mantener vigentes D-V9-027–032 en cuanto a continuidad, siete días, borrador local, texto libre opcional y avisos, **sin abrir nuevas ramas de arquitectura de borrador**.
+- La anterior pregunta «D-V9-033 — recuperar evidencia crítica no persistida» se retira del siguiente paso y queda **PENDING, no aprobada**. Cuando afecte al diagnóstico, aplicar por ahora principios ya aprobados D-V9-017–020 sin inventar reglas de repregunta.
+- No convertir cada posible evento o gráfico en una decisión del propietario. El futuro agente deberá proponer un esquema **mínimo y verificable** con límites de privacidad.
+- Priorizar cerrar definición editorial, taxonomía y ejecución futura del Plan Maestro frente a microdecisiones de UX ya cubiertas.
+
+### 41.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable | Gate |
+| --- | --- | --- | --- |
+| PLAN-ANA01 | Auditar analítica actual V8/V9, D1 y telemetría | Inventario de fuentes, datos y SHA | Sin ejecutar ni modificar |
+| PLAN-ANA02 | Definir contrato mínimo de eventos no identificables | Diccionario de eventos, dimensiones y propósito | Minimización y privacidad |
+| PLAN-ANA03 | Diseñar agregación segura y umbrales de supresión | Modelo conceptual y análisis de reidentificación | Sin filas de sesión |
+| PLAN-ANA04 | Documentar cómo estimar incompletos sin identificadores | Métricas, sesgos, limitaciones y no-deduplicación | No inventar precisión |
+| PLAN-ANA05 | Separar rutas de borrador local, evaluación y analítica | Diagrama de flujo de datos | Sin respuestas en D1 |
+| PLAN-ANA06 | Definir retención de agregados y control de acceso | Política propuesta para aprobación técnica/legal | No asumir plazo |
+| PLAN-ANA07 | Preparar pruebas focalizadas futuras de no filtración | Matriz de eventos, datos prohibidos y C01–C10 | PLAN_ONLY, no ejecutar |
+| PLAN-ANA08 | Integrar decisiones en roadmap F00–F10 sin ramificaciones V8 | Checklist de dependencias y entregables | No implementar |
+
+### 41.5. Criterios de aceptación futuros
+1. Borrador anónimo se guarda solo en navegador compatible.
+2. TTL de borrador: siete días desde último guardado válido.
+3. D1 no contiene borradores ni respuestas crudas.
+4. D1 no contiene texto libre.
+5. D1 no contiene nombres, contactos, IP ni datos de dispositivo.
+6. D1 no contiene identificadores de usuario, sesión o reanudación.
+7. Las métricas se almacenan de forma agregada.
+8. No existen historiales individuales reconstruibles en analítica.
+9. Los eventos tienen finalidad explícita de mejora de V9.
+10. Los grupos pequeños se suprimen o agrupan para reducir reidentificación.
+11. No se afirma medir usuarios únicos sin método compatible.
+12. Los diagnósticos incompletos se interpretan con límites estadísticos explícitos.
+13. Telemetría y logs se auditan para evitar filtración indirecta.
+14. Analítica no se utiliza para marketing, perfilado ni GHL.
+15. El flujo de informe con cuenta sigue separado de la analítica anónima.
+16. No se introduce complejidad heredada de V8 sin necesidad probada.
+17. Los contratos y decisiones quedan documentados antes de implementación.
+18. Las pruebas futuras son focalizadas y no se ejecutan durante PLAN_ONLY.
+
+### 41.6. Próximo paso propuesto
+Consolidar en una **única matriz de cierre** las decisiones D-V9-001–033, separar aprobado de pendiente y retomar los bloqueos sustantivos de V9 (taxonomía final C01–C10, banco editorial certificado, suficiencia de evidencia, separación QBV2), sin abrir una cadena de microdecisiones de privacidad. El siguiente trabajo sigue siendo **documental**.
+
+### 41.7. Estado
+D-V9-001 a D-V9-032 APPROVED. D-V9-033 APPROVED **solo** para arquitectura simple de borrador local + D1 agregado anónimo; propuesta anterior de repreguntas D-V9-033 RETIRADA/NO APROBADA. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.33.0 / 2026-10-29:** D-V9-033 aprobada para arquitectura simple de continuidad local 7 días y analítica agregada anónima en D1, con exclusión estricta de datos personales y de dispositivo; retirada la propuesta homónima previa de repreguntas. Ocho tareas PLAN-ANA01–08, dieciocho criterios y foco en consolidación del Plan Maestro. Solo documentación.
