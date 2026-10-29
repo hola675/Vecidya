@@ -18,7 +18,7 @@ Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/ro
 | `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa; selector global para `platform_admin` | El selector global navega a gestión con target explícito; no cambia membership ni `activeOrganizationId` |
 | `/app/platform/organizations` y `/:organizationId` | Lista y gestión de organizaciones para `platform_admin` (alias de pantallas de control plane) | Mismas guardas y auditoría de `/app/internal`; sin suplantación del owner |
 | `/app/platform/organizations/:organizationId/{miniweb,training}` | Configuración MiniWeb, capacitación y progreso | `requirePlatformAdminAction`, target URL y auditoría vigentes |
-| `/app/aprende` | Biblioteca personal de progreso y favoritos por sesión de usuario | Datos sin ámbito de organización; artículo licenciado vuelve a comprobar entitlement |
+| `/app/aprende` | Biblioteca personal con progreso/favoritos y avance compartido en nueve itinerarios; recomendación editorial determinista y recientes restaurables | Datos sin ámbito de organización; progreso único por guía; recomendación no concede acceso y el artículo licenciado vuelve a comprobar entitlement |
 | `/app/internal` → `routes/internal.tsx` | Métricas actuales, comparación de pendientes y guía operativa | Guardia `requirePlatformAdmin` intacta |
 | `/app/internal/diagnostic-analytics` | Eventos agregados, barras y tendencia con cero real | No cohortes ni datos personales; mismo acceso protegido |
 | `public-layout.tsx`, `client-area-shell.tsx`, `admin-shell.tsx` | Símbolo y retornos visuales coherentes | Solo navegación entre zonas, sin elevación de privilegios |
@@ -128,7 +128,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1; DELETE/PATCH same-origin; `PlatformFooter` en página y ErrorBoundary, oculto al imprimir | No | HTML identificado bajo gate; sin exportación PDF | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | APRENDE-EDITORIAL-FINAL-02 candidato: 6 categorías, 48 guías auditadas, 18 borradores pendientes de aprobación explícita, 9 itinerarios; Comprende → Prioriza → Decide; búsqueda de contenido completo | `learn`, `commercial-review` | Aprende quality #123 y Main integration quality #189 PASS; sin merge/deploy |
-| `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
+| `/aprende/:slug` | `learn-article.tsx` | estático | — | artículo, índice, CTA y metadata; repaso opcional fuera del progreso | `learn`, `commercial-review` | sin deploy |
 | `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
 | `/privacidad` | `privacy.tsx` | estático | — | funcional; datos, límites y contacto claros | `legal-trust` | sí |
 | `/robots.txt` | `robots.ts` | estático | — | funcional | ninguno | sí |

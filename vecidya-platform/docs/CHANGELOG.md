@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 6 (PR #193)
+
+- `/app/aprende` comparte el progreso ya guardado por guía entre los nueve itinerarios y sugiere una siguiente guía con reglas editoriales estables basadas en actividad reciente.
+- Añade restauración de guías ocultas con avance intacto y control de versión; el repaso del lector es opcional. Sin migración nueva, deploy ni D1 remota. Unitarias, Worker/D1 local, build/typecheck y QA responsive/teclado pasan.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 5 integrada (PR #190)
 
 - Cola local con vencimiento, aislamiento por cuenta, reintento online, importación anónima con consentimiento, controles para conflictos/reinicios y limpieza al cerrar sesión salvo retención opt-in. API D1 transaccional con recibos idempotentes, secuencia de dispositivo, límites de payload, validación editorial, entitlement y `reset_epoch`.
