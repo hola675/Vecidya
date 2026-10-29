@@ -817,3 +817,63 @@ D-V9-001 a D-V9-013: APPROVED según sus secciones; D-V9-014 PENDING. **PLAN_ONL
 
 ## Changelog adicional
 - **1.14.0 / 2026-10-29:** D-V9-013 aprobada; política conceptual de comparación histórica, ocho tareas PLAN-C01–C08, diez criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 22. Decisión D-V9-014 — español e inglés completos y certificados desde V9 (aprobada 2026-10-29)
+**Aprobación expresa:** «español e inglés completos y certificados desde V9». Estado APPROVED para alcance de producto; NO autoriza implementación ni afirma que la cobertura actual esté certificada.
+
+### 22.1. Alcance obligatorio por idioma
+- Certificar **español (es)** e **inglés (en)** en todos los recorridos admitidos C01–C10, desde contexto inicial hasta entrevista adaptativa, resumen anónimo, registro/transición, informe autenticado, hoja de ruta, seguimiento, reevaluación y comparación histórica.
+- Traducir y revisar preguntas, opciones, ayudas, etiquetas de niveles, mensajes de insuficiencia de evidencia, explicaciones breves, objetivos, acciones, etapas «Ahora/Después/Más adelante», estados de progreso, errores, accesibilidad y textos legales pertinentes.
+- Preservar el **significado**, no una traducción literal: las respuestas equivalentes deben mapear al mismo concepto semántico y producir las mismas decisiones de aplicabilidad, evidencias, prioridades y niveles bajo la misma versión de reglas.
+- No usar texto traducido como identificador de scoring, pregunta, respuesta, dimensión u objetivo. Los identificadores semánticos deben permanecer estables e independientes del idioma.
+- El cambio de idioma durante el run no debe borrar respuestas ni modificar evidencia o evaluación. Definir política UX de selección y persistencia de preferencia; la detección automática de idioma **no quedó aprobada**.
+- Si falta una traducción crítica o no está validada, el recorrido no puede declararse certificado en ese idioma; especificar política de fallback sin presentar un recorrido mixto como completo.
+- Recursos externos Aprende y páginas de servicios pueden tener disponibilidad por idioma distinta: el agente debe auditarla y definir fallbacks transparentes. La ausencia de un recurso educativo traducido no invalida la evaluación, pero no permite inventar un enlace o afirmar cobertura completa de un recurso inexistente.
+- Mantener separación entre idioma de presentación, país, moneda, mercado y sector; no inferir ubicación o modalidad del negocio a partir de es/en.
+
+### 22.2. Matriz mínima de certificación
+| Área | Español | Inglés | Criterio común |
+| --- | --- | --- | --- |
+| Contexto y rutas C01–C10 | Revisión editorial pendiente | Revisión editorial pendiente | Misma aplicabilidad |
+| Banco de preguntas y opciones | Auditoría pendiente | Auditoría pendiente | Identificadores semánticos equivalentes |
+| Entrevista adaptativa y progreso | Especificación pendiente | Especificación pendiente | Mismo recorrido para evidencias equivalentes |
+| Resumen anónimo y registro | Especificación pendiente | Especificación pendiente | Mismos permisos y conclusiones |
+| Informe, niveles e incertidumbre | Calibración pendiente | Calibración pendiente | Misma evaluación |
+| Objetivos, acciones y hoja de ruta | Revisión pendiente | Revisión pendiente | Mismo ranking y dependencias |
+| Seguimiento, reevaluación e historial | Diseño pendiente | Diseño pendiente | Mismos estados y comparabilidad |
+| Errores, accesibilidad y textos legales | Revisión pendiente | Revisión pendiente | Comprensión y seguridad equivalentes |
+Ninguna celda se considera PASS por la sola existencia de archivos de localización.
+
+### 22.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-LANG01 | Inventariar i18n real, locales, textos hardcodeados, banco editorial y rutas con SHA | Matriz archivo→idioma→estado→deuda | No asumir cobertura |
+| PLAN-LANG02 | Definir glosario bilingüe de conceptos digitales y lenguaje público | Glosario es/en con equivalencias, falsos amigos y revisión humana | Aprobación editorial |
+| PLAN-LANG03 | Diseñar contrato de identificadores semánticos independientes del idioma | Mapa pregunta/opción/dimensión/objetivo/acción→localización | Sin divergencia de scoring |
+| PLAN-LANG04 | Auditar y planificar revisión de todas las preguntas, opciones y variantes activas | Inventario por ID, estado es/en, responsable y criterios | 100 % de rutas activas cubiertas |
+| PLAN-LANG05 | Definir selección/cambio de idioma, persistencia y fallback | Máquina de estados UX y casos de sesión anónima/autenticada | Sin pérdida de respuestas |
+| PLAN-LANG06 | Diseñar equivalencia de resultados y recomendaciones entre idiomas | Pares de casos C01–C10 con resultados esperados | Igual semántica, diferente redacción |
+| PLAN-LANG07 | Definir política de recursos Aprende/servicios por idioma y enlaces válidos | Matriz disponibilidad/fallback, sin promesas de traducción | Motor independiente de catálogos |
+| PLAN-LANG08 | Preparar certificación editorial, accesibilidad y pruebas focalizadas futuras | Checklist bilingüe, responsables, matriz de regresión y evidencia | Ambos idiomas PASS antes de lanzamiento |
+
+### 22.4. Casos de aceptación futuros
+1. Respuestas semánticamente idénticas en es/en: mismo conjunto de evidencias, dimensiones, prioridades y niveles.
+2. Cambio es→en a mitad de entrevista: conserva respuestas y contexto; no reinicia run.
+3. Pregunta u opción sin traducción validada: se detecta como bloqueo de certificación, no se oculta silenciosamente.
+4. Negocio en preparación: ninguna traducción transforma «sin clientes aún» en «fracaso».
+5. Organización sin ventas: ambos idiomas preservan la no aplicabilidad comercial.
+6. Incertidumbre y «no aplicable»: significados equivalentes, sin convertir desconocido en negativo.
+7. Resumen anónimo e informe con cuenta: mismo control de acceso en es/en.
+8. Acciones «Ahora/Después/Más adelante»: misma secuencia y dependencias; etiquetas localizadas.
+9. Recurso Aprende sin versión en inglés: fallback explícito o ausencia de enlace, nunca URL inventada.
+10. Errores, mensajes de privacidad y controles accesibles: revisados en ambos idiomas.
+
+### 22.5. Próxima decisión D-V9-015 — alcance del banco editorial V9
+Definir política de publicación del cuestionario: (A) depurar y aprobar el banco histórico completo antes del lanzamiento; (B) publicar un núcleo editorial nuevo, pequeño y certificado para C01–C10, manteniendo histórico fuera de rutas activas; (C) núcleo certificado y ampliación progresiva por lotes antes del lanzamiento, con bloqueo de rutas no cubiertas. **Ninguna opción está aprobada**. La cobertura completa D-V9-002 es innegociable; no equivale a publicar todas las preguntas históricas.
+
+### 22.6. Estado
+D-V9-001 a D-V9-014: APPROVED según sus respectivas secciones; D-V9-015 PENDING. **PLAN_ONLY**: sin implementación, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.15.0 / 2026-10-29:** D-V9-014 aprobada; cobertura es/en, equivalencia semántica, matriz de certificación, tareas PLAN-LANG01–08, criterios de aceptación y siguiente decisión. Solo documentación.
