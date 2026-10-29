@@ -336,6 +336,45 @@
 - **Concurrencia de agentes:** comprobar HEAD/PR antes de tocar archivos, commits pequeños y no modificar código fuera de fase.
 - **Criterio de avance:** si falta una decisión no esencial, documentar supuesto conservador reversible y continuar las fases independientes; si afecta facturación, permisos o borrado irreversible, no implementarla como regla definitiva sin aprobación.
 
+## 22. F2A/F2B — especificación de implementación y pruebas focales (diseño, 2026-10-29)
+
+### F2A. Separación de licencias CRM y ampliaciones Cuadra
+
+**CODE:** `db/schema/licensing.ts` contiene `billing_account` (titular único), `organization_license` (organización, plan, estado y fechas) y unicidad parcial de licencia no cancelada por organización. `db/queries/licensing.server.ts` dispone de lectura por cuenta y por organización. La API de licencias es de administración de plataforma.
+
+**Diseño para PR F2A-1 (migración aditiva):** crear `billing_miniweb_capacity_extension` con `id`, `billing_account_id`, `kind='cuadra_extra'`, `status`, `starts_at`, `ends_at`, `created_at`, `updated_at`, referencia externa de compra opcional y metadatos de auditoría. El registro de ampliación no se asigna a una organización y no concede CRM. Mantener intacto `organization_license`. No crear licencia ficticia de organización.
+
+**Diseño para PR F2A-2 (resolver):** servicio puro y consulta DB que calculan `hasBase = existe licencia Cuadra/Barrio/Ciudad efectiva para billing_account`, `base = hasBase ? 3 : 0`, `extra = 3 × ampliaciones Cuadra efectivas`. Una Cuadra base dentro de `organization_license` nunca cuenta también como extensión. La extensión solo es utilizable si existe base efectiva, salvo decisión comercial posterior. Rechazar estados `pending`, `suspended`, `cancelled` y fechas fuera de vigencia. El CRM se sigue resolviendo por licencia activa de la organización objetivo.
+
+**Diseño para PR F2A-3 (ocupación y publicación):** introducir asociación verificable de organización publicada con cuenta de facturación, más una reserva/ocupación única por organización. La primera publicación ocupa un cupo; republicar la misma organización no consume otro. Una nueva publicación de otra organización debe verificar disponibilidad y reservar en la misma operación serializable/atómica que el cambio de publicación. Resolver cambios de titular con operación administrativa auditada. Prohibir inferir titular de membresía.
+
+**Política provisional operativa no comercial:** si hay menos capacidad que publicaciones existentes, no eliminar ni despublicar snapshots automáticamente; bloquear **nuevas ocupaciones** y registrar exceso para resolución administrativa. El comportamiento de republicación de organizaciones excedidas queda sujeto a decisión expresa; no convertir la propuesta en derecho contractual.
+
+**Pruebas F2A exclusivamente focales:** ninguna licencia=0; solo Barrio=3; Barrio+Ciudad=3; solo Ciudad=3; solo Cuadra=3; Barrio+Ciudad+1 extensión Cuadra=6; +2 extensiones=9; ampliación suspendida no cuenta; CRM de Barrio no se filtra a otra organización; miembros de cuentas ajenas no suman cupos; dos publicaciones simultáneas con un cupo libre no pueden ambas ocuparlo; republicar no consume cupo.
+
+### F2B. Contrato MiniWeb y versiones inmutables
+
+**CODE:** `app/features/miniweb/registry.ts` usa módulos por `type`, catálogo Esencial disponible y familias adicionales `planned`. `db/queries/business-publication.server.ts` declara `BUSINESS_PUBLICATION_SCHEMA_VERSION=4`, acepta snapshots legacy 1–4 y normaliza medios y branding. El snapshot actual debe mantenerse legible.
+
+**Diseño para PR F2B-1 (configuración):** formato V2 con `instanceId` estable por módulo, `type`, `moduleVersion`, `enabled`, `sortOrder`, `layoutVariant`, `settings` validado; eliminar unicidad por `moduleType` solo después de migración compatible. Migración V1→V2 genera IDs deterministas para módulos existentes; galerías nuevas usan IDs únicos. No cambiar el significado de datos legacy.
+
+**Diseño para PR F2B-2 (historial):** tabla append-only `business_publication_version` con `organization_id`, `version`, `schema_version`, `snapshot_json`, `published_at`, `actor_user_id`, hash/checksum opcional; índice único `(organization_id, version)`. Publicar agrega nueva versión y actualiza puntero actual con CAS en una operación atómica. Nunca sobrescribir filas históricas. Backfill del snapshot actual como versión inicial histórica sin duplicar si se repite.
+
+**Diseño para PR F2B-3 (restauración):** restaurar copia del snapshot elegido a **nuevo borrador**, verificando propiedad de medios, integridad de IDs, vigencia de plantilla y esquema; no modificar publicación pública hasta una acción explícita de publicar. Proteger conflictos de revisión y versiones. Medios históricos desactivados pueden ser públicos si el snapshot actual los referencia; no hacer GC de R2 mientras los referencie cualquier versión retenida.
+
+**Pruebas F2B focales:** parseo de snapshots v1–v4; migración idempotente; dos galerías del mismo tipo con `instanceId` distintos; publicación append-only; CAS conflictivo; restaurar sin publicar; medios históricos inactivos; aislamiento tenant.
+
+### Orden de PR y puertas de salida
+
+1. **F2A-1** migración aditiva + rollback documentado → revisión de esquema.
+2. **F2A-2** resolver puro + tests de matriz → verificación de derechos.
+3. **F2A-3** ocupación atómica + tests de carreras → habilitar control en publicación, no solo UI.
+4. **F2B-1** contrato V2 + lector V1 → compatibilidad.
+5. **F2B-2** historial append-only + backfill idempotente → integridad.
+6. **F2B-3** restauración a borrador + medios retenidos → seguridad.
+
+**Sin bloquear fases visuales:** F1 y F3 pueden implementarse en paralelo sin depender de compra de ampliaciones. F6/F8 no se dan por terminadas hasta conectar el resolver de derechos y la publicación atómica. Todo diseño pendiente de decisión comercial queda identificado como propuesta, no como requisito aprobado.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
