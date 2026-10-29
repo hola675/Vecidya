@@ -371,3 +371,58 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | — | Fases 0–7 | NO INICIADAS | sin pruebas ni código nuevo |
 
 **Próxima acción autorizable:** revisar este plan y aprobar **Fase 0** como checkpoint separado. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
+
+
+## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
+
+**Alcance de evidencia:** inspección de archivos fuente, sin ejecución de pruebas ni lectura de datos reales. Este bloque refina las hipótesis de las secciones 2, 4 y 8; no certifica la Fase 0 como terminada.
+
+### 18.1 Hallazgos verificados
+
+| Fuente | Hecho del código | Consecuencia para Aprende |
+| --- | --- | --- |
+| `db/queries/licensing.server.ts` | `planCodes = cuadra, barrio, ciudad`; `organizationLicenseStatuses = pending, active, suspended, cancelled` | Reutilizar fuente de licencia y exigir `status === active`, no crear estado comercial paralelo |
+| `db/queries/licensing.server.ts` | `getOrganizationLicense(database, organizationId)` prioriza licencia no cancelada y conserva cancelada como fallback; `changeOrganizationLicensePlan` cancela fila previa y crea otra activa | El entitlement debe consultar estado vigente y tolerar cambio de fila/plan sin perder progreso |
+| `app/routes/api-platform-licensing.ts` | Asignación, cambio, suspensión, reactivación, cancelación y transferencia controladas por `platform_admin` y auditadas; sin checkout automático | No diseñar webhook ni pago automático; el CTA remite al flujo comercial existente |
+| `server/auth/authorization.server.ts` | Permisos organizacionales actuales son un conjunto fijo por rol `owner/admin/member`; no existe `learn.full_access` en ese conjunto | **Bloqueo de diseño:** implementar permiso explícito por colaborador sin otorgar rol admin; definir almacenamiento, API y gestión de permisos |
+| `app/routes/api-organization-invitations.ts` | Invitaciones actuales aceptan `email` y `role=member|admin`; no tienen campo de permiso Aprende | Extender invitación con valor por defecto falso y aplicación segura al aceptar, o concesión posterior auditada |
+| `app/routes/api-organization-members.ts` | Gestión actual permite cambiar rol y retirar miembro, no gestionar permiso Aprende | Añadir acción separada con guardas y auditoría, sin tocar otras autorizaciones |
+| `app/routes/api-organization-authorization.ts` | Lista permisos por rol, no excepciones individuales | Exponer permiso efectivo Aprende separado del listado estático por rol; no fingir que el rol lo incluye |
+| `app/routes/api-organization-training.ts` | Ya existe `organizationTrainingAssignment` y `organizationTrainingProgress`, vinculados a organización/asignación y usuario | **No reutilizar estas tablas para progreso personal global de Aprende** |
+| `app/routes/api-platform-training.ts` | Plataforma puede asignar capacitación y corregir progreso con motivo/auditoría | Mantener capacitación organizacional separada de Aprende; evitar acceso de admins a historial personal de Aprende |
+
+### 18.2 Decisión arquitectónica recomendada
+
+**Separar explícitamente tres dominios:**
+
+1. **Licensing** (existente): única fuente de licencia activa por organización.
+2. **Organization access** (existente + extensión focal): relación de usuario con organización y permiso explícito de uso de Aprende. **Propuesta de persistencia:** tabla de grants por `organization_id + user_id` (o `member_id` si garantiza lifecycle correcto), permiso `learn.full_access`, `granted_by`, `granted_at`, `revoked_at`/estado, auditoría; no extender roles globales para un permiso individual. Revisar antes el schema de Better Auth y restricciones de borrado.
+3. **Personal learning** (nuevo): progreso y favoritos por `user_id + guide_id`, independientes de `organization_id`. Nunca incluir `organization_id` como parte de la identidad de progreso ni usar `organizationTrainingProgress`.
+
+**Consulta efectiva:** recorrer organizaciones donde el usuario tiene relación activa; unir licencia **de la misma organización** en estado `active`; aceptar `owner` o grant vigente de Aprende para ese usuario. No derivar autorización del `billing_account.owner_user_id`: el propietario de facturación no es necesariamente el propietario de la organización ni su colaborador autorizado.
+
+**Revocación:** al quitar miembro, grant o licencia, el próximo acceso al contenido debe consultar el estado real. Diseñar invalidación si se introduce caché. Al cambiar de plan se mantiene el derecho mientras exista una licencia vigente activa. La gestión de grants debe auditar actor, organización, destinatario, acción y fecha, sin registrar lecturas individuales.
+
+**Invitaciones:** no confiar en un checkbox client-side. Si se concede permiso durante la invitación, persistir intención autorizada y aplicar grant **solo después de aceptación válida**, verificando que el usuario aceptante coincide con el invitado y que la organización sigue siendo la correcta. Alternativa más sencilla para V1: invitación sin permiso y concesión explícita tras aceptar; **requiere decisión UX** porque la propuesta aprobada exige desactivado por defecto, no necesariamente concesión dentro del formulario de invitación.
+
+### 18.3 Dependencias concretas aún por inspeccionar
+
+- `db/schema/auth.ts`, `db/schema/licensing.ts` y migraciones vigentes: claves, foreign keys, borrado de miembros, ownership, unicidad de licencia y estrategia de índices.
+- `server/auth/session.server.ts`: cómo consultar todas las relaciones activas del usuario sin depender de organización seleccionada.
+- `db/queries/organization.server.ts` y configuración Better Auth: invitaciones aceptadas, roles, membresías retiradas y persistencia.
+- `db/queries/platform-training.server.ts`: límites exactos del módulo de capacitación y eventual reutilización de componentes **solo de UI**, no de datos.
+- `app/routes/license-detail.tsx` y flujos de contacto: CTA comercial real y retorno a guía sin prometer activación instantánea.
+- Tests de licencias, autorización, invitaciones y capacitación: seleccionar regresiones focalizadas; no correr batería general.
+- Política de eliminación/exportación de datos personales y retención de grants/auditoría.
+
+### 18.4 Criterios adicionales para Fase 0
+
+- [ ] Identificar tablas/índices y constraints reales para grants.
+- [ ] Validar si el owner de Better Auth puede transferirse y cómo se detecta owner actual.
+- [ ] Confirmar cómo se resuelven **todas** las organizaciones activas de una cuenta.
+- [ ] Elegir persistencia del permiso explícito y transición de invitación.
+- [ ] Verificar semántica exacta de licencia activa y cambios de plan.
+- [ ] Confirmar que capacitación organizacional y Aprende personal nunca comparten progreso.
+- [ ] Registrar pruebas focalizadas existentes y estrategia de rollout sin tocar producción.
+
+**Estado:** Fase 0 EN PROGRESO (inspección documental de código); implementación F1–F7 NO INICIADA.
