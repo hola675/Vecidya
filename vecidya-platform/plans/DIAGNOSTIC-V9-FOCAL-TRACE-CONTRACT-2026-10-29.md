@@ -84,3 +84,27 @@ Estas decisiones son de **planificación**, no modificaciones aprobadas del banc
 ### Changelog
 
 - v1.2.0: decisiones condicionadas C03/C05/C08 y puertas explícitas para evitar ampliaciones innecesarias.
+
+
+## Alternativas generales examinadas — v1.3.0
+
+**Hallazgo nuevo para C08:** `q2_local_presence_consistency` (fuente `qbv2-reviewed-local-trust.ts`, blob `80645d149de368fd43a749d09a369bc1e8ec3d4a`) pregunta si quien busca el negocio encuentra datos correctos para ubicarlo/contactarlo. Su `appliesWhen` contempla actividad activa y arquetipos local/retail/hospitality, sin exigir una respuesta previa de presencia digital. Por ello es **alternativa candidata de observación de presencia/contacto**, pero **NO sustituto demostrado de claridad de oferta**. La definición revisada marca `evidenceMigration: pending`; verificar su transformación en la capa V3 antes de atribuirle evidencia puntuable.
+
+La pregunta `q2_presence_digital_base` (fuente `qbv2-reviewed-transversal.ts`, blob `8a389afb1fea1786ac99c553175dcdb3a56ca361`) contiene la respuesta `no_reliable_presence` y la salida neutral `not_applicable`, pero su elegibilidad original excluye `physicalCoverage` en ciertos perfiles activos; `qa03b/bank.ts` modifica su `appliesWhen`. **No afirmar** que esté disponible para C08 sin resolver el contexto y la regla final.
+
+`q2_presence_offer_clarity` sí depende materialmente de presencia `reliable_presence/partial_presence` en `qa03b/bank.ts`. La pregunta especializada `q2_food_menu_visibility` también exige esa presencia en `qa03b/specialty-branches-wave1.ts`. Por tanto, **C08 conserva HOLD sobre claridad de oferta**, aunque existe una alternativa de observación de presencia/contacto.
+
+**C03:** `q2_local_presence_consistency` requiere actividad activa, de modo que no cubre comunicación durante pausa. `q2_presence_digital_base` también está restringida a actividad activa o prelaunch por la capa QA03B. No deducir cobertura de pausa de estas preguntas.
+
+**C05:** las preguntas de presencia general pueden ser candidatas para encontrar/contactar la organización, pero ninguna de las dos citadas demuestra por sí sola un mecanismo de participación. Se conserva HOLD sobre participación sin cuotas/donaciones.
+
+### Decisión de cierre de esta revisión
+
+- C08: **alternativa parcial identificada**, no cobertura certificada.
+- C03 y C05: **sin sustituto general suficiente demostrado** en los archivos revisados.
+- No agregar preguntas ni aprobar dimensiones sin revisar la evidencia V3 final y el selector adaptativo.
+- Próximo análisis focal: cotejar `q2_local_presence_consistency` y `q2_presence_digital_base` contra `qbv2-reviewed-evidence.ts` y las transformaciones QA03B; después decidir si existe vacío real.
+
+### Changelog
+
+- v1.3.0: inspección focal de alternativas generales para C03/C05/C08; distingue presencia/contacto de claridad de oferta y participación.
