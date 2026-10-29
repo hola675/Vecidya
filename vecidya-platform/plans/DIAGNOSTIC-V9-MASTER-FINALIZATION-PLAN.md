@@ -1125,3 +1125,63 @@ D-V9-001 a D-V9-018: APPROVED en sus alcances. D-V9-019 PENDING; máximo adicion
 
 ## Changelog adicional
 - **1.19.0 / 2026-10-29:** D-V9-018 aprobada; consentimiento explícito, límites pendientes, ocho tareas PLAN-FAT01–08, catorce criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 27. Decisión D-V9-019 — máximo de cinco interacciones adicionales consentidas (aprobada 2026-10-29)
+**Aprobación expresa:** «máximo de 5 interacciones adicionales después de las 24, únicamente con consentimiento explícito y por evidencia crítica». Estado APPROVED como límite de producto, exclusivamente PLAN_ONLY.
+
+### 27.1. Presupuesto de entrevista aprobado
+- **Objetivo ordinario:** hasta **24 interacciones contabilizadas**; finalizar antes si la evidencia es suficiente.
+- **Extensión excepcional:** **hasta 5 interacciones adicionales**, solo ante vacíos de evidencia crítica resolubles y después de consentimiento afirmativo específico, según D-V9-017/018.
+- **Techo combinado:** **29 interacciones contabilizadas** por entrevista; no es una cuota a completar ni un permiso de repreguntar sin utilidad.
+- El límite de 5 es **global por entrevista**, no por dimensión, bloque, idioma, sesión o reanudación. No reiniciarlo al cambiar idioma, pausar, reabrir o volver a una pregunta.
+- No extender por fines comerciales, para cubrir todas las preguntas del banco, por dudas no críticas o para obtener una puntuación mayor.
+- Al llegar al techo, concluir con las dimensiones sustentadas y marcar «Evidencia insuficiente / Sin nivel asignado» en las restantes; no fabricar puntuaciones, ceros ni resultados globales.
+- Si se rechaza o retira el consentimiento, no consumir interacciones excepcionales adicionales. La opción de finalizar sin extensión debe permanecer accesible y no punitiva.
+- El consentimiento no garantiza que se usarán las cinco interacciones: detenerse tan pronto se resuelva el vacío crítico o ya no exista una aclaración pertinente.
+- La **unidad exacta de interacción** (pregunta mostrada vs. respuesta efectiva, aclaraciones, reintentos, consentimiento, cambios de idioma) **continúa pendiente**. La regla de 29 se aplica a la unidad que se apruebe posteriormente; no se puede afirmar cumplimiento técnico antes de fijarla.
+- La política de fatiga y las pruebas focalizadas futuras deberán comprobar el límite en los diez escenarios C01–C10 y en español/inglés.
+
+### 27.2. Reglas de asignación de las cinco oportunidades
+1. Ordenar vacíos críticos por capacidad de desbloquear conclusiones pertinentes y por mínima carga para el usuario, sin alterar el ranking comercialmente.
+2. Seleccionar preguntas certificadas, aplicables y no redundantes; deduplicar por evidencia semántica, no solo por texto.
+3. Llevar un contador único por evaluación que preserve estado al reanudar y no dependa de la dimensión evaluada.
+4. Si varias dimensiones comparten una misma evidencia, preferir una aclaración que resuelva el vacío común.
+5. Si quedan vacíos pero ya no hay preguntas críticas útiles o el usuario desea finalizar, detenerse sin consumir el presupuesto restante.
+6. Las reglas de suficiencia, abstención y comparación histórica prevalecen sobre el deseo de completar la entrevista.
+
+### 27.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-LIM01 | Precisar la unidad de interacción y eventos contables | Tabla de eventos con ejemplos y excepciones | Requiere aprobación de producto |
+| PLAN-LIM02 | Diseñar contador global persistente de 24+5 y estados de consentimiento | Contrato de estado, reanudación y límites | Sin reinicios indebidos |
+| PLAN-LIM03 | Definir selección de aclaraciones críticas bajo presupuesto de cinco | Tabla de prioridades de evidencia, deduplicación y parada | Sin repreguntas comerciales |
+| PLAN-LIM04 | Diseñar UX de umbral 24, consentimiento, progreso y techo 29 | Flujos y textos es/en accesibles | No consentimiento implícito |
+| PLAN-LIM05 | Documentar salida con evidencia parcial, agotamiento y rechazo | Ejemplos por dimensión, resumen e informe | Sin nivel inventado |
+| PLAN-LIM06 | Revisar compatibilidad con C01–C10, banco por lotes y versiones | Matriz de cobertura, riesgos de fatiga y decisiones abiertas | No asumir certificación |
+| PLAN-LIM07 | Preparar pruebas focalizadas futuras de límites, reanudación e idiomas | Matriz de escenarios, resultados y contadores esperados | Sin ejecutar en PLAN_ONLY |
+
+### 27.4. Casos de aceptación futuros
+1. Evidencia suficiente en interacción 17: termina sin alcanzar 24.
+2. Evidencia suficiente en interacción 24: termina sin solicitar extensión.
+3. Vacío crítico tras 24: solicita consentimiento antes de la primera adicional.
+4. Consentimiento denegado: cero interacciones excepcionales.
+5. Consentimiento concedido y evidencia resuelta con dos aclaraciones: termina en 26, no fuerza 29.
+6. Persisten vacíos después de cinco adicionales: se detiene en 29 y abstiene niveles insuficientes.
+7. Dos dimensiones con vacíos: comparten un único presupuesto de cinco, no diez.
+8. Cambio de idioma, sesión o reanudación: no reinicia el contador.
+9. Pregunta duplicada o no aplicable: no se presenta para gastar presupuesto.
+10. Una dimensión insuficiente no invalida otras con evidencia suficiente.
+11. Organización sin ventas y negocio en preparación: no se generan extensiones por ausencia de ventas.
+12. Consentimiento retirado: no se presentan nuevas aclaraciones.
+13. El informe explica brevemente por qué falta nivel sin insinuar fracaso.
+14. El sistema no afirma cumplir 24+5 mientras la unidad de conteo siga sin definirse.
+
+### 27.5. Próxima decisión D-V9-020 — qué cuenta como interacción
+Opciones por aprobar: **A** contar cada pregunta presentada, incluso si se omite; **B** contar cada pregunta con respuesta enviada (las omitidas no cuentan); **C** contar cada turno de pregunta o aclaración presentado que requiera decisión del usuario, incluyendo «No sé» y «Prefiero omitir», pero excluyendo navegación, consentimiento y cambio de idioma. La opción C es recomendación provisional para evitar eludir el presupuesto y mantener comparabilidad; **no está aprobada**. Precisar el tratamiento de errores técnicos y preguntas reabiertas antes de implementar.
+
+### 27.6. Estado
+D-V9-001 a D-V9-019: APPROVED en sus alcances respectivos. D-V9-020 PENDING. Unidad de interacción PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.20.0 / 2026-10-29:** D-V9-019 aprobada; techo 24+5 global, reglas de uso y detención, siete tareas PLAN-LIM01–07, catorce criterios de aceptación y siguiente decisión. Solo documentación.
