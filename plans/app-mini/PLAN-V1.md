@@ -2160,3 +2160,39 @@ Se exige evidencia visual **real**, no mockups asumidos como capturas del produc
 | BILL-02 | PENDING HUMAN | fiscalidad, impagos y facturación | posponer automatización a P6B |
 
 **Criterio de cierre de esta etapa:** GOV-01, VIS-01 y OPS-01 tienen contrato y evidencias exigidas, **no aprobaciones**. Ninguna de las tareas de esta sección constituye implementación, prueba ejecutada ni despliegue.
+
+
+## 73. Inventario verificado del PR y expediente de decisiones GOV-01 / OPS-01
+
+**Fuente:** inventario de archivos cambiados en el PR #184 consultado en GitHub el 2026-10-29. **Alcance:** cinco archivos añadidos, de los cuales tres Markdown y dos recursos de prototipo; no se han modificado aplicaciones, bases de datos ni CI en esta etapa.
+
+| Archivo en PR #184 | Tipo | Función documental propuesta | Autoridad normativa |
+|---|---|---|---|
+| `plans/app-mini/PLAN-V1.md` | Markdown | plan maestro, decisiones, trazabilidad, fases y aceptación | **canónico propuesto**, sujeto a GOV-01 |
+| `plans/app-mini/CONTRATO-VARIANTES-V2.md` | Markdown | especificación de variantes visuales y contratos | anexo subordinado; no duplicar decisiones |
+| `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md` | Markdown | escenarios y contratos de servicios/pagos | anexo subordinado; no activar pagos |
+| `plans/app-mini/prototypes/miniweb-tiers-comparison.html` | HTML | referencia comparativa de diseño | material ilustrativo, no implementación del producto |
+| `plans/app-mini/prototypes/test-miniweb-tiers.mjs` | JS de prototipo | comprobación auxiliar del prototipo | no constituye test de producción ni certificación |
+
+### 73.1 Propuesta operativa GOV-01 (lista para aprobación)
+
+1. **Una autoridad:** decisiones vinculantes en el plan maestro; anexos contienen detalles extensos y remiten al identificador de decisión del maestro. Una contradicción se resuelve por la decisión aprobada más reciente, no por el archivo más nuevo.
+2. **No borrar anexos automáticamente:** preservar los dos Markdown de apoyo como documentación de consulta hasta que se haga inventario de enlaces entrantes y se apruebe consolidación. Los prototipos permanecen marcados como ilustrativos y fuera del alcance de implementación.
+3. **Registro único de decisiones:** ID, estado (`proposed/specified/approved/superseded`), autoridad, fecha, documento fuente, dependencias, evidencia y enlace al reemplazo. Cambios de estado requieren una instrucción humana explícita cuando afecten precio, lanzamiento, permisos o gobierno.
+4. **Regla de mantenimiento:** una sola edición normativa por decisión, actualización de referencias cruzadas y registro de precedencia. Prohibido declarar GOV-01 aprobado por esta propuesta.
+5. **Gate GOV-01:** el responsable del proyecto aprueba la autoridad canónica y el tratamiento de anexos; después un agente documental autorizado verifica el límite de Markdown canónicos y enlaces. Sin ese control, estado `PENDING APPROVAL`.
+
+### 73.2 OPS-01 — asignación pendiente, sin nombres inferidos
+
+Los roles están definidos en §72.3, pero **ninguna persona ha sido designada formalmente**. Se requieren al menos cuatro designaciones o acumulaciones expresamente aceptadas: (1) propietario del producto y decisiones comerciales, (2) aprobador visual, (3) aprobador de seguridad/QA y (4) autorizador de release. Una persona puede asumir varios roles si queda documentado, pero nadie se autoaprueba su propia entrega técnica sin revisión independiente cuando exista riesgo de seguridad.
+
+**Formato de acta futuro:** `rol → persona designada → alcance → suplente opcional → fecha → aceptación`. Hasta entonces OPS-01 sigue `PENDING OWNERS`. La planificación técnica puede continuar; el lanzamiento no.
+
+### 73.3 Próxima cola de planificación y condición de cierre
+
+- **DOC-01:** revisión de consistencia entre los tres Markdown: decisiones CAT-01, HV2-PRODUCT y REL-01 aprobadas deben prevalecer sobre menciones históricas; tarifas/PSP siguen pendientes.
+- **TRACE-01:** matriz `S01–S12 → contrato → validación → seguridad → prueba focal futura → fase → dueño`.
+- **OPS-02:** guion de alta, suspensión, reactivación y soporte de licencias administradas, sin decidir precios ni gracia contractual.
+- **VIS-02:** checklist por familia/variante y plantilla de acta de aceptación para VIS-01, sin afirmar capturas o QA ejecutados.
+
+**Estado:** GOV-01 preparado para decisión, OPS-01 preparado para nombramientos; no están aprobados. Este checkpoint no autoriza editar código, ejecutar prototipos, fusionar el PR ni desplegar.
