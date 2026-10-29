@@ -1,6 +1,6 @@
 # Entornos y versión candidata 0.9.1 (2026-10-29; no publicada)
 
-La rama principal integrada fija `package.json` en `0.9.1` para el siguiente release correctivo de seguridad/accesibilidad. PR #201 (`407f1cf3268798214bc8c20ef99887f57a1ea914`) está integrada. CI: typecheck/build/unitarias, bundle, regresión Aprende/Diagnóstico y Worker local PASS. El usuario confirma prueba/aprobación con NVDA y zoom 200 %; faltan los metadatos de navegador, lector y viewport, y esto no declara conformidad WCAG. No se desplegó esta candidata, no se aplicaron migraciones ni se modificó D1 remota. No existe comprobación HTTP que la califique como publicada.
+La rama principal integrada fija `package.json` en `0.9.1` para el siguiente release correctivo de seguridad/accesibilidad. PR #201 (`407f1cf3268798214bc8c20ef99887f57a1ea914`) está integrada. CI: typecheck/build/unitarias, bundle, regresión Aprende/Diagnóstico y Worker local PASS. El usuario confirma prueba/aprobación con NVDA y zoom 200 %; faltan los metadatos de navegador, lector y viewport, y esto no declara conformidad WCAG. El checkpoint local implementa y prueba purga Aprende 90/30, pero sus dos flags están en `false` en `wrangler.jsonc` y no se ha publicado esa configuración. No se aplicaron migraciones ni se modificó D1 remota. No existe comprobación HTTP que califique la candidata como publicada.
 
 # Entornos y release de producción 0.9.0 (2026-10-28)
 
@@ -98,7 +98,7 @@ El preflight inicial encontró Wrangler sin login y se completó tras la autenti
 
 ## DIAG-PRIVACY-PURGE-01 — automatización preparada, switches cerrados (2026-10-22)
 
-`wrangler.jsonc` programa Cron diario `17 3 * * *` (UTC) para el Worker base, pero `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED=false` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED=false` evitan todo borrado en producción hasta aprobación y cambio autorizado de ambos. Staging no registra Cron y mantiene ambos valores en `false`. Desarrollo puede habilitar ambos solo para ensayos con `AUTHZ_D1_PERSIST_TO` dirigido a una D1 temporal. Esto es configuración de código, no cron desplegado ni ejecución publicada: sin deploy, D1 remota o HTTP público. No usar `--remote`.
+`wrangler.jsonc` programa Cron diario `17 3 * * *` (UTC) para el Worker base. Los flags `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED` controlan el borrado del funnel. Para Aprende, `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` permanecen `false` en la configuración productiva del repositorio y exigen ambos `true`; no se cambian hasta la revisión legal/privacidad/costo. Staging no registra Cron y conserva ambos flags Aprende en `false`. Desarrollo puede habilitarlos explícitamente solo con una D1 temporal. Esto es configuración de código, no cron/despliegue/ejecución publicada: sin deploy, D1 remota o HTTP público. No usar `--remote`.
 
 ## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
 
