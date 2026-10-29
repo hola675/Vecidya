@@ -2236,3 +2236,38 @@ Los roles están definidos en §72.3, pero **ninguna persona ha sido designada f
 - **GOV-VERIFY:** comprobar el límite de Markdown canónicos y los enlaces cruzados antes de integrar; aprobación conceptual GOV-01 no equivale a validación de repositorio.
 
 **Estado:** GOV-01 aprobado; matriz TRACE-01 especificada. No implementación, tests ejecutados, merge ni despliegue.
+
+
+## 75. Procedimiento operativo P6A y cierre de preparación OPS-02
+
+**Estado: SPECIFIED, no autorizado para producción.** Esta especificación permite lanzar posteriormente con licencias administradas, conforme a REL-01, sin implementar checkout, procesar pagos o elegir PSP.
+
+### 75.1 Alta y activación manual
+
+1. Operaciones identifica al propietario de facturación y su organización mediante mecanismos existentes; comprueba autorización y ausencia de duplicados.
+2. Registra solicitud con ID, actor solicitante, aprobador comercial, organización, paquete Cuadra/Barrio/Ciudad, cupos aplicables, motivo, fecha y evidencia. **No registrar credenciales ni datos de pago.**
+3. Un operador autorizado verifica la decisión comercial y activa la licencia con vigencia explícita. La operación debe ser idempotente y auditable.
+4. El sistema recalcula entitlements y cuotas de publicación del propietario; la interfaz presenta estado real y confirmación. Una activación no publica automáticamente ningún MiniWeb.
+5. El responsable de soporte dispone de guía para investigar diferencias entre licencia concedida y licencia visible, sin editar datos directamente en producción.
+
+### 75.2 Suspensión, expiración, reactivación y corrección
+
+- **Suspensión:** exige motivo y aprobador; bloquea nuevas acciones sujetas a licencia según la política final. No borra borradores, snapshots ni medios, ni ejecuta GC físico. El comportamiento público de una publicación existente queda **pendiente de política comercial/legal** y no se presupone.
+- **Expiración:** transición basada en vigencia registrada; cualquier periodo de gracia requiere aprobación comercial específica. Sin esa decisión no se inventan días de gracia.
+- **Reactivación:** valida titularidad y autorización, registra antes/después y restaura derechos según licencia vigente; no publica automáticamente.
+- **Corrección:** si una licencia se asignó al propietario equivocado, se abre incidencia, se bloquean efectos adicionales, se documenta compensación y se obtiene revisión de seguridad cuando haya exposición entre tenants. No transferir datos entre organizaciones por simple reasignación de licencia.
+- **Auditoría:** conservar actor, instante, entidad, motivo, estado previo/nuevo, evidencia y resultado, con acceso restringido y política de retención por aprobar.
+
+### 75.3 Pruebas y aceptación futura
+
+Casos focales: alta autorizada, alta duplicada idempotente, actor sin permisos, licencia de otra organización, cuota de tres sitios publicados por propietario, ampliación +3 mediante Cuadra adicional cuando corresponda, suspensión sin borrado, expiración, reactivación, conflicto concurrente, reversión administrativa y no activación accidental de checkout. Los resultados se verifican contra entorno DEV y SHA concreto durante implementación; este plan **no declara pruebas ejecutadas**.
+
+### 75.4 Dependencias que no se cierran por documentación
+
+- **OPS-01:** falta designación nominal y aceptación de los aprobadores.
+- **COM-01:** faltan condiciones de contratación y política de suspensión/visibilidad pública, incluso con licencias manuales.
+- **VIS-01:** faltan capturas reales y firma visual.
+- **GOV-VERIFY:** falta comprobación de reglas de repositorio y referencias antes de merge.
+- **P6B:** PAY-01 y BILL-02 permanecen aplazados por decisión del responsable.
+
+**Resultado:** OPS-02 queda **SPECIFIED**. P6A no queda autorizado hasta resolver los bloqueos aplicables y recibir aprobación humana de lanzamiento.
