@@ -108,3 +108,28 @@ La pregunta `q2_presence_digital_base` (fuente `qbv2-reviewed-transversal.ts`, b
 ### Changelog
 
 - v1.3.0: inspección focal de alternativas generales para C03/C05/C08; distingue presencia/contacto de claridad de oferta y participación.
+
+
+## Verificación de evidencia V3 para presencia — v1.4.0
+
+Fuente directa: `app/features/diagnostic/qbv2-reviewed-evidence.ts`, blob `d3bb5edc0b504dd0257a73fccadf38dbc777540e`. Copia editorial: `qa03b/editorial-copy.ts`, blob `4f600136c6761669e99a2d9f9302afb0f084d195`. Guardias QA03B: `qa03b/bank.ts`, blob `b4772d73e1d8b5044ba2011088db978c364097f0`.
+
+| ID | Versión | Dimensión y directness | Mapeo V3 relevante | Restricción para cierre |
+|---|---:|---|---|---|
+| `q2_local_presence_consistency` | 2 | `digital_foundation/direct` | `consistent=established`, `partial=partial`, `no=weak`, `unknown=uncertainty` | Su guardia original exige actividad activa y arquetipo local/retail/hospitality. No mide claridad de oferta. |
+| `q2_presence_digital_base` | 2 | `digital_foundation/direct` | `reliable_presence=established`, `partial_presence=partial`, `no_reliable_presence=missing`, `not_applicable=not_applicable`, `unknown=uncertainty` | QA03B reemplaza `appliesWhen` por actividad activa o prelaunch. `missing` no equivale a `weak` ni autoriza extrapolar otras dimensiones. |
+| `q2_presence_offer_clarity` | 2 | `clarity_positioning/direct` | `clear=established`, `partial=partial`, `unclear=weak`, `not_applicable=not_applicable`, `unknown=uncertainty` | QA03B condiciona `materialAppliesWhen` a presencia fiable/parcial; la rama especializada añade una exclusión cuando aplica la pregunta de menú. |
+
+### Consecuencias por escenario
+
+- **C08:** hay evidencia directa de `digital_foundation` disponible en el catálogo; `clarity_positioning` sigue sin sustituto demostrado cuando falta presencia digital. **HOLD**, no certificar ni agregar pregunta sin revisar el resto del banco.
+- **C03:** la actividad pausada queda fuera de la guardia QA03B de `q2_presence_digital_base`; no usarla como evidencia de comunicación durante pausa. **HOLD**.
+- **C05:** la existencia de un canal de contacto no demuestra que una persona pueda participar en actividades de la organización. **HOLD**.
+
+### Regla de interpretación
+
+Un mapeo V3 existente **no garantiza** que la pregunta sea seleccionada ni que una dimensión alcance suficiencia en un escenario. Mantener separadas identidad, elegibilidad, selección, respuesta y evidencia. No se ejecutaron trazas ni pruebas.
+
+### Changelog
+
+- v1.4.0: cotejo de mapeos V3 de las tres preguntas generales de presencia y consecuencias focales C03/C05/C08.
