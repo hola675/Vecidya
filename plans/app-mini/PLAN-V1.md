@@ -1815,3 +1815,38 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 - **Pendiente para F0 cerrado:** gobernanza GOV-01 y revisión de consistencia final de documentos/PR.
 - **Pendiente para entregas posteriores:** ejecución visual VIS-01, decisiones comerciales, integración V2 y pruebas reales.
 - **No ejecutado en este checkpoint:** pruebas de navegador, typecheck/build, merge, deploy y cobros. Solo cambios documentales en PR #184.
+
+
+## 64. Plan de migración documental sin pérdida y mapa de reconciliación (2026-10-29)
+
+**Hallazgo verificado:** `vecidya-platform/docs/ROADMAP.md` en main ya contiene planificación de Mi Vecidya/MiniWeb, y es extenso; añadir sin más ~210 k caracteres de PLAN-V1 generaría duplicación y dificultaría mantener una sola fuente de verdad. La gobernanza exige documentos por responsabilidad, no un nuevo documento por auditoría. Por ello **no se copió ni eliminó contenido en este checkpoint**.
+
+### 64.1 Mapa de destino y reglas de preservación
+
+| Contenido fuente del PR #184 | Destino canónico recomendado | Condición antes de trasladar |
+| --- | --- | --- |
+| Objetivos F0–F9, dependencias, backlog y gates | `docs/ROADMAP.md` | Fusionar con iniciativas APP-MINI ya existentes, deduplicar por ID |
+| Estado real de PRs, deuda GAP y bloqueos | `docs/STATUS.md` | Contrastar HEAD/CI y no marcar PASS de producto por PASS de PR |
+| Arquitectura Vecidya/GHL, separación reader/entitlement, CAS | `docs/ARCHITECTURE.md` | Mantener invariantes y referencias al código real |
+| Cuotas, ledger, snapshots, titular y migraciones | `docs/DATABASE.md` | No afirmar esquema implementado antes de migración |
+| Matriz de pruebas focales, visual 3×3 y regresión | `docs/TESTING.md` | Distinguir tests escritos, ejecutados y pendientes |
+| Claves, familias, variantes y acceso por plan | `docs/business/VECIDYA_PRODUCT_CATALOG.md` | No aplicar CAT-01 sin aprobación |
+| Tarifas GHL, markup 20%, B0–B7 | `docs/business/VECIDYA_PRODUCT_CATALOG.md` y `docs/ROADMAP.md` | Tarifas de referencia no publicables; versión y fuente |
+| Rutas de Mi Vecidya, dispositivos y navegación | `docs/STRUCTURE.md` para rutas reales; `docs/ROADMAP.md` para propuestas | No presentar rutas futuras como existentes |
+| Prototipo HTML y harness de nueve capturas | Artefactos de prueba no canónicos dentro de `plans/app-mini/prototypes/` hasta reubicación aprobada | Conservar fixtures y rutas; no atribuir PASS sin ejecución |
+| Historial de decisiones, pendientes y conflictos | `docs/ROADMAP.md` y referencias de commit/PR | Conservar ID, fecha, estado, razón y enlace al origen |
+
+### 64.2 Algoritmo editorial de conciliación
+
+1. Congelar una tabla de trazabilidad `ID → sección fuente → documento destino → evidencia → estado` antes de mover contenido.
+2. Inspeccionar en main los apartados existentes de ROADMAP, STATUS, ARCHITECTURE, DATABASE, TESTING y catálogo; **no sobrescribir trabajo concurrente**.
+3. Integrar solo contenido único, preferiblemente como cambios pequeños por documento y PR. Mantener una sola definición vigente por decisión, enlazando antecedentes históricos.
+4. Actualizar enlaces relativos y el índice de `vecidya-platform/README.md`. Revisar referencias a `plans/app-mini/` antes de eliminar o mover.
+5. Verificar diff, encabezados, links locales, recuento canónico y cambios concurrentes. Mantener los archivos fuente hasta demostrar preservación completa.
+6. Solicitar aprobación GOV-01 para la estrategia definitiva; no hacer merge de tres documentos nuevos por silencio.
+
+### 64.3 Puerta de salida documental
+
+**PASS** solo si cada DEC/GAP/Fase/B-checkpoint tiene destino trazable, no quedan contradicciones vigentes, el índice enlaza al destino, los canónicos cumplen política y la documentación de estado refleja los PR reales. **FAIL** si hay decisiones perdidas, doble política activa, rutas rotas o se atribuye implementación a documentación.
+
+**Estado:** mapeo especificado; conciliación material pendiente. GOV-01 no aprobado; GAP-14 sigue SPECIFIED. Se preserva el contenido íntegro de #184 para evitar pérdida irreversible.
