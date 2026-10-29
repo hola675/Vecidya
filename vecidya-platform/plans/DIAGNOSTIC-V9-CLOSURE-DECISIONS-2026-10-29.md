@@ -35,3 +35,16 @@ Las dos últimas especializaciones excluyen la pregunta genérica de claridad so
 
 ### Changelog
 - **1.2.0 / 2026-10-29:** condiciones exactas de tres especializaciones y huecos focales C06/C08/C10.
+
+## Fase 4 — C08: contraste con la pregunta genérica
+
+Fuentes: `qa03b/bank.ts` blob `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`.
+
+En el banco base, `q2_presence_digital_base` aplica a actividad `active/prelaunch`. `q2_presence_offer_clarity` exige adicionalmente presencia `reliable_presence/partial_presence` mediante `materialAppliesWhen`. La especialización `q2_food_menu_visibility` exige historial activo, restaurante/café/food truck, objetivo `explain` y esa misma presencia suficiente. Por tanto, en C08 **sin presencia suficiente**, ninguna de esas dos preguntas sobre claridad ofrece por sí sola una ruta demostrada de evidencia; otras preguntas podrían cubrirla, pero aún no están trazadas.
+
+**Decisión propuesta (no aprobada):** no obligar a publicar menú ni asignar nivel bajo por falta de canal. Primero distinguir: oferta no publicada, oferta explicada por otros medios, negocio aún en preparación, y no aplicable legítimo. Auditar las restantes preguntas de `clarity_positioning` antes de autorizar `NEW-V9` específica. Si no existe evidencia suficiente, abstención explicable.
+
+**Matriz focal para futuras trazas:** C08 con presencia reliable, partial, none, unknown; en cada caso variar `goal=explain/other`, historial sí/no y nicho conocido/desconocido. Registrar pregunta efectiva, evidencia o abstención y costo 24+5. Inspección de código, no prueba ejecutada.
+
+### Changelog
+- **1.3.0 / 2026-10-29:** contraste estático C08 de pregunta genérica y especializada; hueco de claridad condicionado por presencia, pendiente de auditoría integral.
