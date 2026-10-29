@@ -123,7 +123,7 @@
 | DEC-01 | **MiniWeb V2 será de una sola página**, compuesta por secciones | Un único documento público por negocio; no crear rutas multipágina, menús de páginas ni contratos `pages[]` en V2 |
 | DEC-02 | **Videos subidos a Vecidya y enlaces externos** | Dos orígenes de medios con validación, autorización, reproductor y tratamiento de privacidad diferenciados; evaluar YouTube/Vimeo como proveedores permitidos, no aprobados individualmente aún |
 | DEC-03 | **Múltiples galerías de imágenes y de videos** en una misma página | Secciones con `instanceId` estable; no indexar solo por tipo; orden, contenido y diseño independientes |
-| DEC-04 | **Plantillas premium diferenciadas según licencia** | Resolver entitlement en servidor por organización/licencia; el editor solo ofrece plantillas autorizadas; conservar render seguro y apariencia de páginas publicadas al cambiar o vencer licencia, política pendiente de definición |
+| DEC-04 | **Distribución progresiva de plantillas por licencia: Cuadra → Barrio → Ciudad** | Cuadra: catálogo esencial; Barrio: catálogo esencial + diseños avanzados; Ciudad: catálogo anterior + catálogo completo. Resolver entitlement en servidor por organización/licencia; conservar render seguro y páginas publicadas ante cambios de licencia; política exacta pendiente de definición |
 | DEC-05 | **Historial de versiones y restauración** | Snapshot inmutable por publicación, metadatos autor/fecha/revisión, restauración como **nuevo borrador** y publicación posterior explícita; autorización, retención y cuota por definir |
 
 **Reglas obligatorias derivadas:** nunca autorizar plantillas únicamente desde el frontend; no exponer borradores ni archivos privados en snapshots públicos; la restauración no sobrescribe automáticamente una publicación ni permite acceso entre organizaciones; los enlaces externos deben usar allowlist y protección frente a URLs maliciosas; las subidas deben validar tipo/tamaño y permisos en servidor.
@@ -131,11 +131,22 @@
 **[~] Cuestiones de diseño pendientes de evidencia y/o decisión:**
 1. Horarios V2: confirmar alcance inicial de turnos nocturnos, excepciones y zona horaria; propuesta: incluirlos.
 2. Videos: definir límites por licencia, tamaño, duración, almacenamiento/transcodificación y proveedores externos concretos tras revisar infraestructura/costes.
-3. Plantillas: definir **matriz de acceso por licencia real** (Cuadra/Barrio/Ciudad según catálogo vigente), comportamiento al bajar de licencia y si hay plantillas base universales; no inventar restricciones comerciales.
+3. Plantillas: **jerarquía progresiva aprobada** Cuadra (esenciales), Barrio (+ avanzadas), Ciudad (+ catálogo completo). Pendiente catalogar IDs y diseños concretos, verificar el contrato comercial vigente y definir qué ocurre con diseños publicados si baja o vence la licencia. No inventar precios, cupos ni nuevas prestaciones comerciales.
 4. Historial: definir cantidad/retención de versiones y permisos de restauración, con costes y auditoría.
 5. Medios: definir cuota operativa por negocio y política de borrado/retención según R2 y licencias.
 
 **No bloquean la documentación:** estas cuestiones se resolverán en F0 y antes de las migraciones o controles comerciales afectados; no inferir respuestas del silencio del usuario.
+
+### DEC-06 — Catálogo progresivo de plantillas (APROBADO, 2026-10-28)
+
+- **Cuadra:** acceso al conjunto base de plantillas esenciales.
+- **Barrio:** acceso acumulativo a Cuadra y a plantillas de composición avanzada.
+- **Ciudad:** acceso acumulativo a Cuadra, Barrio y el catálogo premium completo.
+- **No regresión:** una licencia superior incluye las plantillas de niveles inferiores; las capacidades de contenido, almacenamiento, dominios y medios **no** quedan diferenciadas automáticamente por esta decisión.
+- **Backend propuesto:** catálogo versionado con `templateId`, `version`, `minimumLicenseTier` y estado; entitlement efectivo resuelto en servidor a partir de la licencia real de la organización, no de un parámetro cliente. Validar al seleccionar, guardar y publicar; no revelar borradores ni activos ajenos.
+- **Frontend propuesto:** mostrar plantillas disponibles y bloqueadas con explicaciones claras de la licencia necesaria; no ocultar de forma engañosa plantillas ya utilizadas. Previsualización segura sin habilitar publicación no autorizada.
+- **Compatibilidad:** conservar el render de páginas ya publicadas si cambia el entitlement hasta que se apruebe una política de transición; nunca degradar silenciosamente la apariencia, eliminar contenido ni despublicar automáticamente.
+- **Pendiente F0:** mapear nombres/IDs reales y condiciones comerciales de Cuadra/Barrio/Ciudad; decidir política de downgrade, expiración, grandfathering y disponibilidad de preview; verificar que el modelo de licencias permite jerarquía acumulativa. **Esta decisión no autoriza migraciones ni cambios de precio.**
 
 ## 11. Gobernanza y handoff
 
@@ -146,4 +157,4 @@
 
 ## 12. Registro de avance
 
-- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
+- **2026-10-28 — [x] DEC-06:** distribución progresiva Cuadra → Barrio → Ciudad confirmada, matriz conceptual y controles server-side definidos; catálogo específico y política de downgrade pendientes.\n- **2026-10-28 — [x] DECISIONES:** DEC-01–DEC-05 confirmadas e incorporadas al contrato funcional; pendientes operativos documentados. Sin merge ni deploy.\n- **2026-10-28 — [x] DOCUMENTACIÓN:** consolidación inicial de requisitos aprobados, inspección estática y propuestas en plan único. **[ ] CÓDIGO:** ninguna fase implementada por este checkpoint. **[ ] TEST:** ninguna prueba nueva ejecutada. **[ ] PRODUCCIÓN:** sin cambios.
