@@ -1210,6 +1210,21 @@ Estos son **valores de diseño**, no un esquema de base de datos aprobado. El mo
 
 **Estado:** inventario inicial del CSS real confirmado y contrato responsive propuesto; pendientes inspección focal de reglas MiniWeb específicas, prototipos gráficos, pruebas y aprobación visual. Sin cambios de código, merge ni despliegue.
 
+
+## 45. F6 — Prototipo HTML comparativo entregado (2026-10-29)
+
+**Artefacto creado:** `plans/app-mini/prototypes/miniweb-tiers-comparison.html` en la rama documental `docs/app-mini-master-plan-v1` (commit `30e12e07cb07c5c3bdd9b76ff7aa98224d9673fe`).
+
+- Documento HTML autocontenido con CSS y JS mínimo para alternar entre Cuadra Base, Barrio Pro y Ciudad Premium mediante botones accesibles `aria-pressed`.
+- El contenido ficticio `Estudio Norte` es idéntico en los tres estados: portada, cuatro servicios, seis marcadores visuales de galería, horario, ubicación, FAQ y contacto.
+- Base: hero dividido y rejilla uniforme; Pro: hero asimétrico y galería mosaico; Premium: hero editorial, tipografía y composición narrativa. Los tres mantienen los mismos datos y módulos.
+- Responsive público mediante reglas de diseño móvil/tableta/escritorio; soporte de foco visible, salto al contenido y preferencia de movimiento reducido.
+- Marcadores gráficos CSS sin fotografías externas; **no confundir con renders de producción, assets finales ni UI conectada al CMS**.
+- No se ha validado visualmente en navegador ni ejecutado test automatizado; se requiere revisión humana en tamaños y dispositivos reales antes de aprobar composición.
+- No incluye motor de plantillas V2, entitlements, APIs, persistencia, publicación, CMS ni CRM; no cambia código de `vecidya-platform`.
+
+**Próxima puerta:** revisar el HTML visualmente y comparar si Barrio/Ciudad ofrecen valor perceptible frente a Cuadra. Si se aprueba la dirección, convertir el prototipo en componentes tipados reutilizables y pruebas focales, manteniendo snapshots legacy.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
