@@ -1259,6 +1259,26 @@ No activar plantillas Pro/Premium en producción antes de: (1) aprobación visua
 
 **Estado:** checklist y límites del prototipo documentados; revisión manual pendiente.
 
+
+## 47. F6 — Revisión estática del prototipo y bloqueo de validación real (2026-10-29)
+
+**Alcance comprobado:** el PR #184 sigue abierto contra `main` y su rama contiene el prototipo HTML; se recuperó su fuente por GitHub. Se detectó Chromium y la biblioteca Playwright en el entorno de revisión, pero la descarga directa del HTML a ese entorno falló por conectividad; **no se ejecutó ninguna prueba de navegador contra el artefacto real**. No confundir disponibilidad del navegador con prueba realizada.
+
+### Hallazgos de revisión de fuente
+1. El selector Base/Pro/Premium actualiza `data-tier` y `aria-pressed` sin sustituir el contenido DOM; la paridad entre niveles está resuelta **en el diseño del prototipo**, no en el motor V2.
+2. El prototipo usa CSS autocontenido, marcadores de fotografía, enlaces internos y datos ficticios. No hay peticiones a API ni escrituras en la base de datos.
+3. Los cuatro servicios y seis marcadores visuales son compartidos; las cuatro preguntas FAQ se incorporaron al mismo HTML. La galería está representada por `div role=img`, no por archivos de medios reales.
+4. La sección de contacto es demostrativa, sin envío de formulario ni integración CRM. El prototipo no demuestra disponibilidad ni licenciamiento.
+5. Se identificaron riesgos para la revisión posterior: altura del hero premium en móvil, texto largo en tarjetas asimétricas, lectura del color de acento premium, orden semántico de FAQ, ausencia de medios y navegación de teclado en todos los tamaños.
+
+### Validación focal pendiente (no ejecutada)
+- Abrir el archivo **real** en Chromium/Playwright en un entorno con acceso al contenido, capturar 390×844, 768×1024 y 1440×900 para cada `data-tier` (9 capturas).
+- Comprobar `scrollWidth <= innerWidth`, visibilidad del CTA, foco y estado `aria-pressed` tras cada cambio, cuatro servicios y cuatro preguntas en los tres tiers.
+- Revisar capturas y consola, corregir solo problemas observados en `plans/app-mini/prototypes/miniweb-tiers-comparison.html`; evitar cambios en app/CI.
+- Registrar evidencia concreta de PASS/FAIL y no aprobar el prototipo únicamente por revisión estática.
+
+**Estado:** revisión de fuente efectuada; prueba visual automatizada **bloqueada por transferencia del artefacto al navegador**, sin falsos PASS. PR #184 continúa abierto y sin merge/deploy.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
