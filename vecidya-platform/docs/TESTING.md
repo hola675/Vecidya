@@ -6,13 +6,13 @@ Revisión de código de `api-learn-sync`, `api-organization-learn-access`, entit
 
 **RAN:** `pnpm audit --prod --json` PASS, cero vulnerabilidades en 218 paquetes. Se actualizó `better-auth` de 1.7.5 a 1.7.14 tras advisories que afectaban rangos previos a 1.7.7. La configuración vigente no registra Magic Link, proveedores OAuth/social ni OAuth Proxy; por ello las precondiciones publicadas para dos avisos de severidad alta/crítica no coinciden con la configuración observada. No se halló evidencia de explotación.
 
-**RAN:** unitarias focales Aprende/catálogo **68/68 PASS**, bundle protegido **114 assets / 2.119 fragmentos PASS**, typecheck y build PASS. `test:e2e:learn-entitlement` inició Worker local pero terminó con `fetch failed (ECONNRESET)` sin salida de Worker, por lo que la matriz runtime completa no se considera PASS en este checkpoint. Un corte previo de la rama certificó matriz equivalente, pero no sustituye reejecución en este corte.
+**RAN:** unitarias focales Aprende/catálogo **68/68 PASS**, bundle protegido **114 assets / 2.119 fragmentos PASS**, typecheck y build PASS. CI del PR #201, commit final `3ef83d3e`, **PASS** en typecheck/build/unitarias, bundle protegido, regresión Aprende/Diagnóstico y certificación del Worker local de entitlement/sync. La ejecución local de esta rama tuvo `ECONNRESET`; CI volvió a ejecutar con éxito la matriz completa.
 
-**Hallazgo abierto:** los recibos idempotentes carecen de expiración/purga automática; 90 días aceptados es solo propuesta hasta validación legal, de privacidad y costo. **No lanzamiento** hasta resolver retención y repetir la certificación Worker estable.
+**Hallazgo abierto:** los recibos idempotentes carecen de expiración/purga automática; 90 días aceptados es solo propuesta hasta validación legal, de privacidad y costo. **No lanzamiento** hasta acordar e implementar la retención efectiva. La certificación Worker sí pasó en CI final.
 
-## APRENDE-PLAN-V1 — pauta manual de accesibilidad (Fase 7; pendiente ejecución humana)
+## APRENDE-PLAN-V1 — pauta manual de accesibilidad (Fase 7; aprobada por el usuario)
 
-Ejecutar sobre una guía `always_free` en el Worker local, en Windows, con NVDA y Firefox (Edge también es válido si se registra). Repetir con zoom del navegador al 200 % y viewport de 640–780 px físicos (320–390 CSS px). No marcar esta pauta como aprobada hasta registrar resultados reales.
+Pauta reproducible para una guía `always_free` en el Worker local, en Windows, con NVDA y Firefox (Edge también es válido si se registra). Repetir con zoom del navegador al 200 % y viewport de 640–780 px físicos (320–390 CSS px). El resultado informado para este checkpoint aparece al final de la pauta; futuras revisiones deben registrar también sus resultados y metadatos.
 
 **Lector de pantalla y teclado:**
 1. Recargar sin ratón. Navegar por encabezados y landmarks; confirmar que el título de la guía es el encabezado principal y que el índice se anuncia como navegación «Índice del artículo».
@@ -25,7 +25,7 @@ Ejecutar sobre una guía `always_free` en el Worker local, en Windows, con NVDA 
 2. Abrir/cerrar el índice y seguir enlaces de sección. Confirmar que el foco siempre es visible y que paneles o cabeceras fijas no tapan el destino.
 3. Aprobar solo si no hay desplazamiento horizontal de página, texto recortado, solapamiento, control inaccesible, estado de expansión incorrecto ni pérdida de foco. Registrar cualquier excepción con pasos para reproducirla.
 
-**Registro obligatorio:** fecha, ruta, navegador/versión, lector/versión, zoom, viewport CSS, resultado por paso (PASS/FAIL), defecto y evidencia/captura opcional. Estado inicial: **no ejecutada; no equivale a certificación de conformidad**.
+**Registro informado por el usuario (2026-10-29):** la prueba manual con NVDA y zoom 200 % ya fue ejecutada y aprobada. Se acepta como gate manual de este checkpoint. No se registraron ruta, navegador/versión, versión NVDA, viewport CSS, resultados por paso ni capturas; la aceptación no equivale a auditoría independiente ni a certificación WCAG. La pauta se conserva para reproducir y registrar esos detalles en futuras revisiones.
 
 ## APRENDE-PLAN-V1 — índice de artículo móvil (Fase 7; 2026-10-29)
 

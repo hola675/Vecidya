@@ -1,6 +1,6 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / FASES 1–6 INTEGRADAS; FASE 7 EN CERTIFICACIÓN TÉCNICA LOCAL, GATES DE LANZAMIENTO ABIERTOS · **Propietario de ejecución:** agente designado por el usuario.
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / FASES 1–7 INTEGRADAS Y CERTIFICADAS LOCALMENTE; VALIDACIÓN LEGAL/OPERATIVA DE RETENCIÓN Y GATES DE LANZAMIENTO ABIERTOS · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
 **Alcance original de planificación:** únicamente documentación en `plans/`. La implementación posterior fue autorizada por el usuario y se ejecuta en checkpoints de aplicación aislados; no implica autorización de deploy ni cambios D1 remotos.
 
@@ -26,7 +26,7 @@
 | Fase 4 — progreso y favoritos D1 | [x] Integrada por PR #187 | Migración `0032`, progreso personal, favoritos, reset epoch; Worker/D1, QA y CI PASS |
 | Fase 5 — sincronización y anonimato | [x] Integrada por PR #190 | Migración `0033`, sync idempotente, importación con consentimiento y cola temporal; Worker/D1 y CI PASS; producción pendiente de revisión de retención |
 | Fase 6 — itinerarios y UX | [x] Integrada por PR #193 en `main@3fdc17cc`; sin publicar | Progreso compartido por guía en nueve itinerarios, recomendaciones editoriales, ocultar/restaurar, repaso opcional y QA responsive/teclado |
-| Fase 7 — certificación y preparación de lanzamiento | [~] Certificación técnica local parcial | Se ejecutó revisión de seguridad estática y audit de dependencias en este checkpoint; Better Auth actualizado y audit de producción sin avisos. Matriz Worker local tuvo ECONNRESET y requiere repetición estable. La base operativa 90/30 fue aceptada como propuesta por el usuario (2026-10-29); sigue pendiente de validación legal/privacidad/costo y no se implementa purge. Lector de pantalla y zoom 200 % pendientes de prueba humana con pauta en `docs/TESTING.md`. No habilita despliegue |
+| Fase 7 — certificación y preparación de lanzamiento | [~] Certificación técnica completada localmente; gates de lanzamiento abiertos | Revisión estática, audit de dependencias sin avisos y CI final del PR #201 PASS, incluida matriz Worker entitlement/sync. El usuario confirma que hizo y aprobó la prueba humana con NVDA y zoom 200 % (2026-10-29; metadatos del equipo de prueba no registrados). La base operativa 90/30 sigue sujeta a validación legal/privacidad/costo y el código no implementa purge. No habilita despliegue |
 
 **Lectura rápida:** §0 instrucciones; §§1–7 requisitos y contratos; §8 fases; §§9–16 validaciones, decisiones y PR; §17 bitácora; §§18–29 evidencias y decisiones ampliadas; §30 handoff. **En caso de discrepancia, las decisiones posteriores explícitas (§§19,25,27–29) refinan las propuestas anteriores, pero nunca sustituyen una decisión APROBADO sin confirmación del usuario.**
 
@@ -407,7 +407,7 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
-| 2026-10-29 | Preparación de perfiles, auditoría y revisión humana | ACEPTADA POR EL USUARIO / PR #198 | Aprobación expresa de las seis guías gratuitas en sus revisiones vigentes, selección 6/42 y cambios editoriales de este checkpoint; gates legal, seguridad y accesibilidad continúan abiertos |
+| 2026-10-29 | Preparación de perfiles, auditoría y revisión humana | ACEPTADA POR EL USUARIO / PR #198 | Aprobación expresa de las seis guías gratuitas en sus revisiones vigentes, selección 6/42 y cambios editoriales; la revisión manual de accesibilidad fue aprobada por el usuario; solo retención legal/operativa sigue abierta |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / selección editorial 6/42 aceptada; distribución no desplegada | PR #183 integrada; 48 guideId, 390 sectionId actuales; aprobación de seis revisiones vigentes registrada abajo; tests de catálogo y privacidad ejecutados |
 | 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
@@ -415,12 +415,12 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-29 | Fase 4: progreso y favoritos personales | INTEGRADA | PR #187 en `main@67c2d1fa`; `0032`, Worker/D1 E2E, aislamiento, reset epoch, favoritos tras revocación, unitarias, QA, typecheck/build y CI PASS |
 | 2026-10-29 | Fase 5: sync, anónimo y offline temporal | INTEGRADA / PRODUCCIÓN PENDIENTE | PR #190 en `main@3d91f15d`; `0033`, cola/consentimiento/logout y POST transaccional; Worker/D1 dos dispositivos, replay/reset, cola 5/5 y tres workflows CI PASS. Sin D1 remota ni deploy; retención de recibos pendiente de revisión legal/operativa |
 | 2026-10-29 | Fase 6: itinerarios y UX | INTEGRADA / PR #193; sin publicar | `main@3fdc17cc`; sin nueva migración; progreso de guías compartido en nueve rutas, sugerencia determinista, restauración de recientes y repaso opcional; unitarias 3/3, Worker/D1, QA Playwright responsive/teclado, typecheck/build y diff-check PASS; sin deploy |
-| 2026-10-29 | Fase 7: certificación técnica local | PARCIAL; lanzamiento bloqueado | D1 `0000–0033`, FK integrity, entitlement/revocación, bundle de 114 assets/2.074 fragmentos, 81 unitarias, QA pública 48 guías/9 rutas/4 viewports, typecheck/build/Drizzle y CI PR #193 PASS. AccessLint no pudo iniciarse en Windows; lector de pantalla y zoom real pendientes. Revisión editorial 6/42 y retención legal/operativa pendientes; sin deploy ni D1 remota |
-| 2026-10-29 | Fase 7: índice compacto móvil | PARCIAL; código y regresión local PASS | El índice de artículos se presenta como `<details>` nativo `Índice · NN%` hasta 820 px; comparte el progreso dinámico, se cierra al navegar a una sección y la prueba verifica que el destino no quede cubierto. E2E teclado/foco/porcentaje/anclas en 320/390/768/1366 px. No es certificación con lector de pantalla, zoom al 200 % ni evaluación de contraste. Typecheck y build PASS; sin deploy. La política y calendario de purga de recibos continúan sin decisión legal/operativa; no se inventa TTL ni se activa borrado automático. |
+| 2026-10-29 | Fase 7: certificación de seguridad y accesibilidad | TÉCNICA PASS; revisión humana aceptada; lanzamiento pendiente | PR #201 integrada en `main@407f1cf3`; CI final PASS en typecheck/build/unitarias, bundle, regresión Aprende/Diagnóstico y Worker entitlement/sync. Better Auth 1.7.14; audit prod con cero avisos. El usuario confirma prueba NVDA/zoom 200 % aprobada; no se registraron metadatos de dispositivo/viewport, ni se afirma certificación WCAG. La retención/purga 90/30 sigue sin validación legal/operativa ni implementación. Sin deploy ni D1 remota |
+| 2026-10-29 | Fase 7: índice compacto móvil | CÓDIGO Y REGRESIÓN PASS | El índice de artículos se presenta como `<details>` nativo `Índice · NN%` hasta 820 px; comparte el progreso dinámico, se cierra al navegar a una sección y la prueba verifica que el destino no quede cubierto. E2E teclado/foco/porcentaje/anclas en 320/390/768/1366 px. Typecheck y build PASS; sin deploy. |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Fase 7 | EN CURSO — CERTIFICACIÓN LOCAL PARCIAL | Cierre requiere revisión de seguridad independiente, decisión legal/operativa y mecanismo de retención/borrado revisado, lector de pantalla y zoom 200 %; cualquier despliegue y migración remota conserva autorización específica |
+| — | Fase 7 | CERTIFICACIÓN TÉCNICA Y ACEPTACIÓN HUMANA COMPLETADAS; PUBLICACIÓN BLOQUEADA | CI de seguridad/Worker PASS y aceptación NVDA/zoom 200 % confirmada por el usuario. Falta validar legal/operativamente 90/30 e implementar y probar expiración/purga; cualquier publicación o migración remota requiere su autorización específica |
 
 ### Preparación local para revisión humana y auditoría editorial (2026-10-29)
 
@@ -804,7 +804,8 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 - [x] Distinción explícita entre cierre de planificación y certificación de software.
 - [ ] Validación editorial definitiva de las seis guías (gate de implementación).
 - [ ] Diagnóstico de lifecycle/datos legacy, comprobación CSRF y pruebas de entitlement (gate de implementación).
-- [ ] Revisión de retención/privacidad y pruebas de sincronización (gate de implementación).
-- [~] Fases 1–6 implementadas e integradas; certificación técnica local parcial de Fase 7. Faltan los gates de revisión editorial, legal/operativa, seguridad independiente y accesibilidad manual; el lanzamiento no está autorizado por haber pasado pruebas locales.
+- [x] Pruebas de sincronización en Worker local y CI; matriz final del PR #201 PASS.
+- [x] Revisión humana de Aprende con NVDA y zoom 200 %, confirmada por el usuario el 2026-10-29; se registró la aprobación y el límite de metadatos no documentados.
+- [~] Fases 1–6 implementadas e integradas y certificación técnica de Fase 7 completada. Falta validación legal/privacidad/costo e implementación/prueba de la política de purga de recibos 90/30; no desplegar el modelo Aprende 6/42 hasta cerrar esos gates y autorización de publicación.
 
 **Resultado:** no se requieren nuevas rondas generales de planificación para comenzar el PR 1. Los pendientes son comprobaciones acotadas y decisiones operativas vinculadas al PR que las necesite. Cualquier decisión editorial/legal no demostrada se mantiene visible, sin fingir que está aprobada. El plan de la aplicación de usuario se tratará por separado en otro chat; no forma parte de este alcance.
