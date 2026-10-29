@@ -1606,3 +1606,62 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 **Cierre de hueco:** registrar `OPEN → SPECIFIED → IMPLEMENTED → VERIFIED → CLOSED`, responsable, PR/SHA, test focal y evidencia de aceptación. Un hueco documentado no se considera solucionado; ningún cierre se infiere de una ejecución CI no relacionada.
 
 **Resultado:** 18 huecos registrados; cinco contradicciones documentales priorizadas en R1, y el resto con gate explícito. El plan sigue **en consolidación**, no certificado como cerrado.
+
+
+## 59. R2 — contratos técnicos para cerrar GAP-06 a GAP-10 (2026-10-29)
+
+**Estado:** contratos propuestos para implementación, no pruebas ejecutadas ni código fusionado. La inspección documental previa identifica las entidades `billing_account`, `organization_license`, snapshots V1, CAS y R2; antes de escribir migraciones o rutas debe verificarse cada nombre y relación contra `main` actualizado.
+
+### 59.1 GAP-06/07 — identidad, organización y derechos en servidor
+
+**Secuencia obligatoria en cada operación de lectura sensible, guardado o publicación:**
+1. Validar sesión autenticada; obtener `userId` exclusivamente del proveedor de autenticación.
+2. Resolver `organizationId` de ruta/selección y comprobar permiso específico del usuario sobre esa organización **en servidor**. Un selector no otorga autorización.
+3. Resolver el `billingAccountId` canónico desde la organización y sus relaciones persistidas, nunca de un campo de formulario o query param. Comprobar asociación y titularidad vigentes, incluyendo revocaciones/transferencias.
+4. Consultar licencias D1 de esa cuenta y evaluar el tier visual máximo activo, separado de los permisos CRM de cada organización.
+5. Para guardado: comprobar permiso de edición, estado de suspensión, esquema y revisión del borrador. Para publicación: comprobar además variante, cuota y estado de publicación en una operación transaccional/atómica apropiada.
+6. Denegar de forma segura si faltan relaciones, la sesión expiró, hay desajuste de titular, licencia desconocida o cambio concurrente. Registrar auditoría sin filtrar información de terceros.
+
+**Invariante:** derecho visual compartido entre organizaciones de un titular **no** implica que un miembro de una organización pueda acceder a otra. Tampoco concede permisos económicos de facturación.
+
+**Pruebas focales mínimas:** usuario sin sesión; usuario con rol de solo lectura; usuario miembro de A que solicita B; owner con dos organizaciones; cambio de organización tras revocación; billingAccountId falsificado; licencia de otro titular; licencia pending/suspended/cancelled; suspensión con público online.
+
+### 59.2 GAP-08 — cupos y ocupación atómica
+
+**Modelo lógico:** `baseCapacity = hasAnyActiveLicense ? 3 : 0`; `extraCapacity = 3 × count(activeExplicitCuadraAddOns)`; `effectiveCapacity = baseCapacity + extraCapacity`. Las Cuadras adicionales son productos de capacidad explícitos y **no** se deducen del número de licencias CRM Cuadra. Barrio/Ciudad no añaden bloques.
+
+**Ocupación:** cuenta cada publicación pública única del titular según el contrato de estado aprobado; una republicación de la misma organización no debe consumir una plaza nueva. Definir identificador estable de ocupación y titular al momento de la operación. No usar `COUNT` seguido de `INSERT` independiente sin protección de concurrencia.
+
+**Contrato transaccional:** reservar o reutilizar plaza de forma atómica con publicación, validar titular/estado/capacidad y registrar evento auditable. En conflicto concurrente devolver respuesta recuperable sin doble ocupación ni sobrescribir snapshots. Transferencia o downgrade conserva sitios históricos, bloquea nuevas ocupaciones cuando exceden capacidad y requiere conciliación administrativa.
+
+**Pruebas focales:** 0 licencias→0 plazas; Cuadra→3; Barrio→3; Ciudad→3; Cuadra+Barrio→3; Cuadra extra→6; dos extras→9; dos solicitudes compitiendo por última plaza; republish no ocupa nueva plaza; reducción y transferencia sin borrado.
+
+### 59.3 GAP-09 — configuración V2 e instancias
+
+**Esquema lógico de configuración:** `version:2`, `templateKey`, `variantKey`, `templateVersion`, `modules: [{instanceId,type,enabled,sortOrder,layoutVariant,settings}]`. Los campos definitivos y tipos deben alinearse con el lector dual V2-B y el registry V2-A al integrar PRs.
+
+**Invariantes:** `instanceId` único y estable, orden determinista, hero único y primero, módulos repetibles solo si su definición lo admite, IDs DOM basados en instanceId y no en type. El renderer puede variar presentación por tier pero no quitar módulos funcionales. La lectura de V1 es no destructiva y mantiene apariencia legacy.
+
+**Pruebas focales:** dos galerías con distinto orden y medios, IDs DOM sin colisión, módulo desconocido rechazado, duplicación de instanceId rechazada, hero ausente o duplicado rechazado, V1 fixture visual/semántico preservado.
+
+### 59.4 GAP-10 — snapshots, CAS y medios históricos
+
+**Persistencia:** separar borrador editable, snapshot publicado inmutable y referencias de medios de cada versión. Una restauración crea nuevo borrador con origen auditado; nunca sobrescribe el snapshot histórico. Publicación comprueba revisión de borrador y versión vigente mediante CAS o transacción equivalente.
+
+**Medios:** mantener assets referenciados por cualquier snapshot histórico recuperable. Desactivar un medio en borrador no lo elimina físicamente ni invalida publicaciones. Antes de publicar/restaurar validar propiedad, tipo, tamaño y existencia del asset; no servir medios de otros titulares. Respetar DEC-15: sin borrado físico automático en V2 inicial.
+
+**Límites:** no fijar tamaño máximo V2 por intuición. Medir payloads reales con galerías múltiples, definir umbrales por campo/configuración/publicación y error explícito antes de habilitar writer. Registrar métricas de almacenamiento y coste.
+
+**Pruebas focales:** doble publish concurrente, restore→nuevo borrador, snapshot inmutable, medio eliminado del borrador aún visible en versión publicada, medio faltante al restaurar, asset de otro titular denegado, fallo parcial sin versión huérfana.
+
+### 59.5 Gates y propiedad
+
+| Hueco | Estado tras este apartado | Dueño propuesto | Evidencia requerida para VERIFIED |
+| --- | --- | --- | --- |
+| GAP-06 | SPECIFIED | Autorización / Mi Vecidya | Tests server-side de rol, org y revocación |
+| GAP-07 | SPECIFIED | Licencias / MiniWeb | Ruta real conectada a D1 y tests cross-tenant |
+| GAP-08 | SPECIFIED | Datos / Publicación | Reserva atómica, pruebas de carrera y conciliación |
+| GAP-09 | SPECIFIED | Renderer / Editor | Dos galerías, IDs únicos y compatibilidad V1 |
+| GAP-10 | SPECIFIED | Publicación / Medios | CAS, restore, referencias históricas y pruebas de fallo |
+
+**No cambiar a IMPLEMENTED sin PR real, ni a VERIFIED sin tests del SHA correspondiente.** Si D1 no ofrece la atomicidad requerida para una operación concreta, diseñar la secuencia compatible con el runtime antes de implementar, en lugar de afirmar transacciones no comprobadas.
