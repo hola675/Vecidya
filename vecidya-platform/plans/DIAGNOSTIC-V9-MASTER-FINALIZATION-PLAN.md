@@ -1272,3 +1272,63 @@ D-V9-001 a D-V9-020 APPROVED. D-V9-021 aprobado como objetivo UX y alcance docum
 
 ## Changelog adicional
 - **1.21.0 / 2026-10-29:** D-V9-020 aprobada (unidad de interacción por turno) y D-V9-021 incorporada (acompañamiento premium, microcopy, animaciones y progreso honesto); doce tareas documentales, criterios de aceptación y D-V9-022. Solo documentación.
+
+
+## 30. Decisión D-V9-022 — progreso visual por hitos y etapas, sin porcentajes exactos engañosos (aprobada 2026-10-29)
+**Aprobación expresa:** «progreso visual por hitos y etapas, sin porcentajes exactos engañosos». Estado APPROVED como dirección UX; exclusivamente PLAN_ONLY.
+
+### 30.1. Contrato de progreso honesto
+1. Representar avance mediante **hitos temáticos y etapas comprensibles**, determinados por la ruta adaptativa aplicable, no por un porcentaje de finalización inventado.
+2. Distinguir hito **pendiente**, **en exploración**, **cubierto** y, cuando corresponda, **sin evidencia suficiente** o **no aplicable**. «Cubierto» significa que se ha recorrido o resuelto la evidencia exigida para ese hito, **no** que la madurez del negocio haya mejorado.
+3. No completar hitos por mero número de respuestas ni marcar como completada una dimensión que todavía requiere evidencia crítica.
+4. La interfaz puede comunicar progreso de entrevista y cobertura temática, pero nunca presentar el avance de la barra como puntuación, certificación, mejora de negocio o resultado anticipado.
+5. Si la entrevista abre una rama relevante, actualizar los hitos sin hacer creer que el usuario perdió trabajo; documentar reglas de adición, ocultación y reordenamiento, y preservar hitos realmente cubiertos.
+6. Mantener **separados** el contador interno de interacciones D-V9-020 (objetivo 24 + hasta 5 excepcionales) y la representación de hitos; no convertir automáticamente 12/24 en «50 % completado».
+7. En el umbral de 24 con evidencia crítica faltante, presentar una **etapa excepcional de aclaración** únicamente tras consentimiento explícito; no retroceder ni reiniciar hitos ya alcanzados.
+8. Al finalizar con evidencia parcial, mostrar los hitos cubiertos y las dimensiones sin nivel con lenguaje neutral y sin barra artificialmente «100 %».
+9. Cambios es/en, edición de respuesta, pausa, reanudación, recarga y fallos transitorios no deben duplicar animaciones de éxito ni crear hitos ficticios.
+10. Animaciones breves y opcionales, compatibles con movimiento reducido, teclado, lectores de pantalla, contraste y dispositivos modestos. El texto siempre comunica el estado sin depender de movimiento o color.
+11. Mensajes de acompañamiento D-V9-021 se disparan por **eventos reales** (tema cubierto, transición, aclaración necesaria, cierre), con variación editorial controlada; «ya casi terminamos» solo cuando el estado lo justifique.
+12. Certificar etiquetas, mensajes, accesibilidad y equivalencia semántica en español e inglés, para todos los escenarios C01–C10.
+
+### 30.2. Modelo conceptual de hitos (no esquema implementado)
+Cada hito propuesto requiere identificador estable, tema/propósito, condición de activación, evidencias vinculadas, estado, regla de finalización, precedencias o paralelismo, versión editorial, etiqueta es/en y explicación breve. La lista definitiva de hitos se deriva de la taxonomía y del banco aprobados; no se fija ahora un número universal de etapas.
+
+**Ejemplos meramente ilustrativos:** «Conocemos tu negocio» → «Exploramos tu presencia digital» → «Revisamos cómo conectas con tu público» → «Preparamos tus conclusiones». No son nombres ni secuencia aprobados y pueden ser inaplicables en ciertos escenarios.
+
+### 30.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-MILE01 | Auditar indicadores de progreso, componentes, grafo y persistencia V9/QBV2 | Inventario de archivos y SHA | No asumir que ya existe |
+| PLAN-MILE02 | Definir taxonomía de hitos adaptativos y estados | Matriz C01–C10 × hito × condición de activación/cierre | Aprobación UX/editorial |
+| PLAN-MILE03 | Especificar sincronización con evidencia y turnos 24+5 sin porcentaje falso | Contrato de eventos y transiciones | No confundir progreso con scoring |
+| PLAN-MILE04 | Diseñar aparición de ramas, hitos no aplicables y cambios de ruta | Tabla de transiciones sin retroceso engañoso | Coherencia con grafo adaptativo |
+| PLAN-MILE05 | Diseñar etapa de aclaración excepcional con consentimiento | Flujos de umbral 24, extensión hasta 5 y cierre parcial | D-V9-017–020 |
+| PLAN-MILE06 | Diseñar microcopy contextual y movimiento es/en | Guía de mensajes, animación, reduced motion y accesibilidad | D-V9-014/021 |
+| PLAN-MILE07 | Especificar reanudación, edición, idempotencia y errores | Máquina de estados conceptual y casos límite | Sin duplicar hitos |
+| PLAN-MILE08 | Preparar pruebas focalizadas futuras de progreso honesto | Matriz eventos→hitos→texto→contador | No ejecutar en PLAN_ONLY |
+
+### 30.4. Criterios de aceptación futuros
+1. Una respuesta válida genera feedback sutil, pero no completa un hito sin evidencia suficiente.
+2. El avance por hitos no se expresa como porcentaje exacto no sustentado.
+3. La aparición de una rama nueva no borra hitos realmente cubiertos.
+4. Un hito no aplicable no penaliza ni simula trabajo pendiente.
+5. Una dimensión sin nivel puede coexistir con hitos de entrevista ya recorridos, con distinción clara.
+6. Cambio de idioma conserva hitos y contador; etiquetas localizadas.
+7. Reanudación conserva estados sin repetir efectos engañosos.
+8. Editar una respuesta reevalúa pertinencia de hitos sin duplicar interacciones.
+9. Al llegar a 24, la extensión solo aparece por evidencia crítica y consentimiento.
+10. Hasta cinco aclaraciones excepcionales no convierten progreso previo en retroceso.
+11. Mensajes «ya casi» y «suficiente información» solo aparecen cuando son verdaderos.
+12. Movimiento reducido, teclado y lectores de pantalla conservan la información de progreso.
+13. Negocios C01–C10 tienen hitos pertinentes, no una secuencia universal impuesta.
+14. La animación y el texto no afectan el motor de evaluación ni las prioridades comerciales.
+
+### 30.5. Próxima decisión D-V9-023 — estilo de acompañamiento
+Opciones pendientes: **A** sobrio/profesional con mensajes discretos; **B** cercano y motivador con microcopy contextual variado y animaciones sutiles (recomendado); **C** expresivo/lúdico con celebraciones frecuentes y mayor movimiento. No aprobada ninguna; la elección no debe comprometer honestidad del progreso, accesibilidad ni fluidez.
+
+### 30.6. Estado
+D-V9-001 a D-V9-022: APPROVED en sus alcances; D-V9-023 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.22.0 / 2026-10-29:** D-V9-022 aprobada; progreso adaptativo por hitos, estados y límites de representación, ocho tareas PLAN-MILE01–08, catorce criterios de aceptación y siguiente decisión. Solo documentación.
