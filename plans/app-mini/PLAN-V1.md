@@ -1778,3 +1778,40 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 **Consecuencia:** el PR documental añade tres Markdown en `plans/app-mini/`; **no está demostrado** que los tres sean canónicos autorizados ni que quepan en el límite. La política exige consolidación en un documento existente o autorización expresa por nuevo canónico. **GOV-01 sigue OPEN para aprobación**, aunque GAP-14 ya tiene inventario inicial verificable.
 
 **Ruta recomendada sin tocar otros agentes:** (1) comparar tabla de canónicos de GOVERNANCE con árbol actual; (2) seleccionar un solo documento canónico para plan maestro y absorber contrato y plan económico como secciones o anexos, preservando enlaces; (3) actualizar índices y rutas en el mismo PR; (4) comprobar diffs y referencias; (5) solicitar aprobación si se necesita excepción. No borrar los tres archivos antes de decidir cómo preservar el historial y las referencias.
+
+
+## 63. Cierre editorial F0 — inventario canónico y decisiones sin ambigüedad (2026-10-29)
+
+**Inspección verificada:** `vecidya-platform/docs/GOVERNANCE.md` en main enumera **16** documentos canónicos concretos, con tope de **20** y autorización previa para nuevos documentos. El árbol completo main tiene 102 Markdown de cualquier tipo, no 102 canónicos. Los tres Markdown del PR #184 elevarían nominalmente a **19** si todos se aprobaran como canónicos; estar por debajo del límite **no equivale a tener autorización**. La regla prioritaria es consolidar cuando un documento existente pueda alojar el contenido.
+
+### 63.1 Resolución recomendada de GOV-01
+
+- **Opción preferida:** integrar el plan de producto y ejecución en `vecidya-platform/docs/ROADMAP.md` (solo trabajo futuro) y la parte comercial en `vecidya-platform/docs/business/VECIDYA_PRODUCT_CATALOG.md`; derivar arquitectura técnica en `ARCHITECTURE.md` y modelo en `DATABASE.md`. Mantener el histórico detallado del PR como referencia no canónica o archivo de trabajo temporal hasta que las referencias y el contenido único se hayan preservado. Esta opción requiere partición editorial para evitar que ROADMAP mezcle decisiones ya realizadas con trabajo futuro.
+- **Alternativa:** solicitar autorización expresa para un único documento canónico de plan maestro y consolidar allí los otros dos Markdown, actualizando GOVERNANCE e índices. No aprobar tres documentos independientes por silencio.
+- **Bloqueo real:** elegir opción, reconciliar contenido sin pérdida y revisar diff. **GAP-14 permanece SPECIFIED**.
+
+### 63.2 Correcciones de contradicciones aplicadas
+
+En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora diferencia niveles **solo visuales**; F4 deja explícito que no hay GC físico automático inicial. Las decisiones DEC-17/18/15 prevalecen. Estas cuatro sustituciones son **DOC** y no implican cambios de interfaz, código o tests.
+
+### 63.3 Matriz de decisiones finales
+
+| ID | Situación | Qué se necesita para cerrar |
+| --- | --- | --- |
+| CAT-01 | Propuesta, no aprobada | Acceso Base a las cinco familias desde Cuadra |
+| VIS-01 | Pendiente de evidencia | Nueve capturas reales y aprobación de dirección visual |
+| REL-01 | Propuesta, no aprobada | Definir si B6 pagos automáticos es requisito del primer release |
+| COM-01 | Pendiente de evidencia | Tarifas GHL verificadas y aprobadas por región y vigencia |
+| PAY-01 | Sin decisión | PSP, jurisdicción fiscal, liquidación y disputas |
+| BILL-02 | Sin decisión | Prorrateo, impago, reembolsos y transferencias |
+| GOV-01 | Sin decisión | Consolidación canónica o autorización de un nuevo documento |
+| OPS-01 | Sin responsables confirmados | Product owner, diseño, seguridad, finanzas y release |
+
+**Regla de avance:** no bloquear V2-E, F2A y F2B por PAY-01/BILL-02 si no activan cobros; sí bloquear publicación de tarifas o pagos reales. No bloquear las pruebas del prototipo por CAT-01; sí bloquear el cambio de permisos de plantillas hasta aprobación.
+
+### 63.4 Estado honesto del cierre F0
+
+- **Definido documentalmente:** fronteras Vecidya/GHL, secuencia, contratos técnicos, aceptación, auditoría de 18 huecos y correcciones de F1/F4/F6/F7.
+- **Pendiente para F0 cerrado:** gobernanza GOV-01 y revisión de consistencia final de documentos/PR.
+- **Pendiente para entregas posteriores:** ejecución visual VIS-01, decisiones comerciales, integración V2 y pruebas reales.
+- **No ejecutado en este checkpoint:** pruebas de navegador, typecheck/build, merge, deploy y cobros. Solo cambios documentales en PR #184.
