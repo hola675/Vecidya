@@ -60,3 +60,16 @@ En `qa03b/bank.ts` (blob `b4772d73e1d8b5044ba2011088db978c364097f0`) se identifi
 
 ### Changelog
 - 1.3.0 (2026-10-29): referencia canónica al banco unificado candidato V9 y separación explícita respecto a V8.
+
+## TAX-G2: composición canónica V9 y decisiones de identidad — v1.4.0
+
+Fuentes inspeccionadas: `qa03b/specialty-candidate-bank.ts` blob `0bc44cddc1dc2f03230bd5ece30847fce984a12b` y `qa03b/specialty-branches-wave1.ts` blob `ec605156f2e974d7b463f44ae76475f8ede1f0e9`.
+
+El ensamblaje de `QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2` es: (1) `QA03B_EDITORIAL_BASE_QUESTIONS_V9`, derivada de `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` con `applyQA03BEditorialCopy`; (2) sustitución de `q2_sector` por candidato v4; (3) ocho selectores `q2_niche_*` basados en grupos explícitos del registro taxonómico; (4) piloto de recuperación; (5) ola 2 de recuperación; (6) sustitución condicional de genéricas mediante gates negativos; (7) tres preguntas especializadas adicionales. El código contiene aserciones de 77 entradas y 77 IDs únicos, pero aquí no se ejecutan.
+
+**Contrato editorial:** preservar `questionId` y versión cuando solo cambie el texto sin cambiar significado; requerir nueva versión y plan de compatibilidad cuando cambien opciones, interpretación o evidencia; no contar especialización como pregunta extra en el recorrido si reemplaza la genérica; no confundir número de preguntas del catálogo con longitud de entrevista. El sector v4 y el seguimiento de carrito v2 ya muestran versiones diferenciadas.
+
+**Puertas pendientes:** fichas completas de los 77 IDs, trazas de escenarios C01–C10, suficiencia por dimensión, traducciones EN revisadas y decisión humana sobre nuevas preguntas. La existencia del candidato no implica activación pública. La rotación de hasta cuatro variantes editoriales por pregunta se diseña después del cierre del banco y sin alterar semántica.
+
+### Changelog
+- 1.4.0 (2026-10-29): composición del banco V9 fijada como contrato de auditoría e identidad.
