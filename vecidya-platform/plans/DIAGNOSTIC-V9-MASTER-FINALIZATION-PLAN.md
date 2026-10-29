@@ -1467,3 +1467,74 @@ D-V9-001 a D-V9-024 APPROVED en sus alcances respectivos. D-V9-025 PENDING. **PL
 
 ## Changelog adicional
 - **1.24.0 / 2026-10-29:** D-V9-024 aprobada; patrón híbrido de preguntas, agrupación semántica sin eludir 24+5, ocho tareas PLAN-VIEW01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 33. Decisión D-V9-025 — avance contextual según tipo de respuesta (aprobada 2026-10-29)
+**Aprobación expresa:** «avance contextual, automático solo en selección única inequívoca y reversible, y manual en respuestas múltiples, texto libre, datos sensibles o validaciones complejas». Estado APPROVED; exclusivamente PLAN_ONLY.
+
+### 33.1. Contrato de avance
+1. **Avance automático** únicamente después de registrar correctamente una respuesta de **selección única, inequívoca y reversible**, cuando la opción no exija confirmación adicional ni active una consecuencia sensible.
+2. **Avance manual mediante «Continuar»** para selección múltiple, texto libre, información sensible, validación compleja, respuestas compuestas y cualquier caso de ambigüedad.
+3. El avance automático no puede ocultar validaciones pendientes, errores, preguntas complementarias obligatorias ni confirmaciones de consentimiento.
+4. La selección debe quedar registrada antes de navegar; ante error de persistencia, mostrar estado recuperable sin duplicar respuestas ni interacciones.
+5. Mantener navegación hacia atrás y edición de respuestas, con reevaluación de pertinencia de ramas posteriores; no consumir un turno nuevo al reabrir una pregunta ya contabilizada.
+6. Una transición, animación, mensaje de acompañamiento o pulsación de «Continuar» **no es una nueva interacción** según D-V9-020; la unidad sigue siendo el turno de pregunta o aclaración presentado.
+7. Respetar presupuesto ordinario de 24 turnos y extensión excepcional de hasta 5, solo con consentimiento explícito previo a la primera pregunta adicional.
+8. Evitar avance sorpresivo para personas que usan teclado, lector de pantalla o tecnologías de asistencia; diseñar foco y anuncios accesibles. Si el avance automático no es seguro o predecible en un contexto, usar avance manual.
+9. El sistema debe permitir lectura suficiente de la selección y del feedback sin retrasos artificiales; los tiempos concretos y preferencias de interacción quedan pendientes de diseño/validación.
+10. Las reglas son independientes de idioma, sector y escenario C01–C10; no alteran selección adaptativa, evidencia, madurez, ranking ni vinculación con GHL.
+11. Cambiar idioma, pausar, reanudar o recuperar un fallo no debe disparar avance automático duplicado.
+12. El estilo de movimiento y mensajes debe obedecer D-V9-021–023, con `prefers-reduced-motion` y estados honestos.
+
+### 33.2. Matriz de comportamiento candidata
+| Tipo de entrada | Avance por defecto | Condición o restricción |
+| --- | --- | --- |
+| Opción única simple | Automático | Solo si inequívoca, persistida y reversible |
+| Opción única con consecuencias sensibles | Manual | Confirmación explícita |
+| Selección múltiple | Manual | Permitir seleccionar/deseleccionar antes de continuar |
+| Texto libre | Manual | Validación y revisión antes de continuar |
+| Datos sensibles | Manual | Minimización, información contextual y control |
+| Campos breves inseparables | Manual salvo justificación editorial específica | No convertir decisiones independientes en una sola |
+| «No sé» / «Prefiero omitir» | Según tipo de control y seguridad | Cuenta turno; no culpabilizar |
+| Consentimiento de extensión | Acción afirmativa separada | No es turno contable ni se autoacepta |
+| Error de validación o red | No avanzar | Mensaje recuperable e idempotencia |
+La matriz requiere especificación UX detallada; no describe comportamiento ya implementado.
+
+### 33.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-AUTO01 | Auditar controles, navegación, validación y persistencia actuales V9/QBV2 | Inventario de archivos, estados y SHA | No asumir implementación |
+| PLAN-AUTO02 | Clasificar preguntas certificadas por tipo y riesgo de avance | Matriz pregunta×entrada×modo de avance | Revisión editorial/UX |
+| PLAN-AUTO03 | Especificar secuencia selección→validación→persistencia→feedback→navegación | Contrato de estados, fallos e idempotencia | Sin pérdida ni duplicación |
+| PLAN-AUTO04 | Diseñar retroceso, edición y recomputación de ramas posteriores | Diagramas de navegación y conservación del contador | D-V9-020 |
+| PLAN-AUTO05 | Definir accesibilidad de avance automático/manual | Reglas de foco, teclado, lector, movimiento reducido | Revisión accesibilidad |
+| PLAN-AUTO06 | Integrar hitos, microcopy y microanimaciones sin acoplamiento al motor | Contrato de eventos de presentación | D-V9-021–023 |
+| PLAN-AUTO07 | Preparar pruebas focalizadas futuras para cada tipo de entrada | Matriz C01–C10, es/en, errores y 24+5 | No ejecutar en PLAN_ONLY |
+| PLAN-AUTO08 | Documentar preferencia opcional de control de avance y sus implicaciones | Alternativas UX con riesgos y decisión pendiente | No presumir aprobación |
+
+### 33.4. Criterios de aceptación futuros
+1. Selección única inequívoca, reversible y persistida puede avanzar automáticamente.
+2. Selección múltiple no avanza hasta pulsar «Continuar».
+3. Texto libre y campos sensibles requieren confirmación manual.
+4. Validación fallida o red caída impide avanzar sin perder respuesta.
+5. Una opción ambigua no dispara autoavance.
+6. Navegar atrás y editar conserva turno ya contado.
+7. Cambiar una respuesta puede reabrir ramas sin duplicar contador.
+8. Animación o navegación no consume interacción adicional.
+9. El consentimiento excepcional no se acepta por autoavance.
+10. La pregunta 25 solo aparece tras consentimiento afirmativo.
+11. No se supera el máximo global de 29 turnos.
+12. Teclado y lector de pantalla mantienen control y foco predecible.
+13. Movimiento reducido no elimina información ni controles.
+14. Reanudación y cambio de idioma no disparan navegación accidental.
+15. Los hitos reflejan cobertura real, no velocidad de respuesta.
+16. La política de avance no modifica evaluación ni resultados.
+
+### 33.5. Próxima decisión D-V9-026 — control del usuario sobre el autoavance
+Opciones pendientes: **A** autoavance contextual obligatorio sin ajuste; **B** autoavance contextual por defecto con opción visible «Prefiero avanzar manualmente» que se conserva durante la entrevista (recomendado); **C** preguntar antes de iniciar si prefiere automático o manual. Ninguna opción aprobada. La elección debe preservar la política D-V9-025 y accesibilidad.
+
+### 33.6. Estado
+D-V9-001 a D-V9-025 APPROVED en sus alcances respectivos; D-V9-026 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.25.0 / 2026-10-29:** D-V9-025 aprobada; reglas de avance contextual, matriz de tipos de entrada, ocho tareas PLAN-AUTO01–08, dieciséis criterios de aceptación y siguiente decisión. Solo documentación.
