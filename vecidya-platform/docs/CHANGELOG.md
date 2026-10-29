@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — índice compacto móvil (Fase 7; local)
+
+- El índice de secciones del artículo se vuelve un control desplegable nativo `Índice · NN%` en pantallas de hasta 820 px; escritorio conserva su navegación lateral. El porcentaje comparte el estado de progreso y el panel se cierra al seleccionar una sección. La regresión E2E cubre cuatro viewports, teclado, foco, destinos de ancla, actualización de porcentaje, typecheck y build. No es certificación con lector de pantalla/zoom ni auditoría independiente. Decisión legal/operativa de retención permanece pendiente; no se inventó TTL ni se habilitó purga. Sin deploy ni D1 remota.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — paquete local de revisión humana y auditoría
 
 - Define perfiles hipotéticos de cobertura y roles humanos con criterios y evidencia separada. Los perfiles no representan entrevistas ni personas reales; la aprobación posterior del usuario se registra separadamente y con alcance explícito.

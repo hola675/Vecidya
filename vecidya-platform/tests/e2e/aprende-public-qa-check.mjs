@@ -199,7 +199,7 @@ try {
       check("Búsqueda sin tildes, vacío, recuperación, filtros de categoría/acceso e itinerarios");
     }
 
-    if (width === 390 || width === 1366) {
+    {
       const licensedSample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "licensed");
       assert(licensedSample, "Debe existir al menos una guía licenciada para verificar su preview.");
       await activePage.goto(new URL("/aprende/" + licensedSample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
@@ -216,8 +216,40 @@ try {
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
-      assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
-      const toc = await activePage.locator(".learn-article-toc a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      const isMobileIndex = width <= 820;
+      const mobileDetails = activePage.locator(".learn-article-toc-mobile details");
+      const mobileSummary = mobileDetails.locator("summary");
+      assert.equal(await activePage.locator(".learn-article-toc-mobile").isVisible(), isMobileIndex, width + "px visibilidad del índice compacto.");
+      assert.equal(await activePage.locator(".learn-article-rail .learn-article-toc").isVisible(), !isMobileIndex, width + "px visibilidad del índice de escritorio.");
+      if (isMobileIndex) {
+        assert.match((await mobileSummary.textContent())?.trim() ?? "", /^Índice · \d+%$/, "El control compacto muestra el progreso.");
+        await mobileSummary.focus();
+        await mobileSummary.press("Enter");
+        assert(await mobileDetails.getAttribute("open") !== null, "El índice compacto se puede abrir con teclado.");
+        assert.equal(await mobileDetails.locator("nav[aria-label='Índice del artículo'] a").count(), sample.sections.length);
+        assert(await mobileSummary.evaluate((node) => document.activeElement === node), "El foco permanece en el disclosure al abrir el panel.");
+        await mobileSummary.press("Tab");
+        assert(await mobileDetails.locator("nav a").first().evaluate((node) => document.activeElement === node), "El foco avanza al primer enlace del índice abierto.");
+        await mobileSummary.focus();
+        await mobileSummary.press("Enter");
+        assert.equal(await mobileDetails.getAttribute("open"), null, "El índice compacto se puede cerrar con teclado.");
+        await mobileSummary.press("Enter");
+        assert(await mobileDetails.getAttribute("open") !== null, "El índice compacto vuelve a abrirse antes de navegar.");
+        const firstSectionHref = await mobileDetails.locator("nav a").first().getAttribute("href");
+        assert(firstSectionHref?.startsWith("#"));
+        const firstSectionId = firstSectionHref.slice(1);
+        await mobileDetails.locator("nav a").first().evaluate((link) => link.click());
+        await activePage.waitForFunction((sectionId) => window.location.hash === `#${sectionId}`, firstSectionId);
+        assert.equal(await mobileDetails.getAttribute("open"), null, "Elegir una sección cierra el índice compacto.");
+        const destination = await activePage.locator(`[id="${firstSectionId}"]`).boundingBox();
+        assert(destination && destination.y >= 60, "El destino de ancla no queda detrás del índice compacto cerrado.");
+        const progressButton = activePage.locator(".learn-section-progress button.button--secondary").first();
+        await progressButton.click();
+        assert.equal((await mobileSummary.textContent())?.trim(), `Índice · ${Math.round(100 / sample.sections.length)}%`, "El porcentaje del índice refleja el progreso recién marcado.");
+      } else {
+        assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
+      }
+      const toc = await activePage.locator(isMobileIndex ? ".learn-article-toc-mobile__nav a" : ".learn-article-toc a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
       for (const href of toc) assert.equal(await activePage.locator(`[id="${href.slice(1)}"]`).count(), 1, "TOC con ancla rota: " + href);
       const image = activePage.locator(".learn-article-image");
       assert((await image.getAttribute("alt"))?.trim(), "Falta alt descriptivo.");
@@ -229,8 +261,11 @@ try {
       for (const item of await sourceLinks.evaluateAll((nodes) => nodes.map((node) => ({ href: node.href, target: node.target, rel: node.rel })))) {
         assert(item.href.startsWith("https://") && item.target === "_blank" && item.rel.includes("noopener"), "Fuente insegura: " + item.href);
       }
-      await activePage.locator(".learn-article-toc a").first().focus();
-      assert(await activePage.locator(".learn-article-toc a").first().evaluate((node) => document.activeElement === node), "El índice no es accesible por teclado.");
+      if (!isMobileIndex) {
+        const desktopFirstTocLink = activePage.locator(".learn-article-toc a").first();
+        await desktopFirstTocLink.focus();
+        assert(await desktopFirstTocLink.evaluate((node) => document.activeElement === node), "El índice no es accesible por teclado.");
+      }
       const reviewHeading = activePage.getByRole("heading", { name: "Repaso opcional: comprueba lo aprendido" });
       assert(await reviewHeading.isVisible(), "El repaso se presenta como actividad opcional.");
       const reviewSummary = activePage.locator(".learn-article-review summary").first();
