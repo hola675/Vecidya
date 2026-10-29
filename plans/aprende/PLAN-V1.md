@@ -426,3 +426,17 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 - [ ] Registrar pruebas focalizadas existentes y estrategia de rollout sin tocar producción.
 
 **Estado:** Fase 0 EN PROGRESO (inspección documental de código); implementación F1–F7 NO INICIADA.
+
+
+## 19. Decisión definitiva: altas exclusivamente por invitación
+
+**APROBADO por el usuario.** Vecidya no permite registro público de cuentas. Aprende no crea cuentas, organizaciones, licencias ni permisos por sí mismo. Toda cuenta autenticada se origina en una invitación válida gestionada por el flujo existente de Better Auth y Vecidya.
+
+- Visitantes anónimos: acceso completo a las seis guías gratuitas; progreso y favoritos únicamente locales cuando el navegador lo permita.
+- Usuarios con cuenta creada por invitación: progreso personal sincronizable; no desbloquean las 42 guías por el mero registro.
+- Propietarios de organización con licencia activa o miembros con permiso explícito de Aprende y licencia activa de esa misma organización: acceso a las 48 guías.
+- Prohibido introducir botón de registro público, alta personal independiente, excepción al control de invitaciones o checkout automático.
+- Si un visitante anónimo desea sincronización, explicar que necesita una invitación de Vecidya; no prometer alta inmediata.
+- En la aceptación de invitación, fusionar progreso anónimo con consentimiento si se entra a una cuenta existente; no otorgar licencia ni permiso Aprende implícitamente.
+
+**Ajuste al alcance de Fase 0:** se elimina cualquier propuesta de registro personal público. Verificar la conservación del guard de invitación de `server/auth.server.ts` mediante prueba focalizada. No hay implementación autorizada.
