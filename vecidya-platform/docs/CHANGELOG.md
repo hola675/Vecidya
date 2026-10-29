@@ -1,8 +1,13 @@
 # Changelog
 
-## 2026-10-29 — APRENDE-PLAN-V1 — Fase 6 (PR #193)
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 7 (certificación local parcial)
 
-- `/app/aprende` comparte el progreso ya guardado por guía entre los nueve itinerarios y sugiere una siguiente guía con reglas editoriales estables basadas en actividad reciente.
+- PR #193 integrada en `main@3fdc17cc`. Worker/D1 `0000–0033`, FK, autorización/revocación, bundle privacy, unitarias focales 81/81, QA 48 guías/9 rutas/4 viewports y consulta manual de licencias, typecheck, build, Drizzle y los workflows del PR pasan. Se actualizó la expectativa de CTA obsoleta en el E2E de licencias. Sin deploy/D1 remota.
+- No es lanzamiento: faltan aceptación editorial 6/42, aprobación legal/operativa de retención/borrado, revisión independiente de seguridad, lector de pantalla y zoom 200 %. AccessLint no pudo arrancar en Windows.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 6 (PR #193 integrada; sin publicar)
+
+- `/app/aprende` comparte el progreso ya guardado por guía entre los nueve itinerarios y sugiere una siguiente guía con reglas editoriales estables basadas en actividad reciente. PR #193 quedó integrada en `main@3fdc17cc`.
 - Añade restauración de guías ocultas con avance intacto y control de versión; el repaso del lector es opcional. Sin migración nueva, deploy ni D1 remota. Unitarias, Worker/D1 local, build/typecheck y QA responsive/teclado pasan.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — Fase 5 integrada (PR #190)
