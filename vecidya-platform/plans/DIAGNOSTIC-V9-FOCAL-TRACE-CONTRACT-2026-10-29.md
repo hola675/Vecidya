@@ -216,3 +216,48 @@ El plan está listo para decidir **qué comprobar**, pero todavía **no** para d
 ### Changelog
 
 - v1.7.0: dictámenes provisionales EXISTING/ABSTAIN/PROPOSE para C03/C05/C08 y puertas explícitas de resolución.
+
+
+## Puerta única de autorización — v1.8.0
+
+**Objetivo:** dejar de ampliar la planificación circular y preparar una ejecución focal que pueda producir decisiones finales verificables. Esta sección **no autoriza ni ejecuta** trabajo de implementación.
+
+### Alcance exacto propuesto para una autorización futura
+
+- Leer el banco compuesto `QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2` y reutilizar `buildCandidateEditorialMatrixV9`; prohibido reconstruir preguntas V8 o crear una matriz paralela.
+- Instrumentar o reutilizar el selector real y `evaluateRuleV2Trace` para observar **solo C03, C05, C07 y C08**. Capturar respuestas, contexto resuelto, elegibilidad, selección, exclusiones, evidencia V3, abstenciones y presupuesto.
+- Ejecutar **tests focalizados de esos casos y funciones afectadas**, más comprobaciones estáticas mínimas necesarias. No lanzar suite general, CI, despliegue, merge ni tocar módulos ajenos sin autorización independiente.
+- Conservar las 77 identidades del candidato mientras no exista decisión editorial aprobada. No activar el candidato en producción ni modificar el flujo público por esta autorización.
+- Registrar evidencia por caso con estado `PASS`, `FAIL` o `ND`; ninguna prueba aislada equivale a certificación integral de V9.
+
+### Criterios de salida por caso
+
+| Caso | Aserción focal imprescindible | Si no hay cobertura |
+|---|---|---|
+| C03 | La pausa no activa preguntas exclusivas de operación ni provoca puntuación débil por sí sola | `ABSTAIN` y propuesta de comunicación durante pausa |
+| C05 | Donación y membresía quedan excluidas sin modelo correspondiente; participación no se infiere de ventas | `ABSTAIN` y propuesta de participación/consulta |
+| C07 | `no_authorized_contact` se trata como `not_applicable`, sin penalización de seguimiento | Corregir interpretación solo con cambio autorizado |
+| C08 | Ausencia de presencia digital no se traduce en debilidad de claridad de oferta; verificar alternativa válida | `ABSTAIN` y propuesta de claridad independiente de canal |
+
+### Decisiones que la autorización focal NO incluye
+
+1. Añadir las tres preguntas propuestas, cambiar versiones, opciones o mapeos V3.
+2. Activar el banco V9 candidato en la sesión pública, Worker, scorer o producción.
+3. Certificar C01–C10, aprobar la matriz editorial completa, generar cuatro variantes ES/EN o cerrar PR #162.
+4. Ejecutar pruebas globales, CI, despliegues o refactorizaciones no relacionadas.
+
+### Secuencia de cierre posterior
+
+1. **Autorización explícita** de ejecución focal, con alcance anterior.
+2. Trazas reales C03/C05/C07/C08 y evidencia reproducible asociada al SHA probado.
+3. Dictamen `EXISTING/ABSTAIN/PROPOSE` definitivo por escenario; aprobar únicamente las preguntas nuevas que se demuestren necesarias.
+4. Cierre editorial de las 77 identidades y escenarios restantes C01/C02/C04/C06/C09/C10, con pruebas focales por lote.
+5. Revisión final de contrato de sesión/replay, privacidad, accesibilidad, ES/EN y activación separada; después, eventual decisión sobre PR y despliegue.
+
+### Estado de la puerta
+
+**READY_FOR_AUTHORIZATION (plan documental)**. **NOT_EXECUTED (pruebas)**. **NOT_CERTIFIED (producto)**. Mantener PLAN_ONLY hasta instrucción expresa.
+
+### Changelog
+
+- v1.8.0: puerta única de autorización, límites de pruebas focales y secuencia de cierre verificable.
