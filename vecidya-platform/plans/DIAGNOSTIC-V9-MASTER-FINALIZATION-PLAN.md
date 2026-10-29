@@ -281,3 +281,55 @@ D-V9-001 DIGITAL: APPROVED. D-V9-002 cobertura completa: APPROVED. D-V9-003 mode
 
 ## Changelog adicional
 - **1.4.0 / 2026-10-29:** modelo híbrido aprobado; contrato cualitativo/numérico, tareas PLAN-R01–R08, ocho escenarios de aceptación y próxima decisión D-V9-004. Documentación exclusivamente.
+
+
+## 12. Decisión de producto D-V9-004 — entrevista adaptativa, objetivo de 24 interacciones (aprobada 2026-10-29)
+**Aprobación expresa:** «entrevista adaptativa, objetivo hasta 24 interacciones y ampliación solo por evidencia crítica justificada». Estado APPROVED para producto, no para código.
+
+### 12.1. Comportamiento exigido al agente futuro
+- La selección prioriza pertinencia contextual, información nueva y cobertura de evidencia para dimensiones aplicables; no se administra el banco completo a cada usuario.
+- **24 interacciones es objetivo orientativo**, no máximo rígido ni obligación de llegar a 24. Puede terminar antes si el informe ya es útil y sustentado.
+- Superar el objetivo exige una causa documentada de **evidencia crítica faltante**, no conveniencia comercial ni búsqueda de una nota numérica.
+- Las respuestas reutilizables pueden informar más de una regla, pero no se contarán como evidencias independientes duplicadas.
+- Preguntas de contexto no aportan automáticamente puntuación. `unknown`, omisiones y no aplicabilidad se conservan como estados diferenciados.
+- El usuario podrá revisar respuestas y el planificador recalculará elegibilidad sin conservar evidencia inválida de otro sector, nicho o etapa.
+- Si la información no crítica es insuficiente, mostrar incertidumbre y recomendaciones prudentes; no alargar artificialmente el recorrido.
+
+### 12.2. Definiciones pendientes, sin asumirlas
+- **Unidad de interacción:** decidir si cuenta pregunta presentada, pregunta respondida, confirmación de contradicción, selección múltiple, navegación o revisión de respuesta.
+- **Criterio de evidencia crítica:** definición observable por dimensión/escenario; responsable y regla de precedencia.
+- **Exceso permitido:** número máximo de interacciones adicionales, si existirá, y política de salida del usuario.
+- **Presupuesto dinámico:** reservar preguntas para contradicciones, especialidades y cambio de contexto; validar el coste con casos C01–C10.
+- **Progreso:** mostrar avance honesto cuando la longitud final es variable, sin porcentajes ficticios.
+- **Finalización anticipada:** especificar condiciones de suficiencia cualitativa, opción de abandonar y recuperación.
+- **Telemetría:** medir preguntas realizadas, tiempo, abandono, redundancia y cobertura sin recolectar datos innecesarios.
+
+### 12.3. Tareas documentales de especificación
+| ID | Instrucción al planificador | Entregable | Gate |
+| --- | --- | --- | --- |
+| PLAN-Q01 | Inventariar el comportamiento real del selector/planner candidato y sus presupuestos | Matriz código→regla actual→diferencia V9 | Ningún límite supuesto |
+| PLAN-Q02 | Definir la unidad de interacción y ejemplos límite | Contrato de conteo versionado | Casos de navegación y multi-opción coherentes |
+| PLAN-Q03 | Definir prioridad de preguntas y eliminación de redundancias | Algoritmo escrito y reglas de desempate | Determinismo y no duplicación |
+| PLAN-Q04 | Definir evidencia crítica, condición de ampliación y salida | Tabla dimensión × escenario × condición | Toda ampliación explicable |
+| PLAN-Q05 | Diseñar tratamiento de incertidumbre y terminación temprana | Árbol de decisiones y ejemplos | Informe útil sin inventar certeza |
+| PLAN-Q06 | Diseñar progreso, revisión y recuperación | Secuencias UX y estados | Progreso no engañoso |
+| PLAN-Q07 | Preparar matriz futura de pruebas focalizadas C01–C10 | Casos entrada→preguntas esperadas→salida | Cobertura transversal, sin ejecutar ahora |
+
+### 12.4. Condiciones futuras de aceptación
+1. C01 activo: no repetir preguntas equivalentes; terminar al reunir evidencia útil.
+2. C02 preparación: no exigir ventas o recurrencia para concluir.
+3. C03 pausa: no convertir datos históricos en actividad actual.
+4. C05 sin venta directa: no forzar comprador ni conversión comercial.
+5. C08 oferta no publicada: conservar distinción semántica de no publicado/no aplicable.
+6. C10 cambio de sector/nicho: descartar evidencia incompatible y recalcular recorrido.
+7. Al superar 24, registrar dimensión, evidencia crítica faltante, pregunta que la obtiene y motivo de no finalizar con incertidumbre.
+8. Si la pregunta adicional no cambia una conclusión ni cubre evidencia crítica, no justificar ampliación por ese motivo.
+
+### 12.5. Próxima decisión D-V9-005 — acceso al resultado y continuidad
+El responsable debe aprobar qué recibe quien finaliza anónimamente y qué requiere identificación voluntaria. Opciones para consulta: (A) informe útil completo anónimo y cuenta solo para guardar/historial; (B) resumen anónimo e informe detallado al identificarse; (C) informe completo anónimo con opciones de guardar, descargar y vincular posteriormente. No asumir almacenamiento, exportación ni enlaces públicos hasta inspeccionar contratos de privacidad y persistencia.
+
+### 12.6. Estado
+D-V9-001 DIGITAL APPROVED; D-V9-002 cobertura completa APPROVED; D-V9-003 modelo híbrido APPROVED; D-V9-004 entrevista adaptativa objetivo 24 APPROVED; D-V9-005 PENDING. **PLAN_ONLY** permanece vigente.
+
+## Changelog adicional
+- **1.5.0 / 2026-10-29:** D-V9-004 aprobada; reglas de entrevista, decisiones aún abiertas, tareas PLAN-Q01–Q07, criterios de aceptación y siguiente consulta. Solo documentación.
