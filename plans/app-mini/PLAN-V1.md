@@ -1043,6 +1043,36 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado:** prueba de diferenciación documentada como propuesta. No se han generado mockups finales, ni implementado variantes, ni ejecutado tests/deploy.
 
+
+## 41. F6 — Contrato del motor de plantillas y variantes tras DEC-18 (CODE + DISEÑO, 2026-10-29)
+
+**Inspección CODE de la rama documental:** `app/features/miniweb/registry.ts` y `app/components/miniweb/templates/default.tsx`. El registro actual define cinco claves (solo `vecidya-default` disponible), `layoutVariants: ["standard"]`, un único `MiniWebConfiguration.version=1`, `settings:null`, máximo 4096 bytes y módulos únicos por tipo. El renderer `DefaultMiniWebTemplate` usa un mapa de renderers por tipo, `id=miniweb-section-${type}` y `key=type`. Estos hechos impiden galerías repetibles y variantes visuales genuinas sin migración; **no se han modificado esos archivos**.
+
+### Separación obligatoria del contrato V2
+- `family`: categoría de búsqueda del negocio (`services`, `catalog`, `gastronomy`, `professional`, y otras solo tras catálogo aprobado), **no** permiso comercial.
+- `templateKey` y `templateVersion`: identifican una composición visual y su renderer compatible, nunca el conjunto de módulos autorizados.
+- `variantKey`: identifica composición concreta dentro de la plantilla; el registro define `minimumTemplateTier: cuadra | barrio | ciudad` por plantilla o variante, sin usar `module.type` como restricción de tier.
+- `module.instanceId`: identidad estable de instancia; `type`, `enabled`, `sortOrder`, `layoutVariant`, `settings` validados por esquema y disponibilidad técnica. Hero único y primero; módulos repetibles según definición de módulo, no por licencia.
+- `supportedModules` puede describir **compatibilidad técnica del renderer**, pero una plantilla premium no puede reservar una funcionalidad exclusiva: cada función habilitada del constructor debe tener una presentación utilizable en Cuadra.
+- **Derechos visuales:** resolver `effectiveMiniWebTemplateTier(billingAccountId)` según DEC-10; comparar nivel mínimo de plantilla/variante al **guardar cambios de diseño** y al **publicar**. Conservar snapshot histórico si el nivel baja (DEC-07).
+- **Disponibilidad:** `planned` no es publicable aunque el titular tenga Ciudad; el editor solo presenta como disponibles variantes con renderer y tests reales.
+
+### Riesgos de implementación detectados
+1. El renderer actual fija IDs y keys por **tipo**; para galerías repetibles migrar a `instanceId`, garantizando anclas HTML únicas y accesibles.
+2. El validador actual rechaza tipos repetidos y propiedades nuevas; introducir **lector dual V1/V2** y validador V2 separado antes de escribir V2.
+3. `settings:null` y `standard` no soportan composiciones Pro/Premium: definir settings tipados por módulo y tokens de layout, sin HTML/CSS/JS arbitrario.
+4. No permitir que `supportedModules` del registro o una UI premium conviertan inadvertidamente productos, FAQ, horarios o galerías en funciones exclusivas de Barrio/Ciudad.
+5. La plantilla Esencial actual debe continuar sirviendo snapshots legacy sin modificación destructiva; migración de borradores explícita, no automática en lectura.
+
+### Contrato de prueba comparativa
+- Mismo negocio ficticio y **mismos datos** en Cuadra/Barrio/Ciudad (§40).
+- Las tres composiciones incluyen los mismos módulos habilitados, con IDs estables y presentación accesible.
+- El cambio de plantilla no borra datos; se valida el tier mínimo por titular, no por organización individual ni por módulo.
+- Pruebas focales de V1 legacy, validador V2, repetición de galería, anclas únicas, downgrade, snapshots, preview y render móvil público.
+- Antes de codificar: inspeccionar pruebas actuales, schema de publicación y rutas de edición en `main` actualizado, evitar conflictos con otros agentes.
+
+**Estado:** contrato de arquitectura propuesto con base en código inspeccionado; sin prototipos gráficos, cambios de aplicación, tests, merge ni deploy.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
