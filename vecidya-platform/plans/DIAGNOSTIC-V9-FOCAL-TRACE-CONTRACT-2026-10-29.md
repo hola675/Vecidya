@@ -188,3 +188,31 @@ Inspección estática de `qbv2-reviewed-commerce.ts`, `qbv2-reviewed-local-appoi
 ### Changelog
 
 - v1.6.0: descartes semánticos de tres falsos sustitutos; conserva HOLD y delimita propuestas.
+
+
+## Dictamen provisional de cobertura — v1.7.0
+
+**Alcance:** lectura estática de las guardias y de los mapeos V3 ya cotejados. Un dictamen `PROPOSE` aquí **no aprueba** una pregunta nueva: indica una hipótesis editorial para evaluación posterior. No se certifica selección ni suficiencia.
+
+| Escenario | EXISTING (lo demostrado) | ABSTAIN (límite actual) | PROPOSE (solo si confirma traza) | Dictamen |
+|---|---|---|---|---|
+| C03 — pausado | El banco distingue estado operativo; preguntas de actividad actual tienen guardias que impiden extrapolarlas a pausa | No se demostró pregunta elegible sobre comunicación de estado/consulta durante pausa | Pregunta neutral sobre si las personas encuentran información actualizada durante la pausa | `ABSTAIN + PROPOSE condicionado` |
+| C05 — organización sin donaciones ni cuotas | Las preguntas de donación y membresía respetan sus modelos específicos; existen observaciones de presencia/contacto, que no equivalen a participación | No se demostró evidencia directa de acceso a actividades o solicitudes de participación sin aportes económicos | Pregunta sobre cómo una persona puede participar o solicitar información, sin presuposición de venta/cuotas | `ABSTAIN + PROPOSE condicionado` |
+| C08 — restaurante sin presencia digital | `q2_local_presence_consistency` y `q2_presence_digital_base` aportan mapeos de `digital_foundation`; las preguntas de menú y claridad online requieren condiciones propias | No se demostró cobertura elegible de `clarity_positioning` sin presencia digital; ausencia de canal no prueba oferta poco clara | Pregunta sobre si la oferta es comprensible mediante los canales que realmente utiliza, sin imponer web o menú digital | `ABSTAIN + PROPOSE condicionado` |
+
+### Reglas para convertir el dictamen en decisión final
+
+1. Verificar el banco V9 **compuesto**, no solo los archivos de origen; revisar si alguna otra pregunta aporta el mismo constructo con guardias válidas.
+2. Resolver las guardias con contexto real y traza del selector: `appliesWhen`, `materialAppliesWhen`, sustituciones, presupuesto y orden.
+3. Exigir evidencia V3 y opciones `unknown/not_applicable` semánticamente correctas; no penalizar la ausencia de actividad, donaciones, cuotas o presencia digital cuando no corresponda.
+4. Si aparece cobertura suficiente: cambiar a `EXISTING` y **no** crear pregunta.
+5. Si no aparece: elevar `PROPOSE` para aprobación editorial explícita, diseño ES/EN, identidad/versionado y pruebas focales futuras.
+6. Si no se puede obtener evidencia válida sin sobrecargar el recorrido: mantener `ABSTAIN`, sin fabricar un score.
+
+### Bloqueo real de cierre
+
+El plan está listo para decidir **qué comprobar**, pero todavía **no** para declarar `PASS` en C03/C05/C08. Bajo PLAN_ONLY no se ejecutan las trazas. El siguiente trabajo documental debe consolidar decisiones pendientes y criterios de autorización, evitando nuevas revisiones circulares de los mismos tres casos.
+
+### Changelog
+
+- v1.7.0: dictámenes provisionales EXISTING/ABSTAIN/PROPOSE para C03/C05/C08 y puertas explícitas de resolución.
