@@ -655,3 +655,27 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Pruebas focalizadas antes de activar:** lifecycle ausente/pendiente/activo/suspendido; licencia vencida; owner/admin/member; grant entre organizaciones; reinvitación; doble dispositivo; duplicado y purga; reset atrasado; CSRF y acceso de otras organizaciones. No ejecutar suite general, migraciones remotas ni despliegues en esta fase documental.
 
 **Pendiente de validación:** datos reales sobre lifecycle legacy, política definitiva de retención y controles CSRF existentes. Ninguna prueba ejecutada.
+
+
+## 30. Handoff de Fase 0: orden de ejecución y puntos de control
+
+**Resultado documental:** las secciones 20–29 describen contratos para autorización, catálogo público, progreso personal, sincronización, migraciones y decisiones pendientes. Este handoff no equivale a certificación técnica: no se han ejecutado pruebas ni aplicado cambios de aplicación.
+
+**Primer PR de implementación recomendado (solo editorial y seguridad pública):**
+1. Congelar manifiesto de 48 guías con IDs inmutables y secciones estables, manteniendo texto y slugs actuales; registrar revisiones.
+2. Definir funciones de proyección allowlist `PublicGuideSummary` y `PublicGuidePreview` que no incluyan secciones, bloques ni resúmenes derivados del cuerpo protegido.
+3. Mantener las seis guías completas gratuitas y convertir las otras 42 en previews públicas seguras; la ruta de cuerpo completo requiere entitlement verificado en servidor.
+4. Aislar búsquedas, metadatos, sitemap, loaders, hidratación y prefetched data de contenido protegido; revisar también bundles compilados para no incluir el catálogo completo en cliente.
+5. Adaptar exclusivamente tests focalizados de publicación, currículo y QA pública, más los tests LEAK-01..08. Conservar 48 URLs públicas, seis categorías y nueve itinerarios.
+
+**Bloqueos de salida:** no habilitar el nuevo modelo de acceso hasta contar con guard de licencia y grant, pruebas de no filtración y revisión de contenido serializado. Evitar una transición en la que el loader antiguo siga devolviendo las 42 guías completas. Un rollback deberá conservar los guards.
+
+**Segundo PR recomendado:** permisos por membresía y licencia con D1 aditiva local; diagnóstico de lifecycle faltante; pruebas de owner, colaboradores, organizaciones múltiples, revocación y licencia expirada. No tocar la matriz global de Better Auth.
+
+**Tercer PR recomendado:** progreso personal, favoritos, reset y sync, con tests de concurrencia e idempotencia; importar progreso anónimo solo con consentimiento.
+
+**Cuarto PR recomendado:** interfaz móvil, itinerarios, recomendaciones y accesibilidad; validación focal final.
+
+**Evidencia mínima por PR:** archivos cambiados, SHA base y final, tests focales exactos y sus resultados, hallazgos de seguridad, cambios D1 locales, pendientes y decisión explícita de listo/no listo. Ningún PR debe hacer merge, deploy o modificar D1 remota sin autorización.
+
+**Próxima acción autorizable:** iniciar PR de implementación 1 en rama separada. Hasta entonces, este documento sigue siendo planificación.
