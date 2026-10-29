@@ -2291,3 +2291,34 @@ Completar inventario exhaustivo por ID/opción/variante/evidenceV3 y matriz de r
 
 ## Changelog adicional
 - **1.38.0 / 2026-10-29:** linaje del banco candidato y ocho riesgos de elegibilidad contextual documentados con SHA; sin código, pruebas ni despliegue.
+
+## 47. CONSOL-01 — especificación del inventario editorial exhaustivo (2026-10-29)
+**PLAN_ONLY.** Fuente revisada: `qa03b/v9-editorial-review-matrix.ts`, blob `5ce3b2520b4a9c4e569aa7a34962a008b46613ab`, y `qa03b/v9-editorial-graph-audit.ts`, blob `89bce38ab69d1b5c12d5a339fb8de923894da1c9`. La existencia de funciones no equivale a su ejecución o certificación.
+
+### Funciones ya disponibles para un futuro agente
+| Función | Información obtenible | Límite |
+| --- | --- | --- |
+| `buildCandidateEditorialMatrixV9` | Filas por pregunta y opciones, versiones, variantes y flags | No certifica interpretación humana |
+| `buildEditorialReviewBatchesV9` | Lotes de revisión priorizados por alertas | Prioridad editorial, no severidad clínica ni score |
+| `listHighPriorityEditorialQuestionsV9` | IDs y valores con mapeo faltante | No reemplaza revisión completa |
+| `buildHighPriorityEditorialReportV9` | Enunciados y opciones prioritarias | No incluye certificación bilingüe |
+| `auditMissingEvidenceDimensionsV9` | Opciones migradas sin estado para alguna dimensión | No cubre semántica de opciones no migradas |
+| `groupMissingEvidenceByDimensionV9` | Huecos agrupados por dimensión | No demuestra ruta alcanzable |
+| `auditQuestionBankV9` | Dependencias, estructura y flags del banco | Auditoría sintáctica, no prueba de ejecución |
+
+### Contrato documental de salida TAX-G2
+Por cada pregunta y opción: ID y versión, módulo, texto es/en (si existe), tipo, variante, regla de aplicabilidad, dependencia, opción y `kind`, exclusividad, evidencia `direct/supporting/contextual`, dimensión, estado, bandera de revisión, decisión editorial, procedencia de archivo y blob SHA. Clasificar explícitamente **no disponible** cuando un campo no esté sustentado por fuente; no inventar traducciones ni decisiones.
+
+### Matriz de rutas TAX-G3 pendiente
+Para cada C01–C10, documentar al menos una trayectoria representativa y casos alternativos de `unknown`, `none`, `not_applicable`, ausencia de respuesta y cambio de sector. Cada paso debe señalar pregunta, regla de entrada, sustitución, evidencia crítica, consumo de interacción y destino; clasificar como `alcanzable`, `no alcanzable`, `insuficiente` o `no demostrado`. No inferir alcanzabilidad por referencias sintácticas. Comprobar presupuesto base de 24 y extensión excepcional de 5 solo con consentimiento; sin agrupar decisiones independientes para eludirlo.
+
+### Orden de revisión humana propuesto
+1. Contexto/estado/destinatario: C02, C03, C05 y C10.
+2. Neutralidad de opciones: `q2_food_menu_visibility`, `q2_ecommerce_cart_followup`.
+3. Sustituciones: citas dentales, gastronomía y agencia; fallback genérico.
+4. Evidencia cruzada: presencia/descubrimiento, claridad/acceso, relación/capacidad.
+5. Revisión bilingüe es/en, trazabilidad y cobertura integral.
+**Estado:** especificación de inventario DOCUMENTADA; inventario materializado y validación de rutas PENDIENTES. No hay nuevos conteos certificados ni ejecución de pruebas.
+
+## Changelog adicional
+- **1.39.0 / 2026-10-29:** especificación TAX-G2/TAX-G3, funciones existentes y criterios de evidencia y rutas; solo documentación.
