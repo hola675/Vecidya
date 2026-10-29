@@ -1769,3 +1769,12 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 | GAP-15 | SPECIFIED | Responsables designados, simulacro de rollback y evidencia HTTP por SHA |
 
 **Pendiente:** inventario real de Markdown, reconciliación editorial y designación humana. R4 completa la especificación, **no** la verificación de los huecos.
+
+
+## 62. Verificación focal de gobernanza en main — GAP-14 (2026-10-29)
+
+**Evidencia GIT/CODE:** inspección de árbol GitHub `main` recursivo completo (`truncated=false`): **102 archivos .md en total**, de los cuales **17** están bajo `vecidya-platform/docs/` y **2** bajo `plans/`. **No interpretar 102 como documentos canónicos**: incluye instrucciones, dependencias y material no canónico. `vecidya-platform/docs/GOVERNANCE.md` declara **máximo 20 Markdown activos**, baseline histórico de **16** y excepción OPS-001. La lista exacta de canónicos y su actualización temporal deben reconciliarse antes de inferir cupos libres.
+
+**Consecuencia:** el PR documental añade tres Markdown en `plans/app-mini/`; **no está demostrado** que los tres sean canónicos autorizados ni que quepan en el límite. La política exige consolidación en un documento existente o autorización expresa por nuevo canónico. **GOV-01 sigue OPEN para aprobación**, aunque GAP-14 ya tiene inventario inicial verificable.
+
+**Ruta recomendada sin tocar otros agentes:** (1) comparar tabla de canónicos de GOVERNANCE con árbol actual; (2) seleccionar un solo documento canónico para plan maestro y absorber contrato y plan económico como secciones o anexos, preservando enlaces; (3) actualizar índices y rutas en el mismo PR; (4) comprobar diffs y referencias; (5) solicitar aprobación si se necesita excepción. No borrar los tres archivos antes de decidir cómo preservar el historial y las referencias.
