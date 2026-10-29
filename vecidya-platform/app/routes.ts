@@ -101,6 +101,7 @@ export default [
   route("app/account", "routes/account.tsx"),
   route("app/organization", "routes/organization.tsx"),
   route("app/training", "routes/organization-training.tsx"),
+  route("app/aprende", "routes/learn-personal.tsx"),
   route("app/invitations/:invitationId", "routes/invitation.tsx"),
   route("app/owner-invitations/:invitationId", "routes/platform-owner-invitation.tsx"),
   route("app/business-profile", "routes/business-profile.tsx"),

@@ -8,6 +8,7 @@ import { join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { learnArticles } from "../../app/content/learn.ts";
+import { getLearnEditorialIdentity } from "../../app/content/learn-publication.ts";
 import { assertLocalBaseUrl } from "./test-safety.mjs";
 
 const projectDirectory = resolve(fileURLToPath(new URL("../..", import.meta.url)));
@@ -94,8 +95,8 @@ class Client {
     assert.equal(response.status, 200, `Registro de fixture ${email}: ${response.status} ${body.slice(0, 250)}`);
     return JSON.parse(body).user;
   }
-  request(path, method = "GET", origin = this.baseUrl) {
-    return fetch(new URL(path, this.baseUrl), { method, headers: this.#headers(origin), redirect: "manual" });
+  request(path, method = "GET", origin = this.baseUrl, body) {
+    return fetch(new URL(path, this.baseUrl), { method, headers: this.#headers(origin), body, redirect: "manual" });
   }
 }
 
@@ -120,6 +121,7 @@ let workerOutput = "";
 try {
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
   assert.equal(Number(query("SELECT count(*) AS total FROM sqlite_master WHERE type='table' AND name='organization_learn_access_grant';")[0]?.total), 1, "La migración 0031 crea la tabla de grants en D1 local limpia.");
+  assert.equal(Number(query("SELECT count(*) AS total FROM sqlite_master WHERE type='table' AND name IN ('learn_guide_progress','learn_section_progress','learn_favorite');")[0]?.total), 3, "La migración 0032 crea el progreso personal y favoritos.");
   query(`
     INSERT INTO user (id,name,email,email_verified,created_at,updated_at)
       VALUES (${sqlLiteral(actorId)},'Learn fixture actor',${sqlLiteral(`learn-actor-${suffix}@vecidya.test`)},1,${now},${now});
@@ -132,6 +134,17 @@ try {
     INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES
       ${Object.entries(emails).map(([label, email]) => `(${sqlLiteral(invitations[label])},${sqlLiteral(organizations[label])},${sqlLiteral(email)},'member','pending',${now + 3_600_000},${now},${sqlLiteral(actorId)})`).join(",\n")};
   `);
+  const guideId = randomUUID();
+  const sectionId = randomUUID();
+  query(`
+    INSERT INTO learn_guide_progress (user_id,guide_id,content_revision,reset_epoch,version) VALUES (${sqlLiteral(actorId)},${sqlLiteral(guideId)},2,0,1);
+    INSERT INTO learn_section_progress (user_id,guide_id,section_id,content_revision) VALUES (${sqlLiteral(actorId)},${sqlLiteral(guideId)},${sqlLiteral(sectionId)},2);
+    INSERT INTO learn_favorite (user_id,guide_id) VALUES (${sqlLiteral(actorId)},${sqlLiteral(guideId)});
+  `);
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(actorId)};`)[0]?.total), 1, "La sección pertenece a la cuenta que la marcó.");
+  query(`DELETE FROM learn_guide_progress WHERE user_id=${sqlLiteral(actorId)} AND guide_id=${sqlLiteral(guideId)};`);
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(actorId)};`)[0]?.total), 0, "Al reiniciar la guía, sus checks se pueden retirar sin afectar favoritos.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_favorite WHERE user_id=${sqlLiteral(actorId)} AND guide_id=${sqlLiteral(guideId)};`)[0]?.total), 1, "El favorito persiste independientemente del progreso.");
 
   worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(port), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "error"], {
     cwd: projectDirectory,
@@ -199,6 +212,29 @@ try {
   const ownerBBody = await clients["owner-b"].request(licensedUrl);
   assert.equal(ownerBBody.status, 200, "Owner con licencia activa accede sin grant.");
   assert.equal((await ownerBBody.text()).includes(protectedText), true);
+  const guideArticle = learnArticles.find((article) => article.slug === protectedSlug);
+  const guideIdentity = getLearnEditorialIdentity(guideArticle);
+  const progressForm = new FormData();
+  progressForm.set("guideId", guideIdentity.guideId);
+  progressForm.set("sectionId", guideIdentity.sections[0].sectionId);
+  progressForm.set("intent", "check");
+  assert.equal((await clients["owner-b"].request(licensedUrl, "POST", baseUrl, progressForm)).status, 200, "El progreso propio acepta el check de una sección con entitlement.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 1);
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities.collaborator.id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 0, "Otra cuenta no recibe el progreso ajeno.");
+  const personalLibrary = await clients["owner-b"].request("/app/aprende");
+  assert.equal(personalLibrary.status, 200, "La biblioteca personal funciona sin depender de una organización activa.");
+  assert.match(await personalLibrary.text(), /Mi aprendizaje/);
+  const uncheckForm = new FormData();
+  uncheckForm.set("guideId", guideIdentity.guideId);
+  uncheckForm.set("sectionId", guideIdentity.sections[0].sectionId);
+  uncheckForm.set("intent", "uncheck");
+  assert.equal((await clients["owner-b"].request(licensedUrl, "POST", baseUrl, uncheckForm)).status, 200);
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_section_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 0, "Desmarcar elimina únicamente el check personal.");
+  const resetForm = new FormData();
+  resetForm.set("guideId", guideIdentity.guideId);
+  resetForm.set("intent", "reset");
+  assert.equal((await clients["owner-b"].request(licensedUrl, "POST", baseUrl, resetForm)).status, 200);
+  assert.equal(Number(query(`SELECT reset_epoch AS value FROM learn_guide_progress WHERE user_id=${sqlLiteral(identities["owner-b"].id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.value), 1, "Reiniciar incrementa reset_epoch para invalidar operaciones anteriores.");
   const billingOwnerBody = await clients["billing-owner"].request(licensedUrl);
   assert.equal(billingOwnerBody.status, 200, "Ser billing_account.owner sin membresía solo recibe vista previa.");
   assertNoProtectedBody(await billingOwnerBody.text(), protectedFragments, "Preview billing owner sin membresía");
@@ -208,6 +244,11 @@ try {
   const anonymousManagement = await fetch(new URL(grantsPath, baseUrl), { redirect: "manual" });
   assert.equal(anonymousManagement.status, 401, "La API de grants requiere sesión.");
   assert.equal(anonymousManagement.headers.get("cache-control"), "private, no-store");
+  const previewFavorite = new FormData();
+  previewFavorite.set("guideId", guideIdentity.guideId);
+  previewFavorite.set("intent", "favorite");
+  assert.equal((await clients.collaborator.request(licensedUrl, "POST", baseUrl, previewFavorite)).status, 200, "Se puede guardar como favorito una guía protegida sin desbloquear el cuerpo.");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_favorite WHERE user_id=${sqlLiteral(identities.collaborator.id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 1);
   const adminGrant = await clients["admin-a"].request(grantPath, "PUT");
   assert.equal(adminGrant.status, 403, "admin no puede conceder grants.");
   const ownerMemberId = (query(`SELECT id FROM member WHERE organization_id=${sqlLiteral(orgB)} AND user_id=${sqlLiteral(identities["owner-b"].id)};`)[0]).id;
@@ -235,6 +276,7 @@ try {
   const afterRevoke = await clients.collaborator.request(licensedUrl);
   assert.equal(afterRevoke.status, 200, "La siguiente solicitud ofrece preview tras revocar el grant.");
   assertNoProtectedBody(await afterRevoke.text(), protectedFragments, "Preview después de revocar grant");
+  assert.equal(Number(query(`SELECT count(*) AS total FROM learn_favorite WHERE user_id=${sqlLiteral(identities.collaborator.id)} AND guide_id=${sqlLiteral(guideIdentity.guideId)};`)[0]?.total), 1, "La pérdida de entitlement conserva el favorito personal.");
   const regrant = await clients["owner-b"].request(grantPath, "PUT");
   assert.equal(regrant.status, 204);
   query(`DELETE FROM member WHERE organization_id=${sqlLiteral(orgB)} AND user_id=${sqlLiteral(identities.collaborator.id)};`);

@@ -1,5 +1,9 @@
 # Arquitectura de Vecidya
 
+## Aprende — estado personal (Fase 4)
+
+El área `/app/aprende` muestra favoritos y progreso asociados exclusivamente a `user.id`, sin organización activa ni relación de lectura para owners/admins. La ruta de artículo guarda checks manuales y el último punto mediante acciones con sesión; el servidor valida que `guideId` y `sectionId` existan en el manifiesto actual. Para guías `licensed`, cada lectura de contenido y mutación de progreso vuelve a comprobar entitlement. Guardar o conservar un favorito no desbloquea el cuerpo. El porcentaje usa únicamente IDs de sección presentes en la revisión editorial actual; no se inventan equivalencias cuando cambia el contenido. La migración `0032` es aditiva; rollback conserva tablas y datos.
+
 ## Transparencia pública y consentimiento local de cookies (PR #102)
 
 `CookieConsent` se monta en el footer del `PublicLayout` y de la MiniWeb pública, pero no en la vista previa autenticada. Usa `cookie-preferences.ts` como contrato v2 en `localStorage`, con tres categorías: necesaria=true (funciones de sesión y seguridad), analítica opcional y marketing opcional. La ausencia, corrupción, versión antigua, fecha futura o indisponibilidad del almacenamiento **no habilita** categorías opcionales. La elección puede ajustarse y se comunica entre pestañas mediante el evento `storage` y dentro de la misma pestaña mediante un evento personalizado.

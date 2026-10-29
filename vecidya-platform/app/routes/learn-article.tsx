@@ -1,12 +1,15 @@
-import { Link } from "react-router";
+import { Form, Link } from "react-router";
+import { and, eq } from "drizzle-orm";
 
 import { learnArticles } from "../content/learn";
 import { getLearnEditorialIdentity, getLearnGuideAccess, getPublicLearnArticle, toPublicLearnGuideSummary } from "../content/learn-publication";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { createDatabase } from "../../db/client.server";
-import { getSession } from "../../server/auth/session.server";
+import { getSession, requireSession } from "../../server/auth/session.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { canReadLearnGuideBody } from "../../server/learn/entitlement.server";
+import { learnFavorite, learnGuideProgress, learnSectionProgress } from "../../db/schema";
+import { resetLearnGuide, setLearnFavorite, setLearnLastSection, setLearnSectionChecked } from "../../db/queries/learn-personal.server";
 
 import type { LearnBlock } from "../content/learn";
 import type { Route } from "./+types/learn-article";
@@ -16,16 +19,20 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (!article || article.editorialDraft) throw new Response("Artículo no encontrado", { status: 404 });
   const access = getLearnGuideAccess(article.slug);
   if (!access) throw new Response("Artículo no encontrado", { status: 404 });
+  const { env } = context.get(cloudflareContext);
+  let userId: string | null = null;
+  if (env.BETTER_AUTH_SECRET) userId = (await getSession(env, request))?.user.id ?? null;
   if (access === "licensed") {
-    const { env } = context.get(cloudflareContext);
     if (!env.BETTER_AUTH_SECRET) {
-      return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const };
+      return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const, authenticated: false, favorite: false };
     }
-    const session = await getSession(env, request);
-    if (!session) return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const };
+    const session = userId ? { user: { id: userId } } : null;
+    if (!session) return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const, authenticated: false, favorite: false };
     const database = createDatabase(env.DB);
     if (!await canReadLearnGuideBody(database, session.user.id, article.slug)) {
-      return { preview: toPublicLearnGuideSummary(article), accessState: "request-access" as const };
+      const identity = getLearnEditorialIdentity(article);
+      const favorite = await database.query.learnFavorite.findFirst({ where: and(eq(learnFavorite.userId, session.user.id), eq(learnFavorite.guideId, identity.guideId)) });
+      return { preview: toPublicLearnGuideSummary(article), accessState: "request-access" as const, authenticated: true, favorite: Boolean(favorite) };
     }
   }
 
@@ -44,7 +51,51 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   ].join(" ");
   const words = readingText.trim().split(/\s+/u).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(words / 200));
-  return { article: getLearnEditorialIdentity(article), relatedGuides, readingMinutes };
+  const identifiedArticle = getLearnEditorialIdentity(article);
+  let personal = { checkedSectionIds: [] as string[], lastSectionId: null as string | null, favorite: false };
+  if (userId) {
+    const database = createDatabase(env.DB);
+    const [checked, guideProgress, favorite] = await Promise.all([
+      database.select({ sectionId: learnSectionProgress.sectionId }).from(learnSectionProgress).where(and(eq(learnSectionProgress.userId, userId), eq(learnSectionProgress.guideId, identifiedArticle.guideId))),
+      database.query.learnGuideProgress.findFirst({ where: and(eq(learnGuideProgress.userId, userId), eq(learnGuideProgress.guideId, identifiedArticle.guideId)) }),
+      database.query.learnFavorite.findFirst({ where: and(eq(learnFavorite.userId, userId), eq(learnFavorite.guideId, identifiedArticle.guideId)) }),
+    ]);
+    const validSectionIds = new Set(identifiedArticle.sections.map((section) => section.sectionId));
+    personal = { checkedSectionIds: checked.map((row) => row.sectionId).filter((id) => validSectionIds.has(id)), lastSectionId: guideProgress?.lastSectionId ?? null, favorite: Boolean(favorite) };
+  }
+  return { article: identifiedArticle, relatedGuides, readingMinutes, personal, authenticated: Boolean(userId) };
+}
+
+export async function action({ context, params, request }: Route.ActionArgs) {
+  if (request.method !== "POST") throw new Response("Método no permitido", { status: 405 });
+  const origin = request.headers.get("Origin");
+  if (!origin || origin !== new URL(request.url).origin) throw new Response("Origen no permitido", { status: 403 });
+  const { env } = context.get(cloudflareContext);
+  const session = await requireSession(env, request);
+  const article = getPublicLearnArticle(learnArticles, params.slug);
+  const identity = article && !article.editorialDraft ? getLearnEditorialIdentity(article) : null;
+  if (!identity) throw new Response("Artículo no encontrado", { status: 404 });
+  const form = await request.formData();
+  const intent = form.get("intent");
+  const guideId = form.get("guideId");
+  if (guideId !== identity.guideId) throw new Response("Guía inválida", { status: 400 });
+  const database = createDatabase(env.DB);
+  if (intent === "favorite" || intent === "unfavorite") {
+    await setLearnFavorite(database, session.user.id, identity.guideId, intent === "favorite");
+    return { ok: true };
+  }
+  if (getLearnGuideAccess(identity.slug) === "licensed" && !await canReadLearnGuideBody(database, session.user.id, identity.slug)) throw new Response("No tienes acceso a esta guía", { status: 403 });
+  const sectionId = form.get("sectionId");
+  if (intent === "check" || intent === "uncheck") {
+    if (typeof sectionId !== "string" || !identity.sections.some((section) => section.sectionId === sectionId)) throw new Response("Sección inválida", { status: 400 });
+    await setLearnSectionChecked(database, { userId: session.user.id, guideId: identity.guideId, sectionId, revision: identity.contentRevision, checked: intent === "check" });
+  } else if (intent === "last-section") {
+    if (typeof sectionId !== "string" || !identity.sections.some((section) => section.sectionId === sectionId)) throw new Response("Sección inválida", { status: 400 });
+    await setLearnLastSection(database, { userId: session.user.id, guideId: identity.guideId, sectionId, revision: identity.contentRevision });
+  } else if (intent === "reset") {
+    await resetLearnGuide(database, session.user.id, identity.guideId, identity.contentRevision);
+  } else throw new Response("Acción inválida", { status: 400 });
+  return { ok: true };
 }
 
 export function headers({ errorHeaders, loaderHeaders }: Route.HeadersArgs) {
@@ -123,7 +174,7 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
   if (loaderData.preview) {
-    const { preview, accessState } = loaderData;
+    const { preview, accessState, authenticated, favorite } = loaderData;
     const signInHref = `/login?redirectTo=${encodeURIComponent(`/aprende/${preview.slug}`)}`;
     return (
       <PublicLayout>
@@ -138,6 +189,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ? "Inicia sesión y volverás a esta guía para comprobar tu acceso."
               : "El acceso depende de la licencia activa de tu organización y de los permisos asignados por su owner. La activación se gestiona manualmente; vuelve a abrir esta guía después de que la confirmen."}</p>
             <div className="learn-article-cta">
+              {authenticated && <Form method="post"><input type="hidden" name="guideId" value={preview.guideId} /><button className="button button--secondary" name="intent" value={favorite ? "unfavorite" : "favorite"}>{favorite ? "Quitar de favoritos" : "Guardar en favoritos"}</button><p>Guardar como favorito no concede acceso al contenido.</p></Form>}
               {accessState === "sign-in" && <Link className="button button--secondary" to={signInHref}>Iniciar sesión</Link>}
               {accessState === "request-access" && <Link className="button button--secondary" to="/app">Ir a mi organización</Link>}
               <Link className="button button--primary" to="/licencias">Ver licencias Vecidya</Link>
@@ -147,7 +199,9 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
       </PublicLayout>
     );
   }
-  const { article, relatedGuides, readingMinutes } = loaderData;
+  const { article, relatedGuides, readingMinutes, personal, authenticated } = loaderData;
+  const checked = new Set(personal.checkedSectionIds);
+  const progressPercent = Math.round((checked.size / article.sections.length) * 100);
 
   return (
     <PublicLayout>
@@ -169,6 +223,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ) : (
                 <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
               )}
+              {authenticated ? <Form method="post" className="learn-personal-toolbar"><input type="hidden" name="guideId" value={article.guideId} /><button className="button button--secondary" name="intent" value={personal.favorite ? "unfavorite" : "favorite"}>{personal.favorite ? "Quitar de favoritos" : "Guardar en favoritos"}</button><span>Mi avance: {progressPercent}% ({checked.size} de {article.sections.length} secciones) · {progressPercent === 100 ? "Completado" : checked.size ? "En curso" : "Sin empezar"}</span>{checked.size > 0 && <button className="text-link" name="intent" value="reset">Reiniciar mi progreso</button>}</Form> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
               <div className="learn-article-quick">
                 <h2>En pocas palabras</h2>
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
@@ -191,6 +246,8 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                   {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
                   {section.bullets && <ul>{section.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}</ul>}
                   {section.blocks?.map((block, blockIndex) => renderLearnBlock(block, `${section.heading}-${blockIndex}`))}
+                  {authenticated && <Form method="post" className="learn-section-progress"><input type="hidden" name="guideId" value={article.guideId} /><input type="hidden" name="sectionId" value={section.sectionId} /><button className="button button--secondary" name="intent" value={checked.has(section.sectionId) ? "uncheck" : "check"}>{checked.has(section.sectionId) ? "Marcar como pendiente" : "Marcar como completada"}</button></Form>}
+                  {authenticated && <Form method="post" className="learn-section-progress"><input type="hidden" name="guideId" value={article.guideId} /><input type="hidden" name="sectionId" value={section.sectionId} /><button className="text-link" name="intent" value="last-section">Guardar como último punto</button></Form>}
                 </section>
               ))}
               <p><a href="#contenido">Volver al inicio del contenido ↑</a></p>

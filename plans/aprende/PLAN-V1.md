@@ -410,13 +410,14 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / aceptación editorial pendiente | PR #183 integrada; 48 guideId, 387 sectionId, revisión 1, clasificación 6/42; tests de catálogo y privacidad ejecutados; gratuidad aún provisional |
 | 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
-| 2026-10-29 | Fase 3: catálogo, preview y retorno | IMPLEMENTADA EN RAMA / PR pendiente | PR #186 (`3d7b11a6`); 1.756 unitarias, QA responsive, typecheck/build/diff-check PASS; checks CI pendientes |
+| 2026-10-29 | Fase 3: catálogo, preview y retorno | INTEGRADA | PR #186 en `main@9b39ffde`; 1.756 unitarias, QA responsive, typecheck/build/diff-check y CI PASS |
+| 2026-10-29 | Fase 4: progreso y favoritos personales | IMPLEMENTADA / PASS TÉCNICO LOCAL | Rama `feat/aprende-v1-progress`; `0032` y Worker/D1 E2E PASS, favoritos conservados tras revocación, aislamiento, reset epoch, 1.756 unitarias, QA pública, typecheck/build/diff-check PASS; PR pendiente |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Fases 4–7 | NO INICIADAS | progreso/favoritos, sync/anónimo/offline temporal, UX de itinerarios y certificación final |
+| — | Fases 5–7 | NO INICIADAS | sync/anónimo/offline temporal, UX de itinerarios y certificación final |
 
-**Siguiente checkpoint:** completar revisión e integración del PR #186; luego implementar Fase 4 (persistencia de progreso y favoritos) en una rama/worktree nuevos desde `origin/main`. La selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha desplegado ni aplicado la migración de forma remota.
+**Siguiente checkpoint:** revisar e integrar Fase 4 por PR cuando checks requeridos pasen; la selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha desplegado ni aplicado la migración de forma remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)

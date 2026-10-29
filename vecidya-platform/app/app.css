@@ -32,6 +32,16 @@
   font-synthesis: none;
 }
 
+.learn-personal-toolbar,
+.learn-section-progress,
+.learn-personal-item { display: flex; align-items: center; flex-wrap: wrap; gap: .75rem; }
+.learn-personal-toolbar { margin-block: 1rem; padding: 1rem; border: 1px solid var(--color-border, #d9dfdc); border-radius: 1rem; }
+.learn-personal-item { justify-content: space-between; padding-block: 1rem; border-top: 1px solid var(--color-border, #d9dfdc); }
+.learn-personal-item h3 { margin: 0; }
+.learn-personal-item p { margin: .35rem 0; }
+.learn-personal-item form { display: flex; flex-wrap: wrap; gap: .75rem; }
+.learn-section-progress { margin-top: 1rem; }
+
 * { box-sizing: border-box; }
 html { background: var(--canvas); }
 body { min-width: 320px; min-height: 100vh; margin: 0; }

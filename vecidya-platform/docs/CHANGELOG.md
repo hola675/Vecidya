@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — progreso personal (Fase 4, checkpoint local)
+
+- PR #186 integró Fases 1–3 en `main@9b39ffde`. Fase 4 agrega esquema personal D1 `0032`, marcación explícita de secciones, último punto, favoritos y biblioteca privada `/app/aprende`; reiniciar conserva favoritos y hace avanzar `reset_epoch`.
+- Worker/D1, typecheck, build, unitarias y QA pública pasan. No desplegado ni aplicado a D1 remota.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — experiencia de acceso (checkpoint local)
 
 - El catálogo muestra si cada guía tiene acceso abierto o requiere licencia, permite filtrar por acceso junto con tema y búsqueda, y presenta «Empieza aquí».
