@@ -375,6 +375,37 @@
 
 **Sin bloquear fases visuales:** F1 y F3 pueden implementarse en paralelo sin depender de compra de ampliaciones. F6/F8 no se dan por terminadas hasta conectar el resolver de derechos y la publicación atómica. Todo diseño pendiente de decisión comercial queda identificado como propuesta, no como requisito aprobado.
 
+
+## 23. Cierre de diseño transversal Mi Vecidya ↔ MiniWeb ↔ Servicios y pagos (2026-10-29)
+
+**Checkpoint:** el plan funcional F0–F9 existe, pero **no está cerrado como especificación lista para implementar íntegramente**; no hay migraciones, componentes ni pruebas nuevas de estas fases. El módulo de pagos B0–B8 se diseña en `SERVICIOS-PAGOS-PLAN-V1.md` y no sustituye las fases MiniWeb.
+
+### Contrato de integración común (propuesta)
+1. **Identidad:** `user` inicia sesión; `billing_account` define titular económico; `organization` define negocio y aislamiento de contenido; `organization_license` define CRM por organización; `billing_miniweb_capacity_extension` define capacidad Cuadra adicional; `organization_subscription` representa add-ons y servicios; ninguna tabla sustituye otra.
+2. **Lectura de derechos:** resolver central `effectiveEntitlements(billingAccountId, organizationId, at)` devuelve cupos base, ampliaciones, ocupaciones, licencia CRM de la organización, nivel de plantilla autorizado, complementos activos y estados. Debe basarse en **activación efectiva**, no en pedido, pago aislado o simple asignación administrativa.
+3. **Publicación:** verifica en servidor permisos, licencia/capacidad, plantilla y revisión de borrador en el momento de la operación; registra ocupación y versión histórica de forma atómica. No deducir derechos de la UI ni de un recibo de pago.
+4. **Facturación:** suscripciones, facturas y pagos son hechos económicos distintos de derechos de uso y activación GHL. El dashboard muestra los tres estados por separado: contratado, activado y pagado.
+5. **Conservación:** baja, impago o downgrade no destruyen automáticamente borradores, snapshots, medios ni facturas; acciones destructivas requieren política y auditoría. La publicación existente en downgrade conserva DEC-07.
+6. **Administración:** gestión interna Vecidya asigna contratos y servicios, verifica activación externa y registra cambios; Mi Vecidya muestra únicamente datos autorizados. El CRM externo sigue gestionando conversaciones y operaciones CRM.
+
+### Puertas de cierre de diseño F0
+| Tema | Situación | Salida exigida |
+| --- | --- | --- |
+| Capacidad 3/6/9 | DEC-08 aprobada | Migración de organizaciones publicadas y asignación de titular sin duplicar Cuadras |
+| Plantillas Cuadra/Barrio/Ciudad | DEC-06 aprobada en niveles | IDs y variantes reales, licencia efectiva de organización secundaria |
+| Downgrade | DEC-07 aprobada | Validación transaccional contra cambios concurrentes de licencia |
+| Suspensión/expiración | Pendiente decisión comercial | Política expresa de visualización, edición, publicación, recuperación y sobrecupo |
+| Multimedia histórica | CODE auditado | Retención, referencias a snapshots, GC y cuotas verificables |
+| Videos externos | Función aprobada | Lista de proveedores, seguridad de URL, embebido y privacidad |
+| Horarios | UX propuesta | Zona horaria, intervalos, excepciones, migración de reglas existentes |
+| Editor premium | Alcance funcional aprobado | Esquemas de settings, tokens, módulos, versiones y catálogo concreto |
+| B0–B8 pagos | Plan separado iniciado | Reutilizar billing_account y org, nunca acoplar publicación a UI de cobro |
+| QA | No ejecutado | Tests focales por contrato y evidencia vinculada a SHA |
+
+**Orden de trabajo priorizado:** cerrar decisiones de F0 que afecten derechos y retención; especificar modelo MiniWeb V2 y migraciones F2B; cerrar matriz de plantillas y estados; terminar F1/F3/F4/F5/F6/F7/F8 como historias verificables; después avanzar B1–B8 sin duplicar la capa de derechos. F1 y F3 pueden avanzar en paralelo cuando no toquen contratos aún abiertos.
+
+**No asumir aprobación por silencio:** para suspensiones, expiración, transferencia de titular, borrado histórico o acceso premium de organizaciones secundarias, preparar alternativas y solicitar decisión antes de implementar una política irreversible. Ninguna de estas pendientes impide seguir diseñando UI y contratos seguros.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
