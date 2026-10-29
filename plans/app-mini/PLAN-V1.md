@@ -764,6 +764,38 @@ type MiniWebConfigV2 = {
 
 **Criterio de cierre del plan:** contratos y decisiones bloqueantes aprobados, matriz de rutas/tablas/servicios trazable al repo, PRs de implementación ordenados, criterios de aceptación verificables. No equivale a software terminado. **Estado:** F8/F9 especificados; implementación y pruebas aún pendientes.
 
+
+## 33. F0 — Registro de decisiones finales y política provisional segura (2026-10-29)
+
+**Objetivo:** separar lo aprobado de lo que requiere una decisión del titular antes de activar prestaciones comerciales o operaciones irreversibles. El plan funcional F0–F9 está redactado, pero el cierre de F0 **no** puede certificarse sin resolver estas cuestiones.
+
+| ID | Asunto | Alternativa recomendada para aprobación | Hasta aprobación |
+| --- | --- | --- | --- |
+| DEC-12 | Distribución de plantillas existentes `planned` | Cuadra: Esencial + Servicios; Barrio: + Catálogo + Gastronomía; Ciudad: + Profesional. Crear después variantes premium por familia, sin afirmar que ya existen. | Solo Esencial `available` |
+| DEC-13 | Exceso de publicaciones tras reducción/transferencia | Conservar todos los snapshots públicos; bloquear primeras publicaciones; permitir **solo** republicación de organizaciones que conserven ocupación válida y derecho efectivo, sin ampliar sobrecupo. Exceso requiere conciliación admin auditada. | No borrar ni despublicar; denegar operaciones ambiguas |
+| DEC-14 | Sitio desactivado manualmente por admin | Responder HTTP 404 público con página de ausencia neutra, sin mostrar contenido ni causa privada; retirar del sitemap y noindex cuando haya respuesta HTML; reactivar solo admin. | No implementar desactivación pública sin respuesta definida |
+| DEC-15 | Retención de versiones y media | Historial sin borrado físico automático durante V2 inicial; introducir cuotas y retención solo tras medir coste y aprobar política de recuperación. | Append-only; sin GC de activos referenciados |
+| DEC-16 | Video subido y externo | Activar solo tras medir capacidad/coste, seguridad y política de proveedores; videos externos inicialmente restringidos a allowlist explícita aprobada. | No habilitar fuentes no verificadas ni cuotas inventadas |
+
+**DEC-12–16 son PROPUESTAS, no decisiones aprobadas.** La propuesta de no borrar físicamente es un guardarraíl técnico, no una promesa contractual de conservación indefinida. Ninguna política provisional autoriza cobros, nuevos límites comerciales, despublicación automática ni exposición de datos.
+
+### Secuencia de implementación sin bloquear por decisiones pendientes
+1. **PR-M1:** shell Mi Vecidya F1, selector de organización, estados solo lectura y permisos; sin cambiar publicación ni facturación.
+2. **PR-M2:** schema aditivo F2A de ampliación Cuadra + resolver de cupos/tier compartido, tests focales, sin checkout.
+3. **PR-M3:** lector dual y migrador puro MiniWeb V1→V2, `instanceId`, tests focales; no escribir V2 en producción.
+4. **PR-M4:** historial append-only, backfill idempotente y publicación atómica con feature flag; pruebas CAS y aislamiento.
+5. **PR-M5:** F3–F5 identidad, galerías/videos/horarios por entregas separadas, activar solo lo autorizado y medido.
+6. **PR-M6:** F6 catálogo visual con derechos DEC-10, editor F7 simple/avanzado y responsive; integrar con API real.
+7. **PR-M7:** F8 restauración y controles de admin, F9 accesibilidad/QA focal, pruebas de despliegue/rollback.
+
+Cada PR requiere inventario de archivos, alcance acotado, tests focales y evidencias ligadas a SHA; sin merge/deploy automático. El orden puede subdividirse para evitar conflictos con otros agentes.
+
+### Criterios de salida de diseño
+- DEC-01–11 aprobadas y reflejadas en contratos; DEC-12–16 resueltas o bloqueadas explícitamente para que no se publiquen prestaciones no autorizadas.
+- Migraciones de lectura dual, backfill y rollback con estrategia segura.
+- Matriz de pruebas focales de F9 y responsables de datos definidos.
+- No confundir **plan maestro funcional documentado** con **implementación terminada**.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
