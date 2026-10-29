@@ -2255,3 +2255,39 @@ TAX-G2 **PARCIAL**: se identificaron fuentes y casos, pero falta inventario exha
 
 ## Changelog adicional
 - **1.37.0 / 2026-10-29:** trazabilidad focal del banco candidato, dependencias QBV2, sustituciones especializadas y ocho grupos de revisión editorial. Solo documentación.
+
+## 46. CONSOL-01 — linaje editorial y riesgos de rutas (2026-10-29)
+**PLAN_ONLY. Revisión estática focal, no ejecución del grafo.** Fuentes y blobs: `qa03b/bank.ts` `b4772d73e1d8b5044ba2011088db978c364097f0`; `qa03b/recovery-wave2.ts` `59fe5898cc98ba243b4c898b027dd22f2c1153c9`; `qa03b/specialty-candidate-bank.ts` `0bc44cddc1dc2f03230bd5ece30847fce984a12b`; `qa03b/specialty-branches-wave1.ts` `ec605156f2e974d7b463f44ae76475f8ede1f0e9`.
+
+### Linaje comprobado
+1. `qa03b/bank.ts` deriva un banco revisado del histórico `qbv2-reviewed-evidence`, con reemplazos y preguntas nuevas.
+2. `specialty-candidate-bank.ts` aplica ajustes editoriales, expande `q2_sector` a versión candidata 4, añade ocho selectores sectoriales de nicho, recuperación piloto y wave2.
+3. `specialty-branches-wave1.ts` añade ramas especializadas y sustituciones de preguntas genéricas; su aserción exige 77 IDs únicos en el candidato.
+4. `v9-editorial-review-matrix.ts` audita el candidato pero no certifica comprensión humana ni rutas ejecutables.
+**Importante:** el número 77 es una aserción del código fuente, no un recuento independiente realizado en esta revisión.
+
+### Riesgos concretos de elegibilidad
+| Caso | Regla observada | Riesgo para C01–C10 | Gate |
+| --- | --- | --- | --- |
+| Wave2 ecommerce | `operating` + `has_customers=yes` + arquetipo ecommerce | C02/C03 no deben heredar supuestos de ventas activas | Comprobar rutas prelaunch/pausa |
+| Wave2 medición | operación activa con historial y `goal=measure` | Evidencia de medición puede faltar si el objetivo declarado es otro | Evaluar suficiencia sin forzar objetivos |
+| Wave2 seguimiento | operación activa con historial y objetivo/fricción de seguimiento | No confundir ausencia de pregunta con buen seguimiento | Probar elegibilidad contextual |
+| Wave2 operaciones | operación activa con historial y objetivo/fricción de operaciones | Riesgo de no observar capacidad digital en otros perfiles | Distinguir contexto de evidencia |
+| Donaciones | organización/misión + operación + soporte donaciones/mixto | C05 sin donaciones no debe ser penalizado | Comprobar `not_applicable` y alternativas |
+| Especialidad dental | operación activa + clientes + nicho dentista + citas + meta/fricción específica | Sustitución de `q2_appointments_rebooking` puede no activarse en rutas alternativas | Probar fallback |
+| Especialidad gastronomía/agencia | operación activa + clientes + nicho + objetivo de explicar + presencia declarada | Sustitución de `q2_presence_offer_clarity` podría perder evidencia si falla el contexto | Probar exclusión mutua y fallback |
+| Sector desconocido | selector admite `other` y `unknown` | C10 requiere ruta genérica, sin inferir nicho | Probar fallback y abstención |
+
+### Criterios de revisión
+- La selección de objetivo no debe convertir una dimensión relevante en «suficiente» sin evidencia; si faltan datos, abstención conforme D017.
+- `q2_startup_demand_signal` en wave2 declara `evidenceMigration=pending`: no puntuar ni inferir ventas por interés.
+- `q2_ecommerce_cart_visibility` mide visibilidad, no permiso para contactar.
+- `q2_measurement_practice` contempla `not_enough_activity` como no aplicable; distinguirlo de no medir.
+- El contrato de `QuestionDefinitionV2` y las reglas `qbv2-rules` siguen presentes en el candidato: autonomía V9 NO CERTIFICADA.
+- No hay evidencia de cobertura efectiva C01–C10 ni de presupuesto 24+5 hasta verificar rutas; el análisis de condiciones es estático.
+
+### Próximo entregable
+Completar inventario exhaustivo por ID/opción/variante/evidenceV3 y matriz de rutas C01–C10 con clasificación `reachable / unreachable / insufficient / unknown`, trazas y SHA. No ejecutar pruebas, no modificar implementación ni afirmar certificación.
+
+## Changelog adicional
+- **1.38.0 / 2026-10-29:** linaje del banco candidato y ocho riesgos de elegibilidad contextual documentados con SHA; sin código, pruebas ni despliegue.
