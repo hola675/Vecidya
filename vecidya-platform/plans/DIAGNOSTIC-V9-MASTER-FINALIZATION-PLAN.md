@@ -768,3 +768,52 @@ D-V9-001 a D-V9-012: APPROVED según sus respectivas secciones; D-V9-013 PENDING
 
 ## Changelog adicional
 - **1.13.0 / 2026-10-29:** D-V9-012 aprobada; separación seguimiento/replanificación/reevaluación, invariantes históricos, tareas PLAN-F01–F09, criterios de aceptación y próxima decisión. Solo documentación.
+
+
+## 21. Decisión D-V9-013 — comparación histórica por dimensiones y calibración compatible (aprobada 2026-10-29)
+**Aprobación expresa:** «comparación histórica por dimensiones, niveles cualitativos y números solo con calibración compatible». Estado APPROVED como definición de producto; NO autoriza implementación.
+
+### 21.1. Contrato de comparación
+- Mostrar evolución por **dimensión digital aplicable** entre evaluaciones explícitas del mismo negocio/organización y con permisos verificados; conservar contexto, etapa, modalidad y fecha de cada instantánea.
+- Comparar **niveles cualitativos** únicamente cuando las definiciones y evidencias permitan comparación significativa. Si una dimensión cambia de aplicabilidad, taxonomía o criterio, indicar «no comparable» y explicar brevemente el motivo.
+- Mostrar **puntuaciones y diferencias numéricas** solo cuando ambas evaluaciones tengan evidencia suficiente, calibración validada y una regla explícita de compatibilidad de escalas, pesos, versiones y dimensiones. No inferir compatibilidad por igualdad del nombre del campo.
+- Conservar instantáneas históricas y versiones de reglas; prohibir recalcular o sobrescribir resultados anteriores silenciosamente. Una migración o recálculo explícito requiere diseño y aprobación propios.
+- No atribuir una variación a una acción completada, un cambio de objetivos o una mejora del negocio sin evidencia causal suficiente.
+- No presentar flechas de mejora, porcentajes de progreso o «crecimiento» cuando solo cambió el cuestionario, la metodología, el sector o la evidencia disponible.
+- La comparación histórica pertenece a la continuidad autenticada D-V9-005/012; el resumen anónimo no expone historial de cuentas ni de otras organizaciones.
+
+### 21.2. Estados de comparabilidad propuestos (pendientes de contrato definitivo)
+**Comparable cualitativa y numéricamente**: versiones compatibles y evidencia/calibración suficiente en ambas; **comparable solo cualitativamente**: niveles compatibles, pero números no habilitados; **comparación contextual limitada**: hay cambios de etapa/cobertura que requieren advertencia; **no comparable**: dimensión no aplicable, evidencia insuficiente o metodología incompatible. Estos estados son hipótesis de especificación y deben validarse con casos C01–C10; no constituyen umbrales aprobados.
+
+### 21.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-C01 | Inventariar snapshots, versiones, resultados, dimensiones y persistencia real V9/QBV2 | Mapa de tablas/rutas/contratos con SHA | No suponer historial certificado |
+| PLAN-C02 | Definir identidad de dimensión y reglas de correspondencia entre versiones | Matriz dimensión-vieja→nueva, aplicabilidad y cambios semánticos | Sin equivalencias por nombre |
+| PLAN-C03 | Definir compatibilidad de calibraciones, pesos, escalas y evidencia | Política versionada de comparabilidad numérica | Aprobación técnica/producto |
+| PLAN-C04 | Diseñar algoritmo conceptual de comparación cualitativa y estados no comparables | Tabla de decisiones y pseudocódigo determinista | No atribuir mejoras falsas |
+| PLAN-C05 | Definir manejo de cambios de contexto, etapa, objetivos y organización | Casos C01–C10 y advertencias de interpretación | Separar contexto de madurez |
+| PLAN-C06 | Diseñar informe histórico autenticado y explicación breve de diferencias | Ejemplos con niveles, números permitidos/omitidos y advertencias | D-V9-010: explicación breve |
+| PLAN-C07 | Diseñar inmutabilidad, permisos, retención y trazabilidad de snapshots | Contrato de ownership, versiones, privacidad y migración | No acceso cruzado ni reescritura |
+| PLAN-C08 | Preparar pruebas focalizadas futuras de compatibilidad y regresión | Matriz entradas→comparabilidad→presentación esperada | No ejecutar en PLAN_ONLY |
+
+### 21.4. Casos de aceptación futuros
+1. Misma dimensión, metodología compatible y evidencia suficiente: mostrar comparación cualitativa y números solo si calibrados.
+2. Niveles compatibles sin calibración numérica: mostrar comparación cualitativa y omitir diferencias numéricas.
+3. Escalas o pesos incompatibles: no mostrar diferencia numérica ni porcentaje de mejora.
+4. Dimensión que pasa a no aplicable: no convertirla en cero ni describir retroceso.
+5. Cambio de etapa (preparación→activo, activo→pausa): advertir el cambio y revisar aplicabilidad antes de comparar.
+6. Evidencia incompleta en una evaluación: comunicar límite sin inventar tendencia.
+7. Acción marcada completada sin reevaluación: historial de madurez permanece igual.
+8. Revisión de objetivos o prioridades: no modifica resultados históricos.
+9. Usuario de otra organización: acceso a historial y comparaciones denegado.
+10. Reglas nuevas sin tabla de compatibilidad aprobada: comparación numérica bloqueada por defecto.
+
+### 21.5. Próxima decisión D-V9-014 — idiomas del diagnóstico
+Determinar alcance inicial de idiomas y traducciones editoriales: (A) español como idioma inicial, arquitectura preparada para otros; (B) español e inglés completos desde V9; (C) idioma adaptativo según preferencia con español/inglés certificados y otros pendientes. Ninguna opción aprobada. No inferir que la presencia de traducciones en el repositorio equivale a cobertura editorial certificada.
+
+### 21.6. Estado
+D-V9-001 a D-V9-013: APPROVED según sus secciones; D-V9-014 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.14.0 / 2026-10-29:** D-V9-013 aprobada; política conceptual de comparación histórica, ocho tareas PLAN-C01–C08, diez criterios de aceptación y próxima decisión. Solo documentación.
