@@ -1665,3 +1665,55 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 | GAP-10 | SPECIFIED | Publicación / Medios | CAS, restore, referencias históricas y pruebas de fallo |
 
 **No cambiar a IMPLEMENTED sin PR real, ni a VERIFIED sin tests del SHA correspondiente.** Si D1 no ofrece la atomicidad requerida para una operación concreta, diseñar la secuencia compatible con el runtime antes de implementar, en lugar de afirmar transacciones no comprobadas.
+
+
+## 60. R3 — cierre de especificación visual y comercial (2026-10-29)
+
+**Alcance:** convertir GAP-02, GAP-11, GAP-12 y GAP-13 en verificaciones y decisiones ejecutables. Ninguna captura, tarifa o aprobación se presume realizada.
+
+### 60.1 GAP-02 / CAT-01 — contrato de acceso visual pendiente
+
+**Recomendación para aprobación:** las cinco familias sectoriales ofrecen una variante Base accesible con Cuadra; Barrio añade Pro y Ciudad añade Premium para esas mismas familias. Las tres licencias comparten idénticos módulos, campos, galerías, horarios, contactos, SEO y capacidades de publicación; el nivel superior solo altera composición, densidad, ritmo visual, animación permitida y dirección de arte. El tier visual máximo activo se comparte entre organizaciones autorizadas del mismo titular de facturación; no se comparte el CRM ni la membresía.
+
+**Conflicto pendiente:** DEC-12 asigna algunas familias por plan; esta propuesta cambiaría esa distribución. Hasta aprobación expresa de CAT-01, no modificar el registro de plantillas ni prometer las cinco familias en Cuadra. Tras aprobar: enmendar DEC-12, textos comerciales, matriz de entitlements, fixtures y tests; no basta cambiar etiquetas.
+
+### 60.2 GAP-11 — protocolo de validación visual 3×3
+
+**Entrada:** HTML exacto versionado de `plans/app-mini/prototypes/miniweb-tiers-comparison.html`, script `test-miniweb-tiers.mjs`, fixtures iguales de servicios, galerías, FAQ, horarios y contacto. No sustituir por una maqueta reconstruida.
+
+**Matriz:** Base, Pro y Premium × 390×844, 768×1024 y 1440×900. Cada una de las nueve capturas debe registrar SHA, viewport, nombre de variante y ruta del artefacto.
+
+**Verificación automática focal:** errores JS, ancho de documento versus viewport, enlaces/CTA visibles, landmarks y encabezados, paridad de módulos, nombres accesibles, navegación por teclado básica, reducción de movimiento y ausencia de contenido truncado. **Revisión humana:** jerarquía, legibilidad, contraste perceptual, calidad de composición, diferenciación real de tiers, imágenes faltantes y textos largos.
+
+**Gate VIS-01:** resultado PASS/FAIL por cada captura, incidencias con prioridad y aprobación explícita del responsable. Si falla una variante, no se certifica la familia. El harness existente no equivale a nueve pruebas ejecutadas.
+
+### 60.3 GAP-12 — inventario de cinco familias y estados
+
+| Familia | Clave | Estado inicial | Fixture exigido | Entrega para declarar available |
+| --- | --- | --- | --- | --- |
+| General | `vecidya-default` | available legacy | negocio local mixto, horarios, FAQ, contacto | V1 sin regresión + tres variantes V2 aprobadas |
+| Servicios | `services-studio` | planned | servicios con descripción larga, CTA y galería | renderer real + 3×3 + prueba de contenido |
+| Comercio | `catalog-store` | planned | catálogo amplio y productos sin foto | renderer real + 3×3 + ausencia de exclusión funcional |
+| Gastronomía | `gastronomy-table` | planned | menú, horarios partidos, ubicación y medios | renderer real + 3×3 + accesibilidad |
+| Profesional | `professional-profile` | planned | perfil, credenciales, servicios y agenda/contacto | renderer real + 3×3 + SEO y responsive |
+
+**Política de disponibilidad:** `planned` → `implemented` (renderer y fixtures) → `verified` (pruebas) → `approved` (aceptación) → `available` (registro habilitado). No saltar etapas por disponer de un prototipo HTML.
+
+### 60.4 GAP-13 — decisiones económicas y de pagos
+
+**Sin aprobación todavía:** REL-01 (primera entrega con o sin pagos automáticos), COM-01 (tarifas oficiales regionales y condiciones), PAY-01 (PSP y jurisdicción), BILL-02 (prorrateo, impago, cancelación, devolución y cambio de titular).
+
+**Reglas ya aprobadas que no se reabren:** Cuadra/Barrio/Ciudad USD 39/59/89 mensuales y recargo GHL exactamente 20% sobre coste base verificado. Una tarifa ilustrativa no es un precio publicable ni cobrable. Ningún cargo se activa a partir de un mockup.
+
+**Gate comercial:** catálogo versionado con fuente y fecha, matriz de impuestos/monedas, contrato aceptado, controles de acceso económico, simulación de factura y conciliación con datos de prueba, aprobación del responsable y rollback. El alcance de release determina si B6 es bloqueante para la primera entrega.
+
+### 60.5 Estado de los cuatro huecos
+
+| Hueco | Estado | Motivo |
+| --- | --- | --- |
+| GAP-02 | SPECIFIED, decisión CAT-01 pendiente | Conflicto DEC-12/DEC-18 no aprobado |
+| GAP-11 | SPECIFIED, ejecución pendiente | Harness existe, nueve capturas sin certificar |
+| GAP-12 | SPECIFIED, implementación pendiente | Cuatro familias planned |
+| GAP-13 | SPECIFIED, aprobación pendiente | REL-01, COM-01, PAY-01 y BILL-02 abiertos |
+
+**Próximo trabajo seguro:** R4 gobernanza/release y conciliación editorial de contradicciones históricas; luego ejecutar pruebas visuales reales y registrar decisiones humanas. No marcar estos huecos VERIFIED por especificarlos.
