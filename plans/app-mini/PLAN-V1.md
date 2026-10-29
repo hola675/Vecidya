@@ -925,6 +925,44 @@ Cada PR requiere inventario de archivos, alcance acotado, tests focales y eviden
 
 **Estado:** blueprint propuesto y documentado, sin renders, tests, implementación ni despliegue.
 
+
+## 38. DEC-18 — MiniWeb completo en Cuadra; licencias diferencian exclusivamente plantillas visuales (APROBADO, 2026-10-29)
+
+**Aclaración explícita del titular y prioridad sobre cualquier tabla anterior que sugiera restricciones de secciones por tier:** **Cuadra ($39/mes) es el producto MiniWeb completo**, no un constructor recortado. **Barrio ($59/mes) y Ciudad ($89/mes) amplían el catálogo y la calidad de las plantillas/variantes visuales**, no desbloquean secciones, módulos o herramientas funcionales del constructor. Esta decisión preserva el valor principal de Cuadra para negocios que no contratan CRM.
+
+### Matriz de derechos de MiniWeb
+| Función o recurso | Cuadra | Barrio | Ciudad |
+| --- | --- | --- | --- |
+| Editor Simple y Avanzado, personalización de contenido y diseño soportada por la plantilla | Sí | Sí | Sí |
+| Módulos y secciones soportados por MiniWeb V2 (hero, servicios, productos, galería, horarios, contacto, FAQ, etc.) | Sí | Sí | Sí |
+| Múltiples galerías, videos, horarios avanzados, historial y restauración **cuando cada función esté implementada y habilitada** | Sí | Sí | Sí |
+| Plantillas Cuadra | Sí | Sí | Sí |
+| Plantillas Barrio y variantes **Pro** de plantillas Cuadra | No | Sí | Sí |
+| Plantillas Ciudad y variantes **Premium** de plantillas de niveles anteriores | No | No | Sí |
+| Capacidad de publicaciones | Bloque base compartido de 3 por titular, ampliable solo con Cuadras adicionales según DEC-08 | Mismo bloque, no suma cupos | Mismo bloque, no suma cupos |
+| CRM/automatizaciones GHL | No implícito | Solo si lo concede licencia por organización | Solo si lo concede licencia por organización |
+
+**Definiciones:** `templateTier = cuadra | barrio | ciudad` (orden creciente); `templateVariantTier = base | pro | premium` para variantes cuando existan. El catálogo puede ofrecer varias familias y estilos en cada tier. El acceso se resuelve por el **tier mínimo exigido por la plantilla/variante**, no por tipos de módulos. Pro corresponde como mínimo a Barrio; Premium como mínimo a Ciudad. Las familias de negocio (servicios, catálogo, gastronomía, profesional) **no** determinan por sí solas un nivel ni limitan funcionalidades.
+
+### Efectos sobre decisiones y diseños anteriores
+- **DEC-12** se conserva como **asignación inicial de las cinco claves actuales**: Esencial y Servicios → Cuadra; Catálogo y Gastronomía → Barrio; Profesional → Ciudad. **No** implica que solo Barrio pueda utilizar productos, ni que solo Ciudad pueda mostrar credenciales: las secciones disponibles son comunes a todas las licencias una vez implementadas.
+- El catálogo futuro puede añadir **plantillas Cuadra para cualquier giro** (incluyendo catálogo, gastronomía y profesionales) y variantes Pro/Premium de una misma plantilla base. No confundir tipo de negocio con nivel visual.
+- **DEC-10** sigue vigente: el mayor nivel visual activo del titular se comparte entre organizaciones autorizadas; CRM, servicios y otros derechos siguen por organización.
+- **DEC-07/09/13/15/16/17** siguen vigentes: downgrade conserva snapshot publicado; vencimiento congela edición; exceso de cupos no despublica; media histórica protegida; videos detrás de gate técnico; editor en /app solo tableta/escritorio y MiniWeb público responsive.
+- **No bloquear módulos en el servidor por tier visual.** La autorización de módulos depende de permisos, validación del esquema, seguridad y disponibilidad real de la función; los tiers solo se aplican al `templateKey`/`layoutVariant` o identificador estable de variante.
+- **No confundir funcionalidad completa con recursos ilimitados:** límites técnicos objetivos de medios, almacenamiento y abuso deben ser consistentes y justificables; no inventar topes comerciales por tier ni activar videos sin controles aprobados.
+
+### Contrato de validación y pruebas focales
+1. Cuadra puede crear/publicar una MiniWeb con todas las secciones V2 disponibles, incluyendo productos, servicios, FAQ y galerías, usando una plantilla Cuadra.
+2. Cuadra no puede publicar una plantilla Barrio/Ciudad ni variante Pro/Premium sin derecho visual vigente.
+3. Barrio puede usar todas las secciones y plantillas Cuadra/Barrio, incluidas variantes Pro, pero no Ciudad/Premium.
+4. Ciudad puede usar todo el catálogo, sin adquirir módulos adicionales para el constructor.
+5. Upgrade/downgrade y multi-organización respetan DEC-07/10; no reescribir snapshots públicos ni conceder CRM a otras organizaciones.
+6. El catálogo explica visualmente la diferencia de **calidad/estilo de plantillas**, nunca una supuesta falta de secciones en Cuadra.
+7. La disponibilidad `planned` sigue bloqueando uso real hasta implementación, independientemente de tier.
+
+**Estado:** política comercial y funcional **aprobada y documentada**. Las plantillas Pro/Premium futuras son un diseño de catálogo, **no** plantillas existentes ni entregadas. No se modificó código, precios, tests ni producción.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
