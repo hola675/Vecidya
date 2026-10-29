@@ -1175,6 +1175,41 @@ Estos son **valores de diseño**, no un esquema de base de datos aprobado. El mo
 
 **Estado:** auditoría focal y ruta de implementación documentadas; sin modificación de aplicación, mockups gráficos, pruebas, merge ni deploy.
 
+
+## 44. F6 — Inventario CSS verificado y especificación responsive para prototipo (2026-10-29)
+
+**Hallazgo corregido de §43:** el CSS principal **sí existe** en `vecidya-platform/app/app.css` (no `app/styles/app.css`). La carpeta `app/styles/` contiene `cookie-consent.css`, `diagnostic-admin.css` y `vecidya-polish.css`. Se inspeccionó directamente `app/app.css` en la rama documental, sin modificarlo.
+
+### Tokens reales ya disponibles en `app.css`
+- **Marca/semánticos:** `--ink:#142b4a`, `--muted:#617188`, `--line:#e1e8f1`, `--surface:#ffffff`, `--canvas:#f7f9fc`, `--blue:#155fc5`, `--blue-dark:#104c9d`, `--orange:#bf4700`, `--success:#13795b`.
+- **Espaciado:** `--space-1:0.5rem`, `--space-2:0.75rem`, `--space-3:1rem`, `--space-4:1.5rem`, `--space-5:2rem`.
+- **Radios:** `--radius-sm:0.75rem`, `--radius-md:1.25rem`, `--radius-lg:1.75rem`; `--shadow` compartido.
+- **Tipografía:** `--font-sans:Arial, Helvetica, sans-serif`, `--text-meta:0.875rem`, `--text-label:0.8125rem`, `--content-reading:68ch`.
+- **Accesibilidad ya implementada:** reglas `:focus-visible` para controles y enlaces; `.skip-link` visible al foco. El diseño nuevo debe conservarlas.
+- **Clases reales reutilizables:** `.miniweb-template__sections`, `.miniweb-template__module--hero`, `.miniweb-content-list__items`, `.miniweb-gallery__grid`, `.miniweb-editor__workspace`, `.miniweb-editor__tabs`, `.miniweb-editor__preview`, `.app-shell`, `.organization-switcher`. La existencia de clase no demuestra por sí sola compatibilidad con V2.
+
+### Estrategia de estilo
+1. Reutilizar tokens y componentes globales; **no duplicar** un design system ni redefinir `:root` para cada plantilla.
+2. Añadir un ámbito visual por plantilla/variante (p. ej. `data-miniweb-template` + `data-miniweb-variant`), y custom properties locales de composición; nunca modificar `.app-shell` para obtener estilos públicos.
+3. Definir presets cerrados y auditables: `split/uniform-grid` para Cuadra, `asymmetric/editorial-grid` para Barrio, `immersive/narrative` para Ciudad. No permitir CSS arbitrario persistido por usuario.
+4. Preservar el comportamiento actual de `vecidya-default:standard` y snapshots V1. La composición nueva debe ser opt-in y estar detrás de registro `available` únicamente tras renderer y pruebas.
+5. CSS responsive de MiniWeb público independiente de DEC-17 (bloqueo de app/internal). No asumir que una media query de anchura por sí sola identifica teléfonos de forma segura.
+
+### Matriz de layout del prototipo (valores orientativos, no breakpoints técnicos aprobados)
+| Vista pública | Base Cuadra | Pro Barrio | Premium Ciudad |
+| --- | --- | --- | --- |
+| Móvil | Hero apilado, servicios 1 col., galería legible | Hero apilado con jerarquía editorial, mosaico simplificado | Hero editorial accesible sin superposición ilegible, narrativa apilada |
+| Tableta | Hero 2 col. solo si cabe, servicios 2 col. | Asimetría moderada, rejilla 2 col. | Composición editorial equilibrada, CTA visible |
+| Escritorio | Hero dividido, tarjetas uniformes hasta 3 col. | Hero asimétrico, rejilla editorial | Hero inmersivo, narrativa visual y galería editorial |
+
+### Casos de revisión antes de CSS definitivo
+- Fotos faltantes, logos muy anchos, títulos largos, servicios sin imágenes, galería de 1 elemento, horarios extensos y FAQ extensa.
+- Orden DOM lógico y navegación teclado; contraste sobre fotografía; `prefers-reduced-motion`; imágenes adaptativas.
+- Comparar los tres niveles con datos idénticos; la diferencia debe ser estética y compositiva, nunca de acceso a secciones.
+- Medir visualmente tableta vertical y escritorio estrecho; la política de acceso `/app` no se deriva de estas reglas de diseño público.
+
+**Estado:** inventario inicial del CSS real confirmado y contrato responsive propuesto; pendientes inspección focal de reglas MiniWeb específicas, prototipos gráficos, pruebas y aprobación visual. Sin cambios de código, merge ni despliegue.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
