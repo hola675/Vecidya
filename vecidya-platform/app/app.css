@@ -41,6 +41,12 @@
 .learn-personal-item p { margin: .35rem 0; }
 .learn-personal-item form { display: flex; flex-wrap: wrap; gap: .75rem; }
 .learn-section-progress { margin-top: 1rem; }
+.learn-progress-controls { margin-block: 1rem; }
+.learn-sync-status { color: var(--muted); font-size: .9rem; }
+.learn-sync-import { margin-block: 1rem; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); }
+.learn-sync-import button { margin-inline-end: .75rem; }
+.learn-sync-retention { display: flex; align-items: flex-start; gap: .5rem; margin-block: .75rem; font-size: .9rem; }
+.learn-sync-conflict { margin-block: .75rem; padding: .75rem; border-inline-start: .25rem solid var(--orange); background: var(--surface-warm); }
 
 * { box-sizing: border-box; }
 html { background: var(--canvas); }

@@ -9,19 +9,15 @@ export async function getLearnPersonalState(database: Database, userId: string) 
     database.select().from(learnSectionProgress).where(eq(learnSectionProgress.userId, userId)),
     database.select().from(learnFavorite).where(eq(learnFavorite.userId, userId)),
   ]);
-  return { guides, sections, favorites: favorites.map((row) => row.guideId) };
+  return { guides, sections, favorites: favorites.filter((row) => row.isFavorite).map((row) => row.guideId) };
 }
 
 export async function setLearnSectionChecked(database: Database, input: { userId: string; guideId: string; sectionId: string; revision: number; checked: boolean }) {
   const now = new Date();
   await database.insert(learnGuideProgress).values({ userId: input.userId, guideId: input.guideId, contentRevision: input.revision, lastActivityAt: now, updatedAt: now, version: 1 })
     .onConflictDoUpdate({ target: [learnGuideProgress.userId, learnGuideProgress.guideId], set: { contentRevision: input.revision, lastActivityAt: now, updatedAt: now, version: sql`${learnGuideProgress.version} + 1` } });
-  if (input.checked) {
-    await database.insert(learnSectionProgress).values({ userId: input.userId, guideId: input.guideId, sectionId: input.sectionId, contentRevision: input.revision, checkedAt: now })
-      .onConflictDoUpdate({ target: [learnSectionProgress.userId, learnSectionProgress.guideId, learnSectionProgress.sectionId], set: { contentRevision: input.revision, checkedAt: now } });
-  } else {
-    await database.delete(learnSectionProgress).where(and(eq(learnSectionProgress.userId, input.userId), eq(learnSectionProgress.guideId, input.guideId), eq(learnSectionProgress.sectionId, input.sectionId)));
-  }
+  await database.insert(learnSectionProgress).values({ userId: input.userId, guideId: input.guideId, sectionId: input.sectionId, contentRevision: input.revision, checkedAt: now, isChecked: input.checked })
+    .onConflictDoUpdate({ target: [learnSectionProgress.userId, learnSectionProgress.guideId, learnSectionProgress.sectionId], set: { contentRevision: input.revision, checkedAt: now, isChecked: input.checked, version: sql`${learnSectionProgress.version} + 1` } });
 }
 
 export async function setLearnLastSection(database: Database, input: { userId: string; guideId: string; sectionId: string; revision: number }) {
@@ -31,12 +27,9 @@ export async function setLearnLastSection(database: Database, input: { userId: s
 }
 
 export async function setLearnFavorite(database: Database, userId: string, guideId: string, favorite: boolean) {
-  if (!favorite) {
-    await database.delete(learnFavorite).where(and(eq(learnFavorite.userId, userId), eq(learnFavorite.guideId, guideId)));
-    return;
-  }
-  await database.insert(learnFavorite).values({ userId, guideId, updatedAt: new Date() })
-    .onConflictDoUpdate({ target: [learnFavorite.userId, learnFavorite.guideId], set: { updatedAt: new Date() } });
+  const now = new Date();
+  await database.insert(learnFavorite).values({ userId, guideId, isFavorite: favorite, updatedAt: now })
+    .onConflictDoUpdate({ target: [learnFavorite.userId, learnFavorite.guideId], set: { isFavorite: favorite, updatedAt: now, version: sql`${learnFavorite.version} + 1` } });
 }
 
 export async function hideLearnRecent(database: Database, userId: string, guideId: string) {

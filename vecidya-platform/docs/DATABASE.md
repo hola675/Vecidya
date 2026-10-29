@@ -46,6 +46,15 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0030 | `0030_business-profile-tiktok-youtube.sql` | Redes sociales | Añade `business_profile.tiktok_url` y `business_profile.youtube_url`, opcionales; aplicada a producción el 2026-10-28 (ver `ENVIRONMENTS.md`). |
 | 0031 | `0031_learn-access-grant.sql` | Grants Aprende | Añade un grant por `member.id`, con actor y fecha; FK a `member` en cascada para revocarlo al retirar la membresía y FK a `user` para auditar al owner. Sin backfill; no concede grants automáticamente. |
 | 0032 | `0032_learn-personal-progress.sql` | Aprende personal | Añade progreso por `(user_id, guide_id)`, checks por sección con cascada al progreso de la guía y favoritos separados; FK a `user` en cascada. Versiones, `reset_epoch`, revisión editorial y fechas. Sin backfill ni datos de organización. |
+| 0033 | `0033_learn-sync-operations.sql` | Aprende sync | Conserva tombstones/versiones para check y favorito; añade cursor de dispositivo y recibos idempotentes con unique `(user, device, sequence)`. Sin backfill; defaults conservan checks y favoritos de 0032. |
+
+### Migración local — `0033_learn-sync-operations` (checkpoint F5)
+
+**Alcance:** conservar tombstones `unchecked` y `unfavorite` con versiones por target; agregar recibos idempotentes y cursor por dispositivo para `client_sequence`. Los recibos no guardan contenido editorial, solo operación/resultado/versión. La cola local expira a los 30 días. La política propuesta de 90 días para recibos todavía no está aplicada (hoy no hay purga automática); ambas propuestas requieren revisión legal/operativa antes de habilitar la sincronización en producción.
+
+**Riesgo y rollback:** aditivo, con defaults que interpretan checks/favoritos F4 existentes como activos. Revertir el Worker y conservar las columnas/tablas; no borrar progreso ni recibos. Wrangler local aplicó migraciones `0000–0033` y la certificación Worker/D1 F5 verificó sync, replay, dispositivos independientes y barrera de reset. Ningún D1 remoto se inspecciona o modifica.
+
+**Gate pendiente fuera del código:** revisión de privacidad, retención, aviso y exportación/borrado antes de activar sync/importación en producción. Si no se aprueba, mantener el servicio cerrado por despliegue/feature flag; no inferir consentimiento legal a partir de una acción de UI.
 
 ### Plan de migración — `0032_learn-personal-progress`
 

@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — sincronización (Fase 5; checkpoint local)
+
+`pnpm run test:e2e:learn-entitlement` **PASS** en Worker/D1 local efímera `0000–0033`: autentica el POST de sync, aplica operación, reproduce `operation_id` sin duplicar recibos, acepta checks independientes desde dos dispositivos con versión base previa y bloquea el replay con época anterior al reset. `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/learn/learn-offline.test.ts`: **5/5 PASS** para aislamiento de cuenta, secuencia/dispositivo, expiración, límite, importación reidentificada y descarte seguro de cola obsoleta. Suite unitaria completa, typecheck, build, `pnpm exec drizzle-kit check` y `git diff --check`: **PASS**. No cubre el flujo offline visual en navegador ni la resolución concurrente de dos escrituras al mismo target; CI de PR pendiente. No está desplegado y `main@67c2d1fa` sigue sin esta fase.
+
 ## APRENDE-PLAN-V1 — progreso personal (Fase 4; en curso)
 
 `pnpm run test:e2e:learn-entitlement`: **PASS** en Worker y D1 local efímera tras aplicar `0000–0032`. Verifica creación de las tablas personales, FK/cascada de checks, favorito separado del progreso, check/uncheck autenticado, acceso a `/app/aprende` sin organización activa, favorito de guía protegida sin entitlement y conservación tras revocar el grant; conserva las matrices owner/admin, ciclo de vida, licencias, CSRF y revocación. `pnpm run test:unit` **1.756/1.756 PASS**, QA pública **PASS** (48 guías, 6 categorías, 9 itinerarios y viewports 320/390/768/1366), typecheck/build/diff-check **PASS**. La primera ejecución E2E se detuvo antes de arrancar por ausencia de `build/client`; se generó con build y la repetición completa pasó. D1 temporal; sin acceso remoto.
