@@ -1976,3 +1976,78 @@ D-V9-001 a D-V9-031 APPROVED en sus alcances respectivos; D-V9-032 PENDING. Micr
 
 ## Changelog adicional
 - **1.31.0 / 2026-10-29:** D-V9-031 aprobada; permiso global reversible y exclusiones individuales, precedencia, nueve tareas PLAN-CONS01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 40. Decisión D-V9-032 — aviso general, señales discretas y recordatorio de textos no conservados (aprobada 2026-10-29)
+**Aprobación expresa:** «aviso general breve, señales contextuales discretas en campos de texto libre excluidos y recordatorio al reanudar si faltan textos». Estado APPROVED; exclusivamente PLAN_ONLY.
+
+### 40.1. Contrato de comunicación
+1. Mostrar **un aviso general breve y comprensible** al configurar la privacidad del borrador: las respuestas estructuradas se conservan temporalmente, mientras el texto libre solo se guarda con autorización global explícita y sin exclusión individual, conforme a D-V9-030–031.
+2. En cada campo de texto libre **excluido del guardado**, mostrar una **señal contextual discreta**, accesible y no intrusiva que indique que esa respuesta no estará disponible al reanudar. La señal no debe depender únicamente de color o iconografía.
+3. Al **reanudar** una evaluación con respuestas libres no conservadas, mostrar **un recordatorio proporcionado** que explique la ausencia de esos textos y, cuando corresponda, permita revisar o volver a responder sin presentar contenido inexistente como recuperado.
+4. Evitar repetir el aviso general en cada pantalla, mostrar advertencias alarmistas o introducir fricción para presionar a activar el guardado.
+5. La señal contextual debe reflejar el **estado real**: preferencia global desactivada, exclusión individual activa o texto no recuperable. No afirmar «guardado» antes de una persistencia confirmada.
+6. Cuando el usuario active o revoque la preferencia global o modifique exclusiones, actualizar las señales sin navegación inesperada, pérdida silenciosa de respuesta activa ni consentimiento implícito.
+7. La reanudación no debe mostrar ni reconstruir texto que no se conservó; el recordatorio debe describir **qué tipo de información falta**, sin revelar el contenido ausente.
+8. La ausencia de texto libre puede afectar evidencia crítica: aplicar D-V9-017–020 para aclaración, insuficiencia de evidencia y presupuesto de 24+5; no asignar madurez ficticia ni duplicar turnos previamente contabilizados.
+9. Avisos, señales, recordatorios y controles de privacidad **no son interacciones contables** D-V9-020, salvo que se presente una nueva pregunta/aclaración sustantiva que sí requiera respuesta.
+10. Ofrecer microcopy equivalente y certificado en **español e inglés**, apto para móvil, teclado y lector de pantalla; respetar movimiento reducido y jerarquía visual premium D-V9-021–023.
+11. No utilizar estos avisos para marketing, registro obligatorio ni GHL. Mantener separados borrador anónimo local y reclamación de informe D-V9-005.
+12. No almacenar texto excluido para poder generar el recordatorio. Como máximo, usar **metadatos mínimos no sensibles** que indiquen que un campo no fue persistido, sujetos a minimización, caducidad de siete días y auditoría de privacidad.
+13. El texto final, ubicación exacta, frecuencia de recordatorios y semántica de estados quedan sujetos a diseño y revisión editorial/accesibilidad; no presumir que existen componentes implementados.
+
+### 40.2. Matriz de momentos y mensajes conceptuales
+| Momento | Comunicación esperada | Restricción |
+| --- | --- | --- |
+| Configuración inicial de privacidad | Aviso general breve | Sin casillas premarcadas ni presión |
+| Campo libre excluido | Señal discreta «No se guardará para continuar después» (texto ilustrativo) | Accesible y contextual |
+| Campo libre incluido y guardado | Estado veraz de guardado | Solo tras confirmación |
+| Revocación de permiso global | Actualizar señales y explicar alcance de limpieza | Sin prometer borrado físico absoluto |
+| Reanudación con textos ausentes | Recordatorio breve y opciones de revisión | Sin reconstruir contenido |
+| Reanudación sin textos ausentes | Sin recordatorio innecesario | Evitar ruido |
+| Caducidad del borrador | Mensaje de vencimiento D-V9-028 | No presentar como texto excluido |
+Los ejemplos de microcopy son ilustrativos, no textos editoriales certificados.
+
+### 40.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-NOTICE01 | Inventariar avisos y estados de guardado existentes V9/QBV2 | Archivos, contratos y SHA | No asumir implementación |
+| PLAN-NOTICE02 | Definir estados y disparadores de aviso general/señal/recordatorio | Tabla evento×estado×mensaje | Sin avisos duplicados |
+| PLAN-NOTICE03 | Diseñar microcopy bilingüe certificado | Banco es/en de mensajes y variantes | Revisión editorial |
+| PLAN-NOTICE04 | Diseñar ubicación y accesibilidad de señales | Flujos móvil/escritorio, teclado y lector | Sin dependencia exclusiva de color |
+| PLAN-NOTICE05 | Especificar metadatos mínimos de texto no conservado | Matriz dato×finalidad×TTL | Sin persistir texto excluido |
+| PLAN-NOTICE06 | Diseñar reanudación con texto faltante y evidencia crítica | Diagrama de aclaración/insuficiencia | D-V9-017–020 |
+| PLAN-NOTICE07 | Documentar relación con preferencia global y exclusiones | Tabla de transiciones y revocación | D-V9-030–031 |
+| PLAN-NOTICE08 | Preparar pruebas focalizadas futuras de avisos y privacidad | Matriz es/en, C01–C10, reanudación y errores | No ejecutar en PLAN_ONLY |
+| PLAN-NOTICE09 | Revisar tono premium no manipulativo y movimiento reducido | Checklist UX y accesibilidad | D-V9-021–023 |
+
+### 40.4. Criterios de aceptación futuros
+1. Existe un aviso general breve al configurar privacidad.
+2. El aviso distingue uso activo y guardado para reanudación.
+3. El guardado de texto libre sigue desactivado por defecto.
+4. Cada campo libre excluido muestra una señal contextual comprensible.
+5. La señal no depende exclusivamente del color.
+6. El estado de «guardado» solo se muestra tras confirmación.
+7. Revocar permiso actualiza las señales sin navegación accidental.
+8. No se repite el aviso general en cada pregunta.
+9. Reanudar con texto no conservado presenta recordatorio proporcionado.
+10. Reanudar sin texto faltante no muestra recordatorio innecesario.
+11. El recordatorio no revela ni reconstruye texto ausente.
+12. El usuario puede revisar el campo faltante cuando corresponda.
+13. El sistema no inventa evidencia crítica al reanudar.
+14. Aclaraciones nuevas respetan contador 24+5 y consentimiento.
+15. Avisos y señales no consumen turnos.
+16. Microcopy es/en mantiene equivalencia semántica.
+17. Teclado, lector de pantalla y movimiento reducido conservan información.
+18. No se crean copias de texto excluido en metadatos o telemetría.
+19. Se respeta TTL local de siete días sin respaldo servidor.
+20. Los mensajes no condicionan el diagnóstico a cuenta, GHL ni marketing.
+
+### 40.5. Próxima decisión D-V9-033 — recuperar evidencia crítica no persistida
+Alternativas pendientes: **A** pedir nuevamente toda respuesta libre ausente; **B** pedir solo textos ausentes que sean evidencia crítica para una conclusión, respetando 24+5 (recomendado); **C** no volver a preguntar y marcar automáticamente evidencia insuficiente. Ninguna opción aprobada. En cualquier caso, no duplicar turnos por reapertura de preguntas ya contabilizadas y no exceder 24+5 sin consentimiento.
+
+### 40.6. Estado
+D-V9-001 a D-V9-032 APPROVED en sus alcances respectivos; D-V9-033 PENDING. Microcopy final y detalles de interfaz PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.32.0 / 2026-10-29:** D-V9-032 aprobada; comunicación general/contextual y recordatorio de texto libre ausente, nueve tareas PLAN-NOTICE01–09, veinte criterios de aceptación y siguiente decisión. Solo documentación.
