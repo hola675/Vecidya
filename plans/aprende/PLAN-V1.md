@@ -1,6 +1,6 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN DE FASES 1–3 EN CURSO · **Propietario de ejecución:** agente designado por el usuario.
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / FASES 1–5 INTEGRADAS; FASE 6 PENDIENTE · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
 **Alcance original de planificación:** únicamente documentación en `plans/`. La implementación posterior fue autorizada por el usuario y se ejecuta en checkpoints de aplicación aislados; no implica autorización de deploy ni cambios D1 remotos.
 
@@ -20,12 +20,12 @@
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
 | Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
-| Fase 1 — identidad editorial y DTOs seguros | [~] Implementación integrada; validación editorial pendiente | PR #183; manifest/DTOs; revisión y aceptación editorial 6/42 pendiente |
-| Fase 2 — licencias y grants | [~] Implementado e integrado por PR #185 | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; sin deploy |
-| Fase 3 — catálogo, previews y retorno | [~] Implementado en rama; PR #186 pendiente | Filtros/etiquetas, retorno allowlisted y activación manual; QA local pasa; CI/integración pendientes |
-| Fase 4 — progreso y favoritos D1 | [ ] Sin implementación | Tests de persistencia personal |
-| Fase 5 — sincronización y anonimato | [ ] Sin implementación | Tests de concurrencia e importación |
-| Fase 6 — itinerarios y UX | [ ] Sin implementación | QA accesible móvil |
+| Fase 1 — identidad editorial y DTOs seguros | [~] Integrada; validación editorial pendiente | PR #183; manifest/DTOs; revisión y aceptación editorial 6/42 pendiente |
+| Fase 2 — licencias y grants | [~] Integrada por PR #185 | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; sin deploy |
+| Fase 3 — catálogo, previews y retorno | [x] Integrada por PR #186 | Filtros/etiquetas, retorno allowlisted y activación manual; QA y CI PASS |
+| Fase 4 — progreso y favoritos D1 | [x] Integrada por PR #187 | Migración `0032`, progreso personal, favoritos, reset epoch; Worker/D1, QA y CI PASS |
+| Fase 5 — sincronización y anonimato | [x] Integrada por PR #190 | Migración `0033`, sync idempotente, importación con consentimiento y cola temporal; Worker/D1 y CI PASS; producción pendiente de revisión de retención |
+| Fase 6 — itinerarios y UX | [ ] No iniciada (siguiente fase autorizada) | QA accesible móvil |
 | Fase 7 — certificación y lanzamiento | [ ] Sin implementación | Evidencia focal, autorización de merge/deploy |
 
 **Lectura rápida:** §0 instrucciones; §§1–7 requisitos y contratos; §8 fases; §§9–16 validaciones, decisiones y PR; §17 bitácora; §§18–29 evidencias y decisiones ampliadas; §30 handoff. **En caso de discrepancia, las decisiones posteriores explícitas (§§19,25,27–29) refinan las propuestas anteriores, pero nunca sustituyen una decisión APROBADO sin confirmación del usuario.**
@@ -412,13 +412,13 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
 | 2026-10-29 | Fase 3: catálogo, preview y retorno | INTEGRADA | PR #186 en `main@9b39ffde`; 1.756 unitarias, QA responsive, typecheck/build/diff-check y CI PASS |
 | 2026-10-29 | Fase 4: progreso y favoritos personales | INTEGRADA | PR #187 en `main@67c2d1fa`; `0032`, Worker/D1 E2E, aislamiento, reset epoch, favoritos tras revocación, unitarias, QA, typecheck/build y CI PASS |
-| 2026-10-29 | Fase 5: sync, anónimo y offline temporal | CANDIDATO LOCAL / CI PENDIENTE | `0033`, cola/consentimiento/logout y POST transaccional; Worker/D1 comprueba dos dispositivos, replay y reset; cola 5/5, typecheck/build/Drizzle PASS; sin purga de recibos aprobada, sin CI, D1 remota ni deploy |
+| 2026-10-29 | Fase 5: sync, anónimo y offline temporal | INTEGRADA / PRODUCCIÓN PENDIENTE | PR #190 en `main@3d91f15d`; `0033`, cola/consentimiento/logout y POST transaccional; Worker/D1 dos dispositivos, replay/reset, cola 5/5 y tres workflows CI PASS. Sin D1 remota ni deploy; retención de recibos pendiente de revisión legal/operativa |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
 | — | Fases 6–7 | NO INICIADAS | UX de itinerarios y certificación final |
 
-**Siguiente checkpoint:** terminar Fase 5 en `feat/aprende-v1-sync`; la selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha desplegado ni aplicado migración de forma remota.
+**Siguiente checkpoint:** iniciar Fase 6 (itinerarios, recomendaciones y UX avanzada) en rama/checkpoint dedicado. Antes de producción deben resolverse la selección editorial gratuita y la revisión legal/operativa de retención; no se ha desplegado ni aplicado migración de forma remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
