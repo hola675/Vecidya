@@ -1,3 +1,7 @@
+## APP-MINI-V2B — checkpoint de compatibilidad (2026-10-29)
+
+Implementación aislada de lectura V1/V2, sin habilitar V2 en publicación. V1 se delega al parser existente; V2 exige identidad de instancias, orden único, hero obligatorio y estructura estricta. Falta validar en CI y revisar contratos contra el registro canónico antes de integrar. No fusionar sin revisión.
+
 ## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
 La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
