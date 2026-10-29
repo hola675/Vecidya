@@ -543,3 +543,24 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Condiciones de aceptación de Fase 0:** esquema y journal revisados; tests existentes leídos (no solo inventariados); contrato de endpoints y autorización cerrado; estrategia de conflictos definida; amenazas de filtración cubiertas por tests; lista de rutas/archivos impactados y plan de rollback. Hasta entonces Fase 0 continúa abierta.
 
 **Estado:** inventario confirmado; pruebas no ejecutadas; ninguna migración ni código modificado.
+
+
+## 24. Fase 0 — lectura del journal y contratos de pruebas existentes
+
+**Fuentes inspeccionadas:** `db/migrations/meta/_journal.json`, `tests/unit/learn/learn-publication-boundary.test.ts`, `tests/unit/invitations/invitation-rules.test.ts`, `tests/unit/auth/organization-http-surface.test.ts`, `tests/e2e/aprende-public-qa-check.mjs`. Revisión estática; no se ejecutaron tests.
+
+**Journal:** `version: 7`, `dialect: sqlite`, 31 entradas indexadas 0..30, última `0030_business-profile-tiktok-youtube`. El futuro agente debe volver a consultar el HEAD antes de reservar nombre de migración y no tocar D1 remota.
+
+**Incompatibilidad de pruebas a resolver durante implementación:** la suite editorial actual comprueba que las 48 guías estén publicadas y sean accesibles; eso debe preservarse **como 48 URLs de preview**, pero no como 48 cuerpos completos anónimos. El E2E público exige 48 enlaces, 48 HTTP 200, sitemap con 48 URLs, seis temas y nueve itinerarios; esas expectativas son compatibles con previews públicas, pero cualquier aserción de cuerpo completo de las 42 guías protegidas debe actualizarse expresamente. No relajar la comprobación de 48 publicaciones ni convertir 42 URLs en 404. Diferenciar claramente `published` de `freeFullAccess`.
+
+**Pruebas de invitación:** `invitation-rules.test.ts` verifica invitación pendiente, cancelada, rechazada, expirada, correo incorrecto, correo sin verificar y aceptación; `organization-http-surface.test.ts` bloquea por defecto endpoints del plugin Organization fuera de allowlist. El nuevo grant Aprende deberá exponerse por una ruta propia con controles de autorización, sin ampliar la allowlist general del plugin ni abrir registro público.
+
+**Adaptación focal recomendada:**
+1. Conservar `learn-publication-boundary.test.ts` para publicación editorial y añadir test de proyección pública que compruebe ausencia de `sections` y `blocks`.
+2. Ajustar `aprende-public-qa-check.mjs` para exigir 48 previews 200, 6 cuerpos gratuitos completos y 42 previews sin texto protegido, incluyendo SSR/hidratación; conservar conteos, sitemap, responsive y borradores.
+3. Añadir tests aislados para el guard de registro por invitación, y para concesión/revocación de Aprende sin depender de rol admin.
+4. No ejecutar `test:unit` general ni toda la batería E2E como condición de cada cambio. Ejecutar archivos afectados y, al cierre, solo las pruebas focalizadas acordadas.
+
+**Riesgo concreto:** si se reutiliza `getPublicLearnArticles` como respuesta JSON pública, se serializan objetos con secciones. Separar función editorial de funciones de DTO público; no cambiar la semántica editorial de publicación.
+
+**Pendiente de Fase 0:** revisar scripts de migración/rollback, tablas auth reales y prueba de seguridad de artefactos build; cerrar contrato de concurrencia para sync. No hay implementación autorizada.
