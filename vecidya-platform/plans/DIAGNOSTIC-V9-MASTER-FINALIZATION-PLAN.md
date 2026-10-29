@@ -231,3 +231,53 @@ D-V9-001 DIGITAL: APPROVED. D-V9-002 cobertura completa: APPROVED. D-V9-003 pres
 
 ## Changelog adicional
 - **1.3.0 / 2026-10-29:** D-V9-002 aprobada, matriz mínima de diez escenarios, implicaciones por fase y siguiente decisión D-V9-003. Solo documentación.
+
+
+## 11. Decisión de producto D-V9-003 — modelo híbrido de resultados (aprobada 2026-10-29)
+**Aprobación expresa:** «modelo híbrido, niveles claros y números solo con evidencia y calibración suficiente». Estado: APPROVED para el diseño; no autoriza implementación.
+
+### 11.1. Contrato funcional de resultados
+- **Salida comprensible:** comunicar, para cada dimensión aplicable, un nivel cualitativo sustentado, fortalezas, oportunidades, límites de evidencia y próximos pasos.
+- **Insuficiencia de evidencia:** si no hay sustento suficiente para un nivel, mostrar «evidencia insuficiente» (etiqueta provisional), sin sustituirlo por nivel bajo, cero o ausencia de capacidad.
+- **Salida numérica condicionada:** permitir puntuación por dimensión solo cuando existan reglas de calibración aprobadas, cobertura mínima, validación de aplicabilidad y pruebas de estabilidad. No asumir que el modelo actual cumple estas condiciones.
+- **Puntuación global condicionada:** no calcular ni mostrar una nota global hasta aprobar explícitamente agregación, ponderación, tratamiento de dimensiones no aplicables, incertidumbre y umbral de cobertura transversal.
+- **Contexto no equivale a desempeño:** estado preparing/operating/paused, existencia de clientes, sector, modalidad o herramientas instaladas no generan una nota por sí mismos.
+- **Explicabilidad:** cada conclusión y prioridad debe enlazar evidencia válida, regla y versión; separar observaciones, inferencias y acciones propuestas.
+- **Neutralidad:** no aumentar ni reducir puntuaciones por contratar servicios, tener perfil en Vecindario, usar MiniWeb, GHL o consumir Aprende.
+
+### 11.2. Especificación que el agente deberá completar antes de programar
+| ID | Tarea de especificación | Salida verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-R01 | Definir etiquetas públicas de niveles y sus significados, sin suponer umbrales | Diccionario de niveles con ejemplos por etapa | Aprobación editorial |
+| PLAN-R02 | Definir aplicabilidad por dimensión y estado no evaluable | Matriz dimensión × contexto | Ningún no aplicable recibe nota |
+| PLAN-R03 | Definir evidencia directa/de apoyo, contradicción y cobertura | Tabla de fuentes y precedencia | Cada conclusión rastreable |
+| PLAN-R04 | Definir reglas de suficiencia cualitativa y numérica | Umbrales y justificación por dimensión | Sin números con evidencia insuficiente |
+| PLAN-R05 | Auditar calibración y pesos existentes; proponer cambios sin ejecutarlos | Comparación de algoritmos y casos límite | Aprobación técnica/producto |
+| PLAN-R06 | Diseñar informe, representación de incertidumbre y prioridades | Maquetas textuales y ejemplos C01–C10 | Comprensible para negocios sin ventas |
+| PLAN-R07 | Determinar si existe score global y condiciones de publicación | Decisión explícita y regla de agregación o prohibición | No publicar nota global por defecto |
+| PLAN-R08 | Especificar pruebas focalizadas y regresiones futuras | Matriz entrada→resultado esperado | Cobertura de valores desconocidos y no aplicables |
+
+### 11.3. Casos de aceptación obligatorios (a especificar; no ejecutados)
+1. Preparación sin clientes: no recibe nota negativa por ausencia de ventas; puede recibir orientación cualitativa cuando exista evidencia.
+2. Negocio en pausa con historial: no se presenta actividad histórica como desempeño digital actual.
+3. Organización sin compra directa: la ausencia de ventas no perjudica una dimensión digital no comercial.
+4. Dimensión no aplicable: no figura como cero ni contamina agregación.
+5. Respuestas unknown/unanswered: incertidumbre visible y no convertida en evidencia negativa.
+6. Evidencia contradictoria: resultado no afirma certeza injustificada; explica límites.
+7. Cobertura parcial: niveles solo donde se justifican; números omitidos cuando no hay calibración suficiente.
+8. Recomendación comercial: no altera puntuación, madurez ni prioridad de una acción por sí misma.
+
+### 11.4. Pendientes deliberados
+- Etiquetas finales de niveles: los identificadores históricos initial/functional/structured/ready_to_grow/ready_to_scale son referencia técnica, **no aprobados como lenguaje público V9**.
+- Umbrales de suficiencia, pesos, confianza, score global y agregación: PENDING.
+- Diseño visual de informe y política de persistencia: PENDING.
+- Presupuesto de preguntas y condiciones para excederlo: PENDING.
+
+### 11.5. Siguiente decisión D-V9-004 — duración de la entrevista
+A: objetivo de hasta 24 interacciones, ampliación solo por evidencia crítica justificada; B: límite rígido de 24 y resultado parcial cuando falte evidencia; C: recorrido variable según necesidad, sin máximo inicial, con control de fatiga. La cifra 24 procede de la propuesta de producto y **no es un límite aprobado todavía**.
+
+### 11.6. Estado
+D-V9-001 DIGITAL: APPROVED. D-V9-002 cobertura completa: APPROVED. D-V9-003 modelo híbrido: APPROVED. D-V9-004 duración: PENDING. **PLAN_ONLY** sin excepciones.
+
+## Changelog adicional
+- **1.4.0 / 2026-10-29:** modelo híbrido aprobado; contrato cualitativo/numérico, tareas PLAN-R01–R08, ocho escenarios de aceptación y próxima decisión D-V9-004. Documentación exclusivamente.
