@@ -231,6 +231,19 @@ try {
       }
       await activePage.locator(".learn-article-toc a").first().focus();
       assert(await activePage.locator(".learn-article-toc a").first().evaluate((node) => document.activeElement === node), "El índice no es accesible por teclado.");
+      const reviewHeading = activePage.getByRole("heading", { name: "Repaso opcional: comprueba lo aprendido" });
+      assert(await reviewHeading.isVisible(), "El repaso se presenta como actividad opcional.");
+      const reviewSummary = activePage.locator(".learn-article-review summary").first();
+      await reviewSummary.focus();
+      await reviewSummary.press("Enter");
+      assert(await reviewSummary.locator("xpath=..").getAttribute("open") !== null, "El repaso se puede abrir por teclado.");
+      await reviewSummary.press("Space");
+      assert(await reviewSummary.locator("xpath=..").getAttribute("open") === null, "El repaso se puede cerrar por teclado.");
+      const skipReview = activePage.getByRole("link", { name: "Omitir el repaso y ver otras guías" });
+      await skipReview.focus();
+      assert(await skipReview.evaluate((node) => document.activeElement === node), "El enlace para omitir el repaso recibe foco de teclado.");
+      await skipReview.click();
+      assert(await activePage.getByRole("heading", { name: "Otras guías de Aprende Vecidya" }).isVisible(), "Omitir repaso mueve el foco visual a otras guías.");
       await noHorizontalOverflow(activePage, width + "px artículo");
       assert.deepEqual(pageErrors, [], width + "px artículo: error JavaScript.");
       await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled" });
