@@ -33,7 +33,14 @@ export async function setLearnFavorite(database: Database, userId: string, guide
 }
 
 export async function hideLearnRecent(database: Database, userId: string, guideId: string) {
-  await database.update(learnGuideProgress).set({ hiddenRecentAt: new Date(), updatedAt: new Date() })
+  const now = new Date();
+  await database.update(learnGuideProgress).set({ hiddenRecentAt: now, updatedAt: now, version: sql`${learnGuideProgress.version} + 1` })
+    .where(and(eq(learnGuideProgress.userId, userId), eq(learnGuideProgress.guideId, guideId)));
+}
+
+export async function restoreLearnRecent(database: Database, userId: string, guideId: string) {
+  const now = new Date();
+  await database.update(learnGuideProgress).set({ hiddenRecentAt: null, updatedAt: now, version: sql`${learnGuideProgress.version} + 1` })
     .where(and(eq(learnGuideProgress.userId, userId), eq(learnGuideProgress.guideId, guideId)));
 }
 

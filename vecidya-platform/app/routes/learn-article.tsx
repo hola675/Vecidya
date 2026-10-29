@@ -251,8 +251,9 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ))}
               <p><a href="#contenido">Volver al inicio del contenido ↑</a></p>
               <section className="learn-article-review" aria-labelledby="learn-review-title">
-                <h2 id="learn-review-title">Comprueba lo aprendido</h2>
-                <p>Antes de continuar, responde con tus propias palabras y abre cada pista para comprobarlo.</p>
+                <h2 id="learn-review-title">Repaso opcional: comprueba lo aprendido</h2>
+                <p>Si te sirve, responde con tus propias palabras y abre cada pista. Saltarlo no cambia tu progreso.</p>
+                <p><a href="#learn-related-title">Omitir el repaso y ver otras guías</a></p>
                 <ol>
                   {article.enPocasPalabras.map((point, index) => (
                     <li key={point}>
