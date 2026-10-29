@@ -1560,3 +1560,49 @@ El plan `SERVICIOS-PAGOS-PLAN-V1.md` mantiene su propia secuencia **B0→B7**. S
 | QA F9 | Matriz de regresión acotada, métricas, reversión | Informe por SHA y entorno, aceptación responsable | Certificar solo por diseño |
 
 **Riesgos abiertos:** divergencia DEC-12/DEC-18 (CAT-01), tarifas no verificadas (COM-01), aceptación visual (VIS-01), gobernanza documental (GOV-01), alcance de pagos (REL-01). No establecer fecha de lanzamiento sin resolver la ruta crítica y capacidad de ejecución.
+
+
+## 58. Auditoría de huecos y contradicciones — registro para resolución (2026-10-29)
+
+**Método:** contraste documental de §21, §34, §37–57, `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md`. Esta revisión identifica inconsistencias verificables dentro de la planificación; **no certifica** el estado del código de main ni reemplaza pruebas. Cada hueco conserva ID, gravedad, dueño funcional y cierre exigido.
+
+### 58.1 Hallazgos priorizados
+
+| ID | Severidad | Hueco / evidencia documental | Resolución propuesta y gate |
+| --- | --- | --- | --- |
+| GAP-01 | Bloqueante | §21 F1 promete shell móvil/escritorio y F7 completar editor desde móvil, mientras DEC-17 (§36) bloquea /app y /internal en móvil | **Corregir interpretación:** DEC-17 prevalece; editor solo tableta/escritorio y MiniWeb público móvil. Tests de guard por superficie y viewport |
+| GAP-02 | Bloqueante | DEC-12 (§34) reserva claves de familias a Barrio/Ciudad, DEC-18 (§38) exige MiniWeb completo desde Cuadra y §56 propone Base por familia | **CAT-01:** solicitar aprobación explícita para Base en cinco familias desde Cuadra, Pro Barrio, Premium Ciudad. Hasta aprobación, mantener DEC-12 y no anunciar familias planned |
+| GAP-03 | Alto | §51 y `CONTRATO-VARIANTES-V2.md` llaman V2-D al renderer; PR #194 es lector D1 | Mantener PR #194 como V2-D y usar V2-E renderer, V2-F editor, V2-G QA; sincronizar contrato antes de integración |
+| GAP-04 | Alto | §21 F4 propone retención/GC y §34 DEC-15 prohíbe borrado físico automático en V2 inicial | DEC-15 prevalece: historial append-only y medios referenciados preservados; GC solo fase posterior con política aprobada y test restore |
+| GAP-05 | Alto | §21 F6 describe niveles como Cuadra esencial/Barrio avanzado/Ciudad completo; DEC-18 exige funcionalidad igual | Reescribir en ejecución como Base/Pro/Premium **solo visual**, con misma matriz de módulos en todos los tiers |
+| GAP-06 | Alto | §21 F2A menciona organizaciones autorizadas sin licencia CRM; faltan reglas exactas de autorización de MiniWeb por organización | Especificar permiso de organización + derecho visual por billing_account + cuota independiente; probar owner/delegado, membresía revocada y cross-tenant |
+| GAP-07 | Alto | El reader V2-D obtiene licencias D1 pero no hay ruta integrada que demuestre autorización del solicitante antes de consultar titular | Crear integración server-side que resuelva titular desde sesión/organización autorizada; nunca aceptar billingAccountId del cliente sin verificación |
+| GAP-08 | Alto | Capacidad +3 por Cuadra adicional definida, pero ledger, transferencias y reserva concurrente no implementados | Contrato de ocupación atómica y ampliación explícita, pruebas 0/3/6/9, sobrecupo y transferencias |
+| GAP-09 | Alto | Modelo V2 permite instancias repetibles, pero V1 indexa por tipo e IDs DOM por tipo | Renderer y writer versionados con instanceId estable, hero único, dos galerías y compatibilidad de snapshots |
+| GAP-10 | Alto | Restauración/historial definidos, pero límites de tamaño, referencias R2 y fallo parcial no están cerrados | Presupuesto medido de configuración y medios; transacción/CAS, referencias y restauración con archivos ausentes |
+| GAP-11 | Alto | §45–50 dispone de prototipo y harness pero sin nueve capturas del artefacto real | Ejecutar Playwright sobre HTML exacto; revisar visualmente 3×3 y accesibilidad antes de aprobar VIS-01 |
+| GAP-12 | Alto | Cinco familias descritas, cuatro planned; no hay diseño final ni renderer real para todas | Inventario por familia, variante, fixture, estado y aceptación; no cambiar a available sin prueba |
+| GAP-13 | Alto | Servicios/pagos describe entidades y tarifas de referencia, pero no PSP, jurisdicción, impuesto ni contrato de impago | PAY-01/BILL-02 y COM-01 con responsables; ningún cobro o tarifa pública sin aprobación |
+| GAP-14 | Alto | PR #184 contiene tres Markdown nuevos; gobierno limita número de documentos canónicos | Consolidar o aprobar excepción GOV-01; actualizar índice y canónicos sin duplicar fuentes de verdad |
+| GAP-15 | Medio | §21 F9 y §53/54 exigen pruebas, pero faltan responsables, calendario de integración y rollback probado | OPS-01, evidencias por SHA/entorno, runbook de reversión y aceptación explícita |
+| GAP-16 | Medio | UX de pantalla comercial mezcla importes estimados y reales sin definición de frescura | Mostrar fuente, timestamp, estado estimado/conciliado, moneda y periodo; pruebas de ausencia de datos |
+| GAP-17 | Medio | Decisión de vídeos condiciona activación a costes/seguridad; catálogo visual podría sugerir soporte inmediato | Feature flag apagado hasta evaluación de capacidad, proveedor, abuso, privacidad y límites; fallback sin vídeo |
+| GAP-18 | Medio | Varias secciones históricas de PLAN-V1 conservan redacción previa a DEC-17/18 | Añadir nota de precedencia y limpiar contradicciones en revisión editorial final; no borrar historia de decisiones |
+
+### 58.2 Regla de precedencia para agentes
+
+1. Las decisiones **explícitamente aprobadas y posteriores** prevalecen sobre propuestas y texto histórico (DEC-17 sobre §21 F1/F7; DEC-18 sobre §21 F6).
+2. Una propuesta nueva (CAT-01, REL-01, PAY-01) **no sustituye** una decisión aprobada sin aprobación del titular.
+3. El código real, los PR y la CI del SHA exacto determinan qué está implementado/probado; la documentación no lo certifica.
+4. Las reglas de seguridad de cierre seguro prevalecen ante ausencia de permisos, tarifa, licencia, capacidad o versión.
+
+### 58.3 Plan de resolución sin bloquear trabajo seguro
+
+- **Ronda R1 — corrección documental sin nuevas decisiones:** GAP-01, 03, 04, 05, 18. Unificar contrato y notas de precedencia; mantener histórico trazable.
+- **Ronda R2 — contratos técnicos:** GAP-06, 07, 08, 09, 10, 16, 17. Resolver mediante PRs focales y pruebas de autorización, CAS, instancias y recursos.
+- **Ronda R3 — evidencia visual y comercial:** GAP-02, 11, 12, 13. CAT-01, VIS-01, COM-01, PAY-01 y BILL-02 requieren aprobación o evidencia.
+- **Ronda R4 — gobernanza y release:** GAP-14, 15. Conciliar canónicos, roles, gates y rollback.
+
+**Cierre de hueco:** registrar `OPEN → SPECIFIED → IMPLEMENTED → VERIFIED → CLOSED`, responsable, PR/SHA, test focal y evidencia de aceptación. Un hueco documentado no se considera solucionado; ningún cierre se infiere de una ejecución CI no relacionada.
+
+**Resultado:** 18 huecos registrados; cinco contradicciones documentales priorizadas en R1, y el resto con gate explícito. El plan sigue **en consolidación**, no certificado como cerrado.
