@@ -1,3 +1,7 @@
+## APP-MINI-V2A — registro visual puro (candidato en PR #188, 2026-10-29)
+
+Se añade un catálogo tipado aislado de variantes Base/Pro/Premium, sin activar plantillas ni alterar el registro V1, el editor, el renderer, la facturación o GHL. El checkpoint posterior V2-B (lector dual V1/V2) no está iniciado. PR #188 permanece en borrador; no hay merge ni despliegue. Pendiente ejecutar pruebas focales, typecheck y build en checkout completo.
+
 ## APRENDE-PUBLIC-QA-01-A11Y — auditoría integral pendiente
 
 La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
