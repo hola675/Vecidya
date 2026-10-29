@@ -2324,3 +2324,51 @@ Checklist de preproducción: decisiones aplicables aprobadas, SHA exacto, diff r
 | PAY-01/BILL-02 | DEFERRED | proveedor, fiscalidad y facturación automática P6B | responsable del proyecto |
 
 **Resultado de planificación:** paquetes de aprobación VIS-01, SEC-QA y RELEASE definidos; no son entregables ya verificados.
+
+
+## 78. Expediente de entrega a agentes implementadores — planificación cerrada por paquetes
+
+**Objetivo:** descomponer el alcance aprobado en tickets delegables con orden, contratos de entrada/salida y límites de autonomía. Esta sección **no autoriza ejecutar los tickets**.
+
+### 78.1 Reglas obligatorias para cada agente
+
+1. Leer `PLAN-V1.md` como fuente normativa y consultar los dos anexos subordinados; aplicar decisiones vigentes CAT-01, HV2-PRODUCT, REL-01, GOV-01 y autoridad §76.
+2. No reutilizar secciones, componentes, editor, renderer ni horarios MiniWeb V1. Conservar snapshots V1 y limitar el posible reuso a infraestructura/identidad/datos de negocio auditados.
+3. Trabajar con cambios mínimos, aislar tenants, documentar SHA y pruebas **focales**; no modificar CI global ni ejecutar suites generales por defecto.
+4. No decidir precios, PSP, impuestos, jurisdicción, periodos de gracia ni visibilidad pública de licencias suspendidas. Escalar esas cuestiones a COM-01/PAY-01/BILL-02.
+5. No asumir que el usuario aprobó capturas, seguridad o release. Cada gate requiere evidencia y autorización específica. No hacer merge ni desplegar producción sin aprobación explícita.
+
+### 78.2 Backlog delegable y dependencias
+
+| Ticket | Alcance de implementación futuro | Entrada obligatoria | Entregable verificable / aceptación |
+|---|---|---|---|
+| IMP-01 | Diseño técnico de esquemas V2 S01–S12 y tipos versionados | §§69–71, CAT-01/HV2 aprobados | contrato tipado, validación por sección, compatibilidad y revisión técnica |
+| IMP-02 | Persistencia V2, revisiones CAS y snapshots inmutables | IMP-01 | aislamiento tenant, historial, rollback y pruebas de concurrencia |
+| IMP-03 | Editor nuevo desde cero y vista previa por revisión | IMP-01/02 | guardar sin publicar, validación, conflictos y accesibilidad |
+| IMP-04 | Renderer público V2 y seguridad de contenido | IMP-01/02 | solo snapshot publicado, fallbacks seguros, V1 intacto |
+| IMP-05 | Cinco familias × tres variantes visuales | IMP-03/04 | paridad funcional, 45 capturas base y revisión VIS-01 |
+| IMP-06 | Motor Horario V2 independiente | IMP-01/02 | nocturnidad, excepciones, DST, cero lecturas V1 |
+| IMP-07 | Publicación, cuotas, entitlement y rollback | IMP-02/04/06 | ownership, 3 slots por propietario, +3 por Cuadra adicional, CAS |
+| IMP-08 | Conversión voluntaria V1→V2 de datos permitidos | IMP-03/07 | consentimiento, allowlist, auditoría, horarios V2 vacíos |
+| IMP-09 | Licencias administradas P6A y soporte | IMP-02/07, COM-01 mínima | activación/suspensión/reactivación auditables, sin checkout |
+| IMP-10 | Seguridad, accesibilidad y QA de integración focal | IMP-03–09 | expediente SEC-QA, incidencias y evidencias por SHA |
+| IMP-11 | Preparación de release y reversión | IMP-05/10, VIS-01, OPS-01 | checklist y solicitud de autorización, **sin despliegue implícito** |
+| IMP-12 | Pagos automáticos P6B | COM-01/PAY-01/BILL-02 aprobados | ticket bloqueado y fuera del primer lanzamiento |
+
+**Paralelización recomendada:** IMP-01 primero; tras su revisión, IMP-02 y prototipado visual documental en paralelo; IMP-03/04/06 después de los contratos; IMP-05/07 cuando estén listas sus dependencias; IMP-08/09 tras publicación y permisos; IMP-10/11 al final. La asignación real depende de capacidad y revisores.
+
+### 78.3 Contrato de handoff de cada ticket
+
+Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`, `dependencias`, `archivos previstos`, `invariantes de seguridad`, `criterios de aceptación`, `pruebas focales`, `riesgos`, `evidencia`, `responsable ejecutor`, `revisor`, `SHA` y `estado`. Estados permitidos: `planned → ready → in_progress → review → accepted`, además de `blocked`; `accepted` exige evidencia y aprobación correspondiente, nunca inferencia.
+
+### 78.4 Preguntas de bloqueo que un agente debe escalar
+
+- ¿Se permite mostrar una publicación ya activa durante suspensión o expiración? **COM-01 pendiente.**
+- ¿Qué precios, impuestos, PSP o términos se aplican? **COM-01/PAY-01/BILL-02 pendientes.**
+- ¿Quién revisa técnicamente seguridad y quién ejecuta cada paquete? **Ejecutores OPS-01 pendientes; aprobador final ya designado.**
+- ¿Qué diseños concretos quedan aceptados? **VIS-01 pendiente de capturas reales.**
+- ¿Se puede fusionar el PR documental o desplegar? **No sin autorización explícita.**
+
+### 78.5 Definición de cierre de planificación
+
+**PLAN-READY** significa que el backlog y sus dependencias, reglas, decisiones y evidencias exigidas están especificados; **no** significa que existan implementación, tests aprobados, revisión legal o release. Los tickets IMP-01–11 quedan **PLANNED, NOT STARTED**; IMP-12 **BLOCKED/DEFERRED**. No se otorga PLAN-READY definitivo hasta revisar consistencia de los anexos y el límite de documentos canónicos (`GOV-VERIFY`).
