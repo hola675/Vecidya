@@ -1,3 +1,5 @@
+**RAN focal limitado (2026-10-29):** una copia local reconstruida desde el contenido GitHub de V2A pasó 3/3 pruebas Node y compilación TypeScript aislada (`tsc --noEmit --strict`, TS global 5.8.3). Se utilizó un hook de importación simplificado; no se ejecutó el runner completo del checkout. El repositorio no pudo clonarse (`Could not resolve host: github.com`); typecheck/build y diff-check de proyecto siguen pendientes. PR #188 continúa draft, no listo para merge.
+
 ## APP-MINI-V2A — candidato no validado (2026-10-29)
 
 **CODE/GIT:** rama `feat/app-mini-v2a-variant-registry`, PR #188 (draft). `app/features/miniweb/visual-variants.ts` define tres variantes y comparación pura de niveles; `tests/unit/miniweb-visual-variants.test.ts` añade tres pruebas focales. No se conectó con registro V1, UI, permisos, DB ni publicaciones. **RAN:** no ejecutado; checkout de GitHub no accesible por DNS desde el entorno actual, por lo que faltan pruebas, typecheck y build. No integrar ni publicar hasta validar.
