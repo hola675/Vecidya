@@ -45,6 +45,15 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada en D1 local y producción el 2026-10-26 tras preflight sin duplicados. Staging no se modificó. |
 | 0030 | `0030_business-profile-tiktok-youtube.sql` | Redes sociales | Añade `business_profile.tiktok_url` y `business_profile.youtube_url`, opcionales; aplicada a producción el 2026-10-28 (ver `ENVIRONMENTS.md`). |
 | 0031 | `0031_learn-access-grant.sql` | Grants Aprende | Añade un grant por `member.id`, con actor y fecha; FK a `member` en cascada para revocarlo al retirar la membresía y FK a `user` para auditar al owner. Sin backfill; no concede grants automáticamente. |
+| 0032 | `0032_learn-personal-progress.sql` | Aprende personal | Añade progreso por `(user_id, guide_id)`, checks por sección con cascada al progreso de la guía y favoritos separados; FK a `user` en cascada. Versiones, `reset_epoch`, revisión editorial y fechas. Sin backfill ni datos de organización. |
+
+### Plan de migración — `0032_learn-personal-progress`
+
+**Riesgo:** bajo; tres tablas nuevas aditivas, sin backfill ni cambios al esquema existente. La clave de usuario impide compartir progreso entre cuentas; los checks tienen FK compuesta a la fila personal de guía y se eliminan al reiniciar. Los favoritos viven en tabla aparte, así que un reinicio o pérdida de entitlement no los borra.
+
+**Aplicación y rollback:** probar toda la cadena `0000–0032` en D1 local efímera. Si se revierte el Worker, dejar las tablas y cualquier dato personal inactivo; no hacer `DROP TABLE` ni purgar progreso. No aplicar esta migración en staging o producción en este checkpoint.
+
+**Verificación:** confirmar ledger hasta `0032`, creación de las tres tablas, relación/cascada de secciones, usuario propietario y separación entre favoritos y progreso; `PRAGMA foreign_key_check` vacío en D1 local. No se consulta ni modifica D1 remota.
 
 ### Plan de migración — `0031_learn-access-grant`
 

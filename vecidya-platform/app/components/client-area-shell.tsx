@@ -22,7 +22,7 @@ const groups: NavGroup[] = [
     ],
   },
   { label: "ORGANIZACIÓN", links: [{ id: "organization", label: "Equipo", to: "/app/organization", icon: "team" }] },
-  { label: "APRENDIZAJE", links: [{ id: "training", label: "Capacitación", to: "/app/training", icon: "spark" }] },
+  { label: "APRENDIZAJE", links: [{ id: "learn", label: "Mi aprendizaje", to: "/app/aprende", icon: "spark" }, { id: "training", label: "Capacitación", to: "/app/training", icon: "team" }] },
   { label: "CUENTA", links: [{ id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
 ];
 
@@ -49,7 +49,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
     useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#app-navigation a" });
   const switcherOrganizations = isPlatformAdmin ? (platformOrganizationOptions.length ? platformOrganizationOptions : organizations) : organizations;
   const hasOrganization = organizations.length > 0 || switcherOrganizations.length > 0;
-  const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
+  const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA" || group.label === "APRENDIZAJE").map((group) => group.label === "APRENDIZAJE" ? { ...group, links: group.links.filter((link) => link.id === "learn") } : group);
 
   async function handleSetActiveOrganization(organizationId: string) {
     if (organizationSwitchLocked || !organizationId) return;

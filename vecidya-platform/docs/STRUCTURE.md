@@ -18,6 +18,7 @@ Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/ro
 | `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa; selector global para `platform_admin` | El selector global navega a gestión con target explícito; no cambia membership ni `activeOrganizationId` |
 | `/app/platform/organizations` y `/:organizationId` | Lista y gestión de organizaciones para `platform_admin` (alias de pantallas de control plane) | Mismas guardas y auditoría de `/app/internal`; sin suplantación del owner |
 | `/app/platform/organizations/:organizationId/{miniweb,training}` | Configuración MiniWeb, capacitación y progreso | `requirePlatformAdminAction`, target URL y auditoría vigentes |
+| `/app/aprende` | Biblioteca personal de progreso y favoritos por sesión de usuario | Datos sin ámbito de organización; artículo licenciado vuelve a comprobar entitlement |
 | `/app/internal` → `routes/internal.tsx` | Métricas actuales, comparación de pendientes y guía operativa | Guardia `requirePlatformAdmin` intacta |
 | `/app/internal/diagnostic-analytics` | Eventos agregados, barras y tendencia con cero real | No cohortes ni datos personales; mismo acceso protegido |
 | `public-layout.tsx`, `client-area-shell.tsx`, `admin-shell.tsx` | Símbolo y retornos visuales coherentes | Solo navegación entre zonas, sin elevación de privilegios |

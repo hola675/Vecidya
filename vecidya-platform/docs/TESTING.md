@@ -1,5 +1,9 @@
 # Pruebas
 
+## APRENDE-PLAN-V1 — progreso personal (Fase 4; en curso)
+
+`pnpm run test:e2e:learn-entitlement`: **PASS** en Worker y D1 local efímera tras aplicar `0000–0032`. Verifica creación de las tablas personales, FK/cascada de checks, favorito separado del progreso, check/uncheck autenticado, acceso a `/app/aprende` sin organización activa, favorito de guía protegida sin entitlement y conservación tras revocar el grant; conserva las matrices owner/admin, ciclo de vida, licencias, CSRF y revocación. `pnpm run test:unit` **1.756/1.756 PASS**, QA pública **PASS** (48 guías, 6 categorías, 9 itinerarios y viewports 320/390/768/1366), typecheck/build/diff-check **PASS**. La primera ejecución E2E se detuvo antes de arrancar por ausencia de `build/client`; se generó con build y la repetición completa pasó. D1 temporal; sin acceso remoto.
+
 ## APRENDE-PLAN-V1 — experiencia de descubrimiento y retorno (2026-10-29; local)
 
 `pnpm exec node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/invitations/invitation-rules.test.ts`: **13/13 PASS**, incluyendo destinos de retorno válidos a una guía y rechazo de open redirects. `pnpm run test:unit`: **1.756/1.756 PASS**. `BASE_URL=http://127.0.0.1:5173 pnpm run test:e2e:aprende-public`: **PASS** con preview sin sesión, CTA de login con retorno, etiquetas de acceso, filtros abierto/licencia combinados con categoría, y viewports 320/390/768/1366; 48 guías, 6 categorías y 9 itinerarios. Capturas de 390 y 1366 px inspeccionadas visualmente. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. El Worker local avisó que faltan `BETTER_AUTH_SECRET` y credenciales Gmail de desarrollo; el preview público funciona sin ellas. No se probaron sesiones reales ni el retorno tras autenticación exitosa. Sin acceso D1 remoto ni deploy.
