@@ -50,7 +50,7 @@
 .learn-pathway-progress__item > a { display: inline-block; margin-block: .35rem; color: var(--blue); font-weight: 700; text-underline-offset: .18em; }
 .learn-recommendation { border-color: rgb(21 95 197 / 25%); background: linear-gradient(135deg, #f4f8ff, #fff8f3); }
 .learn-recommendation .button { width: fit-content; }
-.learn-section-progress { margin-top: 1rem; }
+.learn-section-progress { margin-top: 1.25rem; padding: 1rem; border: 1px solid var(--color-border, #d9dfdc); border-radius: 1rem; background: var(--surface, #fff); }
 .learn-progress-controls { margin-block: 1rem; }
 .learn-progress-panel { display:grid; gap:.35rem; margin-top:.75rem; border:1px solid #d6e1ef; border-radius:1.1rem; padding:.7rem .8rem; background:linear-gradient(140deg,rgb(242 246 252 / 82%),rgb(255 255 255 / 96%)); box-shadow:0 .35rem 1rem rgb(20 43 74 / 5%); }
 .learn-personal-toolbar { gap:.45rem .7rem; margin:0; border:0; border-bottom:1px solid var(--line); border-radius:var(--radius-sm); padding:0 0 .55rem; }
