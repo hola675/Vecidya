@@ -19,7 +19,7 @@
 | Definición de producto, límites y 6/42 | [x] Diseño aprobado | §§1,3,19; candidatas editoriales aún por validar |
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
-| Fase 0 — baseline y decisiones bloqueantes | [~] Cierre documental preparado, validación pendiente | Diagnóstico legacy, CSRF, retención, editorial y pruebas focales |
+| Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
 | Fase 1 — identidad editorial y DTOs seguros | [ ] Sin implementación | Pruebas de catálogo y no filtración |
 | Fase 2 — licencias y grants | [ ] Sin implementación | Tests de entitlement y revocación |
 | Fase 3 — catálogo, previews y retorno | [ ] Sin implementación | QA pública segura |
@@ -40,7 +40,7 @@
 
 ### Registro de incoherencias detectadas y criterio de lectura
 
-- **Permisos:** §3.1.6 decía «propietario o actor autorizado»; la propuesta específica V1 de §28 restringe la concesión a `owner`. Queda como **propuesta de política**, no cambio aplicado a Better Auth.
+- **Permisos:** decisión final del usuario: exclusivamente el rol organizacional `owner` concede y revoca grants Aprende. `admin` no puede gestionarlos por su rol. No cambia la matriz global de Better Auth.
 - **Importación anónima:** §3.2.19 planteaba fusión automática al crear cuenta, mientras §§19,21,25 exigen consentimiento. Se adopta la regla más protectora: **consentimiento explícito antes de toda importación**, tanto cuenta nueva invitada como existente; requiere confirmación de producto antes de implementarse.
 - **Sincronización:** §3.2.17 menciona fusionar operaciones independientes, pero §§25 y 29 proponen rechazo de versiones obsoletas por guía. Para V1, **conflicto explícito por versión** es la política provisional; optimizar fusiones independientes solo con pruebas de causalidad.
 - **Orden de PR:** §16 describe ocho checkpoints y §30 agrupa cuatro PR de implementación. Son **dos niveles de granularidad**, no calendarios incompatibles: mantener gates D0–D8 aunque se agrupen entregas únicamente con autorización.
@@ -89,7 +89,7 @@ Transformar la biblioteca pública Aprende en una experiencia educativa de Vecid
 3. Las otras 42 guías requieren licencia **activa** Cuadra, Barrio o Ciudad. El registro gratuito **no** concede créditos ni desbloqueos. Suprimir el modelo anterior 10 anónimas + 5 por registro y todos sus contadores/prompts; verificar antes si hay datos heredados que requieran política de migración.
 4. Licencia comercial centralizada; Aprende no crea cobros ni suscripciones. Enlace hacia `/licencias` o detalle oficial validado y regreso seguro a la guía solicitada **solo cuando la licencia esté realmente activa**; puede requerir espera y activación manual.
 5. Acceso por **cuenta personal**: basta una organización donde el usuario sea propietario o colaborador activo con permiso explícito de Aprende, siempre que la organización tenga licencia activa. El progreso es personal, no propiedad de la organización.
-6. El permiso de colaborador para Aprende estará **desactivado por defecto** en invitaciones. Para V1 se propone que solo el propietario organizacional pueda concederlo, pendiente de confirmación de producto; no implica rol admin ni acceso a datos comerciales. Admin sin permiso Aprende no lo hereda automáticamente, salvo que sea propietario.
+6. El permiso de colaborador para Aprende estará **desactivado por defecto** en invitaciones. Solo el usuario con rol `owner` de la organización puede concederlo o revocarlo; decisión definitiva aprobada por el usuario. no implica rol admin ni acceso a datos comerciales. Admin sin permiso Aprende no lo hereda automáticamente, salvo que sea propietario.
 7. Al perder licencia, permiso o relación organizacional, se revoca acceso a las 42 guías; se conservan progreso y favoritos. Si otra organización habilita al usuario, el acceso continúa.
 8. Ni el cambio de organización activa ni el cierre de sesión transfieren datos de aprendizaje entre cuentas.
 
@@ -412,7 +412,7 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |\n| — | Fases 1–7 | NO INICIADAS | sin pruebas ni código nuevo |
 
-**Próxima acción autorizable:** validar bloqueos restantes de **Fase 0** y autorizar explícitamente el primer PR de implementación. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
+**Próxima acción autorizable:** aprobar el inicio del primer PR de implementación; las verificaciones técnicas restantes son gates del PR correspondiente, no nuevas fases de planificación. Ninguna fase de implementación ni despliegue está autorizada por la creación de este documento.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
@@ -720,4 +720,51 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 
 **Evidencia mínima por PR:** archivos cambiados, SHA base y final, tests focales exactos y sus resultados, hallazgos de seguridad, cambios D1 locales, pendientes y decisión explícita de listo/no listo. Ningún PR debe hacer merge, deploy o modificar D1 remota sin autorización.
 
-**Próxima acción autorizable:** iniciar PR de implementación 1 en rama separada. Hasta entonces, este documento sigue siendo planificación.
+**Próxima acción autorizable:** iniciar PR de implementación 1 en rama separada tras autorización explícita. El diseño documental se considera cerrado, sin certificar aún el producto.
+
+
+## 31. Acta de cierre del plan y transferencia al implementador (2026-10-28)
+
+**Decisión de producto confirmada por el usuario:** exclusivamente el rol `owner` de una organización puede conceder y revocar el permiso Aprende de sus colaboradores. No basta `admin`, ni ser titular de `billing_account`, ni seleccionar la organización activa. La verificación debe utilizar membresía organizacional real del actor y del destinatario en la misma organización. El propietario puede leer guías protegidas con licencia activa sin necesitar grant propio. Esta decisión sustituye formulaciones anteriores de «propietario o gestor autorizado».
+
+**Estado de cierre:** `PLAN V1 CERRADO PARA IMPLEMENTACIÓN` significa requisitos, dependencias, contratos propuestos, gates y alcance definidos; **NO** significa código implementado, pruebas pasadas, PR fusionado ni despliegue. La inspección estática de Fase 0 y la preparación documental se marcan `[x]`; las verificaciones que requieren ejecución pasan a gates del PR correspondiente. Las fases 1–7 siguen `[ ]`.
+
+### Matriz final de asuntos antes llamados bloqueos
+
+| ID | Resolución documental | Estado del plan | Gate técnico que queda para implementación |
+| --- | --- | --- | --- |
+| B1 owner concede/revoca | **APROBADO**: exclusivamente `owner`; `admin` no concede | [x] decisión cerrada | Test focal de actor owner/admin/member y auditoría de cambios en PR entitlement |
+| B2 lifecycle legacy | **DEFINIDO**: fail-closed sin fila `active`; sin regularización automática | [x] política cerrada | Diagnóstico de datos solo lectura autorizado; tratamiento individual de excepciones antes de activar entitlement |
+| B3 CSRF y autorización | **DEFINIDO**: endpoint propio con control de sesión, Origin/CSRF, actor, destino y auditoría | [x] requisitos cerrados | Verificar patrón real del stack e implementar/testear endpoint en PR entitlement |
+| B4 seis guías gratuitas | **SELECCIÓN PROVISIONAL FIJADA**: seis slugs, uno por categoría, con IDs inmutables al implementar | [~] aceptación editorial de contenido pendiente | Revisión focal de texto/fuentes y confirmación editorial antes de publicar gratuidad |
+| B5 retención y privacidad | **PROPUESTA BASE**: recibos 90 días, reintentos automáticos 30 días; no se aprueba retención legal sin revisión | [~] revisión legal/operativa pendiente | Medir costos, revisar aviso y borrado/exportación antes de migración y sincronización |
+| B6 conflictos de sync | **CONTRATO PROPUESTO**: versión/epoch, barrera de reset, ack idempotente y conflicto explícito | [x] diseño de prueba preparado | Implementar y probar concurrencia/duplicados/purga en PR sync |
+| B7 legado y copy comercial | **DEFINIDO**: no checkout; activación manual; no inventar créditos heredados | [x] límites fijados | Inspección de datos legacy y revisión de copy en PR catálogo |
+| B8 publicación | **DEFINIDO**: flags/rollback, staging y producción con aprobación expresa | [x] gates fijados | Ejecutar QA focal, revisar rollback y solicitar autorización específica de merge/deploy |
+
+**Hallazgo de código adicional (inspección estática):** `server/auth/authorization.server.ts` permite `member:invite` y `member:role:update` a `owner/admin`; esto **no** autoriza a reutilizar tales permisos para grants Aprende. `db/queries/licensing.server.ts` distingue licencias `pending/active/suspended/cancelled`; el entitlement debe exigir `active` y comprobar fechas de vigencia. El estado `active` de la licencia no se infiere de `billing_account.ownerUserId`. No se han ejecutado tests ni consultas a D1 real.
+
+### Contrato de ejecución para un agente con pensamiento medio
+
+1. **No reabrir el plan completo.** Leer primero la leyenda, §3, §§19,25,27–31 y luego el checkpoint concreto de §8; inspeccionar los archivos fuente pertinentes en HEAD. Si aparece una contradicción material, registrarla y detener únicamente la operación afectada.
+2. **Una unidad verificable por vez:** seleccionar un checkpoint D0–D8, enumerar rutas/tablas y tests focales, implementar cambio mínimo, ejecutar solamente pruebas focales pertinentes más `typecheck` y `build` cuando proceda, inspeccionar diff y registrar evidencia SHA.
+3. **Dependencias obligatorias:** identidad editorial → DTO/guard sin fugas → entitlement → experiencia pública; progreso personal después de identidad y guard; sincronización después de progreso; UX avanzada después de catálogo y sync; certificación después de todas. Se permite desarrollo paralelo solo en ramas aisladas sin activar superficie insegura.
+4. **No crear cuentas públicas:** invitación obligatoria. Seis guías gratuitas completas para visitantes; 42 cuerpos protegidos para propietarios o colaboradores expresamente habilitados en organización con licencia activa. Consentimiento explícito antes de importar progreso anónimo.
+5. **Seguridad por defecto:** ninguna ruta, loader, bundle, búsqueda, caché, sitemap ni prefetch revela cuerpo protegido; cada solicitud de cuerpo revalida acceso. Si falta lifecycle o grant, denegar cuerpo y mantener preview pública.
+6. **Pruebas focalizadas, nunca suite general por inercia.** No tocar GHL/CRM ni cambios ajenos. D1 local aislada para pruebas; staging, merge, migración remota y producción requieren autorizaciones específicas.
+7. **Cierre de cada checkpoint:** actualizar marcas solo con pruebas realmente ejecutadas, commit, PR y evidencia; una prueba no ejecutada nunca se marca `[x]`. No añadir nuevas secciones al plan por rutina: usar §17 para progreso de implementación.
+
+### Checklist de entrega documental
+
+- [x] Alcance funcional, 48 guías, seis gratuitas, 42 licenciadas, nueve itinerarios y seis categorías definidos.
+- [x] Política de cuentas exclusivamente por invitación y owner como único gestor de permisos Aprende confirmadas.
+- [x] Dependencias, escalado progresivo, orden de PR y límites de seguridad documentados.
+- [x] Contratos propuestos de D1, progreso, revisión editorial, sincronización y pruebas focales descritos.
+- [x] Riesgos de filtración pública, organizaciones múltiples, revocación y datos personales identificados.
+- [x] Distinción explícita entre cierre de planificación y certificación de software.
+- [ ] Validación editorial definitiva de las seis guías (gate de implementación).
+- [ ] Diagnóstico de lifecycle/datos legacy, comprobación CSRF y pruebas de entitlement (gate de implementación).
+- [ ] Revisión de retención/privacidad y pruebas de sincronización (gate de implementación).
+- [ ] Implementación, pruebas focales, integración y lanzamiento autorizados (fases futuras).
+
+**Resultado:** no se requieren nuevas rondas generales de planificación para comenzar el PR 1. Los pendientes son comprobaciones acotadas y decisiones operativas vinculadas al PR que las necesite. Cualquier decisión editorial/legal no demostrada se mantiene visible, sin fingir que está aprobada. El plan de la aplicación de usuario se tratará por separado en otro chat; no forma parte de este alcance.
