@@ -695,6 +695,75 @@ type MiniWebConfigV2 = {
 
 **Dependencias abiertas:** catálogo visual real y distribución de templates por tier (§28 es propuesta), límites económicos de video, proveedor externo permitido, cuotas/retención de media y versiones, y política de horarios frente a datos legacy. No inventar aprobación para estos puntos. **Estado:** dirección UX aprobada, especificación F3–F5 documentada, implementación/pruebas no iniciadas en este checkpoint.
 
+
+## 31. F8 — Máquina de estados de publicación y restauración (2026-10-29)
+
+**Contrato de producto:** la página pública se sirve exclusivamente desde el último snapshot publicado y autorizado para visibilidad; el borrador nunca se sirve públicamente. La visibilidad y la capacidad de editar/publicar son dimensiones **independientes** (DEC-07/09/10).
+
+### Estados ortogonales
+- **Contenido:** `never_published`, `published` (con versión y snapshot), `draft_dirty` (borrador distinto al publicado); `draft_dirty` puede coexistir con `published`.
+- **Derecho de edición:** `editable`, `frozen_expired`, `frozen_suspended`, `frozen_no_base`, `restricted_tier`, `restricted_capacity`; resolver en servidor, no persistir un booleano de frontend como verdad.
+- **Visibilidad pública:** `not_published`, `public`, `admin_deactivated`. `admin_deactivated` prevalece incluso si una nueva licencia entra en vigor; solo acción admin separada puede reactivar.
+- **Historial:** lista append-only de versiones; `restore` produce nuevo borrador con nueva revisión, nunca modifica visibilidad ni la versión pública por sí mismo.
+
+### Transiciones permitidas
+| Acción | Precondiciones | Efecto atómico | No debe hacer |
+| --- | --- | --- | --- |
+| Guardar borrador | Permiso de edición, licencia efectiva, CAS revisión, módulo/medios propios | Incrementar `draftRevision` | Cambiar snapshot público |
+| Primera publicación | Permiso, licencia activa, capacidad disponible, tier compartido, revisión vigente | Reservar cupo + añadir versión 1 + activar puntero público | Duplicar cupo por reintento |
+| Republicación | Publicación existente autorizada, tier efectivo, CAS, no admin-deactivated | Añadir versión N+1 + mover puntero | Consumir segundo cupo |
+| Restaurar versión | Permiso y acceso a versión de misma organización, licencia que permita editar | Crear borrador y marcar incompatibilidades | Publicar automáticamente |
+| Vencimiento/suspensión | Cambio de licencia efectivo | Congelar edición/publicación; conservar público | Borrar contenido o despublicar |
+| Downgrade de tier | Nuevo máximo del titular | Bloquear nuevas publicaciones premium incompatibles | Reescribir versión pública |
+| Desactivar por no renovación | `platform_admin` con permiso explícito, motivo, confirmación, CAS | Visibilidad `admin_deactivated` + auditoría | Borrar snapshots/medios |
+| Reactivar visibilidad | Acción admin separada, licencia regularizada, autorización y auditoría | Volver a `public` si snapshot íntegro | Republicar borrador o alterar versión |
+
+**Idempotencia:** usar identificador de operación y unicidad por publicación/versionado; el mismo request no crea múltiples versiones ni consume dos cupos. **Concurrencia:** publicación, transferencia de titular, suspensión y desactivación compiten bajo transacción/bloqueo consistente; si no puede garantizarse en almacenamiento actual, no habilitar la operación hasta implementar serialización equivalente.
+
+**Decisión operativa aún abierta:** qué hacer cuando el titular tiene más publicaciones ocupadas que cupos efectivos después de transferencias o reducciones. Política provisional segura: conservar visibilidad y bloquear nuevas ocupaciones; no asumir automáticamente derecho de republicación para todos los excedidos.
+
+### Contrato de errores API
+- `REVISION_CONFLICT`: borrador cambió; ofrecer recargar/comparar.
+- `LICENSE_INACTIVE`: licencia base vencida/suspendida; sitio existente público.
+- `TEMPLATE_TIER_DENIED`: plantilla supera nivel compartido vigente.
+- `PUBLICATION_CAPACITY_EXCEEDED`: no hay cupo para primera publicación.
+- `ADMIN_DEACTIVATED`: publicación desactivada por administración; no reactivar por edición.
+- `ASSET_NOT_OWNED` / `ASSET_UNAVAILABLE`: medio ajeno o faltante.
+- `PUBLISHED_VERSION_CONFLICT`: publicación cambió durante confirmación.
+- `FORBIDDEN`: rol/organización no autorizados; sin revelar datos de otros tenants.
+
+## 32. F9 — Plan de verificación focal y entrega segura (2026-10-29)
+
+### Matriz de pruebas por cambio
+| Área tocada | Pruebas obligatorias focales | Evidencia |
+| --- | --- | --- |
+| Licencias/capacidad | Resolver 0/3/6/9, CRM por organización, tier compartido, concurrencia | Tests de servicio y query |
+| Registry V2 | V1→V2, módulos repetibles, IDs estables, hero obligatorio | Tests de validadores |
+| Publicación | CAS, idempotencia, atomicidad, estados congelados/admin | Tests API/DB |
+| Historial | Backfill idempotente, append-only, restore a borrador | Tests de repositorio |
+| Medios | Referencias históricas, autorización, URL externa | Tests de media/seguridad |
+| Editor | Guardado, selector organización, modos, responsive y teclado | Tests de componentes |
+| Horarios | Intervalos, nocturnos, DST, excepciones | Tests de horario |
+| Plantillas | Nivel compartido, downgrade, snapshots legacy | Tests de catálogo/renderer |
+
+**CI focal:** seleccionar solo pruebas de archivos/contratos modificados y sus dependencias inmediatas; typecheck/build únicamente cuando corresponda al cambio y exista presupuesto de ejecución. No modificar workflows globales ni disparar suites generales por defecto. Si una verificación no se ejecuta, marcar `NO EJECUTADA` en vez de inferir éxito.
+
+### Puertas de despliegue
+1. **Antes de PR de implementación:** inventario de rutas/queries/schema reales, prueba de reversibilidad, impacto en otros agentes y límites del diff.
+2. **Antes de merge:** pruebas focales vinculadas al SHA exacto, revisión de aislamiento tenant, plan de rollback y revisión de migraciones aditivas.
+3. **Antes de staging:** migración de lectura dual y backfill idempotente, métricas de errores/latencia, feature flag para escritor V2 y smoke test focal.
+4. **Antes de producción:** autorización explícita, verificación de snapshot legacy, control de cupos, permisos admin, restauración y monitoreo.
+5. **Tras despliegue:** comprobaciones en URL DEV/staging/producción según fase; nunca declarar éxito basándose solo en comando de deploy. No ejecutar merge/deploy en este checkpoint.
+
+### Riesgos y decisiones que bloquean acciones específicas
+- **Comercial:** tier mínimo de cuatro plantillas `planned` aún propuesto (§28); confirmar antes de activar catálogo premium.
+- **Coste/almacenamiento:** cuota de videos, transcodificación, retención y GC aún sin valores aprobados; no habilitar subida sin límites operativos.
+- **Historial:** número/tiempo de versiones y medios asociados aún no aprobado; evitar borrado físico y cobros automáticos.
+- **Capacidad excedida:** transferencias y reducciones requieren política comercial para republicación de excedidos.
+- **SEO/visibilidad:** definir respuesta pública para `admin_deactivated` y señales a buscadores sin revelar datos privados.
+
+**Criterio de cierre del plan:** contratos y decisiones bloqueantes aprobados, matriz de rutas/tablas/servicios trazable al repo, PRs de implementación ordenados, criterios de aceptación verificables. No equivale a software terminado. **Estado:** F8/F9 especificados; implementación y pruebas aún pendientes.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
