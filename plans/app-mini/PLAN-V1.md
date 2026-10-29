@@ -2196,3 +2196,43 @@ Los roles están definidos en §72.3, pero **ninguna persona ha sido designada f
 - **VIS-02:** checklist por familia/variante y plantilla de acta de aceptación para VIS-01, sin afirmar capturas o QA ejecutados.
 
 **Estado:** GOV-01 preparado para decisión, OPS-01 preparado para nombramientos; no están aprobados. Este checkpoint no autoriza editar código, ejecutar prototipos, fusionar el PR ni desplegar.
+
+
+## 74. GOV-01 aprobado y matriz de trazabilidad para entrega a implementación
+
+**Aprobación explícita del responsable (2026-10-29):** GOV-01 **APPROVED**. `PLAN-V1.md` es el **único documento maestro normativo**; `CONTRATO-VARIANTES-V2.md` y `SERVICIOS-PAGOS-PLAN-V1.md` son **anexos subordinados**. En contradicciones prevalecen las decisiones vigentes del maestro, con prioridad a las actas explícitas más recientes. Los prototipos HTML/JS son solo referencia ilustrativa. No se borran ni fusionan anexos por esta decisión; cualquier reorganización futura requiere inventario de enlaces y revisión documental. Esta aprobación no resuelve por sí sola el cumplimiento mecánico del límite de documentos canónicos del repositorio: comprobarlo antes del merge.
+
+### 74.1 Trazabilidad S01–S12 para agentes implementadores (especificación, no ejecución)
+
+| Sección | Validación y privacidad exigidas | Prueba focal futura | Fase responsable |
+|---|---|---|---|
+| S01 Hero | CTA seguro, alt y longitud controlada | CTA inválido y móvil estrecho | P2/P3 |
+| S02 Sobre | sanitización, orden y límites | HTML peligroso y reordenación | P2/P3 |
+| S03 Servicios | identidad/medios autorizados, no duplicar CRM | servicio vacío, orden y ownership | P2/P3 |
+| S04 Catálogo | CTA y categoría válidos, sin precio/disponibilidad inferidos | ítem sin imagen, categoría inválida | P2/P3 |
+| S05 Galería | propiedad del medio, alt, tamaños | medio ajeno y fallo de carga | P2/P3 |
+| S06 Contacto | URL, teléfono/email públicos y permisos | enlace peligroso, dato privado | P2/P3 |
+| S07 Ubicación | consentimiento de dirección pública, opt-in mapa | dirección oculta y mapa sin permiso | P2/P3 |
+| S08 FAQ | texto seguro, accesibilidad sin JS | contenido largo y navegación teclado | P2/P3 |
+| S09 Equipo | consentimiento de perfiles y retirada | perfil sin consentimiento | P2/P3 |
+| S10 Certificaciones | fuente, fecha, no simular verificación | certificación sin respaldo | P2/P3 |
+| S11 Testimonios | autorización, moderación y retirada | testimonio revocado | P2/P3 |
+| S12 Horario V2 | IANA, siete días, excepciones, aislamiento V1 | horario nocturno, DST, no import V1 | P1/P2/P3 |
+
+**Gates transversales:** ownership y tenant isolation; CAS y revisión inmutable; no publicación implícita; cuotas; accesibilidad; permisos de medios; no filtración de datos; reversión lógica; snapshots V1 intactos. Para cada caso futuro registrar SHA, fixture, comando focal, resultado, revisor y evidencia; no afirmar PASS sin ejecución.
+
+### 74.2 Contrato de entregables y secuencia
+
+1. **Paquete de planificación P0:** este maestro, anexos subordinados, catálogo de doce secciones, reglas HV2 y decisiones aprobadas. Se entrega a arquitectura para revisión técnica sin programar desde este PR.
+2. **Paquete de diseño P3:** 15 combinaciones visuales y evidencia VIS-01; la aceptación de diseños reales sigue pendiente.
+3. **Paquete operativo P6A:** procedimiento de licencias administradas, asignación de aprobadores OPS-01, seguridad, QA, rollback y monitoreo. No exige PSP para checkout, pero sí cumplimiento comercial y legal aplicable.
+4. **Paquete comercial P6B:** COM-01, PAY-01, BILL-02 deliberadamente aplazados; no habilitar cobros ni precios no aprobados.
+
+### 74.3 Pendientes después de GOV-01
+
+- **OPS-01:** designar personas para aprobación de producto/comercial, diseño, seguridad/QA y release.
+- **VIS-01:** revisar y aceptar evidencia real de las quince combinaciones.
+- **COM-01, PAY-01, BILL-02:** mantener sin aprobación; no elegir proveedor, jurisdicción, tarifas ni política de impago.
+- **GOV-VERIFY:** comprobar el límite de Markdown canónicos y los enlaces cruzados antes de integrar; aprobación conceptual GOV-01 no equivale a validación de repositorio.
+
+**Estado:** GOV-01 aprobado; matriz TRACE-01 especificada. No implementación, tests ejecutados, merge ni despliegue.
