@@ -877,3 +877,62 @@ D-V9-001 a D-V9-014: APPROVED según sus respectivas secciones; D-V9-015 PENDING
 
 ## Changelog adicional
 - **1.15.0 / 2026-10-29:** D-V9-014 aprobada; cobertura es/en, equivalencia semántica, matriz de certificación, tareas PLAN-LANG01–08, criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 23. Decisión D-V9-015 — núcleo editorial certificado y ampliación progresiva por lotes (aprobada 2026-10-29)
+**Aprobación expresa:** «núcleo editorial certificado y ampliación progresiva por lotes, con cobertura completa antes del lanzamiento». Estado APPROVED como política editorial y gate de lanzamiento; NO autoriza implementación.
+
+### 23.1. Estrategia editorial
+- Crear un **núcleo mínimo suficiente y certificado** para sostener todas las rutas de negocio C01–C10, dimensiones digitales aplicables y resultados útiles, sin exigir que todas las preguntas históricas se publiquen.
+- Ampliar por **lotes editoriales con alcance definido** (brecha de cobertura, sector, etapa, modalidad o evidencia crítica); cada lote requiere revisión semántica, editorial, de aplicabilidad, de accesibilidad y bilingüe es/en antes de entrar en rutas activas.
+- Clasificar cada pregunta histórica como **conservar, adaptar, sustituir, retirar o pendiente**, con motivo y referencias a sus opciones, variantes, reglas y dependencias; no asumir que los 77 ítems históricos son válidos o que el lote de ocho preguntas revisadas está aprobado.
+- Preguntas, opciones o variantes sin certificación no pueden activar rutas de producción. El inventario debe distinguir **revisado** de **aprobado** y **publicable**.
+- «Cobertura completa antes del lanzamiento» significa que cada escenario admitido tiene recorrido adaptativo coherente, evidencia suficiente para un resultado útil, estados desconocido/no aplicable, textos es/en certificados y pruebas de aceptación planificadas; **no** significa activar todo el banco histórico.
+- El banco editorial debe permanecer independiente de la oferta comercial Vecidya, GHL y la disponibilidad de recursos Aprende.
+- No usar preguntas sobre ventas, CRM, anuncios, web o pagos como requisitos universales; diferenciar contexto de madurez digital según D-V9-001/002.
+- Respetar objetivo de hasta 24 interacciones y ampliaciones justificadas D-V9-004; el aumento de preguntas en el banco no implica entrevistas más largas.
+
+### 23.2. Inventario editorial y metadatos propuestos
+Para cada pregunta/opción/variante, especificar identificador semántico estable, objetivo de evidencia, dimensión(es), escenarios de aplicabilidad, estados de respuesta, reglas de salto y dependencia, relación con otras preguntas, textos es/en, versión, fuente editorial, estado de revisión, aprobador y fecha. Son requisitos documentales a validar contra los archivos reales, no afirmación de que todos estos campos existan.
+
+### 23.3. Secuencia documental de lotes (propuesta, no aprobación individual)
+- **Lote núcleo:** contexto y evidencias digitales transversales necesarias para C01–C10; priorizar neutralidad de etapa y modalidad.
+- **Lotes de especialidad:** ampliar solo brechas justificadas para servicios por cita, ecommerce, restauración, híbridos y organizaciones sin venta directa; validar que no reintroduzcan preguntas obligatorias improcedentes.
+- **Lotes de refinamiento:** resolver contradicciones, ambigüedades y casos límite observados en certificación; no añadir preguntas por volumen.
+- Ningún lote está aprobado automáticamente por pertenecer a una categoría; registrar criterios de entrada/salida y aprobación por separado.
+
+### 23.4. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-E01 | Inventariar banco histórico, variantes, opciones, rutas y dependencias en HEAD | Tabla por ID, archivo/SHA, estado real y trazabilidad | No equiparar revisado con aprobado |
+| PLAN-E02 | Definir matriz escenario C01–C10 × dimensión × evidencia crítica | Cobertura requerida y huecos identificados | Todas las rutas justificadas |
+| PLAN-E03 | Diseñar núcleo mínimo y justificar cada pregunta | Fichas editoriales y grafo conceptual | Sin redundancia ni sesgo comercial |
+| PLAN-E04 | Clasificar preguntas históricas conservar/adaptar/sustituir/retirar/pendiente | Registro de decisiones con razones y dependencias | Aprobación editorial humana |
+| PLAN-E05 | Diseñar protocolo de lotes, versionado y publicación | Checklist de entrada/salida y rollback conceptual | Ninguna ruta activa sin certificación |
+| PLAN-E06 | Certificar equivalencia semántica es/en de preguntas, opciones y saltos | Pares bilingües y glosario, revisión por ID | D-V9-014 completo |
+| PLAN-E07 | Validar coherencia con presupuesto adaptativo y suficiencia de evidencia | Simulaciones documentales C01–C10 y límites | D-V9-003/004 coherentes |
+| PLAN-E08 | Preparar matriz futura de pruebas focalizadas y gates de lanzamiento | Casos de ruta, opciones, unknown, contradicción y no aplicabilidad | Sin ejecutar pruebas durante PLAN_ONLY |
+| PLAN-E09 | Mapear dependencias de banco con motor, scoring, Aprende y catálogo comercial | Diagrama de contratos, versiones y aislamiento | V9 no depende de QBV2/GHL en destino |
+
+### 23.5. Criterios de aceptación futuros
+1. C01–C10 cuentan con rutas documentadas y evidencia suficiente para un informe útil.
+2. Las preguntas del núcleo poseen textos es/en certificados y equivalencia de opciones.
+3. Ninguna pregunta pendiente de aprobación se ejecuta en un recorrido activo.
+4. Preguntas redundantes no consumen presupuesto adaptativo sin justificación.
+5. Negocio sin clientes o en preparación no recibe preguntas de ventas obligatorias.
+6. Organización sin venta directa no es penalizada por ausencia de ecommerce o CRM.
+7. Cambio de etapa/sector invalida saltos y respuestas incompatibles según reglas.
+8. La incorporación de un lote no altera silenciosamente resultados históricos.
+9. Una brecha de cobertura bloquea el lanzamiento de la ruta correspondiente; no se declara cobertura completa de V9.
+10. La certificación de un lote requiere evidencia editorial y bilingüe, además de pruebas focalizadas futuras.
+11. La ausencia de Aprende, servicios Vecidya o GHL no afecta la validez del banco.
+12. La entrevista no supera el objetivo de 24 interacciones salvo evidencia crítica faltante y justificación documentada.
+
+### 23.6. Próxima decisión D-V9-016 — modelo de dimensiones digitales
+Determinar si (A) se mantienen las ocho dimensiones candidatas existentes, tras auditoría y aprobación individual; (B) se redefine desde cero la taxonomía de dimensiones; o (C) se toma el conjunto actual como base de trabajo, se audita contra C01–C10 y se aprueba una versión final ajustada antes de diseñar pesos y calibración. La opción C es recomendación de planificación, **no aprobada**. Las ocho dimensiones actuales no deben considerarse aprobadas solo por existir en código o documentación.
+
+### 23.7. Estado
+D-V9-001 a D-V9-015: APPROVED según sus respectivas secciones; D-V9-016 PENDING. **PLAN_ONLY**: sin implementación, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.16.0 / 2026-10-29:** D-V9-015 aprobada; estrategia de núcleo/lotes, inventario editorial, tareas PLAN-E01–E09, doce criterios de aceptación y siguiente decisión. Solo documentación.
