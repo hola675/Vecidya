@@ -1307,6 +1307,17 @@ Se comprobó por lectura del código que la comparación anterior omitía una se
 
 **Estado:** correcciones CSS/semánticas aplicadas en rama documental; navegador del sistema comprobado, pruebas del artefacto aún pendientes. No se modificaron `vecidya-platform`, CI, licencias ni despliegue.
 
+
+## 49. F6 — Harness focal Playwright versionado para comparar los tres niveles (2026-10-29)
+
+**Archivo nuevo:** `plans/app-mini/prototypes/test-miniweb-tiers.mjs`, commit `6bf576fea58f283d79b47ad561dbbb28cda3ad7d`. La prueba trabaja contra el archivo local `miniweb-tiers-comparison.html` del mismo directorio, sin red ni publicación.
+
+**Cobertura:** matriz 3×3 para Base/Pro/Premium en 390×844, 768×1024 y 1440×900; selector y `aria-pressed`, ausencia de scroll horizontal, CTA visible, contenido textual invariante, cuatro servicios, cuatro FAQ, seis marcadores visuales y errores JS. Guarda nueve capturas `screenshots/{mobile,tablet,desktop}-{base,pro,premium}.png` y termina con código 1 ante fallos.
+
+**Ejecución:** desde el directorio del prototipo, en un entorno que ya tenga `playwright` y Chromium accesible: `node test-miniweb-tiers.mjs`. Si el navegador gestionado por Playwright no está instalado, requiere configurar su instalación en el entorno de pruebas; no cambiar CI ni añadir dependencias al producto para este experimento. El directorio `screenshots/` es salida de prueba y **no** debe añadirse al commit salvo revisión expresa.
+
+**Precisión del estado:** el harness está **creado, no ejecutado**. Sigue pendiente la transferencia del HTML exacto al navegador de prueba y una revisión visual de capturas; no se declara PASS, WCAG ni aceptación de diseño. El PR #184 sigue abierto y no se modificó `vecidya-platform`.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
