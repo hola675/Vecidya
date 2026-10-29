@@ -1,3 +1,8 @@
+# MiniWeb V2 IMP-01: contrato de secciones
+
+
+ode --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
+
 # Pruebas
 
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)

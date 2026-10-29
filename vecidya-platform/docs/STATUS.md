@@ -1,3 +1,7 @@
+# MiniWeb V2 — contratos tipados (IMP-01, 2026-10-29)
+
+**Implementación parcial local:** pp/features/miniweb-v2/sections.ts define tipos y validadores iniciales S01–S12, envelope versión 1, IDs/orden únicos y allowlist de URL. Prueba focal 2/2 PASS; typecheck y build PASS. Aún sin persistencia, editor, renderer ni garantía tenant-scoped de medios; validar hours integralmente con IMP-06. No certificado ni publicado.
+
 # Estado de implementación
 
 ## APRENDE-PLAN-V1 — estado vigente y certificación local (2026-10-29)
