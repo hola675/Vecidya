@@ -35,3 +35,28 @@ test("V2B: no acepta módulos planned ni tipos fuera del registro", () => {
   assert.equal(parse({ ...v2, modules: [hero, { ...gallery, type: "team" }] }), null);
   assert.equal(parse({ ...v2, modules: [hero, { ...gallery, type: "__proto__" }] }), null);
 });
+
+test("V2B: ordena instancias por sortOrder sin mutar ni perder identidad", () => {
+  const second = { ...gallery, instanceId: "gallery-2", sortOrder: 2 };
+  const result = parse({ ...v2, modules: [second, hero, gallery] });
+  assert.equal(result?.version, 2);
+  assert.deepEqual(result?.modules.map((module) => module.instanceId), ["hero-1", "gallery-1", "gallery-2"]);
+});
+
+test("V2B: rechaza órdenes duplicados, negativos y fuera de rango", () => {
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, sortOrder: 0 }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, sortOrder: -1 }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, sortOrder: 2 }] }), null);
+});
+
+test("V2B: rechaza ids malformados, hero repetido y settings no soportados", () => {
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, instanceId: "Galeria Uno" }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...hero, instanceId: "hero-2", sortOrder: 1 }] }), null);
+  assert.equal(parse({ ...v2, modules: [hero, { ...gallery, settings: {} }] }), null);
+});
+
+test("V2B: mantiene el límite de bytes V1 y rechaza snapshots V2 enormes", () => {
+  const legacy = { version: 1, templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] };
+  assert.equal(parseMiniWebReadConfigurationJson(JSON.stringify(legacy) + " ".repeat(4097)), null);
+  assert.equal(parseMiniWebReadConfigurationJson(JSON.stringify(v2) + " ".repeat(16385)), null);
+});
