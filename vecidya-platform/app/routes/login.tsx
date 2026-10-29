@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Link, useNavigate, useSearchParams } from "react-router";
 
 import { authClient } from "../lib/auth-client";
-import { safeAppRedirect } from "../lib/safe-redirect";
+import { safeAppRedirect, safeLearnReturn } from "../lib/safe-redirect";
 import { Alert, Button } from "../components/ui";
 import { AuthShell } from "../components/auth-shell";
 
@@ -13,7 +13,8 @@ export function meta() {
 export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = safeAppRedirect(searchParams.get("redirectTo"));
+  const requestedRedirect = searchParams.get("redirectTo");
+  const redirectTo = safeAppRedirect(requestedRedirect) ?? safeLearnReturn(requestedRedirect);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 

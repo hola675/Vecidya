@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-10-29 — APRENDE-PLAN-V1 — experiencia de acceso (checkpoint local)
+
+- El catálogo muestra si cada guía tiene acceso abierto o requiere licencia, permite filtrar por acceso junto con tema y búsqueda, y presenta «Empieza aquí».
+- Los previews explican la activación manual por licencia/grant. El botón de login conserva un retorno interno y validado a la guía solicitada.
+- Suite unitaria completa 1.756/1.756, QA público responsive, typecheck, build y diff-check pasan; revisión e integración siguen pendientes. Sin deploy ni cambio de D1 remota.
+
 ## 2026-10-28 — APRENDE-PLAN-V1 — primer paso de catálogo
 
 - `/aprende` serializa tarjetas desde un DTO allowlist que excluye secciones y otros campos del cuerpo; la búsqueda usa título, extracto y categoría. Prueba focal 6/6, QA pública local, typecheck, build y diff-check PASS.

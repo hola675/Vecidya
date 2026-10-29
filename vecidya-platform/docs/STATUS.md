@@ -2,9 +2,9 @@
 
 ## APRENDE-PLAN-V1 — primer cambio de catálogo (2026-10-28)
 
-**Fase 1 integrada; Fase 2 implementada y validada localmente, PR pendiente.** CODE: el catálogo usa un DTO allowlist y búsqueda solo por metadata; el manifiesto fija 48 `guideId`, 387 `sectionId`, revisión inicial `1` y clasificación provisional 6 `always_free` / 42 `licensed`. El cuerpo licensed exige sesión más una membresía owner, o una membresía con grant explícito, en alguna organización con lifecycle y licencia vigentes. Owner es el único rol que concede/revoca grants; cada solicitud reevalúa entitlement. Acceso a múltiples organizaciones no depende de la organización activa. La selección 6/42 y textos siguen pendientes de aceptación editorial final.
+**Fases 1–2 integradas por PR #185 en `main@3154cfe5`; Fase 3 en implementación local.** CODE: el catálogo usa un DTO allowlist y búsqueda solo por metadata; el manifiesto fija 48 `guideId`, 387 `sectionId`, revisión inicial `1` y clasificación provisional 6 `always_free` / 42 `licensed`. El cuerpo licensed exige sesión más una membresía owner, o una membresía con grant explícito, en alguna organización con lifecycle y licencia vigentes. Owner es el único rol que concede/revoca grants; cada solicitud reevalúa entitlement. Acceso a múltiples organizaciones no depende de la organización activa. Fase 3 agrega filtros/etiquetas por acceso, retorno seguro tras login y explicación de activación manual en el preview.
 
-**RAN 2026-10-29:** unitarias de entitlement 6/6 PASS; Worker/D1 PASS tras aplicar la cadena local hasta `0031`; bundle privacy PASS (110 assets, 2,074 fragmentos); typecheck/build/diff-check PASS. Sin migración remota, merge de este checkpoint ni deploy. La gratuidad 6/42 continúa provisional y requiere revisión editorial.
+**RAN 2026-10-29:** Fase 2: unitarias de entitlement 6/6 PASS; Worker/D1 PASS tras aplicar la cadena local hasta `0031`; bundle privacy PASS (110 assets, 2,074 fragmentos); CI completo de PR #185 PASS. Fase 3: prueba de redirect 13/13; suite `pnpm run test:unit` 1.756/1.756; QA público responsive; typecheck; build; diff-check, todos PASS. Revisión e integración siguen pendientes. No hay migración remota ni deploy. La clasificación 6/42 continúa provisional y requiere revisión editorial.
 
 ## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
 

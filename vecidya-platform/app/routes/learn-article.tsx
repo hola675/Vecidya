@@ -19,13 +19,13 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   if (access === "licensed") {
     const { env } = context.get(cloudflareContext);
     if (!env.BETTER_AUTH_SECRET) {
-      return { preview: toPublicLearnGuideSummary(article), needsLogin: true };
+      return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const };
     }
     const session = await getSession(env, request);
-    if (!session) return { preview: toPublicLearnGuideSummary(article), needsLogin: true };
+    if (!session) return { preview: toPublicLearnGuideSummary(article), accessState: "sign-in" as const };
     const database = createDatabase(env.DB);
     if (!await canReadLearnGuideBody(database, session.user.id, article.slug)) {
-      return { preview: toPublicLearnGuideSummary(article), needsLogin: false };
+      return { preview: toPublicLearnGuideSummary(article), accessState: "request-access" as const };
     }
   }
 
@@ -123,7 +123,8 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
   if (loaderData.preview) {
-    const { preview, needsLogin } = loaderData;
+    const { preview, accessState } = loaderData;
+    const signInHref = `/login?redirectTo=${encodeURIComponent(`/aprende/${preview.slug}`)}`;
     return (
       <PublicLayout>
         <main className="public-page learn-article-page">
@@ -132,10 +133,13 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
             <h1>{preview.title}</h1>
             <img className="learn-article-image" src={preview.image} alt={preview.imageAlt} width={900} height={360} />
             <p className="learn-article-intro">{preview.excerpt}</p>
-            <h2>Contenido completo con una licencia Vecidya activa</h2>
-            <p>Esta vista previa no incluye las secciones de la guía. El acceso se comprueba cuando vuelves a abrirla.</p>
+            <h2>Guía completa con acceso de Aprende</h2>
+            <p>Esta vista previa no incluye las secciones. {accessState === "sign-in"
+              ? "Inicia sesión y volverás a esta guía para comprobar tu acceso."
+              : "El acceso depende de la licencia activa de tu organización y de los permisos asignados por su owner. La activación se gestiona manualmente; vuelve a abrir esta guía después de que la confirmen."}</p>
             <div className="learn-article-cta">
-              {needsLogin && <Link className="button button--secondary" to="/login">Iniciar sesión</Link>}
+              {accessState === "sign-in" && <Link className="button button--secondary" to={signInHref}>Iniciar sesión</Link>}
+              {accessState === "request-access" && <Link className="button button--secondary" to="/app">Ir a mi organización</Link>}
               <Link className="button button--primary" to="/licencias">Ver licencias Vecidya</Link>
             </div>
           </article>

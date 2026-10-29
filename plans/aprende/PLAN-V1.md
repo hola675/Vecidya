@@ -1,6 +1,6 @@
 # VECIDYA APRENDE — PLAN MAESTRO FUNCIONAL Y TÉCNICO V1
 
-**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN DE FASES 1–2 EN CURSO · **Propietario de ejecución:** agente designado por el usuario.
+**Identificador:** APRENDE-PLAN-V1 · **Fecha:** 2026-10-28 · **Estado:** PLAN CERRADO / IMPLEMENTACIÓN DE FASES 1–3 EN CURSO · **Propietario de ejecución:** agente designado por el usuario.
 **Repositorio:** `hola675/Vecidya` · **Producto:** `vecidya-platform/` · **Terminología obligatoria:** **licencia**, nunca membresía.  
 **Alcance original de planificación:** únicamente documentación en `plans/`. La implementación posterior fue autorizada por el usuario y se ejecuta en checkpoints de aplicación aislados; no implica autorización de deploy ni cambios D1 remotos.
 
@@ -20,9 +20,9 @@
 | Inspección estática de arquitectura y riesgos | [x] Inspección documental realizada | §§2,18,20,23,24,27–29; no equivale a auditoría dinámica |
 | Contratos técnicos y matriz de pruebas | [x] Documentación preparada | §§4–16,21–30; propuestas sujetas a verificación |
 | Fase 0 — diseño y handoff documental | [x] Plan de implementación cerrado; comprobaciones técnicas diferidas | Las verificaciones pendientes se ejecutan como gates focales de cada PR, no como planificación adicional |
-| Fase 1 — identidad editorial y DTOs seguros | [~] Implementación integrada; validación editorial pendiente | PR #183 aporta manifest/DTOs; cierre editorial 6/42 pendiente |
-| Fase 2 — licencias y grants | [~] Implementado localmente, PR en preparación | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; no integrado/publicado |
-| Fase 3 — catálogo, previews y retorno | [~] Preview mínima de cuerpo licenciado en el checkpoint F2 | Falta el flujo UX completo de catálogo y retorno seguro |
+| Fase 1 — identidad editorial y DTOs seguros | [~] Implementación integrada; validación editorial pendiente | PR #183; manifest/DTOs; revisión y aceptación editorial 6/42 pendiente |
+| Fase 2 — licencias y grants | [~] Implementado e integrado por PR #185 | Worker/D1, aislamiento, owner/admin, revocación, auditoría y privacidad pasan; sin deploy |
+| Fase 3 — catálogo, previews y retorno | [~] Implementado en rama; PR #186 pendiente | Filtros/etiquetas, retorno allowlisted y activación manual; QA local pasa; CI/integración pendientes |
 | Fase 4 — progreso y favoritos D1 | [ ] Sin implementación | Tests de persistencia personal |
 | Fase 5 — sincronización y anonimato | [ ] Sin implementación | Tests de concurrencia e importación |
 | Fase 6 — itinerarios y UX | [ ] Sin implementación | QA accesible móvil |
@@ -409,13 +409,14 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 | --- | --- | --- | --- |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / aceptación editorial pendiente | PR #183 integrada; 48 guideId, 387 sectionId, revisión 1, clasificación 6/42; tests de catálogo y privacidad ejecutados; gratuidad aún provisional |
-| 2026-10-29 | Fase 2: entitlement y grants owner-only | IMPLEMENTADA LOCALMENTE / no integrada | Migración `0031`, OpenAPI, APIs de grants y guard de artículo; unit 6/6, Worker+D1, bundle, typecheck/build/diff-check PASS; sin D1 remota ni deploy |
+| 2026-10-29 | Fase 2: entitlement y grants owner-only | INTEGRADA / no publicada | PR #185 (`main@3154cfe5`); migración `0031`, OpenAPI, grants y guard de artículo; Worker+D1, bundle, typecheck/build/unit y CI PASS; sin D1 remota ni deploy |
+| 2026-10-29 | Fase 3: catálogo, preview y retorno | IMPLEMENTADA EN RAMA / PR pendiente | PR #186 (`3d7b11a6`); 1.756 unitarias, QA responsive, typecheck/build/diff-check PASS; checks CI pendientes |
 | 2026-10-28 | Inspección de rutas, publicación editorial, lector, catálogo y licencias | CODE inspeccionado, sin ejecutar | archivos enumerados en §2 |
 | 2026-10-28 | Plan maestro y estructura `plans/` | DOCUMENTADO, pendiente de revisión/merge | PR documental de este checkpoint |
 | 2026-10-28 | Fase 0: inspección estática y diseño de contratos (§§18–30) | DOCUMENTACIÓN AVANZADA / VALIDACIÓN PENDIENTE | PR #182; sin pruebas ni código de aplicación |
-| — | Fases 3–7 | NO INICIADAS | el preview inicial de F2 no sustituye el catálogo UX, progreso, sync, itinerarios ni certificación final |
+| — | Fases 4–7 | NO INICIADAS | progreso/favoritos, sync/anónimo/offline temporal, UX de itinerarios y certificación final |
 
-**Siguiente checkpoint:** revisar y enviar el PR F2; después implementar F3, incluyendo retorno seguro tras login/activación y QA pública. La selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha publicado ni aplicado la migración de forma remota.
+**Siguiente checkpoint:** completar revisión e integración del PR #186; luego implementar Fase 4 (persistencia de progreso y favoritos) en una rama/worktree nuevos desde `origin/main`. La selección editorial gratuita permanece provisional y debe resolverse antes del lanzamiento. No se ha desplegado ni aplicado la migración de forma remota.
 
 
 ## 18. Fase 0 — inspección ampliada de licencias, permisos y capacitación (CODE, 2026-10-28)
