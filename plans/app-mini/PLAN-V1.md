@@ -2553,3 +2553,49 @@ Todo ticket debe incluir: `ID`, `alcance`, `exclusiones`, `decisiones aprobadas`
 ### 81.3 Entrega final aún pendiente
 
 El expediente de implementación (§78) y los contratos (§§79–80) son suficientes para iniciar revisión técnica futura, **no ejecución autorizada**. Permanecen pendientes: GOV-VERIFY, validación física ARC-01–04, ejecutores técnicos, política comercial mínima P6A, VIS-01, SEC-QA y autorización de release. COM-01/PAY-01/BILL-02 no se dan por aprobados.
+
+
+## 82. GOV-VERIFY — contraste directo con reglas del repositorio (2026-10-29)
+
+**Evidencia CODE/DOC consultada en `main`:** `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md` y `vecidya-platform/app/features/miniweb/registry.ts`; inventario del PR #184 obtenido de GitHub. No se ejecutaron comandos locales ni tests. `main` es un objetivo móvil: repetir comparación de SHA antes del merge.
+
+### 82.1 Inventario exacto del PR #184 (GIT)
+
+1. `plans/app-mini/PLAN-V1.md`: maestro normativo del **plan**.
+2. `plans/app-mini/CONTRATO-VARIANTES-V2.md`: anexo subordinado.
+3. `plans/app-mini/SERVICIOS-PAGOS-PLAN-V1.md`: anexo subordinado.
+4. `plans/app-mini/prototypes/miniweb-tiers-comparison.html`: prototipo ilustrativo.
+5. `plans/app-mini/prototypes/test-miniweb-tiers.mjs`: auxiliar de prototipo; no evidencia de prueba productiva.
+
+**Resultado:** inventario de cinco rutas **VERIFIED (GIT)**. No se observaron archivos de aplicación entre los cinco cambios listados.
+
+### 82.2 Regla de 20 documentos canónicos
+
+`AGENTS.md` y `GOVERNANCE.md` establecen máximo **20 Markdown canónicos activos** y recuento documental de **16**, registrado en la gobernanza. **Interpretación segura:** no equiparar tres archivos Markdown nuevos con tres canónicos automáticamente. GOV-01 otorga a `PLAN-V1.md` primacía **dentro del expediente APP-MINI**, pero no lo incorpora por sí solo a la tabla global de documentos canónicos de `GOVERNANCE.md`.
+
+**Gate previo al merge:** decidir explícitamente si el maestro entra al catálogo canónico global (y dónde queda registrado); mantener anexos como referencias subordinadas/no canónicas salvo decisión distinta; comprobar recuento actualizado sobre HEAD real. Si se promoviera uno, el recuento teórico sería 17 partiendo de 16, **no un recuento actual verificado**. No editar el catálogo ni afirmar cupo disponible definitivo sin esa comprobación.
+
+### 82.3 Reglas operativas verificadas
+
+- `AGENTS.md` pide pruebas focales y certificación del alcance modificado; suites generales solo si el riesgo transversal lo justifica. Este PR es documental: **no se atribuyen PASS de tests de aplicación**.
+- `GOVERNANCE.md` exige reconciliar `STATUS.md`/`PROJECT_STATE.md` con evidencia de implementación cuando corresponda; el presente expediente no altera el estado de capacidades de producción.
+- Merge condicionado a autorización explícita, checks y ausencia de conflictos; deploy independiente. La excepción de mantener **un único PR documental** es el alcance acordado para este expediente; no prescribe la estrategia de ramas de los futuros tickets de implementación.
+- La fuente de verdad técnica es código/configuración/pruebas, no afirmaciones del plan.
+
+### 82.4 Contraste puntual del MiniWeb V1
+
+`registry.ts` en `main` todavía describe plantillas con `version: 1`, variantes `standard` y familias alternativas `planned`. Esto **sustenta que el diseño V2 de cinco familias × tres variantes no debe presentarse como ya implementado**. La lectura es estática; no demuestra comportamiento desplegado. Se mantiene DEC-19: V2 nuevo y sin reutilizar secciones/horario V1.
+
+### 82.5 Estado GOV-VERIFY
+
+| Comprobación | Resultado | Límite |
+|---|---|---|
+| Archivos cambiados del PR #184 | **VERIFIED** | inventario GitHub de cinco archivos |
+| Existencia de `AGENTS.md`/`GOVERNANCE.md` | **VERIFIED** | lectura en `main` |
+| Regla máximo 20, recuento documentado 16 | **VERIFIED AS POLICY** | recuento real del HEAD no recontado |
+| Un maestro normativo y anexos subordinados | **APPROVED (GOV-01)** | falta decidir promoción al catálogo global |
+| Ausencia de cambios de código en PR | **VERIFIED BY FILE LIST** | no equivale a validación de contenido de prototipos |
+| Integridad de todas las rutas/referencias | **PENDING** | falta inventario completo de referencias en texto |
+| Checks del PR, conflictos y autorización merge | **PENDING** | no se consultaron checks ni se solicitó merge |
+
+**Veredicto:** GOV-VERIFY **PARTIAL**, con política e inventario confirmados. No declarar PLAN-READY completo ni solicitar merge automático. El siguiente paso es verificar rutas citadas, referencias normativas y estado del PR contra el SHA actual, y plantear al responsable la decisión sobre la promoción del maestro al catálogo global.
