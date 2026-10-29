@@ -2102,3 +2102,61 @@ Cada fase exige revisión de seguridad, pruebas focales en archivos tocados y ev
 **VIS-01** (aceptación visual real), **COM-01** (tarifas, regiones, monedas y términos), **PAY-01** (proveedor y flujo de pagos), **BILL-02** (facturación, impuestos e impago), **GOV-01** (gobierno documental) y **OPS-01** (responsables de diseño, seguridad y autorización de release). Las decisiones sobre permisos, retención y consentimiento también requieren sus revisiones correspondientes. Ninguna se infiere por silencio.
 
 **Estado del proyecto:** decisiones de producto anteriores aprobadas; el PR #184 continúa siendo **exclusivamente de planificación**. No ejecutar código, migraciones, pruebas ni despliegues como consecuencia de este acta.
+
+
+## 72. Gobierno documental, aceptación visual y operación — cierre de especificaciones
+
+**Alcance:** planificación exclusivamente. Esta sección define propuestas listas para aprobación; no sustituye decisiones humanas GOV-01, VIS-01 ni OPS-01.
+
+### 72.1 GOV-01 — propuesta de gobierno documental (SPECIFIED / APPROVAL PENDING)
+
+**Opción recomendada:** mantener `plans/app-mini/PLAN-V1.md` como única fuente normativa del alcance MiniWeb V2, con anexos de apoyo estrictamente informativos e índice de referencias. Evitar duplicar decisiones vinculantes en múltiples Markdown. Si el límite de documentos canónicos del repositorio obliga a consolidar, mover contenido al documento canónico aprobado sin perder enlaces, historial, identificadores DEC/GAP/AC ni autoría. No borrar ni renombrar documentos sin inventario previo y verificación de referencias entrantes.
+
+**Procedimiento de aceptación GOV-01:** (1) inventario de los cinco archivos del PR y de las reglas documentales vigentes; (2) tabla `documento → propietario → función → autoridad → enlaces`; (3) propuesta de consolidación y redirecciones; (4) aprobación del responsable de gobierno; (5) ejecución por agente autorizado en un trabajo documental posterior. Criterio de salida: una sola definición vigente por decisión y cero enlaces rotos verificados. **No se declara GOV-01 aprobado**.
+
+### 72.2 VIS-01 — matriz de revisión y firma (SPECIFIED / APPROVAL PENDING)
+
+Se exige evidencia visual **real**, no mockups asumidos como capturas del producto. Por cada familia (5) y variante (3), revisar:
+- escritorio ≥1280 px, tableta 768–1024 px y móvil 360–430 px;
+- portada, navegación, contenido largo, sección vacía, contacto, galería, horario con excepción y error de medios;
+- contraste, foco visible, teclado, semántica, textos alternativos, reduced-motion y ausencia de desbordamiento;
+- paridad funcional de las doce secciones en Base, Pro y Premium;
+- no filtración de datos privados ni mensajes que aparenten servicios/cobros no habilitados.
+
+**Evidencia mínima:** matriz de 15 combinaciones × 3 viewports = **45 capturas base**, más escenarios de estado por muestreo trazable; cada entrada registra versión/SHA, fecha, dispositivo, revisor, hallazgos y decisión `accepted | changes_requested | blocked`. No marcar VIS-01 `accepted` hasta aprobación humana de las capturas y correcciones. El diseño puede especificarse antes; la aceptación final exige producto renderizado.
+
+### 72.3 OPS-01 — matriz RACI y autorización de lanzamiento (SPECIFIED / OWNERS PENDING)
+
+| Actividad | Responsable ejecutor propuesto | Aprobador obligatorio | Evidencia |
+|---|---|---|---|
+| Catálogo y alcance | Producto / agente documental | Responsable Vecidya | acta DEC y matriz AC |
+| Diseño visual | Diseño UX/UI | Responsable visual designado | 45 capturas y registro VIS-01 |
+| Modelo de datos y seguridad | Ingeniería backend + seguridad | Responsable técnico/seguridad designado | revisión tenancy, CAS, privacidad |
+| Accesibilidad y QA | QA + frontend | Responsable QA designado | matriz focal y hallazgos |
+| Licencias administradas | Operaciones + soporte | Responsable comercial designado | procedimiento alta/suspensión/reactivación |
+| Publicación y rollback | Ingeniería / operaciones | Responsable de release designado | checklist, ventana, reversión, monitoreo |
+| Tarifas, PSP, fiscalidad | Finanzas/legal | Responsable comercial/legal designado | acta COM-01/PAY-01/BILL-02 |
+
+**Separación de funciones:** quien implementa no aprueba unilateralmente su propia seguridad o release; los agentes pueden preparar evidencias, no otorgar aprobación humana. La ausencia de un aprobador identificado bloquea el gate correspondiente, no el trabajo documental. Los nombres propios quedan vacíos hasta designación explícita.
+
+### 72.4 P6A — operación con licencias administradas (SPECIFIED)
+
+**Sin checkout automático.** Operaciones asigna licencia por propietario de facturación, registra actor, motivo, fecha y evidencia de autorización; el sistema comprueba cuota y entitlements antes de publicar. Definir estados `pending_activation → active → suspended → expired/cancelled`, con política de gracia aún sujeta a revisión comercial. Suspensión impide nuevas publicaciones cuando corresponda, sin eliminar contenido ni efectuar GC automático; el comportamiento de la URL pública debe documentarse y aprobarse antes del lanzamiento. Soporte dispone de procedimiento de corrección de asignaciones, reversión y auditoría.
+
+**Gate de lanzamiento P6A:** decisiones comerciales mínimas aplicables a licencias manuales, OPS-01 con responsables nombrados, VIS-01 aceptado, seguridad y QA firmados, prueba de rollback y monitoreo. El aplazamiento de PAY-01/BILL-02 no autoriza publicar precios o condiciones legales sin revisión.
+
+### 72.5 Matriz de cierre y prioridades
+
+| ID | Estado de planificación | Bloqueo real | Próximo acto |
+|---|---|---|---|
+| CAT-01 | APPROVED | ninguno de producto | usar como contrato |
+| HV2-PRODUCT | APPROVED | ninguno de producto | usar como contrato |
+| REL-01 | APPROVED | ninguno de producto | dividir P6A/P6B |
+| GOV-01 | SPECIFIED / PENDING APPROVAL | gobierno documental | aprobar consolidación o excepción |
+| VIS-01 | SPECIFIED / PENDING EVIDENCE | 45 capturas y firma | preparar diseño; aceptar después |
+| OPS-01 | SPECIFIED / PENDING OWNERS | nombres y autorizaciones | designar responsables |
+| COM-01 | PENDING HUMAN | tarifas, región, moneda, términos | mantener sin precios no aprobados |
+| PAY-01 | PENDING HUMAN | PSP y checkout | posponer a P6B |
+| BILL-02 | PENDING HUMAN | fiscalidad, impagos y facturación | posponer automatización a P6B |
+
+**Criterio de cierre de esta etapa:** GOV-01, VIS-01 y OPS-01 tienen contrato y evidencias exigidas, **no aprobaciones**. Ninguna de las tareas de esta sección constituye implementación, prueba ejecutada ni despliegue.
