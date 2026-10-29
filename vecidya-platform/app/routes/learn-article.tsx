@@ -1,15 +1,36 @@
 import { Link } from "react-router";
 
 import { learnArticles } from "../content/learn";
-import { getLearnEditorialIdentity, getPublicLearnArticle, getPublicLearnArticles } from "../content/learn-publication";
+import { getLearnEditorialIdentity, getLearnGuideAccess, getPublicLearnArticle, toPublicLearnGuideSummary } from "../content/learn-publication";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { createDatabase } from "../../db/client.server";
+import { getSession } from "../../server/auth/session.server";
+import { cloudflareContext } from "../../server/cloudflare-context";
+import { canReadLearnGuideBody } from "../../server/learn/entitlement.server";
 
 import type { LearnBlock } from "../content/learn";
 import type { Route } from "./+types/learn-article";
 
-export function loader({ params }: Route.LoaderArgs) {
+export async function loader({ context, params, request }: Route.LoaderArgs) {
   const article = getPublicLearnArticle(learnArticles, params.slug);
   if (!article || article.editorialDraft) throw new Response("Artículo no encontrado", { status: 404 });
+  const access = getLearnGuideAccess(article.slug);
+  if (!access) throw new Response("Artículo no encontrado", { status: 404 });
+  if (access === "licensed") {
+    const { env } = context.get(cloudflareContext);
+    const session = await getSession(env, request);
+    const database = createDatabase(env.DB);
+    if (!await canReadLearnGuideBody(database, session?.user.id ?? null, article.slug)) {
+      return { preview: toPublicLearnGuideSummary(article), needsLogin: !session };
+    }
+  }
+
+  const publicArticles = learnArticles.filter((candidate) => candidate.editorialDraft !== true);
+  const relatedSlugs = article.relatedSlugs ?? publicArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2).map((candidate) => candidate.slug);
+  const relatedGuides = relatedSlugs.flatMap((slug) => {
+    const candidate = publicArticles.find((item) => item.slug === slug && item.slug !== article.slug);
+    return candidate ? [{ slug: candidate.slug, category: candidate.category, title: candidate.title }] : [];
+  }).slice(0, 2);
   const readingText = [
     article.title, article.intro, ...article.enPocasPalabras,
     ...article.sections.flatMap((section) => [
@@ -19,7 +40,13 @@ export function loader({ params }: Route.LoaderArgs) {
   ].join(" ");
   const words = readingText.trim().split(/\s+/u).filter(Boolean).length;
   const readingMinutes = Math.max(1, Math.ceil(words / 200));
-  return { article: getLearnEditorialIdentity(article), readingMinutes };
+  return { article: getLearnEditorialIdentity(article), relatedGuides, readingMinutes };
+}
+
+export function headers({ errorHeaders, loaderHeaders }: Route.HeadersArgs) {
+  return {
+    "Cache-Control": errorHeaders?.get("Cache-Control") ?? loaderHeaders.get("Cache-Control") ?? "private, no-store",
+  };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
@@ -82,14 +109,28 @@ function renderLearnBlock(block: LearnBlock, key: string) {
 }
 
 export default function LearnArticle({ loaderData }: Route.ComponentProps) {
-  const { article, readingMinutes } = loaderData;
-  const publicArticles = getPublicLearnArticles(learnArticles);
-  const related = article.relatedSlugs
-    ? article.relatedSlugs.flatMap((slug) => {
-      const candidate = publicArticles.find((item) => item.slug === slug);
-      return candidate && !candidate.editorialDraft && candidate.slug !== article.slug ? [candidate] : [];
-    }).slice(0, 2)
-    : publicArticles.filter((candidate) => candidate.slug !== article.slug).slice(0, 2);
+  if (loaderData.preview) {
+    const { preview, needsLogin } = loaderData;
+    return (
+      <PublicLayout>
+        <main className="public-page learn-article-page">
+          <article className="learn-article-preview">
+            <p className="eyebrow">GUÍA PRÁCTICA · {preview.category}</p>
+            <h1>{preview.title}</h1>
+            <img className="learn-article-image" src={preview.image} alt={preview.imageAlt} width={900} height={360} />
+            <p className="learn-article-intro">{preview.excerpt}</p>
+            <h2>Contenido completo con una licencia Vecidya activa</h2>
+            <p>Esta vista previa no incluye las secciones de la guía. El acceso se comprueba cuando vuelves a abrirla.</p>
+            <div className="learn-article-cta">
+              {needsLogin && <Link className="button button--secondary" to="/login">Iniciar sesión</Link>}
+              <Link className="button button--primary" to="/licencias">Ver licencias Vecidya</Link>
+            </div>
+          </article>
+        </main>
+      </PublicLayout>
+    );
+  }
+  const { article, relatedGuides, readingMinutes } = loaderData;
 
   return (
     <PublicLayout>
@@ -161,7 +202,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
         <section className="learn-related" aria-labelledby="learn-related-title">
           <p className="eyebrow">SIGUE APRENDIENDO</p>
           <h2 id="learn-related-title">Otras guías de Aprende Vecidya</h2>
-          <div className="learn-related-grid">{related.map((item) => <Link className="learn-related-card" key={item.slug} to={`/aprende/${item.slug}`}><span>{item.category}</span><strong>{item.title}</strong><small>Leer guía →</small></Link>)}</div>
+          <div className="learn-related-grid">{relatedGuides.map((item) => <Link className="learn-related-card" key={item.slug} to={`/aprende/${item.slug}`}><span>{item.category}</span><strong>{item.title}</strong><small>Leer guía →</small></Link>)}</div>
         </section>
       </main>
     </PublicLayout>

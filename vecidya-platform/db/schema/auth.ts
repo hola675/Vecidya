@@ -202,6 +202,13 @@ export const platformOrganizationLifecycle = sqliteTable("platform_organization_
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 }, (table) => [index("platform_organization_lifecycle_status_idx").on(table.status, table.updatedAt)]);
 
+/** Grant explícito por membresía. Si Better Auth retira el miembro, el permiso se elimina. */
+export const organizationLearnAccessGrant = sqliteTable("organization_learn_access_grant", {
+  memberId: text("member_id").primaryKey().references(() => member.id, { onDelete: "cascade" }),
+  grantedByUserId: text("granted_by_user_id").notNull().references(() => user.id),
+  grantedAt: integer("granted_at", { mode: "timestamp_ms" }).notNull(),
+});
+
 export const platformOwnerInvitation = sqliteTable("platform_owner_invitation", {
   id: text("id").primaryKey(),
   organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }),

@@ -43,7 +43,16 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0027 | `0027_business-media-draft-removal.sql` | Añade `is_active` para retirar medios del próximo snapshot sin borrar un objeto que aún usa la publicación vigente. | Aditiva, default `true` conserva todas las filas existentes. Producción confirmó ledger `0000–0028` el 2026-10-25; staging sin evidencia de aplicación. |
 | 0028 | `0028_miniweb-offering-image.sql` | Añade `business_offering.image_asset_id` nullable para referenciar una imagen tenant-scoped del negocio desde cada oferta. | Aditiva y sin backfill; las referencias solo pueden asignarse a imágenes activas de la organización por la API protegida. Aplicada a producción el 2026-10-25; staging no se modificó. |
 | 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada en D1 local y producción el 2026-10-26 tras preflight sin duplicados. Staging no se modificó. |
-| 0030 | `0030_business-profile-tiktok-youtube.sql` | Redes sociales | Añade `business_profile.tiktok_url` y `business_profile.youtube_url`, opcionales. Generada para el candidato 0.9.0; pendiente de aplicación en D1. |
+| 0030 | `0030_business-profile-tiktok-youtube.sql` | Redes sociales | Añade `business_profile.tiktok_url` y `business_profile.youtube_url`, opcionales; aplicada a producción el 2026-10-28 (ver `ENVIRONMENTS.md`). |
+| 0031 | `0031_learn-access-grant.sql` | Grants Aprende | Añade un grant por `member.id`, con actor y fecha; FK a `member` en cascada para revocarlo al retirar la membresía y FK a `user` para auditar al owner. Sin backfill; no concede grants automáticamente. |
+
+### Plan de migración — `0031_learn-access-grant`
+
+**Riesgo:** bajo, aditivo. La migración solo crea `organization_learn_access_grant`; no altera tablas existentes ni modifica filas. El grant se identifica por la membresía Better Auth aceptada, no por correo, rol `admin` ni `billing_account`.
+
+**Aplicación y rollback:** generar con Drizzle y probar la cadena completa desde una D1 local vacía. El rollback de aplicación consiste en revertir el Worker y dejar la tabla sin uso; no eliminar grants existentes automáticamente. Si en un entorno aislado se decide retirar el esquema antes de guardar datos, `DROP TABLE organization_learn_access_grant` revierte la estructura. En entornos compartidos/remotos no se aplicará ni se eliminará sin autorización y revisión de datos; nunca usar `drizzle-kit push`.
+
+**Verificación:** ledger `0000–0031`, `PRAGMA foreign_key_check`, cascada al retirar una membresía, unicidad de `member_id`, rechazo de grant cross-organization en el servicio y auditoría atómica de conceder/revocar. La evidencia de D1 local de este checkpoint se registra en `TESTING.md`; ninguna D1 remota se consulta ni modifica.
 
 No se detectan `DROP TABLE`, borrados de filas ni renombrados; `0019` es la única contracción (`DROP COLUMN`). `0010` contiene seeds de tres precios y cuatro tiers; las migraciones posteriores no los actualizan. Integridad de seeds, datos sintéticos, relaciones, índices y snapshot/token se verificó localmente.
 
@@ -396,7 +405,7 @@ renovación automática. E2E del Worker/D1 local y navegador PASS; ver `TESTING.
 
 ## Migraciones
 
-`_journal.json` tiene entradas consecutivas `0000`–`0029`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0029` y su snapshot a partir del schema; el ledger de D1 del checkpoint se aplicó solo en local.
+`_journal.json` tiene entradas consecutivas `0000`–`0031`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. `0030` se aplicó a producción el 2026-10-28; `0031` se generó desde el schema y se probó en D1 local aislada. El ledger remoto no se consultó en este checkpoint.
 
 | # | Archivo | Propósito | Cambios |
 | --- | --- | --- | --- |

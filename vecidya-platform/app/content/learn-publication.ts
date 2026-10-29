@@ -15,6 +15,10 @@ export const LEARN_ALWAYS_FREE_SLUGS = Object.entries(editorialGuides)
   .filter(([, entry]) => entry.access === "always_free")
   .map(([slug]) => slug);
 
+export function getLearnGuideAccess(slug: string): EditorialGuide["access"] | null {
+  return editorialGuides[slug]?.access ?? null;
+}
+
 export function getLearnEditorialIdentity(article: LearnArticle) {
   const entry = editorialGuides[article.slug];
   if (!entry) throw new Error(`Falta identidad editorial para Aprende: ${article.slug}`);
