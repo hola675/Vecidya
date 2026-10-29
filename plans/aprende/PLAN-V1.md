@@ -640,3 +640,18 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Pruebas focalizadas:** owner con licencia activa; admin sin grant; admin/member con grant; invitado no aceptado; grant de otra organización; usuario multi-org con solo una elegible; cambio de organización activa; lifecycle ausente/pendiente/suspendido; licencia expirada/suspendida; grant eliminado; miembro retirado y reinvitado; owner billing distinto de owner organizacional; revocación sin caché compartida.
 
 **Pendiente de validación:** verificar si existen organizaciones legacy sin lifecycle y cómo regularizarlas; confirmar el patrón CSRF/auditoría de rutas actuales; definir retención de recibos sync. Esta es una política documental propuesta, no código aplicado.
+
+
+## 29. Decisiones pendientes: ciclo de vida, sincronización y permisos
+
+**Evidencia inspeccionada:** `db/schema/auth.ts` define `platformOrganizationLifecycle` con estados `pending_owner`, `owner_invited`, `active` y `suspended`. `server/auth/session.server.ts` bloquea `suspended`, pero no exige fila de lifecycle. `app/routes/api-organization-members.ts` valida la organización y el miembro objetivo en operaciones de roles y eliminación.
+
+**Política Aprende propuesta:** únicamente organizaciones con lifecycle `active` explícito, licencia vigente y membresía actual pueden aportar entitlement. No alterar la autorización global existente. Antes de habilitar, contar organizaciones sin lifecycle y por estado mediante diagnóstico solo lectura; no asumir que existen registros legacy ni activarlos en bloque. La regularización debe ser administrativa y auditable.
+
+**Concesión de acceso:** solo el rol `owner` organizacional podrá conceder o revocar grants Aprende en V1; `admin` no obtiene ese poder automáticamente. El endpoint propio validará actor, destino por `member.id` en la misma organización, CSRF/Origin según los patrones reales y auditoría. La revocación o retirada de membresía bloquea inmediatamente cuerpos protegidos, preservando progreso personal.
+
+**Sincronización propuesta:** retención de recibos idempotentes durante 90 días y reintentos automáticos del cliente hasta 30 días, pendientes de revisión de privacidad y costo. Cada operación verifica `base_version` y `base_reset_epoch` en transacción; el reset crea una barrera contra operaciones atrasadas. Duplicados con recibo vigente reciben ack anterior; sin recibo y con versión obsoleta, conflicto y resync. No se debe afirmar deduplicación perpetua tras purga. Preferir operaciones de estado explícitas, no incrementos ciegos.
+
+**Pruebas focalizadas antes de activar:** lifecycle ausente/pendiente/activo/suspendido; licencia vencida; owner/admin/member; grant entre organizaciones; reinvitación; doble dispositivo; duplicado y purga; reset atrasado; CSRF y acceso de otras organizaciones. No ejecutar suite general, migraciones remotas ni despliegues en esta fase documental.
+
+**Pendiente de validación:** datos reales sobre lifecycle legacy, política definitiva de retención y controles CSRF existentes. Ninguna prueba ejecutada.
