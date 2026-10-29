@@ -1143,6 +1143,38 @@ Estos son **valores de diseño**, no un esquema de base de datos aprobado. El mo
 
 **Estado:** tres composiciones especificadas como propuesta; sin mockups gráficos, cambios de código, tests o despliegues.
 
+
+## 43. F6/F7 — Auditoría focal de componentes existentes y ruta de prototipado (2026-10-29)
+
+**Evidencia:** lectura directa en la rama `docs/app-mini-master-plan-v1` de `app/features/miniweb/registry.ts`, `app/components/miniweb/templates/default.tsx`, `app/components/miniweb/modules/hero.tsx`, `app/components/miniweb/modules/offerings.tsx` y `app/routes/miniweb-editor.tsx`. No se localizaron estilos en la ruta supuesta `app/styles/app.css`; **no se ha inventariado todavía el CSS real**, por lo que los tokens de §42 siguen propuestos.
+
+### Hallazgos verificables
+- `HeroModule` delega en `PublicBusinessHeader`, con logo y cover; las tres variantes pueden reutilizar el origen de datos, pero requieren variantes de composición del header, no tres modelos de negocio.
+- `OfferingsModule` filtra `isActive` y `kind`, presenta título/descripción, imagen y precio textual opcional; actualmente usa `miniweb-content-list` y `miniweb-content-list__items`. Las rejillas Base/Pro/Premium deben modificar solo presentación, no filtrado de servicios/productos.
+- `DefaultMiniWebTemplate` selecciona renderers por tipo y utiliza clases `miniweb-template__module--${type}`; es punto de extensión para presets tipados, con cuidado de no romper la plantilla Esencial.
+- `miniweb-editor.tsx` ya separa las fuentes de edición: identidad/horarios/ubicación en Mi negocio, servicios/productos/FAQ/medios en MiniWeb; artículos/equipo/certificaciones/testimonios se identifican como futuros. El nuevo diseño no debe presentarlos como implementados.
+- La ruta de editor lee datos consistentes y exige permiso `business-profile:read` antes de exponer datos; el nuevo catálogo debe preservar validación y autorización en servidor, no solo ocultar botones.
+
+### Secuencia de implementación recomendada (sin ejecutar)
+**PR-D1 — auditoría de estilos y prototipo aislado:** localizar CSS/tokens reales; crear prototipo de la misma página Base/Pro/Premium con datos ficticios sin conectarlo a publicación. Revisar en móvil público, tableta y escritorio, contraste, texto largo y ausencia de medios. Sin cambios de DB/licencias.
+
+**PR-M2 — contrato de variantes y permisos:** registro tipado de `templateKey`/`variantKey`/`minimumTemplateTier`; resolución del nivel efectivo por titular (DEC-10), comprobación server-side al guardar/publicar, `planned` inaccesible. Pruebas focales de tiers y multi-organización.
+
+**PR-M3 — compatibilidad y renderer:** lector dual V1/V2, IDs estables de módulos repetibles, renderer compartido de composición, sin alterar snapshots existentes. Pruebas focales de V1, anclas únicas, render y datos preservados.
+
+**PR-M4 — catálogo visual:** selección por familia + nivel + estilo, previews y cambio de plantilla reversible; etiquetas claras de mejora, sin bloqueo de secciones Cuadra. Pruebas focales de preview, cambio y downgrade.
+
+**Dependencias:** validar la secuencia frente a PR-M1 y otros agentes antes de crear ramas; no reutilizar nombres PR-M2/M3 si ya están ocupados. No ejecutar suites globales ni cambios de CI.
+
+### Puerta de aceptación del prototipo
+- Cuadra Base luce terminada y comercializable con el mismo contenido que Pro/Premium.
+- Pro y Premium difieren por composición visible, no por contenido, módulos o rendimiento inferior en Cuadra.
+- Los tres niveles respetan diseño responsive público y no requieren edición móvil de `/app`.
+- Se verifica visualmente el sistema real de estilos antes de fijar tokens.
+- Aprobación de prototipo antes de incorporar diseños nuevos al registro de plantillas disponibles.
+
+**Estado:** auditoría focal y ruta de implementación documentadas; sin modificación de aplicación, mockups gráficos, pruebas, merge ni deploy.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
