@@ -554,6 +554,46 @@ type MiniWebConfigV2 = {
 
 **Pendientes de diseño con coste/impacto:** límites de videos y medios, retención temporal/cantidad de versiones, catálogo real de plantillas, estrategia HTTP/SEO de MiniWeb desactivado. No inventar cifras ni fechas. **Estado:** especificación documentada; ninguna migración, prueba o despliegue ejecutado.
 
+
+## 28. F6 — Catálogo visual verificable y matriz de plantillas (2026-10-29)
+
+**Inventario CODE real:** `app/features/miniweb/registry.ts` declara cinco `templateKey`: `vecidya-default` (Esencial, `available`), `services-studio` (Servicios, `planned`), `catalog-store` (Catálogo, `planned`), `gastronomy-table` (Gastronomía, `planned`) y `professional-profile` (Profesional, `planned`). Solo **una** está disponible hoy. Los `layoutVariants` son `standard`; **no** hay variantes premium ya construidas. La validación actual usa `version:1`, `settings:null`, unicidad de tipo y máximo 4096 bytes serializados; V2 requiere contrato nuevo, no relajar silenciosamente el validador V1.
+
+### Matriz de catálogo objetivo (PROPUESTA, no activos ya disponibles)
+| Key existente | Familia | Estado actual CODE | Tier mínimo objetivo | Primera composición de referencia |
+| --- | --- | --- | --- | --- |
+| `vecidya-default` | Profesional general | Disponible | Cuadra | Portada, presentación, contacto, ubicación, horarios |
+| `services-studio` | Servicios | Planeada | Cuadra | Portada, servicios, beneficios, contacto |
+| `catalog-store` | Catálogo | Planeada | Barrio | Portada, productos, galerías, contacto |
+| `gastronomy-table` | Gastronomía | Planeada | Barrio | Portada, carta/productos, horarios, ubicación |
+| `professional-profile` | Profesional | Planeada | Ciudad | Portada, credenciales, testimonios, contacto |
+
+**Importante:** esta asignación por tier es una **propuesta de producto**, no decisión comercial ya aprobada. DEC-06 solo aprueba jerarquía Cuadra→Barrio→Ciudad; DEC-10 comparte el máximo tier entre organizaciones del titular. La familia de negocio no equivale al tier: más adelante cada familia puede tener variantes esenciales, avanzadas y premium. No anunciar las cuatro plantillas planeadas como disponibles.
+
+### Diseño de registry V2
+- Separar `templateFamily`, `templateKey`, `minimumLicenseTier`, `availability`, `version`, `layoutVariants`, `capabilities` y `previewAsset` opcional.
+- `availability`: `planned`, `available`, `retired`; una versión `retired` se puede renderizar en snapshot histórico, pero no elegir para nueva publicación.
+- Validar tier compartido DEC-10 en servidor para selección, guardado y publicación. El frontend muestra niveles bloqueados y motivo, sin conceder derechos.
+- Mantener `vecidya-default` v1 y su render legacy; introducir diseños nuevos por versiones/keys nuevos, sin mutar la apariencia de snapshots publicados.
+- Variantes de composición: hero con logo independiente y encuadre; columnas responsivas; tipografía y tokens de color; tarjetas; secciones repetibles. La configuración editable debe ser validada por esquema, no aceptar CSS/JS arbitrarios.
+- Cada plantilla debe especificar fallback de imagen, navegación teclado, contraste, responsive, estructura semántica y media accesible.
+
+### Inventario de módulos CODE y ampliación objetivo
+**Disponibles:** `hero`, `about`, `contact`, `hours`, `services`, `gallery`, `location`, `products`, `faq`.
+**Planeados:** `articles`, `team`, `certifications`, `testimonials`.
+**V2 por especificar:** galerías de video repetibles, bloques de contenido flexible, secciones de columnas; no inventar que ya existen. `gallery` actualmente combina imágenes y videos del negocio, sin instancias repetibles.
+
+### Gate de aceptación F6
+1. Plantilla Esencial legacy renderiza idéntica en lectura y tras despliegue de registry V2.
+2. Tier compartido del titular determina plantillas en organizaciones autorizadas sin compartir CRM.
+3. Plantilla `planned` o `retired` no se puede seleccionar ni publicar, aunque se manipule payload.
+4. Downgrade conserva snapshot público premium y bloquea nueva publicación premium (DEC-07).
+5. Suspensión/vencimiento congela editor/publicación, mantiene web pública (DEC-09).
+6. Diseño nuevo conserva portada/logo independientes y navegación accesible en móvil.
+7. Tests focales de validador, autorización, renderer y snapshot; no suites generales.
+
+**Estado:** inventario y contrato objetivo documentados; cuatro plantillas siguen `planned`; ninguna implementación ni prueba nueva realizada.
+
 ## 12. Registro de avance
 
 - **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
