@@ -1,5 +1,6 @@
+import { newHoursV2 } from "./hours";
 import {
-  createEmptyV2Hours, type V2Draft, type V2Section,
+  type V2Draft, type V2Section,
   type V2TemplateFamily, type V2VisualTier,
 } from "./sections";
 
@@ -53,7 +54,7 @@ export function importPublishedV1ToV2(
   if (Object.keys(location).length) sections.push({ instanceId: "location-1", type: "location", enabled: true, content: location });
 
   // Deliberately constructed without reading any legacy hours value.
-  sections.push({ instanceId: "hours-1", type: "hours", enabled: false, content: createEmptyV2Hours() });
+  sections.push({ instanceId: "hours-1", type: "hours", enabled: false, content: newHoursV2() });
   return {
     draft: { schemaVersion: 2, family, visualTier, sections, sourcePublicationId: legacy.publicationId },
     importedFields,
