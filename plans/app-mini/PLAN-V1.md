@@ -253,7 +253,7 @@
 - `api-platform-licensing.ts`: `getOrganizationLicense(database, organizationId)` ofrece un punto de lectura para la licencia de la organización; los cambios requieren `organization:license:update` de plataforma y comparan `currentLicenseId` en operaciones. Revisar implementación/estados/fechas antes de decidir entitlement; **no importar directamente una ruta de administración como dependencia del editor**.
 - `app/content/commercial-detail.ts` no es una fuente técnica de permisos.
 
-**Corrección aprobada (DEC-08):** la propuesta anterior de publicaciones secundarias amparadas sin cupos queda sustituida. Una o varias licencias activas Cuadra/Barrio/Ciudad conceden un único bloque base de 3 MiniWeb; solo Cuadras adicionales de ampliación suman otros bloques de 3. Barrio/Ciudad incluyen una sola vez el beneficio Cuadra y conceden CRM exclusivamente a su organización asignada. El catálogo histórico requiere conciliación. La atribución de plantillas avanzadas a otras organizaciones y la suspensión/expiración siguen pendientes.
+**Corrección aprobada (DEC-08):** la propuesta anterior de publicaciones secundarias amparadas sin cupos queda sustituida. Una o varias licencias activas Cuadra/Barrio/Ciudad conceden un único bloque base de 3 MiniWeb; solo Cuadras adicionales de ampliación suman otros bloques de 3. Barrio/Ciudad incluyen una sola vez el beneficio Cuadra y conceden CRM exclusivamente a su organización asignada. El catálogo histórico requiere conciliación. La atribución de plantillas avanzadas se resolvió en DEC-10 (compartidas por titular) y la suspensión/expiración en DEC-09 (congelación pública y desactivación administrativa).
 
 **Cierre parcial:** el inventario de rutas ya está localizado. Pendientes inspeccionar `getOrganizationLicense`, estados efectivos, acceso público a medios, baja de activos, y transacciones; no afirmar implementación ni tests.
 
@@ -284,7 +284,7 @@
 4. Registrar asignación de cada MiniWeb publicado a la cuenta titular y consumir un cupo por organización; definir explícitamente transferencias de titular, downgrade y sobrecupo antes de migrar.
 5. El servidor debe verificar capacidad al publicar, con prueba de carrera sobre el último cupo; no basta un contador en UI ni una consulta separada sin protección contra concurrencia.
 6. El CRM Barrio/Ciudad se autoriza **por licencia de la organización destino**, nunca por cupos disponibles del titular.
-7. La matriz de plantillas premium DEC-06 sigue vigente como objetivo, pero la atribución de plantillas a organizaciones sin licencia Barrio/Ciudad propia permanece pendiente de decisión.
+7. La matriz de plantillas premium DEC-06 sigue vigente y DEC-10 aprueba compartir el nivel visual máximo entre organizaciones del titular, sin compartir CRM.
 
 **Bloqueos antes de implementar:** modelo comercial/operativo de compra de ampliaciones (sin checkout automático actual), tratamiento de sobrecupo por suspensión/expiración, y migración de organizaciones ya publicadas. **Evidencia CODE + propuesta**, sin pruebas ni migraciones.
 
@@ -317,7 +317,7 @@
 **Entregables:** editor semanal claro, días cerrados, validación de intervalos y presentación compacta en perfil público. **Salida:** misma interpretación entre formulario, snapshot y página publicada; casos límite cubiertos.
 
 ### F6 — Plantillas y niveles
-**Entregables:** Cuadra esencial, Barrio avanzado, Ciudad completo, vista previa responsiva y enforcement en servidor. **Salida:** no se habilitan plantillas premium por modificar payload; downgrade mantiene snapshot publicado (DEC-07). **Decisión pendiente aislada:** organización sin CRM propio no hereda automáticamente plantillas Barrio/Ciudad; hasta resolverlo, solo catálogo esencial para nuevas publicaciones de esa organización como propuesta conservadora, sin afirmar aprobación comercial.
+**Entregables:** Cuadra esencial, Barrio avanzado, Ciudad completo, vista previa responsiva y enforcement en servidor. **Salida:** no se habilitan plantillas premium por modificar payload; downgrade mantiene snapshot publicado (DEC-07). **DEC-10 aprobada:** el nivel visual máximo Cuadra/Barrio/Ciudad se comparte entre todas las organizaciones autorizadas del mismo billing_account, aunque no tengan CRM propio. El CRM permanece exclusivamente en su organización licenciada. Validar nivel visual compartido en servidor, sin sumar cupos por Barrio/Ciudad.
 
 ### F7 — Editor simple/avanzado
 **Entregables:** ordenación de secciones, edición inline, ajustes progresivos, deshacer cambios de borrador y vista previa fiel. **Salida:** un usuario sin conocimientos técnicos completa un MiniWeb desde móvil; guardado y validaciones no alteran publicación.
