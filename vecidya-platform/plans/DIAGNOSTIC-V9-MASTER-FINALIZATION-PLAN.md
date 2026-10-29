@@ -2538,3 +2538,39 @@ A. Grafo de dependencias explícitas + contexto inferido; B. reglas de invalidac
 
 ## Changelog adicional
 - **1.44.0 / 2026-10-29:** contrato documental de replanificación e invalidación tras correcciones, nueve casos focales y gates de aceptación; sin código, tests ni despliegues.
+
+## 53. CIERRE EJECUTIVO — ruta crítica y definición de «plan terminado» (2026-10-29)
+**PLAN_ONLY.** Consolidación de secciones 42–52, no nueva aprobación de producto ni evidencia de ejecución. Se evita ampliar indefinidamente el plan con auditorías repetitivas: el siguiente trabajo documental debe producir artefactos verificables y cerrar decisiones.
+
+### Bloqueos únicos, dependencias y entregables obligatorios
+| Orden | Bloqueo | Entregable concreto | Criterio documental de cierre |
+| --- | --- | --- | --- |
+| 1 | TAX-G2: banco | Inventario completo del candidato de 77 preguntas, todas las opciones/variantes, ID, versión, reglas, evidencia, estado editorial, SHA | Cada pregunta y opción del banco representada; huecos `pending` explícitos; sin contar aserción como auditoría independiente |
+| 2 | TAX-G3: grafo | Trazas por C01–C10, incluidos neutros, cambios de respuestas y sustituciones; matriz 8×10 | Cada celda con evidencia o abstención justificada, ruta y coste; ND no se convierte en aprobado |
+| 3 | TAX-G1: taxonomía | Decisión comparada P-TAX-01/02/03 y límites de las ocho dimensiones | Aprobación humana explícita de taxonomía final, no inferida |
+| 4 | EDIT-G1: editorial | Lotes priorizados por severidad y cobertura es/en | Todas las preguntas que entrarán en lanzamiento revisadas; `pending_human_review` fuera de ruta pública |
+| 5 | EVAL-G1: evaluación | Contrato de suficiencia, abstención, evidencia directa/apoyo, versión y calibración | Sin score global arbitrario, sin doble conteo ni evidencia QBV2 heredada sin aprobación |
+| 6 | GRAPH-G1: presupuesto | Especificación de selección y replanificación, casos 24+5, consentimiento y cambios | Ninguna trayectoria crítica supera presupuesto sin consentimiento; no se promete ejecución |
+| 7 | BOUND-G1: límites | Contrato V9 independiente de QBV2/GHL; privacidad borrador local/D1 agregada; Aprende/servicios opcionales | Dependencias y flujos de datos identificados y decisiones pendientes explicitadas |
+| 8 | HANDOFF-G1: agente | Orden de implementación F00–F10, archivos permitidos, gates focales, rollback, criterios de aceptación | Instrucciones suficientes para ejecutar **después** de autorización; PR draft sin merge |
+
+### Política de bloqueo y priorización
+**P0**: errores que cambian interpretación de una respuesta neutral, atribuyen madurez sin evidencia, confunden ventas con interés, reusan evidencia inelegible, rompen privacidad o exceden 24+5. **P1**: traducción, accesibilidad, recomendaciones, experiencia y límites Vecidya/GHL. **P2**: mejoras editoriales no necesarias para las rutas certificadas. La severidad se aplica al riesgo del producto, no al número de flags sintácticos.
+
+### Decisiones humanas realmente abiertas
+- Aprobar taxonomía final: ocho dimensiones con fronteras redefinidas, seis fusionadas u ocho parcialmente internas.
+- Resolver semántica y migración versionada de `q2_food_menu_visibility.not_applicable` y equivalentes.
+- Aprobar núcleo editorial es/en y evidencia suficiente para cada escenario; ningún mapeo estático sustituye aprobación.
+- Aprobar diseño de almacenamiento de informes autenticados, distinto de borrador local y analítica agregada.
+Estas decisiones no pueden darse por resueltas con documentación técnica.
+
+### Protocolo para siguientes avances
+1. Entregar primero inventario materializado y matriz de huecos, no otra lista de deseos.
+2. Adjuntar origen SHA, alcance, método de obtención y distinción entre `comprobado`, `inferido` y `pendiente`.
+3. No cambiar implementación, tests, CI, producción ni PR mientras siga PLAN_ONLY.
+4. Solo declarar «PLAN TERMINADO» cuando los ocho entregables documentales existan, los bloqueos de aprobación humana estén señalados y el handoff F00–F10 sea ejecutable sin decisiones inventadas. «MOTOR TERMINADO» exige implementación y validación posteriores; es otro estado.
+
+**Estado a 2026-10-29:** arquitectura y contratos documentados; TAX-G2/TAX-G3 y aprobación taxonómica pendientes. La matriz 8×10 no está certificada. El plan aún NO está terminado.
+
+## Changelog adicional
+- **1.45.0 / 2026-10-29:** ruta crítica consolidada de ocho entregables, política P0–P2, decisiones humanas abiertas y definición verificable de cierre documental. Sin implementación.
