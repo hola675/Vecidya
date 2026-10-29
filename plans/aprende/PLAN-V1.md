@@ -440,3 +440,18 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 - En la aceptación de invitación, fusionar progreso anónimo con consentimiento si se entra a una cuenta existente; no otorgar licencia ni permiso Aprende implícitamente.
 
 **Ajuste al alcance de Fase 0:** se elimina cualquier propuesta de registro personal público. Verificar la conservación del guard de invitación de `server/auth.server.ts` mediante prueba focalizada. No hay implementación autorizada.
+
+
+## 20. Fase 0: invitaciones, permisos y diseño D1 (propuesta)
+
+Inspección estática: `api-organization-invitations.ts` acepta correo y rol member/admin; `invitation.tsx` exige sesión, correo verificado e invitación válida antes de aceptar; `api-organization-members.ts` permite cambiar rol o retirar miembros; `auth-plugins.server.ts` limpia la organización activa de sesiones al retirar miembro. Ninguna de estas rutas concede permiso Aprende. Las cuentas continúan siendo exclusivamente por invitación.
+
+**Diseño recomendado:** crear una tabla `organization_learn_permission` con `member_id` como clave única y FK a `member.id` con eliminación en cascada, `enabled`, `granted_by`, `granted_at`, `revoked_by`, `revoked_at`, `updated_at`. Usar auditoría de plataforma para concesión y revocación. Confirmar compatibilidad con migraciones y claves actuales antes de fijar esquema. El permiso nace desactivado: invitación, aceptación y cambio de rol no lo conceden. La concesión se hace después de aceptar la invitación, por propietario o gestor autorizado, comprobando la organización del miembro. Una nueva invitación tras una baja no debe restaurar permisos anteriores.
+
+**Consultas:** para contenido protegido, comprobar sesión, membresía actual, estado de organización, licencia activa de la misma organización y rol owner o permiso explícito. Consultar todas las organizaciones del usuario; no solo la seleccionada en sesión. El progreso y favoritos siguen vinculados a `user.id`, nunca a una organización.
+
+**Pruebas propuestas:** invitaciones pendientes/canceladas/expiradas no conceden acceso; aceptación sin grant tampoco; concesión/revocación auditadas; eliminación del miembro invalida grant; reinvitación no restaura permiso; cambio de rol no lo concede; organización suspendida no habilita; varias organizaciones se evalúan sin mezclar permisos y licencias; registro sin invitación sigue prohibido.
+
+**Migraciones futuras:** aditivas, con índice único y FK comprobadas en D1 local; identificar número real de migración y rollback antes de escribir SQL. Sin migraciones remotas ni deploy.
+
+**Estado:** documentación; Fase 0 en progreso. No se ha implementado código.
