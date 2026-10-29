@@ -1941,3 +1941,14 @@ En §21 F1/F7 se eliminó la instrucción ejecutable de editor móvil; F6 ahora 
 - **AC-19F:** el usuario puede elegir una familia nueva al convertir V1, editar el resultado y publicar una nueva versión sin perder su historial.
 
 **Precedencia:** DEC-19 sustituye cualquier instrucción anterior de «reutilizar secciones V1», «extender el editor de secciones existente» o «preservar la sección Horarios V1 en V2». Mantener compatibilidad pública V1 no significa vincular su horario a V2. **GAP-19 cambia de OPEN a SPECIFIED por decisión; implementación y pruebas siguen pendientes.** GAP-21/22 permanecen abiertos hasta diseñar el adaptador y verificar el código.
+
+
+## 67. Primer checkpoint CODE de DEC-19 — PR #197 (2026-10-29)
+
+**Implementación creada en rama independiente desde main:** `feat/miniweb-v2-section-contract-hours-isolation`, PR [#197](https://github.com/hola675/Vecidya/pull/197) **draft**.
+
+**Archivos nuevos:** `app/features/miniweb-v2/sections.ts` (tipos de 12 secciones V2, cinco familias, tres variantes visuales, borrador V2 y nuevo horario vacío con validación), `app/features/miniweb-v2/migrate.ts` (importación voluntaria de campos publicados permitidos y exclusión absoluta de horarios), `tests/unit/miniweb/v2-sections.test.ts` (cuatro tests focales).
+
+**Alcance real:** código puro inicial; no UI, no ruta, no D1, no renderer, no publicación, no migración automática, no cambio del horario legado en producción. Las pruebas están escritas, **no se declara RAN/PASS** sin ejecución de CI o local sobre SHA del PR.
+
+**Trazabilidad:** DEC-19/AC-19C y AC-19D tienen primera implementación parcial; GAP-19 pasa de SPECIFIED a PARTIAL CODE, pendiente de UI y prueba; GAP-21/22 siguen OPEN. Próximos PRs: modelo persistente de Horario V2 separado, pruebas de ausencia de consultas a V1, renderer de secciones nuevas, editor y conversión desde publicación.
