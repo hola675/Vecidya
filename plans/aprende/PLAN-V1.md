@@ -564,3 +564,18 @@ Inspección estática: `api-organization-invitations.ts` acepta correo y rol mem
 **Riesgo concreto:** si se reutiliza `getPublicLearnArticles` como respuesta JSON pública, se serializan objetos con secciones. Separar función editorial de funciones de DTO público; no cambiar la semántica editorial de publicación.
 
 **Pendiente de Fase 0:** revisar scripts de migración/rollback, tablas auth reales y prueba de seguridad de artefactos build; cerrar contrato de concurrencia para sync. No hay implementación autorizada.
+
+
+## 25. Contrato de concurrencia y migraciones D1 (propuesta)
+
+**Fuentes inspeccionadas:** `drizzle.config.ts`, `db/migrations/meta/_journal.json`, `db/migrations/0020_platform-admin-training.sql`, `db/migrations/0029_organization-license-single-current.sql` y `tests/e2e/test-safety.mjs`. Drizzle usa SQLite; el journal contiene 31 migraciones hasta `0030`. Los tests locales restringen el destino a loopback; los remotos requieren staging explícito y rechazan producción.
+
+**Sincronización personal V1:** versión monotónica `server_version` por usuario y guía, más `reset_epoch` que cambia al restablecer progreso. Cada operación aporta `operation_id` idempotente, `base_version` y `base_reset_epoch`. El servidor valida sesión y propiedad; una operación repetida devuelve el resultado original sin volver a aplicarse. Si la versión base está obsoleta, responde conflicto y snapshot autorizado; si la época difiere, nunca revive checks anteriores al reset. No usar reloj local, unión OR ni last-write-wins silencioso. El reset incrementa versión y época atómicamente. Importación anónima requiere consentimiento y detección de conflictos.
+
+**Ajuste de esquema propuesto:** incluir `server_version` y `reset_epoch` en `learn_guide_progress`, y versiones base/resultantes y recibo idempotente en `learn_sync_operation` con UNIQUE `(user_id, operation_id)`. Evaluar consolidación de preferencias secundarias para evitar tablas innecesarias. Retención de recibos y ventana máxima de reintentos deben definirse juntas; tras purga, rechazar operaciones de versión antigua.
+
+**Migración:** revisar HEAD y journal antes de elegir numeración; generar SQL aditivo Drizzle, verificar FK e índices, aplicar solo en D1 local aislada y ejecutar pruebas focalizadas. Rollback de código sin DROP de datos personales. Separar expansión de esquema, activación de endpoints y exposición de interfaz. Sin D1 remota, merge ni despliegue sin autorización.
+
+**Casos de prueba:** doble dispositivo, reset contra operación atrasada, duplicado de operación, purga de recibos, importación con conflicto, licencia caducada con progreso conservado, eliminación de cuenta y bloqueo de producción en E2E.
+
+**Estado:** diseño documental; implementación pendiente.
