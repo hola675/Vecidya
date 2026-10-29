@@ -1185,3 +1185,90 @@ D-V9-001 a D-V9-019: APPROVED en sus alcances respectivos. D-V9-020 PENDING. Uni
 
 ## Changelog adicional
 - **1.20.0 / 2026-10-29:** D-V9-019 aprobada; techo 24+5 global, reglas de uso y detención, siete tareas PLAN-LIM01–07, catorce criterios de aceptación y siguiente decisión. Solo documentación.
+
+
+## 28. Decisión D-V9-020 — unidad de interacción: turno de pregunta o aclaración (aprobada 2026-10-29)
+**Aprobación expresa:** opción C: «cada turno de pregunta o aclaración que requiera decisión del usuario, incluidas respuestas No sé y Prefiero omitir; excluir navegación, consentimiento y cambio de idioma». Estado APPROVED; PLAN_ONLY.
+
+### 28.1. Regla de contabilización
+- Cuenta **una interacción** cada turno distinto de pregunta o aclaración **presentado** que solicite una respuesta o decisión, independientemente de si se responde, se elige «No sé» o se omite.
+- No cuentan: navegación, cambio es/en, solicitud/aceptación/rechazo de consentimiento, animaciones, mensajes de acompañamiento ni visualización de progreso.
+- Volver a mostrar una pregunta ya contabilizada para editar respuesta no debe consumir otra interacción; una aclaración semánticamente nueva sí cuenta. Errores técnicos, recargas y duplicación accidental no deben generar consumo adicional.
+- El presupuesto **24 ordinarias + 5 excepcionales = máximo 29 turnos contabilizados** es global por evaluación, se conserva entre pausas/reanudaciones y no se reinicia por idioma, dimensión o sesión.
+- El consentimiento explícito es requisito previo al primer turno excepcional; el usuario puede terminar sin penalización y las dimensiones sin evidencia suficiente quedan sin nivel.
+- La distinción entre «presentado» y «respuesta enviada», el registro idempotente y los casos de pregunta compuesta requieren contrato detallado; no utilizar agrupación artificiosa para eludir el límite.
+
+### 28.2. Tareas documentales
+| ID | Tarea | Entregable |
+| --- | --- | --- |
+| PLAN-COUNT01 | Auditar el modelo actual de turno, navegación, persistencia y repregunta | Mapa de eventos y archivos/SHA |
+| PLAN-COUNT02 | Especificar tabla contable y exclusiones, incluidos reintentos y preguntas reabiertas | Contrato de evento idempotente |
+| PLAN-COUNT03 | Definir contador único y estado de consentimiento entre sesiones | Máquina de estados conceptual 24+5 |
+| PLAN-COUNT04 | Preparar pruebas focalizadas futuras con omisiones, cambios de idioma y fallos de red | Matriz de conteos esperados, sin ejecutar |
+
+### 28.3. Aceptación futura
+Una pregunta omitida cuenta; editarla no cuenta dos veces; «No sé» cuenta; cambio de idioma, consentimiento y animación no cuentan; aclaración nueva cuenta; fallos/reintentos no duplican; sin consentimiento no existe turno 25; nunca se supera 29.
+
+## 29. Decisión D-V9-021 — acompañamiento premium y progreso perceptible (solicitud expresa 2026-10-29)
+**Solicitud del usuario:** durante el diagnóstico debe sentirse el avance mediante textos variados de acompañamiento («ya casi lo tenemos», «queremos saber más de ti», «solo falta confirmar pocas cosas»), animaciones, progreso, respuestas visuales a cada intervención y experiencia atractiva, interactiva y fluida. **Aprobado como objetivo de experiencia y requisito documental**; detalles visuales, copy definitivo y métricas aún requieren diseño y validación. PLAN_ONLY.
+
+### 29.1. Principios UX
+1. La entrevista se percibe como **conversación guiada y acompañada**, no como cuestionario burocrático. Cada respuesta válida recibe retroalimentación inmediata, breve y no distractora.
+2. Separar **avance de turnos** (cuántos consumidos respecto al presupuesto ordinario), **cobertura de información** (temas/evidencias abordados) y **suficiencia diagnóstica** (si puede emitirse una conclusión por dimensión). Nunca confundir estas medidas.
+3. La barra o indicador de progreso debe ser **honesto y adaptativo**: no prometer porcentaje exacto de finalización si el grafo cambia, no retroceder engañosamente ni simular madurez creciente con cada clic. Diseñar una representación por hitos/etapas y una indicación transparente del tramo excepcional consentido.
+4. Textos de acompañamiento **contextuales y variados**, no repetidos mecánicamente ni asociados a una mejora de puntuación. Ejemplos editoriales candidatos, no copy aprobado: «Vamos conociendo mejor tu negocio», «Ya cubrimos varios aspectos importantes», «Estamos revisando los últimos detalles», «Hay un punto importante que conviene aclarar», «Puedes terminar con la información disponible».
+5. Frases como «ya tenemos suficiente información» solo cuando la evidencia realmente sea suficiente; «ya casi terminamos» solo si el flujo permite sostener esa afirmación. Evitar promesas falsas de inmediatez, elogios automáticos vacíos o presión para aceptar extensión.
+6. Animaciones y microinteracciones sobrias: transición de pregunta, confirmación de respuesta, actualización de hitos, estados de carga y cierre; no bloquear entrada ni introducir demoras artificiales.
+7. Respetar `prefers-reduced-motion`, teclado, lectores de pantalla, foco, contraste, anuncios de estado no invasivos y conexiones/dispositivos modestos. Sin animación obligatoria.
+8. Certificar textos, tono, estados y equivalencia de intención en español e inglés D-V9-014; la selección del mensaje no cambia scoring, rutas ni prioridades.
+9. Respetar anonimato, privacidad, consentimiento y neutralidad comercial. La experiencia premium no es una mecánica para forzar registro o compra.
+10. Si falta evidencia crítica al llegar a 24, mostrar explicación clara y consentimiento para hasta cinco turnos adicionales; distinguir progreso ordinario de extensión y permitir salida sin castigo.
+
+### 29.2. Momentos de acompañamiento a especificar
+- Inicio: bienvenida breve y expectativa realista de recorrido adaptativo.
+- Después de una respuesta: acuse visual sutil, sin afirmar conclusión prematura.
+- Hito de cobertura: mensaje sobre el tema completado, no sobre un porcentaje inventado.
+- Transición de tema: explicar qué se explorará a continuación y por qué importa.
+- Duda/«No sé»/omisión: respuesta neutral, sin culpabilizar ni insistencia repetitiva.
+- Contradicción o aclaración: mensaje breve sobre necesidad de precisión.
+- Cerca del cierre **solo cuando sea verificable**: orientación honesta sobre pasos restantes.
+- Umbral 24: aviso de evidencia crítica, consentimiento explícito para extensión y opción de finalizar.
+- Resultado parcial: reconocer dimensiones evaluadas y explicar las no evaluables sin tono negativo.
+- Reanudación: restaurar hito y estado sin simular avance nuevo.
+
+### 29.3. Tareas documentales para el agente futuro
+| ID | Tarea | Entregable verificable | Gate |
+| --- | --- | --- | --- |
+| PLAN-UXP01 | Auditar UX real de entrevista, estados de progreso y animaciones V9/QBV2 | Inventario de componentes/rutas/estados con SHA | No asumir UX implementada |
+| PLAN-UXP02 | Diseñar modelo de progreso honesto para grafo adaptativo y extensión 24+5 | Contrato de hitos, turnos, cobertura y suficiencia | No porcentajes engañosos |
+| PLAN-UXP03 | Elaborar matriz de microcopy es/en por evento, estado y contexto | Biblioteca bilingüe con condiciones de emisión | Revisión editorial humana |
+| PLAN-UXP04 | Especificar sistema de movimiento y microinteracciones | Guía de transiciones, estados, duración por validar y reduced motion | Accesibilidad y rendimiento |
+| PLAN-UXP05 | Diseñar feedback inmediato sin acoplar UI a scoring | Contrato de eventos de presentación y no interferencia | Evaluación determinista |
+| PLAN-UXP06 | Diseñar estados de fatiga, pausa, error, incertidumbre y consentimiento | Flujos y prototipos documentales | Sin presión ni bloqueo |
+| PLAN-UXP07 | Preparar pruebas focalizadas futuras de UX, accesibilidad y equivalencia es/en | Matriz de escenarios C01–C10 y casos límite | Sin ejecutar en PLAN_ONLY |
+| PLAN-UXP08 | Definir criterios de evaluación de experiencia sin métricas inventadas | Plan de validación de comprensión, fricción y confianza | Sin declarar resultados no medidos |
+
+### 29.4. Criterios de aceptación futuros
+1. Cada respuesta tiene feedback perceptible sin demora artificial.
+2. Los mensajes cambian por contexto y no se repiten de forma intrusiva.
+3. No se anuncia «casi terminado» si quedan ramas o evidencia crítica inciertas.
+4. El indicador no confunde preguntas contestadas con mejora de madurez.
+5. La extensión consentida no provoca barra engañosa ni supera cinco turnos.
+6. Omisiones y «No sé» reciben acompañamiento neutral.
+7. Animaciones no impiden navegación por teclado ni lectura de pantalla.
+8. Modo de movimiento reducido conserva toda la información funcional.
+9. Cambiar es/en mantiene respuestas, contador e hitos.
+10. Red lenta, recarga o reanudación no duplican efectos ni avance.
+11. No se induce a registrarse ni comprar para «completar» artificialmente la entrevista.
+12. Los resultados parciales explican incertidumbre sin aparentar fracaso.
+13. Los mensajes no alteran motor, evidencia, ranking ni resultados.
+14. El usuario puede avanzar con claridad incluso sin animaciones.
+
+### 29.5. Próxima decisión D-V9-022 — representación principal del progreso
+**A:** barra porcentual basada en turnos consumidos, con aviso de adaptabilidad; **B:** hitos de temas/etapas con indicador de avance, sin porcentaje exacto (recomendado para recorrido adaptativo); **C:** combinación de hitos y porcentaje estimado, sujeto a calibración y advertencias. **Ninguna opción está aprobada.** La elección debe respetar D-V9-020 y D-V9-021 y evitar progreso ficticio.
+
+### 29.6. Estado
+D-V9-001 a D-V9-020 APPROVED. D-V9-021 aprobado como objetivo UX y alcance documental; diseño definitivo PENDING. D-V9-022 PENDING. **PLAN_ONLY**: sin código, pruebas, CI, merges ni despliegues.
+
+## Changelog adicional
+- **1.21.0 / 2026-10-29:** D-V9-020 aprobada (unidad de interacción por turno) y D-V9-021 incorporada (acompañamiento premium, microcopy, animaciones y progreso honesto); doce tareas documentales, criterios de aceptación y D-V9-022. Solo documentación.
