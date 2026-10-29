@@ -268,8 +268,29 @@
 - Pruebas focales: Barrio + Ciudad = 3; Barrio + Ciudad + Cuadra adicional = 6; no duplicación al cambiar licencias; publicación concurrente sobre último cupo; aislamiento por titular.
 - **Estado:** decisión aprobada; sin implementación ni tests.
 
+## 19. F0 — compatibilidad del esquema de licencias y propuesta de capacidad (CODE / DISEÑO)
+
+**CODE verificado** en `db/schema/licensing.ts` y `db/queries/licensing.server.ts`:
+- `billing_account` tiene un `owner_user_id` único. La frontera económica es el titular de facturación, **no** las membresías de Better Auth.
+- `organization_license` vincula cada licencia a una organización y tiene un índice único parcial para una licencia no cancelada por organización. No modela directamente la compra de varias Cuadras de ampliación sin crear organizaciones ficticias o alterar la semántica de CRM.
+- Estados disponibles: `pending`, `active`, `suspended`, `cancelled`. Existen `activated_at` y `ends_at`; comprobar ambos al definir licencia efectiva, no usar solo el texto de estado.
+- `getLicenseLinesForBillingAccount` lista licencias del mismo `billing_account` y no deriva derechos de `member`.
+- `api-platform-licensing.ts` opera asignación, cambio, cancelación, suspensión, reactivación y transferencia mediante `platform_admin`; no existe checkout autoservicio en esta ruta.
+
+**Propuesta técnica F2, no implementada:**
+1. Mantener `organization_license` para la licencia y CRM de cada organización, sin romper su unicidad ni la auditoría.
+2. Añadir entidad explícita de **Cuadra de ampliación de capacidad** vinculada a `billing_account`, con identificador, estado efectivo, fechas, referencia contractual y auditoría. No representar la ampliación como licencia CRM de una organización ficticia.
+3. Resolver `baseSlots = 3` cuando el titular tenga al menos una licencia Cuadra/Barrio/Ciudad efectiva; en caso contrario `baseSlots = 0`. Resolver `extraSlots = 3 × ampliaciones Cuadra efectivas`; total = base + extra. La Cuadra base **no se cuenta otra vez** como ampliación. Validar también los estados de las ampliaciones.
+4. Registrar asignación de cada MiniWeb publicado a la cuenta titular y consumir un cupo por organización; definir explícitamente transferencias de titular, downgrade y sobrecupo antes de migrar.
+5. El servidor debe verificar capacidad al publicar, con prueba de carrera sobre el último cupo; no basta un contador en UI ni una consulta separada sin protección contra concurrencia.
+6. El CRM Barrio/Ciudad se autoriza **por licencia de la organización destino**, nunca por cupos disponibles del titular.
+7. La matriz de plantillas premium DEC-06 sigue vigente como objetivo, pero la atribución de plantillas a organizaciones sin licencia Barrio/Ciudad propia permanece pendiente de decisión.
+
+**Bloqueos antes de implementar:** modelo comercial/operativo de compra de ampliaciones (sin checkout automático actual), tratamiento de sobrecupo por suspensión/expiración, y migración de organizaciones ya publicadas. **Evidencia CODE + propuesta**, sin pruebas ni migraciones.
+
 ## 12. Registro de avance
 
+- **2026-10-29 — [x] F0 esquema de licencias CODE:** cuenta de facturación única por titular, licencia actual por organización, estados y API admin; propuesta de Cuadra de ampliación separada, sin implementación.
 - **2026-10-29 — [x] DEC-08 corregida:** Barrio/Ciudad no acumulan cupos; bloque base único de 3 y ampliaciones exclusivamente por Cuadras adicionales. Sin código, tests, merge ni deploy.
 - **2026-10-29 — [x] F0 rutas CODE:** identificadas rutas reales y permisos save/publish, punto de lectura de licencia y tensión multi-organización del catálogo; pendiente decidir nivel de plantillas de organizaciones secundarias. Sin ejecución.
 - **2026-10-29 — [x] F0 publicación y cuotas CODE:** snapshot schema 4, CAS por revisión/token, sobrescritura de publicación, cuotas técnicas 32 MiB/100 MiB; pendiente inventario de rutas y licencia efectiva. Sin ejecución.
