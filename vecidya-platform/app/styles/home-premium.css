@@ -200,6 +200,18 @@
   pointer-events: none;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .public-home .home-hero-visual__product {
+    animation: home-art-float 8s cubic-bezier(.77, 0, .175, 1) 1s infinite alternate;
+    transform-origin: 54% 52%;
+  }
+
+  .public-home .home-hero-visual__vico {
+    animation: home-vico-float 6s cubic-bezier(.77, 0, .175, 1) 1.08s infinite alternate;
+    transform-origin: 52% 100%;
+  }
+}
+
 .public-home .experience-journey--home,
 .public-home .home-neighborhood-preview,
 .public-home .home-diagnostic-feature,
@@ -421,6 +433,16 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+@keyframes home-art-float {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-4px) scale(1.008); }
+}
+
+@keyframes home-vico-float {
+  from { transform: translateY(0) rotate(0); }
+  to { transform: translateY(-7px) rotate(.7deg); }
+}
+
 @media (max-width: 900px) {
   .public-home .public-home-hero {
     grid-template-columns: minmax(0, 1fr);
@@ -522,4 +544,14 @@
     scroll-behavior: auto !important;
     transition: none !important;
   }
+
+  .public-home .home-hero-visual__product,
+  .public-home .home-hero-visual__vico {
+    animation: home-image-soften 180ms ease-out both !important;
+  }
+}
+
+@keyframes home-image-soften {
+  from { opacity: .9; }
+  to { opacity: 1; }
 }
