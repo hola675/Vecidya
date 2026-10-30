@@ -10,6 +10,7 @@ on:
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
       - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
+      - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
   push:
     branches:
       - feat/diagnostic-v9-lex-graph-p1b
@@ -19,6 +20,7 @@ on:
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
       - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
+      - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
 permissions:
   contents: read
 jobs:
