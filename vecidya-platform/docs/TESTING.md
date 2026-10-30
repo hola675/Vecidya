@@ -2320,3 +2320,7 @@ Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nu
 ## MiniWeb V2 IMP-07
 
 Typecheck, build, diff-check y migración `0036` local PASS. La ocupación atómica aún requiere E2E Worker para sin licencia, capacidad base, dos publicaciones concurrentes al último slot y republicación idempotente; no certificada.
+
+## MiniWeb V2 IMP-08
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-conversion.test.ts tests/unit/miniweb-v2-sections.test.ts` — 4/4 PASS: allowlist de perfil/ofertas/FAQ/medios, rechazo de URL no segura, omisión de inactivos y medios no publicados, horarios ausentes, validación del documento e IDs V2 nuevos. `pnpm run test:e2e:miniweb-v2-conversion` **PASS** en Worker/D1 local: consentimiento, guards anónimos y cross-tenant, procedencia/actor, horario ausente, V1 y borradores anteriores intactos, y borrador nuevo no visible públicamente. Typecheck/build/migraciones `0000–0037` PASS. Sin D1 remota ni deploy.

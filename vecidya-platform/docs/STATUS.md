@@ -1,3 +1,7 @@
+# MiniWeb V2 — IMP-08 conversión voluntaria desde V1 (2026-10-29)
+
+Se implementa acción explícita que toma la última publicación V1 tenant-scoped y crea un sitio/borrador V2 independiente; V1 y borradores V2 previos no se modifican. El mapeo allowlist copia perfil público, ofertas activas, FAQ activa y referencias de imágenes publicadas; excluye totalmente horarios, configuración V1, estilos y CRM. La confirmación, actor, fecha, versión fuente, versión del conversor y reporte importado/omitido quedan en la fila del sitio. Migración `0037` aplicada solo a D1 local. Unitarias focales 2/2 y E2E Worker local PASS para consentimiento, cross-tenant, procedencia y no modificación de snapshots/drafts; typecheck, build y migraciones PASS. El editor puede seleccionar sitios. No certificado por VIS-01/SEC-QA ni publicado.
+
 # MiniWeb V2 — IMP-07 cupos de publicación (implementación inicial, 2026-10-29)
 
 Se añade slot persistente por sitio/owner y reserva condicional en batch al publicar. Capacidad base de tres sitios con licencia activa del owner; cero sin licencia. El schema no dispone de add-on de capacidad, así que no se inventa cupo extra. Migración `0036` generada y aplicada solo a D1 local; typecheck/build/diff-check PASS. Faltan pruebas Worker de carrera, downgrade/transferencia y auditoría de eventos. No remoto ni publicado.
