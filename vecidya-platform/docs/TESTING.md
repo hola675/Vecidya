@@ -2325,3 +2325,7 @@ Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nu
 
 `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 12/12 PASS: valida payload malformado, días fuera de orden y rangos de excepción superpuestos, además de las reglas previas. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
 
+## MiniWeb V2 IMP-05/07
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-editor-state.test.ts` — 17/17 PASS: contrato de snapshots y reserva, edición inicial publicable con horario incompleto oculto, estado tenant-scoped y validador de horario. Typecheck/build/diff-check PASS. Faltan pruebas Worker para carreras de cupo.
+

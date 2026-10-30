@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createEmptyV2HoursSection, getV2LocalDate, validateV2HoursSection } from "../../../app/features/miniweb-v2/hours";
+import { createEmptyV2HoursSection, getV2LocalDate, splitV2OvernightRange, validateV2HoursSection } from "../../../app/features/miniweb-v2/hours";
 
 describe("MiniWeb V2 hours isolation", () => {
   it("creates a completely empty section without importing V1 hours", () => {
@@ -41,13 +41,15 @@ describe("MiniWeb V2 hours isolation", () => {
     assert.equal(validateV2HoursSection(section).valid, false);
   });
 
-  it("supports overnight ranges and rejects overlap with the next day", () => {
+  it("splits overnight shifts across local dates and rejects next-day overlap", () => {
     const section = createEmptyV2HoursSection();
     section.timezone = "America/New_York";
-    section.days[0] = { day: "monday", closed: false, ranges: [{ start: "22:00", end: "02:00" }] };
+    section.days[0] = { day: "monday", closed: false, ranges: [splitV2OvernightRange("22:00", "02:00")[0]] };
+    section.days[1] = { day: "tuesday", closed: false, ranges: [splitV2OvernightRange("22:00", "02:00")[1]] };
     assert.equal(validateV2HoursSection(section).valid, true);
-    section.days[1] = { day: "tuesday", closed: false, ranges: [{ start: "01:00", end: "04:00" }] };
+    section.days[1].ranges.push({ start: "01:00", end: "04:00" });
     assert.equal(validateV2HoursSection(section).valid, false);
+    assert.throws(() => splitV2OvernightRange("22:00", "22:00"));
   });
 
   it("validates IANA zones and calendar exceptions, and resolves DST-local dates", () => {

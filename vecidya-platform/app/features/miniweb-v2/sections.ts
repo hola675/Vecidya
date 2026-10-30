@@ -1,5 +1,5 @@
 /** Typed, versioned content contract for the independently designed MiniWeb V2. */
-import { validateV2HoursSection, type V2HoursSection } from "./hours";
+import { createEmptyV2HoursSection, validateV2HoursSection, type V2HoursSection } from "./hours";
 export const MINIWEB_V2_SCHEMA_VERSION = 1 as const;
 export const MINIWEB_V2_SECTION_TYPES = [
   "hero", "about", "services", "products", "gallery", "contact",
@@ -54,8 +54,22 @@ const validators: Record<MiniWebV2SectionType, (c: unknown) => boolean> = {
   team: c => isRecord(c) && list(c.people, x => item(x, { name: v => isText(v, 160), role: nullableText(120), bio: isText, image: imageOrNull, consented: v => typeof v === "boolean" })),
   certifications: c => isRecord(c) && list(c.items, x => item(x, { issuer: v => isText(v, 200), title: v => isText(v, 200), date: nullableText(40), document: imageOrNull })),
   testimonials: c => isRecord(c) && list(c.items, x => item(x, { quote: v => isText(v, 2000), author: v => isText(v, 160), context: nullableText(300), consented: v => typeof v === "boolean" })),
-  hours: c => isRecord(c) && validateV2HoursSection(c as unknown as V2HoursSection).valid,
+  hours: c => isRecord(c) && validateV2HoursSection(c as unknown as V2HoursSection, { requireTimezone: false }).valid,
 };
+
+export function createEmptyMiniWebV2Document(types: readonly MiniWebV2SectionType[]): MiniWebV2Document {
+  const factories: { [T in MiniWebV2SectionType]: () => V2SectionContentMap[T] } = {
+    hero: () => ({ title: "", subtitle: "", cta: null, image: null }),
+    about: () => ({ headline: "", description: "", blocks: [] }), services: () => ({ items: [] }), products: () => ({ items: [] }),
+    gallery: () => ({ images: [] }), contact: () => ({ phone: null, email: null, links: [], cta: null }),
+    location: () => ({ address: null, city: null, area: null, mapUrl: null }), faq: () => ({ items: [] }), team: () => ({ people: [] }),
+    certifications: () => ({ items: [] }), testimonials: () => ({ items: [] }), hours: () => createEmptyV2HoursSection(),
+  };
+  const unique = [...new Set(types)];
+  if (unique.length !== types.length || unique.some((type) => !MINIWEB_V2_SECTION_TYPES.includes(type))) throw new TypeError("Invalid initial section list");
+  const ordered: MiniWebV2SectionType[] = unique.includes("hero") ? ["hero", ...unique.filter((type) => type !== "hero")] : unique;
+  return { schemaVersion: MINIWEB_V2_SCHEMA_VERSION, sections: ordered.map((type, order) => ({ id: crypto.randomUUID(), type, schemaVersion: 1, order, visible: type !== "hours", content: factories[type]() })) as MiniWebV2Section[] };
+}
 
 export function validateMiniWebV2Section(value: unknown): SectionValidation {
   if (!isRecord(value) || typeof value.id !== "string" || !value.id.trim() || value.id.length > 160 ||
@@ -67,7 +81,7 @@ export function validateMiniWebV2Section(value: unknown): SectionValidation {
   return { valid: true, value: value as unknown as MiniWebV2Section };
 }
 
-export function validateMiniWebV2Document(value: unknown): { valid: true; value: MiniWebV2Document } | { valid: false; errors: string[] } {
+export function validateMiniWebV2Document(value: unknown, options: { publishable?: boolean } = {}): { valid: true; value: MiniWebV2Document } | { valid: false; errors: string[] } {
   if (!isRecord(value) || value.schemaVersion !== MINIWEB_V2_SCHEMA_VERSION || !Array.isArray(value.sections))
     return { valid: false, errors: ["Invalid document envelope"] };
   const errors: string[] = [];
@@ -78,6 +92,8 @@ export function validateMiniWebV2Document(value: unknown): { valid: true; value:
     if (ids.has(result.value.id)) errors.push("Duplicate section id");
     if (orders.has(result.value.order)) errors.push("Duplicate section order");
     ids.add(result.value.id); orders.add(result.value.order);
+    if (options.publishable && result.value.visible && result.value.type === "hero" && !result.value.content.title.trim()) errors.push("Visible hero requires a title");
+    if (options.publishable && result.value.visible && result.value.type === "hours" && !validateV2HoursSection(result.value.content, { requireTimezone: true }).valid) errors.push("Visible hours section is incomplete");
   }
   return errors.length ? { valid: false, errors } : { valid: true, value: value as unknown as MiniWebV2Document };
 }

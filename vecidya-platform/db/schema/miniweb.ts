@@ -62,6 +62,13 @@ export const miniWebV2Publication = sqliteTable("miniweb_v2_publication", {
   createdAt: integer("created_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
 }, (t) => [uniqueIndex("miniweb_v2_publication_site_revision_unique").on(t.siteId, t.revision), index("miniweb_v2_publication_site_created_idx").on(t.siteId, t.createdAt)]);
 
+/** A slot is occupied only after publication; historical publications retain the slot. */
+export const miniWebV2PublicationSlot = sqliteTable("miniweb_v2_publication_slot", {
+  siteId: text("site_id").primaryKey().references(() => miniWebV2Site.id, { onDelete: "cascade" }),
+  ownerUserId: text("owner_user_id").notNull(),
+  reservedAt: integer("reserved_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
+}, (t) => [index("miniweb_v2_slot_owner_idx").on(t.ownerUserId, t.reservedAt)]);
+
 export const miniWebModule = sqliteTable(
   "miniweb_module",
   {

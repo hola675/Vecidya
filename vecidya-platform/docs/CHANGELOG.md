@@ -23,6 +23,11 @@
 
 # Changelog
 
+## 2026-10-30 — MiniWeb V2 IMP-05/07 — integración local
+
+- La creación sincroniza su documento familiar en el editor; el horario incompleto queda oculto hasta que pueda editarse. Las publicaciones reservan el cupo en batch con todas las columnas, preservan snapshots idempotentes y distinguen cupo agotado de reintento conflictivo.
+- 17 pruebas focales, typecheck, build y diff-check PASS. PR #209 pendiente de revisión e integración. Sin publicación ni cambios remotos de D1.
+
 ## 2026-10-29 — UX-COHERENCE-ROUNDED-001 — refinamiento global de interfaz
 
 - Se refina el menú «Soluciones» con panel translúcido, estados más claros y movimiento breve; el foco permanece visible y la animación se desactiva con `prefers-reduced-motion`.

@@ -19,5 +19,5 @@ function SectionView({ section }: { section: MiniWebV2Section }) {
   }
 }
 export function MiniWebV2Renderer({ document, familyKey, variant }: { document: MiniWebV2Document; familyKey: string; variant: string }) {
-  return <main className={`miniweb-v2 miniweb-v2--${familyKey} miniweb-v2--${variant}`}>{[...document.sections].sort((a,b) => a.order-b.order || a.id.localeCompare(b.id)).map(section => <SectionView key={section.id} section={section}/>)}</main>;
+  return <main className="miniweb-v2" data-family={familyKey} data-variant={variant}>{[...document.sections].sort((a,b) => a.order-b.order || a.id.localeCompare(b.id)).map(section => <SectionView key={section.id} section={section}/>)}</main>;
 }

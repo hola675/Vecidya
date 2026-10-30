@@ -1,9 +1,9 @@
 import { createDatabase } from "../../db/client.server";
-import { hasActiveLicenseForOrganizationOwner } from "../../db/queries/business-profile.server";
 import { member } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
-import { createMiniWebV2Site, getMiniWebV2EditorState, publishMiniWebV2Draft, saveMiniWebV2Draft } from "../../db/queries/miniweb-v2.server";
-import { validateMiniWebV2Document } from "../features/miniweb-v2/sections";
+import { createMiniWebV2Site, getMiniWebV2EditorState, getMiniWebV2PublicationCapacity, publishMiniWebV2Draft, saveMiniWebV2Draft } from "../../db/queries/miniweb-v2.server";
+import { createEmptyMiniWebV2Document, validateMiniWebV2Document } from "../features/miniweb-v2/sections";
+import { isMiniWebV2Family, isMiniWebV2Variant, MINIWEB_V2_FAMILY_CATALOG } from "../features/miniweb-v2/visual-families";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization, requireSession } from "../../server/auth/session.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -39,8 +39,13 @@ export async function action(args: Route.ActionArgs) {
     const id = crypto.randomUUID();
     const [owner] = await database.select({ userId: member.userId }).from(member).where(and(eq(member.organizationId, organization.id), eq(member.role, "owner"))).limit(1);
     if (!owner) return Response.json({ error: "La organización no tiene un titular activo." }, { status: 409 });
-    await createMiniWebV2Site(database, { id, organizationId: organization.id, ownerUserId: owner.userId, familyKey: "vecidya-default", visualVariant: "base" });
-    return Response.json({ ok: true, siteId: id, revision: 0 }, { status: 201 });
+    const familyKey = isMiniWebV2Family(input.familyKey) ? input.familyKey : "vecidya-default";
+    const visualVariant = isMiniWebV2Variant(input.visualVariant) ? input.visualVariant : "base";
+    const document = createEmptyMiniWebV2Document(MINIWEB_V2_FAMILY_CATALOG[familyKey].initialSections);
+    await createMiniWebV2Site(database, { id, organizationId: organization.id, ownerUserId: owner.userId, familyKey, visualVariant });
+    const saved = await saveMiniWebV2Draft(database, { siteId: id, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: 0, schemaVersion: 1, documentJson: JSON.stringify(document) });
+    if (!saved.ok) return Response.json({ error: "No fue posible inicializar el borrador." }, { status: 409 });
+    return Response.json({ ok: true, siteId: id, revision: saved.revision, document }, { status: 201 });
   }
   if (input.operation === "save") {
     await requireOrganizationPermission(env, args.request, organization.id, "business-profile:update");
@@ -53,13 +58,14 @@ export async function action(args: Route.ActionArgs) {
   if (input.operation === "publish") {
     await requireOrganizationPermission(env, args.request, organization.id, "business-profile:publish");
     if (typeof input.siteId !== "string" || !Number.isSafeInteger(input.expectedRevision)) return Response.json({ error: "Revisión inválida." }, { status: 400 });
-    if (!await hasActiveLicenseForOrganizationOwner(database, organization.id)) return Response.json({ error: "Necesitas una licencia activa para publicar." }, { status: 403 });
     const current = await getMiniWebV2EditorState(database, organization.id);
     if (!current || current.site.id !== input.siteId || current.draft.revision !== input.expectedRevision) return Response.json({ error: "La revisión cambió.", code: "REVISION_CONFLICT" }, { status: 409 });
-    const validation = validateMiniWebV2Document(JSON.parse(current.draft.documentJson));
+    const validation = validateMiniWebV2Document(JSON.parse(current.draft.documentJson), { publishable: true });
     if (!validation.valid) return Response.json({ error: "El borrador no se puede publicar.", details: validation.errors }, { status: 400 });
-    const published = await publishMiniWebV2Draft(database, { siteId: input.siteId, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: input.expectedRevision as number, publicationId: crypto.randomUUID() });
-    return published.ok ? Response.json(published) : Response.json({ error: "La revisión ya cambió; vuelve a cargar el borrador.", code: "REVISION_CONFLICT" }, { status: 409 });
+    const capacity = await getMiniWebV2PublicationCapacity(database, current.site.ownerUserId);
+    const published = await publishMiniWebV2Draft(database, { siteId: input.siteId, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: input.expectedRevision as number, publicationId: crypto.randomUUID(), capacity: capacity.capacity });
+    if (published.ok) return Response.json(published);
+    return published.reason === "capacity" ? Response.json({ error: "No hay cupos de publicación disponibles para el titular.", code: "PUBLICATION_CAPACITY" }, { status: 409 }) : Response.json({ error: "La revisión ya cambió; vuelve a cargar el borrador.", code: "REVISION_CONFLICT" }, { status: 409 });
   }
   return Response.json({ error: "Operación no permitida." }, { status: 400 });
 }
