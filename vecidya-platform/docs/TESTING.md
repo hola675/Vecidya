@@ -5,6 +5,10 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
+
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.
+
 ## UX-COHERENCE-ROUNDED-001 — verificación local y release 0.9.2 (2026-10-29)
 
 **RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` valida el catálogo Aprende y el panel de progreso compacto/desplegable. `BASE_URL=http://127.0.0.1:5175 node tests/e2e/public-navigation-a11y-check.mjs` valida navegación pública, superficies redondeadas y ausencia de desbordamiento en Diagnóstico en 1366/1024/960/768/390/360/320 px. Typecheck, build y `git diff --check` **PASS**. La prueba visual automatizada no es certificación WCAG; se hizo sobre Worker/DB locales, sin D1 remota ni deploy.
