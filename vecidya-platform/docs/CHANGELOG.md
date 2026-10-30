@@ -26,7 +26,7 @@
 ## 2026-10-30 — UX-PREMIUM-01-HOME — portada local
 
 - Se renueva la composición de `/` con el texto y los CTA existentes, Vico Inicio, el símbolo de marca y una ilustración compañera WebP inspirada en los assets Vecidya. Se mantienen rutas y contenido funcional.
-- Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR del checkpoint queda pendiente; sin deploy, D1 remota ni declaración de publicación.
+- Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR #219 abierta como borrador; sin deploy, D1 remota ni declaración de publicación.
 
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 

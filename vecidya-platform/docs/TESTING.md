@@ -2337,6 +2337,8 @@ Typecheck, build, diff-check y migración `0036` local PASS. Unitarias focales 1
 
 ## UX-PREMIUM-01-HOME — Inicio (2026-10-30; checkpoint local)
 
+PR #219 quedó abierta como borrador; sin merge ni deploy.
+
 - Capturas completas antes/después en `C:\Users\Admin\.codex\worktrees\ux-premium-home-01\evidence\{before,after}` para 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; baseline anterior corresponde a `origin/main@f6cad631`.
 - Runner visual Playwright temporal (no versionado), contra Worker local: los cinco tamaños sin overflow horizontal, con H1/copy y rutas CTA vigentes, imágenes cargadas y sin errores de consola/página. Teclado y foco visible, destino de CTA, menú móvil/desktop, rechazo de cookies, y `prefers-reduced-motion` revisados. Las capturas 390 px menú abierto y 1366 px consentimiento también se guardaron en `evidence/after`.
 - `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build emitió solo avisos existentes de secretos locales opcionales, imports dinámicos inefectivos y sourcemap CSS. No se leyeron secretos.
