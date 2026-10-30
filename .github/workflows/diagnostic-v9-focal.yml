@@ -7,12 +7,18 @@ on:
     paths:
       - .github/workflows/diagnostic-v9-focal.yml
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
   push:
     branches:
       - feat/diagnostic-v9-lex-graph-p1b
     paths:
       - .github/workflows/diagnostic-v9-focal.yml
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
 permissions:
   contents: read
 jobs:
