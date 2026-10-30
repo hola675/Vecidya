@@ -39,3 +39,10 @@ export function interpretV9SelectedOption(
   if (optionKind === "unknown") return "unknown";
   return state;
 }
+
+/** Evidence boundary: missing and neutral answers never contribute negative evidence. */
+export function classifyV9EvidenceContribution(state: V9AnswerState): "evaluate" | "uncertainty" | "skip" {
+  if (state === "answered") return "evaluate";
+  if (state === "unknown") return "uncertainty";
+  return "skip";
+}
