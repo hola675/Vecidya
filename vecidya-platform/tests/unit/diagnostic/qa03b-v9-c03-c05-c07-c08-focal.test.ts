@@ -50,6 +50,9 @@ test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
   const q = get("q2_ecommerce_cart_followup");
   assert.equal(q.options.find((option) => option.value === "no_authorized_contact")?.kind, "not_applicable");
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "relationship_recurrence")?.answers.no_authorized_contact, "not_applicable");
+  for (const dimension of q.evidenceV3?.dimensions ?? []) {
+    assert.equal(dimension.answers.no_authorized_contact, "not_applicable", `Unauthorized contact must remain neutral in ${dimension.dimension}`);
+  }
   assert.equal(interpretV9AnswerState("no_authorized_contact", false), "not_applicable");
 });
 
@@ -75,4 +78,8 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.match(JSON.stringify(materialGate), /q2_presence_digital_base/);
   assert.match(JSON.stringify(materialGate), /reliable_presence/);
   assert.match(JSON.stringify(materialGate), /partial_presence/);
+  for (const dimension of q.evidenceV3?.dimensions ?? []) {
+    assert.notEqual(dimension.answers.unknown, "weak", `Unknown menu evidence cannot be weak in ${dimension.dimension}`);
+    assert.notEqual(dimension.answers.not_applicable, "weak", `Inapplicable menu evidence cannot be weak in ${dimension.dimension}`);
+  }
 });
