@@ -69,9 +69,9 @@ export function validateV2HoursSection(value: V2HoursSection): V2HoursValidation
   }
   // Check weekly intervals on a circular timeline so an overnight shift cannot overlap
   // the following day's first shift, including the Sunday-to-Monday boundary.
-  const weekly = days.flatMap((day, index) => day.ranges.filter((r) => r && typeof r.start === "string" && typeof r.end === "string" && clock.test(r.start) && clock.test(r.end) && r.start !== r.end).map((r) => {
-    const start = index * 1440 + minutes(r.start);
-    const end = index * 1440 + minutes(r.end) + (minutes(r.end) < minutes(r.start) ? 1440 : 0);
+  const weekly = days.filter((day) => day && typeof day === "object" && V2_WEEKDAYS.includes(day.day) && Array.isArray(day.ranges)).flatMap((day) => day.ranges.filter((r) => r && typeof r.start === "string" && typeof r.end === "string" && clock.test(r.start) && clock.test(r.end) && r.start !== r.end).map((r) => {
+    const start = V2_WEEKDAYS.indexOf(day.day) * 1440 + minutes(r.start);
+    const end = V2_WEEKDAYS.indexOf(day.day) * 1440 + minutes(r.end) + (minutes(r.end) < minutes(r.start) ? 1440 : 0);
     return { start, end };
   }));
   const circular = [...weekly, ...weekly.map((r) => ({ start: r.start + 10080, end: r.end + 10080 }))].sort((a, b) => a.start - b.start);
@@ -87,6 +87,11 @@ export function validateV2HoursSection(value: V2HoursSection): V2HoursValidation
       if (typeof entry.date === "string") dates.add(entry.date);
       if (typeof entry.closed !== "boolean" || !Array.isArray(entry.ranges) || entry.ranges.length > 4 || (entry.closed && entry.ranges.length > 0)) errors.push("Invalid exception schedule");
       if (Array.isArray(entry.ranges)) for (const range of entry.ranges) if (!range || typeof range.start !== "string" || typeof range.end !== "string" || !clock.test(range.start) || !clock.test(range.end) || range.start === range.end) errors.push("Invalid exception time range");
+      if (Array.isArray(entry.ranges)) {
+        const intervals = entry.ranges.filter((range) => range && typeof range.start === "string" && typeof range.end === "string" && clock.test(range.start) && clock.test(range.end) && range.start !== range.end).map((range) => ({ start: minutes(range.start), end: minutes(range.end) > minutes(range.start) ? minutes(range.end) : minutes(range.end) + 1440 })).sort((a, b) => a.start - b.start);
+        for (let i = 1; i < intervals.length; i++) if (intervals[i].start < intervals[i - 1].end) errors.push("Overlapping exception ranges");
+        if (intervals.length > 1 && intervals[0].start + 1440 < intervals[intervals.length - 1].end) errors.push("Overlapping exception ranges");
+      }
       if (entry.note !== null && (typeof entry.note !== "string" || entry.note.length > 500)) errors.push("Exception note too long");
     }
   }

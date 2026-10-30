@@ -6,6 +6,7 @@ import { requireOrganizationPermission } from "../../server/auth/authorization.s
 import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { ensureMiniWebV2Hero, miniWebV2EditorKey } from "../features/miniweb-v2/editor-state";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Button, Card } from "../components/ui";
 import type { MiniWebV2Document } from "../features/miniweb-v2/sections";
@@ -20,11 +21,18 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   return { ...shell, organization: { id: organization.id, name: organization.name }, canEdit: membership.role === "owner" || membership.role === "admin", state: state ? { site: state.site, revision: state.draft.revision, document: JSON.parse(state.draft.documentJson) as MiniWebV2Document } : null };
 }
 
+type MiniWebV2EditorData = Awaited<ReturnType<typeof loader>>;
+
 export default function MiniWebV2Editor() {
   const data = useLoaderData<typeof loader>();
+  const editorKey = miniWebV2EditorKey(data.organization.id, data.state?.site.id ?? null);
+  return <MiniWebV2EditorState key={editorKey} data={data} />;
+}
+
+function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const fetcher = useFetcher();
   const { revalidate } = useRevalidator();
-  const [document, setDocument] = useState<MiniWebV2Document>(data.state?.document ?? { schemaVersion: 1, sections: [{ id: "hero-main", type: "hero", schemaVersion: 1, order: 0, visible: true, content: { title: "", subtitle: "", cta: null, image: null } }] });
+  const [document, setDocument] = useState<MiniWebV2Document>(() => ensureMiniWebV2Hero(data.state?.document));
   const [revision, setRevision] = useState(data.state?.revision ?? 0);
   const [notice, setNotice] = useState("");
   useEffect(() => {
@@ -33,7 +41,7 @@ export default function MiniWebV2Editor() {
     else if (fetcher.data?.error) setNotice(fetcher.data.error);
   }, [fetcher.data, revalidate]);
   useEffect(() => {
-    if (data.state && data.state.revision !== revision) { setRevision(data.state.revision); setDocument(data.state.document); }
+    if (data.state && data.state.revision > revision) { setRevision(data.state.revision); setDocument(ensureMiniWebV2Hero(data.state.document)); }
   }, [data.state, revision]);
   const endpoint = `/api/organizations/${encodeURIComponent(data.organization.id)}/miniweb-v2`;
   const section = document.sections.find((item) => item.type === "hero");
