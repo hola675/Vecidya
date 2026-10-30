@@ -233,3 +233,22 @@ export function planV9GraphQuestions(
   );
   return { evaluations, selection };
 }
+
+/**
+ * Safe entrypoint for graph-owned planning. Validates references and cycles,
+ * then topologically orders questions before eligibility and budget selection.
+ * Callers may name truly external prerequisites explicitly, but not silently.
+ */
+export function planV9AuditedGraphQuestions(
+  questions: readonly V9GraphQuestion[],
+  facts: V9GraphFacts,
+  presentedQuestionIds: readonly string[],
+  options: {
+    readonly extendedInterviewConsented?: boolean;
+    readonly materialEvidenceRequested?: boolean;
+    readonly externalQuestionIds?: readonly string[];
+  } = {},
+): V9GraphPlan {
+  const ordered = orderV9GraphQuestions(questions, options.externalQuestionIds ?? []);
+  return planV9GraphQuestions(ordered, facts, presentedQuestionIds, options);
+}
