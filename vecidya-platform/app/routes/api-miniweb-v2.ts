@@ -45,7 +45,7 @@ export async function action(args: Route.ActionArgs) {
     await createMiniWebV2Site(database, { id, organizationId: organization.id, ownerUserId: owner.userId, familyKey, visualVariant });
     const saved = await saveMiniWebV2Draft(database, { siteId: id, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: 0, schemaVersion: 1, documentJson: JSON.stringify(document) });
     if (!saved.ok) return Response.json({ error: "No fue posible inicializar el borrador." }, { status: 409 });
-    return Response.json({ ok: true, siteId: id, revision: saved.revision }, { status: 201 });
+    return Response.json({ ok: true, siteId: id, revision: saved.revision, document }, { status: 201 });
   }
   if (input.operation === "save") {
     await requireOrganizationPermission(env, args.request, organization.id, "business-profile:update");

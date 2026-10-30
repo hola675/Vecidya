@@ -5,6 +5,16 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
+
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.
+
+## UX-COHERENCE-ROUNDED-001 — verificación local y release 0.9.2 (2026-10-29)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` valida el catálogo Aprende y el panel de progreso compacto/desplegable. `BASE_URL=http://127.0.0.1:5175 node tests/e2e/public-navigation-a11y-check.mjs` valida navegación pública, superficies redondeadas y ausencia de desbordamiento en Diagnóstico en 1366/1024/960/768/390/360/320 px. Typecheck, build y `git diff --check` **PASS**. La prueba visual automatizada no es certificación WCAG; se hizo sobre Worker/DB locales, sin D1 remota ni deploy.
+
+**Release RAN:** CI del PR #213 terminó PASS en quality, Playwright/publication guard y typecheck/build/unit regression. Localmente también pasaron typecheck, build y `wrangler deploy --dry-run`. Después del deploy, GET anónimo a `/`, `/aprende` y `/__health/db` pasó con HTTP 200; portada/Aprende mostraron `0.9.2` y `© 2026 Vecidya`, y Aprende mostró 48 guías (HTTP RAN 2026-10-30T03:40:21Z). D1 remota quedó sin migraciones pendientes tras aplicar `0031–0033`. Esto no certifica WCAG ni prueba rutas que requieren autenticación; purga Aprende sigue deshabilitada.
+
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
 
 Revisión de código de `api-learn-sync`, `api-organization-learn-access`, entitlement, sesión, consultas y configuración de Better Auth. Se verificaron guardas de sesión/membresía/licencia/lifecycle/grant, organización explícita, permisos owner, auditoría, Origin same-site en mutaciones, límites de cuerpo/operaciones, validación de IDs/secciones/tiempos, protección no-store, revocación por solicitud, control de versión/reset y recibos de replay. La revisión de código no sustituye la certificación de runtime.
@@ -2307,16 +2317,15 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 
 ## MiniWeb V2 IMP-03
 
-Typecheck y build ejecutados en el checkpoint local. Falta E2E real en Worker para sesión/roles/cross-tenant, crear/guardar/CAS/publicar y acceso a licencia; no declarar certificación funcional ni accesibilidad.
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-editor-state.test.ts tests/unit/miniweb-v2-sections.test.ts` — 5/5 PASS. Verifica identidad del destino por organización/sitio e inicialización de una portada editable cuando el draft persistido está vacío. Typecheck/build PASS. Falta E2E real en Worker para sesión/roles/cross-tenant, crear/guardar/CAS/publicar y acceso a licencia; no declarar certificación funcional ni accesibilidad.
 ## MiniWeb V2 IMP-04
 
 Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nunca público, snapshot activo únicamente, 404 sin publicación, contenido consentido y regresión V1.
 ## MiniWeb V2 IMP-06
 
-`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 9/9 PASS (2026-10-29): horario vacío, rangos, partición nocturna a 24:00 y solapamiento semanal, zona IANA, excepciones y fecha local DST. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
-## MiniWeb V2 IMP-05
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 12/12 PASS: valida payload malformado, días fuera de orden y rangos de excepción superpuestos, además de las reglas previas. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
 
-`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-families.test.ts tests/unit/miniweb/v2-hours.test.ts` — 8/8 PASS. Verifica cinco composiciones, tres tiers, documentos draft incompletos válidos, publicación incompleta rechazada y regresiones del horario. Capturas y revisión VIS-01 siguen pendientes.
-## MiniWeb V2 IMP-07
+## MiniWeb V2 IMP-05/07
 
-Typecheck, build, diff-check y migración `0036` local PASS. La ocupación atómica aún requiere E2E Worker para sin licencia, capacidad base, dos publicaciones concurrentes al último slot y republicación idempotente; no certificada.
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-editor-state.test.ts` — 17/17 PASS: contrato de snapshots y reserva, edición inicial publicable con horario incompleto oculto, estado tenant-scoped y validador de horario. Typecheck/build/diff-check PASS. Faltan pruebas Worker para carreras de cupo.
+
