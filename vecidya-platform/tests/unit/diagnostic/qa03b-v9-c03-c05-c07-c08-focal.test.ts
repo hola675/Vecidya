@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { collectContextDependencies, evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
+import { resolveDiagnosticContext } from "../../../app/features/diagnostic/context-resolver";
 import { classifyV9Activity, interpretV9AnswerState, interpretV9SelectedOption } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
@@ -90,10 +91,42 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   }
 });
 
-// Specialty replacement must preserve the generic fallback when specialty evidence is absent.
-test("F03: restaurant menu specialty replaces generic offer clarity only when eligible", () => {
-  const base = { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" };
-  assert.equal(eligible("q2_food_menu_visibility", base), true);
-  assert.equal(eligible("q2_food_menu_visibility", { ...base, q2_presence_digital_base: "no_reliable_presence" }), false);
-  assert.equal(eligible("q2_food_menu_visibility", { ...base, q2_niche_food_hospitality: "unknown" }), false);
+// Evaluate both sides of the replacement with a resolved context, not a fabricated cast.
+test("F03: restaurant specialty replaces generic only when eligible; unknown niche keeps generic", () => {
+  const context = resolveDiagnosticContext({
+    hasRealCustomers: { value: true, provenance: "explicit_declaration" },
+  }).context;
+  const generic = get("q2_presence_offer_clarity");
+  const genericRule = generic.materialAppliesWhen;
+  assert.ok(genericRule, "Expected a material eligibility rule for generic offer clarity");
+  assert.deepEqual(collectContextDependencies(genericRule), ["activity"]);
+  const genericEligible = (answers: Record<string, string>) =>
+    evaluateRuleV2Trace(genericRule, answers, context).result;
+
+  const base = {
+    q2_operational_status: "operating",
+    q2_has_customers: "yes",
+    q2_niche_food_hospitality: "restaurant",
+    q2_goal: "explain",
+    q2_presence_digital_base: "partial_presence",
+  };
+  assert.equal(eligible("q2_food_menu_visibility", base), true, "Restaurant specialty should be eligible");
+  assert.equal(genericEligible(base), false, "Specialist must suppress generic to avoid double observation");
+
+  const absentPresence = { ...base, q2_presence_digital_base: "no_reliable_presence" };
+  assert.equal(eligible("q2_food_menu_visibility", absentPresence), false);
+  assert.equal(genericEligible(absentPresence), false, "No presence must not imply digital offer clarity");
+
+  const unknownNiche = { ...base, q2_niche_food_hospitality: "unknown" };
+  assert.equal(eligible("q2_food_menu_visibility", unknownNiche), false);
+  assert.equal(genericEligible(unknownNiche), true, "Generic must remain when specialization is unconfirmed");
+
+  const agency = {
+    ...base,
+    q2_niche_food_hospitality: "unknown",
+    q2_niche_b2b_services: "marketing_agency",
+    q2_customer_buyer: "b2b",
+  };
+  assert.equal(eligible("q2_marketing_agency_scope_clarity", agency), true);
+  assert.equal(genericEligible(agency), false, "Agency specialist must also suppress generic");
 });
