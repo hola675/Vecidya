@@ -2317,3 +2317,6 @@ Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nu
 ## MiniWeb V2 IMP-05
 
 `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-families.test.ts tests/unit/miniweb/v2-hours.test.ts` — 8/8 PASS. Verifica cinco composiciones, tres tiers, documentos draft incompletos válidos, publicación incompleta rechazada y regresiones del horario. Capturas y revisión VIS-01 siguen pendientes.
+## MiniWeb V2 IMP-07
+
+Typecheck, build, diff-check y migración `0036` local PASS. La ocupación atómica aún requiere E2E Worker para sin licencia, capacidad base, dos publicaciones concurrentes al último slot y republicación idempotente; no certificada.

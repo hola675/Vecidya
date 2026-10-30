@@ -540,3 +540,7 @@ ORDER BY event_day, diagnostic_version, event_type;
 5. Nunca modificar manualmente un schema remoto ni guardar secretos en Git.
 6. El Worker público usa `vecidya-prod` desde el cutover registrado el 2026-10-02; `vecidya-staging` es un entorno separado y no debe tratarse como el D1 público. Ver `ENVIRONMENTS.md` para la fecha y evidencia de publicación. Cualquier migración remota requiere autorización explícita.
 7. Todo recurso con `organization_id` se consulta filtrando por la organización verificada (membresía) y nunca por un identificador del cliente sin verificar.
+
+## MiniWeb V2 IMP-07 — reserva inicial de cupos
+
+`0036_miniweb-v2-publication-slots.sql` añade ocupación por propietario, separada de los snapshots. Capacidad base según contrato: 3 con al menos una licencia activa asociada a la billing account del owner, 0 sin licencia. No se añadieron cupos adicionales porque el schema comercial actual no representa un add-on explícito de capacidad; no se infiere desde cantidad de organizaciones ni desde plan CRM. La publicación reserva slot condicionalmente dentro del mismo batch que snapshot/puntero; re-publicar conserva el slot. Validado por generación de esquema y aplicación D1 local; concurrencia Worker todavía pendiente.

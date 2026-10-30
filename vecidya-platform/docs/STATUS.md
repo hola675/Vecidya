@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-07 cupos de publicación (implementación inicial, 2026-10-29)
+
+Se añade slot persistente por sitio/owner y reserva condicional en batch al publicar. Capacidad base de tres sitios con licencia activa del owner; cero sin licencia. El schema no dispone de add-on de capacidad, así que no se inventa cupo extra. Migración `0036` generada y aplicada solo a D1 local; typecheck/build/diff-check PASS. Faltan pruebas Worker de carrera, downgrade/transferencia y auditoría de eventos. No remoto ni publicado.
 # MiniWeb V2 — IMP-05 familias y variantes visuales iniciales (2026-10-29)
 
 Se registran cinco familias editoriales y las tres variantes Base/Pro/Premium, todas con el mismo contrato funcional. La creación de borrador permite elegir family/variant y genera secciones iniciales vacías ordenadas; el renderer aplica tratamientos CSS por `data-family`/`data-variant`. Draft admite contenido incompleto; publicar exige título de portada y horario completo si está visible. Prueba focal familias/variantes PASS; typecheck PASS. Visuales son una primera implementación, aún requieren VIS-01, revisión humana, 45 capturas y accesibilidad; no certificados ni publicados.
