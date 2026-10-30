@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
-import { inspectV9Graph, orderV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation";
+import { inspectV9Graph, orderV9GraphQuestions, planV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation";
 
 const graph = bank.map(({ id, appliesWhen, materialAppliesWhen }) => ({
   id,
@@ -37,4 +37,49 @@ test("F03 full bank: prerequisites precede their dependants in deterministic ord
       < ordered.findIndex((question) => question.id === "q2_food_menu_visibility"),
     "Niche classification must precede restaurant-specialty evidence",
   );
+});
+
+test("F03 full bank: empty input is deterministic and never consumes pending questions", () => {
+  const ordered = orderV9GraphQuestions(graph);
+  const first = planV9GraphQuestions(ordered, { answers: {} }, []);
+  const second = planV9GraphQuestions(ordered, { answers: {} }, []);
+  assert.deepEqual(first, second);
+  assert.ok(first.evaluations.some((candidate) => candidate.status === "pending"));
+  assert.equal(first.evaluations.find((candidate) => candidate.id === "q2_food_menu_visibility")?.status, "pending");
+  assert.equal(first.evaluations.find((candidate) => candidate.id === "q2_nonprofit_donation_clarity")?.status, "pending");
+  assert.ok(first.selection.selectedIds.length <= 24);
+  assert.ok(first.selection.skipped.some((candidate) => candidate.reason === "pending_dependencies"));
+  const replay = planV9GraphQuestions(ordered, { answers: {} }, first.selection.selectedIds);
+  assert.ok(replay.selection.selectedIds.every((id) => !first.selection.selectedIds.includes(id)));
+  assert.ok(replay.selection.selectedIds.length + first.selection.selectedIds.length <= 24);
+});
+
+test("F03 full bank: restaurant context transition changes eligibility, not historical evidence", () => {
+  const ordered = orderV9GraphQuestions(graph);
+  const answers = {
+    q2_operational_status: "operating",
+    q2_has_customers: "yes",
+    q2_niche_food_hospitality: "restaurant",
+    q2_goal: "explain",
+    q2_presence_digital_base: "partial_presence",
+  };
+  const facts = {
+    answers,
+    context: { fields: { activity: { status: "resolved", value: "active" } } },
+  } as const;
+  const active = planV9GraphQuestions(ordered, facts, [], { materialEvidenceRequested: true });
+  assert.equal(active.evaluations.find((item) => item.id === "q2_food_menu_visibility")?.status, "eligible");
+  assert.equal(active.evaluations.find((item) => item.id === "q2_presence_offer_clarity")?.status, "ineligible");
+
+  const noPresence = planV9GraphQuestions(ordered, {
+    ...facts, answers: { ...answers, q2_presence_digital_base: "no_reliable_presence" },
+  }, [], { materialEvidenceRequested: true });
+  assert.equal(noPresence.evaluations.find((item) => item.id === "q2_food_menu_visibility")?.status, "ineligible");
+  assert.equal(noPresence.evaluations.find((item) => item.id === "q2_presence_offer_clarity")?.status, "ineligible");
+
+  const unknownNiche = planV9GraphQuestions(ordered, {
+    ...facts, answers: { ...answers, q2_niche_food_hospitality: "unknown" },
+  }, [], { materialEvidenceRequested: true });
+  assert.equal(unknownNiche.evaluations.find((item) => item.id === "q2_food_menu_visibility")?.status, "ineligible");
+  assert.equal(unknownNiche.evaluations.find((item) => item.id === "q2_presence_offer_clarity")?.status, "eligible");
 });
