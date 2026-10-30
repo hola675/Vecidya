@@ -6,6 +6,7 @@ on:
       - feat/diagnostic-v9-lex-graph-p1b
     paths:
       - .github/workflows/diagnostic-v9-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
 permissions:
   contents: read
 jobs:
