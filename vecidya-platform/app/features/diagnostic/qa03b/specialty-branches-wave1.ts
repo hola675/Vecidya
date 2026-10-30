@@ -25,12 +25,14 @@ const healthGenericGate = notV2(dentalSpecialistEligible);
 // Generic clarity stays available until a known specialty can replace it.
 const foodSpecialistEligible = andV2(
   activeHistory,
+  eqV2("q2_sector", "food_hospitality"),
   inV2("q2_niche_food_hospitality", ["restaurant", "cafe", "food_truck"]),
   eqV2("q2_goal", "explain"),
   inV2("q2_presence_digital_base", ["reliable_presence", "partial_presence"]),
 );
 const agencySpecialistEligible = andV2(
   activeHistory,
+  eqV2("q2_sector", "b2b_services"),
   eqV2("q2_niche_b2b_services", "marketing_agency"),
   eqV2("q2_goal", "explain"),
   inV2("q2_customer_buyer", ["b2b", "mixed"]),
