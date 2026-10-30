@@ -67,7 +67,7 @@ jobs:
             echo "- Scope: C03 / C05 / C07 / C08 (three selected files)"
             echo ""
             echo "### Node test summary"
-            grep -E "^# (tests|pass|fail|cancelled|skipped|duration_ms) " /tmp/v9-focal-test.log || true
+            grep -E "^(#|ℹ) (tests|pass|fail|cancelled|skipped|duration_ms) " /tmp/v9-focal-test.log || true
             echo ""
             echo "Only focal contract checks; not a full adaptive journey or V9 certification."
           } >> "$GITHUB_STEP_SUMMARY"
