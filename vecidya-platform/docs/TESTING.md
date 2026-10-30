@@ -2329,3 +2329,8 @@ Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nu
 
 `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-editor-state.test.ts` — 17/17 PASS: contrato de snapshots y reserva, edición inicial publicable con horario incompleto oculto, estado tenant-scoped y validador de horario. Typecheck/build/diff-check PASS. Faltan pruebas Worker para carreras de cupo.
 
+Typecheck, build, diff-check y migración `0036` local PASS. Unitarias focales 17/17. La ocupación atómica aún requiere E2E Worker para sin licencia, capacidad base, dos publicaciones concurrentes al último slot y republicación idempotente; no certificada. PR #209 integrado a `main@87b97239`.
+
+## MiniWeb V2 IMP-08
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-conversion.test.ts tests/unit/miniweb-v2-sections.test.ts` — 6/6 PASS: allowlist, URL segura, omisión de inactivos/medios no publicados y truncamiento reportado al máximo V2. `pnpm run test:e2e:miniweb-v2-conversion` **PASS** en Worker/D1 local: consentimiento, guards anónimos/cross-tenant, procedencia, horario ausente, snapshots/drafts previos intactos y borrador no público. Typecheck/build/diff-check y migraciones `0000–0037` PASS. Sin D1 remota ni deploy.

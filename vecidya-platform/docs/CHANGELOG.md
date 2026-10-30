@@ -23,6 +23,11 @@
 
 # Changelog
 
+## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
+
+- La conversión voluntaria trunca descripción y zona de servicio al máximo del contrato V2 y deja constancia explícita en el reporte; se valida el documento antes de persistirlo.
+- Unitarias focales 6/6, E2E Worker local, typecheck/build y diff-check PASS. PR #211 pendiente de integración. Sin despliegue ni D1 remota.
+
 ## 2026-10-30 — MiniWeb V2 IMP-05/07 — integración local
 
 - La creación sincroniza su documento familiar en el editor; el horario incompleto queda oculto hasta que pueda editarse. Las publicaciones reservan el cupo en batch con todas las columnas, preservan snapshots idempotentes y distinguen cupo agotado de reintento conflictivo.

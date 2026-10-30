@@ -7,8 +7,15 @@ export type MiniWebV2SiteInput = {
   id: string; organizationId: string; ownerUserId: string; familyKey: string; visualVariant: string;
 };
 
-export async function getMiniWebV2EditorState(database: Database, organizationId: string) {
-  const [site] = await database.select().from(miniWebV2Site).where(eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt).limit(1);
+export async function listMiniWebV2Sites(database: Database, organizationId: string) {
+  return database.select({ id: miniWebV2Site.id, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, createdAt: miniWebV2Site.createdAt })
+    .from(miniWebV2Site).where(eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt);
+}
+
+export async function getMiniWebV2EditorState(database: Database, organizationId: string, siteId?: string) {
+  const [site] = await database.select().from(miniWebV2Site).where(siteId
+    ? and(eq(miniWebV2Site.organizationId, organizationId), eq(miniWebV2Site.id, siteId))
+    : eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt).limit(1);
   if (!site) return null;
   const [draft] = await database.select().from(miniWebV2Draft).where(eq(miniWebV2Draft.siteId, site.id)).limit(1);
   return draft ? { site, draft } : null;
@@ -24,12 +31,13 @@ export async function getMiniWebV2PublicationCapacity(database: Database, ownerU
 }
 
 /** Creates an empty V2 site and revision-zero draft atomically. Caller must authorize org membership. */
-export async function createMiniWebV2Site(database: Database, input: MiniWebV2SiteInput) {
+export async function createMiniWebV2Site(database: Database, input: MiniWebV2SiteInput & { documentJson?: string; conversion?: { sourceOrganizationId: string; sourcePublicationVersion: number; reportJson: string; consentedAt: Date; consentedByUserId: string } }) {
+  const { documentJson, conversion, ...site } = input;
   await database.batch([
-    database.insert(miniWebV2Site).values({ ...input, draftRevision: 0 }),
-    database.insert(miniWebV2Draft).values({ siteId: input.id, revision: 0, schemaVersion: 1, documentJson: JSON.stringify({ schemaVersion: 1, sections: [] }), updatedByUserId: input.ownerUserId }),
+    database.insert(miniWebV2Site).values({ ...site, sourceOrganizationId: conversion?.sourceOrganizationId ?? null, sourcePublicationVersion: conversion?.sourcePublicationVersion ?? null, conversionMigrationVersion: conversion ? 1 : null, conversionReportJson: conversion?.reportJson ?? null, conversionConsentedAt: conversion?.consentedAt ?? null, conversionConsentedByUserId: conversion?.consentedByUserId ?? null, draftRevision: documentJson ? 1 : 0 }),
+    database.insert(miniWebV2Draft).values({ siteId: site.id, revision: documentJson ? 1 : 0, schemaVersion: 1, documentJson: documentJson ?? JSON.stringify({ schemaVersion: 1, sections: [] }), updatedByUserId: conversion?.consentedByUserId ?? site.ownerUserId }),
   ]);
-  return { siteId: input.id, revision: 0 };
+  return { siteId: site.id, revision: documentJson ? 1 : 0 };
 }
 
 /** Revision CAS. The site increment and draft replacement are one D1 batch transaction. */
