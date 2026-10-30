@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
+import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
 
 test("V9: pausa con clientes históricos no acredita operación actual", () => {
   assert.deepEqual(classifyV9Activity("paused", "yes"), {
@@ -25,4 +25,12 @@ test("V9: desconocido, sin respuesta y no aplicable son estados diferentes", () 
   assert.equal(interpretV9AnswerState(undefined, true), "unanswered");
   assert.equal(interpretV9AnswerState("no", false), "not_applicable");
   assert.equal(interpretV9AnswerState("no", true), "answered");
+});
+
+test("V9: neutral option does not require marking the whole question inapplicable", () => {
+  assert.equal(interpretV9SelectedOption("no_authorized_contact", true, "not_applicable"), "not_applicable");
+  assert.equal(interpretV9SelectedOption("unknown", true, "unknown"), "unknown");
+  assert.equal(interpretV9SelectedOption("clear", true, undefined), "answered");
+  assert.equal(interpretV9SelectedOption(undefined, true, undefined), "unanswered");
+  assert.equal(interpretV9SelectedOption("clear", false, undefined), "not_applicable");
 });
