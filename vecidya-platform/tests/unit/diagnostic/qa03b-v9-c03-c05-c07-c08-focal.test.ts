@@ -3,6 +3,7 @@ import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { collectContextDependencies, evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
 import { resolveDiagnosticContext } from "../../../app/features/diagnostic/context-resolver";
+import { selectV9Questions } from "../../../app/features/diagnostic/v9/question-selection";
 import { classifyV9Activity, interpretV9AnswerState, interpretV9SelectedOption } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
@@ -129,4 +130,15 @@ test("F03: restaurant specialty replaces generic only when eligible; unknown nic
   };
   assert.equal(eligible("q2_marketing_agency_scope_clarity", agency), true);
   assert.equal(genericEligible(agency), false, "Agency specialist must also suppress generic");
+
+  // V9-only bounded selector consumes the real evaluated eligibility; QBV2 stays in the test adapter.
+  const pick = (answers: Record<string, string>) => selectV9Questions([
+    { id: "q2_food_menu_visibility", eligible: eligible("q2_food_menu_visibility", answers) },
+    { id: "q2_marketing_agency_scope_clarity", eligible: eligible("q2_marketing_agency_scope_clarity", answers) },
+    { id: "q2_presence_offer_clarity", eligible: genericEligible(answers) },
+  ], []).selectedIds;
+  assert.deepEqual(pick(base), ["q2_food_menu_visibility"]);
+  assert.deepEqual(pick(absentPresence), []);
+  assert.deepEqual(pick(unknownNiche), ["q2_presence_offer_clarity"]);
+  assert.deepEqual(pick(agency), ["q2_marketing_agency_scope_clarity"]);
 });
