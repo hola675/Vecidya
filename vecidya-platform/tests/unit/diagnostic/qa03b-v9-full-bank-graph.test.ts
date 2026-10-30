@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
-import { inspectV9Graph, orderV9GraphQuestions, planV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation";
+import { inspectV9Graph, orderV9GraphQuestions, planV9GraphQuestions, planV9AuditedGraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation";
 
 const graph = bank.map(({ id, appliesWhen, materialAppliesWhen }) => ({
   id,
@@ -83,4 +83,17 @@ test("F03 full bank: restaurant context transition changes eligibility, not hist
   }, [], { materialEvidenceRequested: true });
   assert.equal(unknownNiche.evaluations.find((item) => item.id === "q2_food_menu_visibility")?.status, "ineligible");
   assert.equal(unknownNiche.evaluations.find((item) => item.id === "q2_presence_offer_clarity")?.status, "eligible");
+});
+
+test("F03 full bank: audited planning orders even reversed candidates and rejects malformed graphs", () => {
+  const reversed = [...graph].reverse();
+  const result = planV9AuditedGraphQuestions(reversed, { answers: {} }, []);
+  assert.deepEqual(result.evaluations.map((question) => question.id), orderV9GraphQuestions(reversed).map((question) => question.id));
+  assert.ok(result.selection.selectedIds.length <= 24);
+  assert.throws(() => planV9AuditedGraphQuestions([
+    { id: "a", appliesWhen: { op: "eq", ref: { question: "missing" }, value: "yes" } },
+  ], { answers: {} }, []), /missing/);
+  assert.deepEqual(planV9AuditedGraphQuestions([
+    { id: "a", appliesWhen: { op: "eq", ref: { question: "external" }, value: "yes" } },
+  ], { answers: { external: "yes" } }, [], { externalQuestionIds: ["external"] }).selection.selectedIds, ["a"]);
 });
