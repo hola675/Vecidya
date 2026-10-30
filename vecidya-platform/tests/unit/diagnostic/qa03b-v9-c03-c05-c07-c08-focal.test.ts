@@ -36,9 +36,11 @@ test("C05: nonprofit without donations or dues has distinct gated questions", ()
     assert.ok(gate.includes(id.includes("donation") ? "donations" : "membership_dues"));
   }
   assert.notEqual(get("q2_nonprofit_donation_clarity").id, get("q2_nonprofit_membership_lifecycle").id);
-  const answers = { q2_operational_status: "operating", q2_entity: "organization", q2_nonprofit_support_type: "other" };
+  const answers = { q2_operational_status: "operating", q2_entity: "organization", q2_nonprofit_support_type: "grants" };
   assert.equal(eligible("q2_nonprofit_donation_clarity", answers), false);
   assert.equal(eligible("q2_nonprofit_membership_lifecycle", answers), false);
+  assert.equal(eligible("q2_nonprofit_donation_clarity", { ...answers, q2_nonprofit_support_type: "donations" }), true);
+  assert.equal(eligible("q2_nonprofit_membership_lifecycle", { ...answers, q2_nonprofit_support_type: "membership_dues" }), true);
 });
 
 test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
@@ -55,6 +57,7 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.ok(gate.includes("reliable_presence") && gate.includes("partial_presence"));
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "clarity_positioning")?.answers.unknown, "uncertainty");
   assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_presence" }), false);
+  assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" }), true);
   const generic = get("q2_presence_offer_clarity");
   assert.ok(generic.appliesWhen || generic.materialAppliesWhen);
 });
