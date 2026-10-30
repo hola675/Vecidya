@@ -59,6 +59,7 @@ test("F03 full bank: restaurant context transition changes eligibility, not hist
   const answers = {
     q2_operational_status: "operating",
     q2_has_customers: "yes",
+    q2_sector: "food_hospitality",
     q2_niche_food_hospitality: "restaurant",
     q2_goal: "explain",
     q2_presence_digital_base: "partial_presence",
