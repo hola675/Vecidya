@@ -2321,3 +2321,7 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 ## MiniWeb V2 IMP-04
 
 Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nunca público, snapshot activo únicamente, 404 sin publicación, contenido consentido y regresión V1.
+## MiniWeb V2 IMP-06
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 12/12 PASS: valida payload malformado, días fuera de orden y rangos de excepción superpuestos, además de las reglas previas. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
+

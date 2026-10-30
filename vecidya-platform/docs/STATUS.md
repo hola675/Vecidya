@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-06 horario independiente (2026-10-29)
+
+`hours.ts` mantiene un modelo V2 autónomo, valida zona IANA, siete días, rangos, cruces de medianoche sin solapamiento semanal, fechas/excepciones y resolución de fecha local mediante Intl/tzdata. El validador de secciones invoca validación completa del horario y rechaza estructuras malformadas. Pruebas focales 9/9 y typecheck PASS. No lee/importa horarios V1. Todavía sin editor visual de horas ni E2E Worker/fixtures de todas las transiciones DST; no certificado ni publicado.
 # MiniWeb V2 — IMP-04 renderer público inicial (2026-10-29)
 
 **CODE local:** `/miniweb/:siteId` solo lee mediante el puntero de publicación activa y valida el snapshot antes de renderizar. Salida React escapada, sin consultar borrador ni horario V1; equipo/testimonios requieren consentimiento. Se añadió renderizado base para S01–S12. Typecheck/build PASS. Medios aún muestran alt/caption sin resolver URLs, y falta matriz de variantes, headers/cache y runtime E2E. No certificado ni publicado.

@@ -1,4 +1,5 @@
 /** Typed, versioned content contract for the independently designed MiniWeb V2. */
+import { validateV2HoursSection, type V2HoursSection } from "./hours";
 export const MINIWEB_V2_SCHEMA_VERSION = 1 as const;
 export const MINIWEB_V2_SECTION_TYPES = [
   "hero", "about", "services", "products", "gallery", "contact",
@@ -53,7 +54,7 @@ const validators: Record<MiniWebV2SectionType, (c: unknown) => boolean> = {
   team: c => isRecord(c) && list(c.people, x => item(x, { name: v => isText(v, 160), role: nullableText(120), bio: isText, image: imageOrNull, consented: v => typeof v === "boolean" })),
   certifications: c => isRecord(c) && list(c.items, x => item(x, { issuer: v => isText(v, 200), title: v => isText(v, 200), date: nullableText(40), document: imageOrNull })),
   testimonials: c => isRecord(c) && list(c.items, x => item(x, { quote: v => isText(v, 2000), author: v => isText(v, 160), context: nullableText(300), consented: v => typeof v === "boolean" })),
-  hours: c => isRecord(c) && c.schemaVersion === 2,
+  hours: c => isRecord(c) && validateV2HoursSection(c as unknown as V2HoursSection).valid,
 };
 
 export function validateMiniWebV2Section(value: unknown): SectionValidation {
