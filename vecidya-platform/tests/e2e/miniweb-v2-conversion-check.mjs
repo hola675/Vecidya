@@ -130,7 +130,7 @@ try {
 
   const billingAccountId = randomUUID();
   query(`INSERT INTO billing_account (id,owner_user_id,kind,created_at,updated_at) VALUES (${literal(billingAccountId)},${literal(userId)},'individual',${now},${now}); INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,created_at,updated_at) SELECT ${literal(randomUUID())},${literal(orgId)},${literal(billingAccountId)},'cuadra',id,'active',${now},${now},${now},${now} FROM license_price WHERE plan_code='cuadra' AND status='active' LIMIT 1;`);
-  for (let index = 2; index <= 4; index += 1) publishableSites.push(await createPublishableDraft(`Sitio de prueba ${index}`));
+  for (let index = 2; index <= 4; index += 1) publishableSites.push(await createPublishableDraft("Matriz QA <script>window.__miniwebXss=1</script>"));
   const competingPublishes = await Promise.all(publishableSites.map((siteId) => owner.request(endpoint, "POST", { operation: "publish", siteId, expectedRevision: 2 })));
   assert.equal(competingPublishes.filter((response) => response.status === 200).length, 3, "only three concurrent publications may consume the base owner capacity");
   assert.equal(competingPublishes.filter((response) => response.status === 409).length, 1, "the fourth concurrent publication must be rejected at the final slot");
@@ -152,7 +152,7 @@ try {
   const families = ["vecidya-default", "services-studio", "catalog-store", "gastronomy-table", "professional-profile"];
   const variants = ["base", "pro", "premium"];
   const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
-  function visualDocument(family, variant) {
+  function visualDocument(family, variant, exerciseHiddenContact = false) {
     const longText = `${family} ${variant}: experiencia profesional con información clara sobre los servicios, el proceso de atención y las opciones disponibles para cada persona. `.repeat(8).trim();
     const content = {
       hero: { title: `Negocio de ejemplo · ${family} · ${variant}`, subtitle: "Atención local, información transparente y opciones de contacto accesibles.", cta: { label: "Contactar", href: "#contacto" }, image: null },
@@ -168,7 +168,13 @@ try {
       testimonials: { items: [{ id: "quote-1", quote: "Texto de muestra, no es una reseña de cliente.", author: "Persona de prueba", context: null, consented: true }] },
       hours: { schemaVersion: 2, title: "Horario", timezone: "America/New_York", days: weekdays.map((day, i) => ({ day, closed: i === 6, ranges: i === 6 ? [] : [{ start: "09:00", end: "17:00" }] })), note: "Horario de prueba con zona horaria explícita.", exceptions: [{ date: "2026-12-25", closed: true, ranges: [], note: "Cerrado por festivo de ejemplo." }] },
     };
-    return { schemaVersion: 1, sections: Object.entries(content).map(([type, sectionContent], order) => ({ id: `${family}-${variant}-${type}`, type, schemaVersion: 1, order, visible: true, content: sectionContent })) };
+    const sections = Object.entries(content).map(([type, sectionContent], order) => ({ id: `${family}-${variant}-${type}`, type, schemaVersion: 1, order, visible: true, content: sectionContent }));
+    if (exerciseHiddenContact) {
+      const hiddenContact = sections.find((section) => section.type === "contact");
+      hiddenContact.visible = false;
+      sections.push({ ...hiddenContact, id: `${family}-${variant}-contact-visible`, order: sections.length, visible: true });
+    }
+    return { schemaVersion: 1, sections };
   }
   const visualSql = [];
   const visualSites = [];
@@ -178,7 +184,8 @@ try {
   for (const family of families) for (const variant of variants) {
     const siteId = randomUUID(); const publicationId = randomUUID();
     visualSites.push({ family, variant, siteId });
-    const document = JSON.stringify(visualDocument(family, variant)).replaceAll("'", "''");
+    const exercisesHiddenContact = family === families[0] && variant === variants[0];
+    const document = JSON.stringify(visualDocument(family, variant, exercisesHiddenContact)).replaceAll("'", "''");
     visualSql.push(`INSERT INTO miniweb_v2_site (id,organization_id,owner_user_id,family_key,visual_variant,draft_revision,published_revision,active_publication_id,created_at,updated_at) VALUES (${literal(siteId)},${literal(orgId)},${literal(userId)},${literal(family)},${literal(variant)},1,1,${literal(publicationId)},${now},${now}); INSERT INTO miniweb_v2_publication (id,site_id,revision,schema_version,document_json,published_by_user_id,created_at) VALUES (${literal(publicationId)},${literal(siteId)},1,1,'${document}',${literal(userId)},${now});`);
   }
   query(visualSql.join("\n"));
@@ -212,7 +219,8 @@ try {
             scrollWidth: document.documentElement.scrollWidth,
             sectionCount: siteRoot?.querySelectorAll(":scope > section").length ?? 0,
             headingCount: siteRoot?.querySelectorAll("h1").length ?? 0,
-            hasContactAnchor: siteRoot?.querySelector("#contacto") !== null,
+            contactAnchorCount: document.querySelectorAll("#contacto").length,
+            contactAnchorHeading: siteRoot?.querySelector("#contacto h2")?.textContent ?? null,
             imageAltValid: [...document.querySelectorAll("img")].every((image) => image.hasAttribute("alt")),
             linkTargetsValid: links.every((link) => { const href = link.getAttribute("href") ?? ""; return href.startsWith("#") || (href.startsWith("/") && !href.startsWith("//")) || /^(https?:|mailto:|tel:)/.test(href); }),
             textContrast: rootStyle && headingStyle ? contrast(headingStyle.color, background) : 0,
@@ -221,9 +229,10 @@ try {
           };
         });
         assert.ok(inspection.scrollWidth <= viewport.width, `horizontal overflow ${site.family}/${site.variant}/${viewport.width}: ${JSON.stringify(inspection)}`);
-        assert.equal(inspection.sectionCount, 11, "the renderer must preserve its section structure (hero is header)");
+        assert.equal(inspection.sectionCount, 11, "the renderer must preserve visible sections (hero is header)");
         assert.equal(inspection.headingCount, 1, "each public page has one h1");
-        assert.equal(inspection.hasContactAnchor, true, "the hero contact CTA has a rendered target");
+        assert.equal(inspection.contactAnchorCount, 1, "the contact CTA has exactly one rendered target");
+        assert.equal(inspection.contactAnchorHeading, "Contacto", "the contact anchor belongs to a visible contact section");
         assert.equal(inspection.imageAltValid, true);
         assert.equal(inspection.linkTargetsValid, true);
         assert.ok(inspection.textContrast >= 4.5, `text contrast below AA: ${JSON.stringify(inspection)}`);

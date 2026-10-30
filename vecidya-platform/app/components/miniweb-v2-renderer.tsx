@@ -20,6 +20,6 @@ function SectionView({ section, contactAnchor }: { section: MiniWebV2Section; co
 }
 export function MiniWebV2Renderer({ document, familyKey, variant }: { document: MiniWebV2Document; familyKey: string; variant: string }) {
   const sections = [...document.sections].sort((a,b) => a.order-b.order || a.id.localeCompare(b.id));
-  const firstContactId = sections.find((section) => section.type === "contact")?.id;
+  const firstContactId = sections.find((section) => section.type === "contact" && section.visible)?.id;
   return <main className="miniweb-v2" data-family={familyKey} data-variant={variant}>{sections.map(section => <SectionView key={section.id} section={section} contactAnchor={section.type === "contact" && section.id === firstContactId}/>)}</main>;
 }
