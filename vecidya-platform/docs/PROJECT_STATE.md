@@ -1,3 +1,7 @@
+## Mi Vecidya / MiniWeb V2 — IMP-11, preparación sin release (2026-10-30)
+
+Se preparó en `STATUS.md` el checklist versionado de release, el registro de gates abiertos y el procedimiento de reversión candidato. El IMP-10 de la cadena está en PR #215 (`c6a1481a9abb598821a12c31641a84cfef277474`) y no integrado; por ello no existe aún SHA integrado listo para release. VIS-01 y SEC-QA requieren aceptación humana, COM-01 y las decisiones operativas aplicables siguen pendientes. Las migraciones `0034–0039` no se aplicaron remotamente; respaldo/restauración y rollback de schema no se han ensayado. No se solicitó ni concedió autorización para merge/deploy, y no hubo cambios remotos. El paquete IMP-11 queda preparado; la publicación permanece bloqueada por sus gates explícitos.
+
 ## MiniWeb V2 — IMP-10, evidencia QA local (2026-10-29)
 
 El checkpoint refuerza la publicación con entitlement/cupo comprobado dentro de la misma operación batch que reserva y publica, permite CTAs hacia IDs locales seguros y asigna identidad DOM estable a las secciones. La validación Worker+Playwright local cubrió negativa sin licencia, concurrencia 4→3 por cupo, extensión Cuadra, escape de contenido, y una matriz automatizada de 45 capturas; el manifiesto local contiene resultados de teclado, contraste y movimiento reducido. 13 unitarias, typecheck y build PASS. Esto es evidencia del harness sobre fixtures sintéticos, no aceptación VIS-01, revisión humana SEC-QA ni certificación WCAG. Sigue sin merge/deploy; gates de COM-01/OPS-01 y autorización de release continúan aplicando.

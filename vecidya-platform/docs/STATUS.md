@@ -1,3 +1,24 @@
+# Mi Vecidya / MiniWeb V2 — IMP-11 paquete de release y reversión (2026-10-30)
+
+**Preparación documental lista; release NO autorizado.** La cadena técnica IMP-01–10 sigue en PRs apiladas y no integradas; IMP-10 está en PR #215 (`c6a1481a9abb598821a12c31641a84cfef277474`), sobre IMP-09. La matriz de IMP-10 es automatizada/sintética, por lo que VIS-01 humana y revisión SEC-QA siguen pendientes. COM-01 y gates operativos/comerciales del plan tampoco se presumen resueltos. No se hicieron cambios remotos, migraciones remotas, merge ni deploy.
+
+**Checklist release (estado al preparar IMP-11):**
+
+| Gate | Estado | Evidencia / acción pendiente |
+|---|---|---|
+| Decisiones de producto/comercio aplicables | BLOCKED | COM-01 y decisión de comportamiento público ante suspensión siguen pendientes; no activar cobros ni inventar políticas. |
+| Diff/SHA de release integrado | BLOCKED | Revisión final y SHA de release aún no existen; IMP-10 está en PR #215, no integrada. Revalidar cualquier SHA tras cambios. |
+| VIS-01 | PENDING | 45 capturas automatizadas locales en fixtures sintéticos; falta revisión visual humana con decisión por alcance/SHA. |
+| SEC-QA | PENDING | Falta informe/revisión técnica humana independiente y severidad residual por SHA; pruebas focales locales no equivalen a aprobación. |
+| Migraciones y respaldo/restauración | NOT RUN | `0034–0039` solo forman parte de la cadena local apilada. No se ha aplicado en remoto ni se probó backup/restore o rollback de schema. |
+| Permisos, límites, snapshots V1, runtime DEV | PARTIAL | Hay regresión local de entitlement/concurrencia, conversión y V1; falta smoke DEV autorizado, diff integrado y comprobación sobre el SHA final. |
+| Observabilidad, guardia y comunicación | PENDING | Asignar ejecutor/guardia y confirmar monitorización y plan de comunicación antes de pedir release. |
+| Autorización | NOT AUTHORIZED | Debe registrarse explícitamente SHA + entorno + ventana + alcance por el responsable del proyecto. |
+
+**Reversión preparada (no ejecutada ni probada):** ante fallo, detener el avance de release, preservar logs/evidencia, y revertir la aplicación al SHA estable anterior únicamente tras verificar compatibilidad con el schema vigente. Las migraciones V2 `0034–0039` son aditivas en los SQL revisados; no hay rollback de schema ensayado, así que no borrar tablas/columnas ni restaurar una copia sobre datos activos como acción automática. Antes de cualquier cambio remoto se requiere respaldo verificado, procedimiento de restauración ensayado y revisión de operaciones de escritura. Esta rama no creó ni modificó datos remotos.
+
+**Solicitud preparada, aún sin autorización:** `SHA=<release integrado y revalidado>; entorno=<DEV|staging|producción>; ventana=<inicio-fin y zona horaria>; alcance=<migraciones/rutas/flags>; responsable de guardia=<asignado>; rollback=<procedimiento y respaldo verificados>`. Si cambia SHA, alcance o entorno, rehacer la revisión y obtener aprobación expresa. P6B/IMP-12 continúa aplazado.
+
 # MiniWeb V2 — IMP-10 QA focal local (2026-10-29)
 
 El checkpoint endurece la publicación con comprobación atómica de licencia/cupo dentro del batch, añade IDs de sección y fragmentos locales seguros para CTA, y extiende el harness Worker+Playwright. **RAN local:** typecheck/build PASS; 13 pruebas unitarias MiniWeb V2 PASS; `pnpm run test:e2e:miniweb-v2-conversion` PASS con D1/Worker local, publicación sin licencia rechazada, carrera de cuatro publicaciones con tres aceptadas, extensión Cuadra habilitando la cuarta, contenido escapado y 45 capturas (5 familias × 3 variantes × 3 viewports), además de teclado, contraste y reduced-motion. Evidencia visual local: `.playwright-mcp/miniweb-v2-vis01-65ea4c68-fbc0-40dd-a928-f901eb95b0b7/manifest.json`. Las capturas son sintéticas y automatizadas; no constituyen aprobación humana VIS-01 ni auditoría SEC-QA/WCAG. Sin D1 remoto, merge ni deploy.

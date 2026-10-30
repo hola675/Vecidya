@@ -1,5 +1,9 @@
 # MiniWeb V2 IMP-01: contrato de secciones
 
+## MiniWeb V2 IMP-11 — preparación release/reversión
+
+**Revisión documental:** checklist de gates, solicitud por SHA/entorno/ventana/alcance y rollback candidato reconciliados en `STATUS.md`. No es prueba de release. La cadena de migraciones `0034–0039` solo se ha aplicado en entornos locales durante checkpoints previos; respaldo/restauración y reversión de schema están **NOT RUN**. La ruta de rollback de aplicación depende de verificar compatibilidad del schema para el SHA estable; no ejecutar restauración destructiva ni revertir schema automáticamente. VIS-01 humana, SEC-QA, COM-01, smoke DEV final y autorización puntual siguen pendientes. No se contactó entorno remoto.
+
 ## MiniWeb V2 IMP-10 — QA focal local
 
 **RAN:** 13 unitarias focales de secciones, familias, horario, conversión y cupos PASS; `pnpm run typecheck` y `pnpm run build` PASS; `git diff --check` PASS. `pnpm run test:e2e:miniweb-v2-conversion` PASS en Worker/D1 local con Chrome local: rechaza publicación sin licencia, verifica cuatro publicaciones concurrentes (tres aceptadas), concede la cuarta con extensión Cuadra, y comprueba escape de contenido. Generó 45 capturas automatizadas para cinco familias, tres variantes y tres viewports; verificó desbordamiento horizontal, H1, secciones, ancla de contacto, alt, enlaces, contraste, reduced-motion y navegación por teclado. Manifiesto: `.playwright-mcp/miniweb-v2-vis01-65ea4c68-fbc0-40dd-a928-f901eb95b0b7/manifest.json` (artefacto local ignorado por Git). Fixtures sintéticos y pruebas automáticas no equivalen a la revisión humana VIS-01, aceptación SEC-QA ni certificación WCAG. Sin D1 remoto ni deploy.
