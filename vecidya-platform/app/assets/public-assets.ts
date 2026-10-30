@@ -59,6 +59,8 @@ export const publicAssets = {
     businessOnboardingForm: `${selectedAssetBase}/illustrations/illus-business-onboarding-form.webp`,
     mobileCustomerChat: `${selectedAssetBase}/illustrations/illus-mobile-customer-chat.webp`,
     mobileLocalDiscovery: `${selectedAssetBase}/illustrations/illus-mobile-local-discovery.webp`,
+    vicoHome: `${selectedAssetBase}/illustrations/vico-home.webp`,
+    homeVecidyaCompanion: `${selectedAssetBase}/illustrations/home-vecidya-companion.webp`,
     neighborhoodMapPins: `${selectedAssetBase}/illustrations/illus-neighborhood-map-pins.webp`,
     platformGrowthDashboard: `${selectedAssetBase}/illustrations/illus-platform-growth-dashboard.webp`,
     reviewsAndRatingsMobile: `${selectedAssetBase}/illustrations/illus-reviews-and-ratings-mobile.png`,

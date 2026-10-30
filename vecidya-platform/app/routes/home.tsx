@@ -45,7 +45,7 @@ export default function Home() {
 
   return (
     <PublicLayout>
-      <main>
+      <main className="public-home">
         <JsonLd data={organizationSchema} />
 
           <section aria-labelledby="home-hero-title" className="public-home-hero">
@@ -60,8 +60,9 @@ export default function Home() {
             </div>
             <div className="home-hero-visual">
               <div aria-hidden="true" className="home-hero-visual__glow" />
-              <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" decoding="async" height={1086} src={publicAssets.illustrations.mobileLocalDiscovery} width={1448} />
-              <span className="home-hero-visual__pin" aria-hidden="true"><span>V</span></span>
+              <img alt="Ilustración de Vecidya sobre claridad, aprendizaje y crecimiento digital." className="home-hero-visual__product" decoding="async" height={1024} src={publicAssets.illustrations.homeVecidyaCompanion} width={1536} />
+              <img alt="Vico, la mascota de Vecidya, da la bienvenida." className="home-hero-visual__vico" decoding="async" height={1536} src={publicAssets.illustrations.vicoHome} width={1024} />
+              <span className="home-hero-visual__pin" aria-hidden="true"><img alt="" height={32} src={publicAssets.brand.symbol3d} width={32} /></span>
             </div>
           </section>
 
