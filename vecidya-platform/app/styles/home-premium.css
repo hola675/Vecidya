@@ -142,11 +142,11 @@
 }
 
 .public-home .home-hero-visual::before {
-  border: 1px solid rgb(21 95 197 / 10%);
+  border: 1px solid rgb(21 95 197 / 7%);
   background:
-    radial-gradient(ellipse at 12% 95%, rgb(84 184 241 / 14%), transparent 42%),
-    url("/assets/selected/backgrounds/bg-network-route-pins.webp") center / cover no-repeat;
-  opacity: .72;
+    radial-gradient(ellipse at 84% 18%, rgb(60 151 233 / 8%), transparent 52%),
+    radial-gradient(ellipse at 12% 90%, rgb(255 183 97 / 7%), transparent 43%);
+  opacity: 1;
 }
 
 .public-home .home-hero-visual::after {
@@ -187,18 +187,17 @@
   pointer-events: none;
 }
 
-.public-home .home-hero-visual__pin img {
-  width: 1.6rem;
-  height: 1.6rem;
-  transform: rotate(45deg);
-}
-
-.public-home .home-hero-visual__pin {
-  right: 6%;
-  bottom: 7%;
-  border: 2px solid #fff;
-  background: linear-gradient(145deg, #2085e9, var(--blue-dark));
-  box-shadow: 0 .75rem 1.7rem rgb(11 47 94 / 28%);
+.public-home .home-hero-visual img.home-hero-visual__brand {
+  position: absolute;
+  z-index: 4;
+  right: clamp(.65rem, 2vw, 1rem);
+  bottom: clamp(.65rem, 2vw, 1rem);
+  width: clamp(3.5rem, 5.5vw, 5rem);
+  max-width: 18%;
+  max-height: none;
+  height: auto;
+  filter: drop-shadow(0 .15rem .3rem rgb(6 30 66 / 10%));
+  pointer-events: none;
 }
 
 .public-home .experience-journey--home,
@@ -410,9 +409,6 @@
     animation: home-visual-enter 760ms cubic-bezier(.22, 1, .36, 1) 70ms both;
   }
 
-  .public-home .home-hero-visual__pin {
-    animation: home-pin-enter 520ms cubic-bezier(.22, 1, .36, 1) 360ms both;
-  }
 }
 
 @keyframes home-copy-enter {
@@ -423,11 +419,6 @@
 @keyframes home-visual-enter {
   from { opacity: 0; transform: translateY(12px) scale(.985); }
   to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes home-pin-enter {
-  from { opacity: 0; transform: translateY(7px) rotate(-45deg) scale(.86); }
-  to { opacity: 1; transform: translateY(0) rotate(-45deg) scale(1); }
 }
 
 @media (max-width: 900px) {
