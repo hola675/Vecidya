@@ -1,5 +1,9 @@
 # Estado de implementación
 
+## UX-COHERENCE-ROUNDED-001 — refinamiento global local (2026-10-29)
+
+La plataforma aplica esquinas redondeadas de forma coherente a secciones, tarjetas, paneles, formularios y controles, con separación adicional entre bloques consecutivos. El menú «Soluciones» tiene estados activo/foco claros, indicador de apertura y panel translúcido animado que respeta movimiento reducido. Aprende reduce el tamaño y amplía el ancho del H1, compacta espacios de lectura, mejora el contraste del contador y agrupa favoritos, avance y acciones por sección en una tarjeta superior; las acciones se despliegan al solicitarlas y conservan nombres accesibles ligados a sus encabezados. Typecheck, build y E2E local PASS (ver `docs/TESTING.md`). Cambios locales; no publicados. No implica certificación de accesibilidad.
+
 ## APRENDE-PLAN-V1 — estado vigente y certificación local (2026-10-29)
 
 **Fases 1–6 integradas en `main@3fdc17cc` por PR #193; Fase 7 de seguridad integrada por PR #201 en `main@407f1cf3`.** CI final del PR #201 pasó typecheck/build/unitarias, bundle protegido, regresión Aprende/Diagnóstico y Worker local de entitlement/sync. El usuario confirma que realizó y aprobó la prueba manual con NVDA y zoom 200 %; no se documentaron versiones/configuración del equipo de prueba, por lo que no se afirma certificación WCAG. Better Auth se actualizó a 1.7.14 y el audit productivo quedó en cero avisos. La versión candidata local es 0.9.1; no publicada. Migraciones `0031–0033` siguen solo en D1 local; no hubo deploy ni cambios en D1 remota.

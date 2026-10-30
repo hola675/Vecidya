@@ -226,7 +226,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
               ) : (
                 <p className="learn-article-byline">Por <strong>Yoan Ortiz</strong> · Aprende Vecidya</p>
               )}
-              {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} onCheckedChange={onCheckedChange} /> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
+              {authenticated || access === "always_free" ? <LearnProgressControls userId={userId} guideId={article.guideId} version={personal.version} resetEpoch={personal.resetEpoch} sectionIds={article.sections.map((section) => section.sectionId)} sectionLabels={article.sections.map((section) => section.heading)} initialChecked={personal.checkedSectionIds} initialFavorite={personal.favorite} initialLastSectionId={personal.lastSectionId} access={access} onCheckedChange={onCheckedChange} /> : <p><Link to={`/login?redirectTo=${encodeURIComponent(`/aprende/${article.slug}`)}`}>Inicia sesión</Link> para guardar tu progreso y favoritos.</p>}
               <div className="learn-article-quick">
                 <h2>En pocas palabras</h2>
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>

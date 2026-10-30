@@ -1,5 +1,9 @@
 # Pruebas
 
+## UX-COHERENCE-ROUNDED-001 — verificación visual local (2026-10-29)
+
+**RAN:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` valida el catálogo Aprende y el panel de progreso compacto/desplegable. `BASE_URL=http://127.0.0.1:5175 node tests/e2e/public-navigation-a11y-check.mjs` valida navegación pública, superficies redondeadas y ausencia de desbordamiento en Diagnóstico en 1366/1024/960/768/390/360/320 px. Typecheck, build y `git diff --check` deben pasar antes de entregar. La prueba visual automatizada no es certificación WCAG; se hizo sobre Worker/DB locales, sin D1 remota ni deploy.
+
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
 
 Revisión de código de `api-learn-sync`, `api-organization-learn-access`, entitlement, sesión, consultas y configuración de Better Auth. Se verificaron guardas de sesión/membresía/licencia/lifecycle/grant, organización explícita, permisos owner, auditoría, Origin same-site en mutaciones, límites de cuerpo/operaciones, validación de IDs/secciones/tiempos, protección no-store, revocación por solicitud, control de versión/reset y recibos de replay. La revisión de código no sustituye la certificación de runtime.
