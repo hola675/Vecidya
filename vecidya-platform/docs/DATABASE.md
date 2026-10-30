@@ -545,6 +545,10 @@ ORDER BY event_day, diagnostic_version, event_type;
 
 `0036_miniweb-v2-publication-slots.sql` añade ocupación por propietario, separada de los snapshots. Capacidad base según contrato: 3 con al menos una licencia activa asociada a la billing account del owner, 0 sin licencia. No se añadieron cupos adicionales porque el schema comercial actual no representa un add-on explícito de capacidad; no se infiere desde cantidad de organizaciones ni desde plan CRM. La publicación reserva slot condicionalmente dentro del mismo batch que snapshot/puntero; re-publicar conserva el slot. Validado por generación de esquema y aplicación D1 local; concurrencia Worker todavía pendiente.
 
+## MiniWeb V2 IMP-09 — ampliaciones explícitas de cupo
+
+`0038_miniweb-capacity-extensions.sql` registra ampliaciones `cuadra_extra` asociadas a `billing_account`, estado y ventana de vigencia, razón operativa, actor e idempotency key única; `0039` añade el vínculo auditable con la organización objetivo. Solo una licencia activa del titular habilita la capacidad base y el uso de ampliaciones; cada ampliación activa suma tres sitios. No contiene importes ni significa un pago. El grant desde administración verifica la organización objetivo, cuenta coincidente y licencia activa, y escribe auditoría en la misma operación. Migraciones aplicadas solo en D1 local, sin cambios remotos.
+
 ## MiniWeb V2 IMP-08 — procedencia de conversión V1
 
 `0037_miniweb-v2-conversion-provenance.sql` añade a `miniweb_v2_site` organización y versión de publicación V1 fuente, versión del conversor, reporte JSON de importados/omitidos, marca temporal de consentimiento y actor que confirmó. Los campos son nulos para sitios creados vacíos. La conversión almacena un snapshot independiente como revisión inicial 1 en la misma operación batch de creación de sitio y borrador; no altera la publicación V1 ni otra revisión. Migración aplicada solo en D1 local; sin datos remotos.

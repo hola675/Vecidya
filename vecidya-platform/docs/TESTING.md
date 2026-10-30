@@ -1,9 +1,17 @@
 # MiniWeb V2 IMP-01: contrato de secciones
 
+## MiniWeb V2 IMP-10 — QA focal local
+
+**RAN:** 13 unitarias focales de secciones, familias, horario, conversión y cupos PASS; `pnpm run typecheck` y `pnpm run build` PASS; `git diff --check` PASS. `pnpm run test:e2e:miniweb-v2-conversion` PASS en Worker/D1 local con Chrome local: rechaza publicación sin licencia, verifica cuatro publicaciones concurrentes (tres aceptadas), concede la cuarta con extensión Cuadra, y comprueba escape de contenido sin depender del ganador de la carrera. Generó 45 capturas automatizadas para cinco familias, tres variantes y tres viewports; verificó desbordamiento horizontal, H1, secciones, ancla al contacto visible incluso si un contacto anterior está oculto, alt, enlaces, contraste, reduced-motion y navegación por teclado. Manifiesto: `.playwright-mcp/miniweb-v2-vis01-5993d17e-cf4d-46bc-8911-d510cf47099c/manifest.json` (artefacto local ignorado por Git). Fixtures sintéticos y pruebas automáticas no equivalen a la revisión humana VIS-01, aceptación SEC-QA ni certificación WCAG. Sin D1 remoto ni deploy.
+
 
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
 
 # Pruebas
+
+## MiniWeb V2 IMP-09 — capacidad de publicación
+
+**RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-capacity.test.ts` PASS (0/3/6/9 según licencia y ampliaciones explícitas); `pnpm wrangler d1 migrations apply DB --local` aplicó `0038–0039`; `pnpm run test:e2e:miniweb-v2-conversion` Worker local PASS; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El E2E existente cubre conversión y aislamiento; no certifica P6A ni sustituye aprobación humana/SEC-QA/VIS-01. Sin remoto ni deploy.
 
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
 

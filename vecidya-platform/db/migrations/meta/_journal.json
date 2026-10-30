@@ -267,6 +267,20 @@
       "when": 1793328943130,
       "tag": "0037_miniweb-v2-conversion-provenance",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1793330450801,
+      "tag": "0038_miniweb-capacity-extensions",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "6",
+      "when": 1793330650050,
+      "tag": "0039_miniweb-capacity-extension-org-scope",
+      "breakpoints": true
     }
   ]
 }
