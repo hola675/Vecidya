@@ -72,10 +72,10 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.ok(gate.includes("q2_presence_digital_base"));
   assert.ok(gate.includes("reliable_presence") && gate.includes("partial_presence"));
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "clarity_positioning")?.answers.unknown, "uncertainty");
-  const absentPresence = { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_reliable_presence" };
+  const absentPresence = { q2_operational_status: "operating", q2_has_customers: "yes", q2_sector: "food_hospitality", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_reliable_presence" };
   assert.equal(eligible("q2_food_menu_visibility", absentPresence), false);
   assert.equal(eligible("q2_food_menu_visibility", { ...absentPresence, q2_presence_digital_base: "unknown" }), false);
-  assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" }), true);
+  assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_sector: "food_hospitality", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" }), true);
   assert.equal(interpretV9AnswerState(undefined, true), "unanswered");
   assert.equal(interpretV9AnswerState("unknown", true), "unknown");
   assert.equal(interpretV9AnswerState(undefined, false), "not_applicable");
@@ -108,7 +108,7 @@ test("F03: restaurant specialty replaces generic only when eligible; unknown nic
   const base = {
     q2_operational_status: "operating",
     q2_has_customers: "yes",
-    q2_niche_food_hospitality: "restaurant",
+    q2_sector: "food_hospitality", q2_niche_food_hospitality: "restaurant",
     q2_goal: "explain",
     q2_presence_digital_base: "partial_presence",
   };
@@ -126,6 +126,7 @@ test("F03: restaurant specialty replaces generic only when eligible; unknown nic
   const agency = {
     ...base,
     q2_niche_food_hospitality: "unknown",
+    q2_sector: "b2b_services",
     q2_niche_b2b_services: "marketing_agency",
     q2_customer_buyer: "b2b",
   };
@@ -157,7 +158,7 @@ test("F03 native V9 graph respects real C03/C05/C08 candidate gates without V8 e
   const partialPresence = {
     q2_operational_status: "operating",
     q2_has_customers: "yes",
-    q2_niche_food_hospitality: "restaurant",
+    q2_sector: "food_hospitality", q2_niche_food_hospitality: "restaurant",
     q2_goal: "explain",
     q2_presence_digital_base: "partial_presence",
   };
