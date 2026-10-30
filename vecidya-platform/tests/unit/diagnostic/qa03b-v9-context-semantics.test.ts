@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { selectV9Questions } from "../../../app/features/diagnostic/v9/question-selection.ts";
-import { evaluateV9Rule, evaluateV9Question, planV9GraphQuestions, inspectV9Graph, orderV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation.ts";
+import { evaluateV9Rule, evaluateV9Question, planV9GraphQuestions, inspectV9Graph, orderV9GraphQuestions, decideV9NextQuestion } from "../../../app/features/diagnostic/v9/graph-evaluation.ts";
 import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption, classifyV9EvidenceContribution } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
 
 test("V9: pausa con clientes históricos no acredita operación actual", () => {
@@ -161,4 +161,35 @@ test("F03 V9 graph: neutral and empty multi-answer cannot authorize a specialist
   assert.equal(evaluateV9Rule(multi, { answers: { channels: ["website"] } }).status, "eligible");
   assert.equal(evaluateV9Rule({ op: "answered", ref: { question: "channels" } }, { answers: { channels: [] } }).status, "pending");
   assert.equal(evaluateV9Rule({ op: "multiIntersects", ref: { question: "channels" }, values: ["website"] }, { answers: { channels: ["website", "unknown"] } }).status, "ineligible");
+});
+
+test("F03: single-step V9 decisions advance in dependency order after recorded answers", () => {
+  const questions = [
+    { id: "specialist", appliesWhen: { op: "eq", ref: { question: "niche" }, value: "restaurant" } },
+    { id: "niche", appliesWhen: { op: "eq", ref: { question: "sector" }, value: "food_hospitality" } },
+    { id: "sector" },
+  ] as const;
+  const first = decideV9NextQuestion(questions, { answers: {} }, []);
+  assert.equal(first.nextQuestionId, "sector");
+  assert.equal(first.reason, "ready");
+  assert.deepEqual(first.pendingQuestionIds, ["niche", "specialist"]);
+  const second = decideV9NextQuestion(questions, { answers: { sector: "food_hospitality" } }, ["sector"]);
+  assert.equal(second.nextQuestionId, "niche");
+  const third = decideV9NextQuestion(questions, { answers: { sector: "food_hospitality", niche: "restaurant" } }, ["sector", "niche"]);
+  assert.equal(third.nextQuestionId, "specialist");
+  const finished = decideV9NextQuestion(questions, { answers: { sector: "food_hospitality", niche: "restaurant" } }, ["sector", "niche", "specialist"]);
+  assert.equal(finished.reason, "no_eligible_questions");
+  assert.equal(finished.nextQuestionId, null);
+  const blocked = decideV9NextQuestion(questions, { answers: { sector: "food_hospitality" } }, ["sector", "niche"]);
+  assert.equal(blocked.reason, "awaiting_dependencies");
+  assert.equal(blocked.nextQuestionId, null);
+});
+
+test("F03: single-step selection obeys original interview budget and explicit extension", () => {
+  const allPresented = Array.from({ length: 24 }, (_, index) => `already_${index}`);
+  const questions = [{ id: "remaining" }];
+  assert.equal(decideV9NextQuestion(questions, { answers: {} }, allPresented).reason, "budget_exhausted");
+  const extended = decideV9NextQuestion(questions, { answers: {} }, allPresented, { extendedInterviewConsented: true });
+  assert.equal(extended.nextQuestionId, "remaining");
+  assert.equal(extended.remainingBudgetBeforeAsk, 5);
 });
