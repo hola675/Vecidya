@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
-import { evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
+import { collectContextDependencies, evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
 import { classifyV9Activity } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
@@ -13,8 +13,11 @@ const get = (id: string) => {
 const eligible = (id: string, answers: Record<string, string>) => {
   const rule = get(id).appliesWhen;
   assert.ok(rule, `Missing eligibility rule for ${id}`);
-  // These selected gates use answer references only; no context fields are read.
-  return evaluateRuleV2Trace(rule, answers, {} as Parameters<typeof evaluateRuleV2Trace>[2]).result;
+  // Never silently evaluate context-dependent rules against a fabricated context.
+  assert.deepEqual(collectContextDependencies(rule), [], `${id} unexpectedly depends on resolved context`);
+  const evaluation = evaluateRuleV2Trace(rule, answers, {} as Parameters<typeof evaluateRuleV2Trace>[2]);
+  console.log("V9_FOCAL_GATE " + JSON.stringify({ id, answers, result: evaluation.result, trace: evaluation.trace }));
+  return evaluation.result;
 };
 
 test("C03: paused activity with historical customers is not current operation", () => {
