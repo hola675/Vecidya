@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { collectContextDependencies, evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
-import { classifyV9Activity, interpretV9AnswerState } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
+import { classifyV9Activity, interpretV9AnswerState, interpretV9SelectedOption } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
   const q = bank.find((item) => item.id === id);
@@ -59,7 +59,7 @@ test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
   for (const dimension of q.evidenceV3?.dimensions ?? []) {
     assert.equal(dimension.answers.no_authorized_contact, "not_applicable", `Unauthorized contact must remain neutral in ${dimension.dimension}`);
   }
-  assert.equal(interpretV9AnswerState("no_authorized_contact", false), "not_applicable");
+  assert.equal(interpretV9SelectedOption("no_authorized_contact", true, q.options.find((option) => option.value === "no_authorized_contact")?.kind), "not_applicable");
 });
 
 test("C08: restaurant menu question is guarded; no presence cannot be assumed clear", () => {
