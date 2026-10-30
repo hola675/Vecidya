@@ -1,6 +1,12 @@
 name: Diagnostic V9 focused verification
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - .github/workflows/diagnostic-v9-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
   push:
     branches:
       - feat/diagnostic-v9-lex-graph-p1b
