@@ -25,7 +25,7 @@ test("C03: paused activity with historical customers is not current operation", 
   assert.equal(state.canAssertCurrentOperation, false);
   assert.equal(state.canAssertHistoricalDemand, true);
   const donation = get("q2_nonprofit_donation_clarity");
-  assert.match(JSON.stringify(donation.appliesWhen), /"question":"q2_operational_status","value":"operating"/);
+  assert.match(JSON.stringify(donation.appliesWhen), /"ref":\{"question":"q2_operational_status"\},"value":"operating"/);
   assert.equal(eligible("q2_nonprofit_donation_clarity", { q2_operational_status: "paused", q2_entity: "organization", q2_nonprofit_support_type: "donations" }), false);
 });
 
