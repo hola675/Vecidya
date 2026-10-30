@@ -60,7 +60,9 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.ok(gate.includes("q2_presence_digital_base"));
   assert.ok(gate.includes("reliable_presence") && gate.includes("partial_presence"));
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "clarity_positioning")?.answers.unknown, "uncertainty");
-  assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_presence" }), false);
+  const absentPresence = { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_reliable_presence" };
+  assert.equal(eligible("q2_food_menu_visibility", absentPresence), false);
+  assert.equal(eligible("q2_food_menu_visibility", { ...absentPresence, q2_presence_digital_base: "unknown" }), false);
   assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" }), true);
   assert.equal(interpretV9AnswerState(undefined, true), "unanswered");
   assert.equal(interpretV9AnswerState("unknown", true), "unknown");
