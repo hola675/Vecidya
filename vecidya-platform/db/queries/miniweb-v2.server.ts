@@ -6,6 +6,13 @@ export type MiniWebV2SiteInput = {
   id: string; organizationId: string; ownerUserId: string; familyKey: string; visualVariant: string;
 };
 
+export async function getMiniWebV2EditorState(database: Database, organizationId: string) {
+  const [site] = await database.select().from(miniWebV2Site).where(eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt).limit(1);
+  if (!site) return null;
+  const [draft] = await database.select().from(miniWebV2Draft).where(eq(miniWebV2Draft.siteId, site.id)).limit(1);
+  return draft ? { site, draft } : null;
+}
+
 /** Creates an empty V2 site and revision-zero draft atomically. Caller must authorize org membership. */
 export async function createMiniWebV2Site(database: Database, input: MiniWebV2SiteInput) {
   await database.batch([

@@ -21,14 +21,9 @@ export type V2SectionContentMap = {
   testimonials: { items: { id: string; quote: string; author: string; context: string | null; consented: boolean }[] };
   hours: import("./hours").V2HoursSection;
 };
-export type MiniWebV2Section<T extends MiniWebV2SectionType = MiniWebV2SectionType> = {
-  id: string;
-  type: T;
-  schemaVersion: number;
-  order: number;
-  visible: boolean;
-  content: V2SectionContentMap[T];
-};
+export type MiniWebV2Section = { [T in MiniWebV2SectionType]: {
+  id: string; type: T; schemaVersion: number; order: number; visible: boolean; content: V2SectionContentMap[T];
+} }[MiniWebV2SectionType];
 export type MiniWebV2Document = { schemaVersion: typeof MINIWEB_V2_SCHEMA_VERSION; sections: MiniWebV2Section[] };
 export type SectionValidation = { valid: true; value: MiniWebV2Section } | { valid: false; errors: string[] };
 

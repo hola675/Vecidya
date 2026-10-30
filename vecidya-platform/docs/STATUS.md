@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-03 editor inicial (2026-10-29)
+
+**CODE local:** ruta `/app/miniweb-v2` con guard de sesión/membership, UI inicial de portada, API tenant-scoped para crear/leer/guardar/publicar, CAS y conflictos recuperables. Publicar requiere rol owner/admin y licencia activa; V1 y su horario no se consultan. Typecheck/build local PASS. Pendiente: editor de las doce secciones, renderer público V2, pruebas Worker de autorización/concurrencia y QA accesible. No certificado ni desplegado.
 # MiniWeb V2 — IMP-02 persistencia inicial (2026-10-29)
 
 **CODE local:** tablas aisladas de sitio V2, borrador mutable y snapshots publicados inmutables; queries iniciales de creación, guardado con CAS y publicación con revisión esperada/organización. Migraciones `0034`–`0035` generadas; aplicadas solo a D1 local. Typecheck PASS; pruebas de concurrencia, runtime real, rollback y guards de rutas pendientes. No conectado a UI ni publicado. Imp-01 permanece abierto en PR #204.

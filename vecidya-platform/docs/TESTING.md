@@ -2304,3 +2304,7 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
 10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.
 
+
+## MiniWeb V2 IMP-03
+
+Typecheck y build ejecutados en el checkpoint local. Falta E2E real en Worker para sesión/roles/cross-tenant, crear/guardar/CAS/publicar y acceso a licencia; no declarar certificación funcional ni accesibilidad.
