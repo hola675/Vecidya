@@ -125,12 +125,20 @@
   backdrop-filter: blur(12px);
 }
 
+.public-home .home-hero-media {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  min-height: clamp(21rem, 31vw, 28rem);
+}
+
 .public-home .home-hero-visual {
   position: relative;
   display: grid;
   place-items: center;
+  z-index: 1;
   overflow: hidden;
-  min-height: clamp(21rem, 31vw, 28rem);
+  min-height: inherit;
   border-color: rgb(255 255 255 / 80%);
   border-radius: clamp(1.2rem, 2.5vw, 2rem);
   padding: clamp(.75rem, 1.8vw, 1.4rem);
@@ -176,11 +184,11 @@
 .public-home .home-hero-visual__vico {
   position: absolute;
   z-index: 3;
-  left: 1%;
+  left: clamp(-2.25rem, -2.8vw, -1rem);
   bottom: 0;
-  width: clamp(10rem, 22vw, 18rem);
-  max-width: 52%;
-  max-height: 96%;
+  width: clamp(12rem, 26vw, 19rem);
+  max-width: 60%;
+  max-height: none;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 .7rem 1rem rgb(8 31 63 / 24%));
@@ -209,6 +217,11 @@
   .public-home .home-hero-visual__vico {
     animation: home-vico-float 6s cubic-bezier(.77, 0, .175, 1) 1.08s infinite alternate;
     transform-origin: 52% 100%;
+  }
+
+  .public-home .home-hero-visual__brand {
+    animation: home-brand-pulse 7s cubic-bezier(.77, 0, .175, 1) 1.16s infinite alternate;
+    transform-origin: 50% 50%;
   }
 }
 
@@ -443,6 +456,11 @@
   to { transform: translateY(-7px) rotate(.7deg); }
 }
 
+@keyframes home-brand-pulse {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-2px) scale(1.025); }
+}
+
 @media (max-width: 900px) {
   .public-home .public-home-hero {
     grid-template-columns: minmax(0, 1fr);
@@ -459,10 +477,19 @@
     font-size: clamp(3.25rem, 8vw, 5.5rem);
   }
 
-  .public-home .home-hero-visual {
+  .public-home .home-hero-media {
     width: min(100%, 42rem);
     min-height: clamp(17rem, 40vw, 25rem);
     justify-self: center;
+  }
+
+  .public-home .home-hero-visual {
+    width: 100%;
+  }
+
+  .public-home .home-hero-visual__vico {
+    left: -1rem;
+    width: clamp(11rem, 38vw, 19rem);
   }
 }
 
@@ -497,6 +524,10 @@
     padding: .55rem;
   }
 
+  .public-home .home-hero-media {
+    min-height: clamp(15rem, 66vw, 21rem);
+  }
+
   .public-home .home-hero-visual img {
     max-height: 19rem;
   }
@@ -507,10 +538,11 @@
   }
 
   .public-home .home-hero-visual__vico {
-    left: 0;
-    width: clamp(8rem, 42vw, 11rem);
-    max-width: 54%;
-    max-height: 95%;
+    left: -.5rem;
+    bottom: 0;
+    width: clamp(8rem, 51vw, 11rem);
+    max-width: 72%;
+    max-height: none;
   }
 
   .public-home .home-section-heading {
@@ -546,7 +578,8 @@
   }
 
   .public-home .home-hero-visual__product,
-  .public-home .home-hero-visual__vico {
+  .public-home .home-hero-visual__vico,
+  .public-home .home-hero-visual__brand {
     animation: home-image-soften 180ms ease-out both !important;
   }
 }
