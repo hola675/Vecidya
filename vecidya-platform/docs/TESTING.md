@@ -5,6 +5,10 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## UX-PREMIUM-02G — Licencias (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/licenses-experience-check.mjs` — PASS. Verifica hero, catálogo y precios, tabla/alternativa móvil, CTAs, destinos, metadata, foco y overflow en 1366/768/390/360 px. Playwright capturó la página completa antes/después en 1366/1024/768/390/360 px; el baseline reproduce CSS de `origin/main` y la revisión confirma que no hay overflow y que las tarjetas pasan a una columna a 768 px. `prefers-reduced-motion: reduce` reduce a casi cero la transición de hover de las tarjetas. No se ejecutaron axe, lector de pantalla ni zoom real a 200 %; no equivale a certificación WCAG. Typecheck, build y diff-check PASS (ver STATUS).
+
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.
