@@ -44,6 +44,12 @@ test("C05: nonprofit without donations or dues has distinct gated questions", ()
   assert.equal(eligible("q2_nonprofit_membership_lifecycle", answers), false);
   assert.equal(eligible("q2_nonprofit_donation_clarity", { ...answers, q2_nonprofit_support_type: "donations" }), true);
   assert.equal(eligible("q2_nonprofit_membership_lifecycle", { ...answers, q2_nonprofit_support_type: "membership_dues" }), true);
+  const mixed = { ...answers, q2_nonprofit_support_type: "mixed" };
+  assert.equal(eligible("q2_nonprofit_donation_clarity", mixed), true);
+  assert.equal(eligible("q2_nonprofit_membership_lifecycle", mixed), true);
+  const paused = { ...mixed, q2_operational_status: "paused" };
+  assert.equal(eligible("q2_nonprofit_donation_clarity", paused), false);
+  assert.equal(eligible("q2_nonprofit_membership_lifecycle", paused), false);
 });
 
 test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
