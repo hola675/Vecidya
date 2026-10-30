@@ -1,3 +1,6 @@
+## MiniWeb V2 IMP-02 — persistencia aislada (checkpoint local)
+
+Migraciones `0034`–`0035` crean `miniweb_v2_site`, `miniweb_v2_draft` y `miniweb_v2_publication`, separadas de V1. El borrador tiene revisión CAS; publicación copia un documento inmutable y actualiza el puntero activo mediante batch D1. Las tablas están tenant-scoped por `organization_id`; las consultas reciben la organización explícita y no resuelven membresía por sí mismas, por lo que solo deben llamarse tras guard server-side. Las familias repetibles no tienen índice único. Verificación local: ambas migraciones aplicadas a D1 local limpia; typecheck/build pendientes de registrar al cierre. Sin remoto.
 # Base de datos
 
 ## Migración productiva 0029 — release 0.8.2 (2026-10-26)
