@@ -128,6 +128,88 @@ export function evaluateV9Question(
 }
 
 
+/**
+ * F03 structural audit: dependencies declared in question rules are inspected
+ * before graph activation. External prerequisites must be named explicitly.
+ * The ordered IDs respect declared input order where no dependency constrains it.
+ */
+function collectV9AnswerDependencies(rule: V9Rule, into: Set<string>): void {
+  if (rule.op === "and" || rule.op === "or") {
+    for (const child of rule.rules) collectV9AnswerDependencies(child, into);
+  } else if (rule.op === "not") {
+    collectV9AnswerDependencies(rule.rule, into);
+  } else if ("ref" in rule) {
+    into.add(rule.ref.question);
+  }
+}
+
+export type V9GraphAudit = {
+  readonly orderedIds: readonly string[];
+  readonly missingDependencies: readonly { readonly questionId: string; readonly dependencyId: string }[];
+  readonly cycles: readonly (readonly string[])[];
+};
+
+export function inspectV9Graph(
+  questions: readonly V9GraphQuestion[],
+  externalQuestionIds: readonly string[] = [],
+): V9GraphAudit {
+  const byId = new Map<string, V9GraphQuestion>();
+  for (const question of questions) {
+    if (!question.id.trim()) throw new Error("V9 graph question id cannot be empty");
+    if (byId.has(question.id)) throw new Error(`V9 graph has duplicate id: ${question.id}`);
+    byId.set(question.id, question);
+  }
+  const external = new Set(externalQuestionIds);
+  const dependencies = new Map<string, readonly string[]>();
+  const missingDependencies: { questionId: string; dependencyId: string }[] = [];
+  for (const question of questions) {
+    const refs = new Set<string>();
+    if (question.appliesWhen) collectV9AnswerDependencies(question.appliesWhen, refs);
+    if (question.materialAppliesWhen) collectV9AnswerDependencies(question.materialAppliesWhen, refs);
+    dependencies.set(question.id, [...refs].filter((id) => byId.has(id)));
+    for (const ref of refs) {
+      if (!byId.has(ref) && !external.has(ref)) {
+        missingDependencies.push({ questionId: question.id, dependencyId: ref });
+      }
+    }
+  }
+
+  const visited = new Set<string>();
+  const visiting = new Set<string>();
+  const path: string[] = [];
+  const orderedIds: string[] = [];
+  const cycles: string[][] = [];
+  const visit = (id: string): void => {
+    if (visiting.has(id)) {
+      const index = path.indexOf(id);
+      cycles.push([...path.slice(index), id]);
+      return;
+    }
+    if (visited.has(id)) return;
+    visiting.add(id);
+    path.push(id);
+    for (const ref of dependencies.get(id) ?? []) visit(ref);
+    path.pop();
+    visiting.delete(id);
+    visited.add(id);
+    orderedIds.push(id);
+  };
+  for (const question of questions) visit(question.id);
+  return { orderedIds, missingDependencies, cycles };
+}
+
+export function orderV9GraphQuestions(
+  questions: readonly V9GraphQuestion[],
+  externalQuestionIds: readonly string[] = [],
+): readonly V9GraphQuestion[] {
+  const audit = inspectV9Graph(questions, externalQuestionIds);
+  if (audit.missingDependencies.length || audit.cycles.length) {
+    throw new Error(`V9 invalid graph: missing=${JSON.stringify(audit.missingDependencies)}, cycles=${JSON.stringify(audit.cycles)}`);
+  }
+  const byId = new Map(questions.map((question) => [question.id, question]));
+  return audit.orderedIds.map((id) => byId.get(id)!);
+}
+
 export type V9GraphPlan = {
   readonly evaluations: readonly V9GraphQuestionResult[];
   readonly selection: V9SelectionResult;
