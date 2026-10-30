@@ -7,6 +7,7 @@ type Props = {
   version: number;
   resetEpoch: number;
   sectionIds: string[];
+  sectionLabels?: string[];
   initialChecked: string[];
   initialFavorite: boolean;
   initialLastSectionId: string | null;
@@ -131,17 +132,26 @@ export function LearnProgressControls(props: Props) {
   return <div className="learn-progress-controls" aria-live="polite">
     {props.userId && anonymousImportCount > 0 && <aside className="learn-sync-import"><p>Hay {anonymousImportCount} cambio(s) guardado(s) en este dispositivo sin asociar a una cuenta. ¿Quieres importarlos a esta cuenta?</p><button type="button" className="button button--primary" onClick={() => importAnonymous(true)}>Importar a mi cuenta</button><button type="button" className="text-link" onClick={() => importAnonymous(false)}>Descartar cambios anónimos</button></aside>}
     {props.userId && props.showProgress !== false && <label className="learn-sync-retention"><input type="checkbox" checked={retainOnSignOut} onChange={(event) => { setRetainOnSignOut(event.currentTarget.checked); queue.setRetainAfterSignOut(props.userId!, event.currentTarget.checked); }} /> Conservar mis cambios pendientes en este dispositivo al cerrar sesión</label>}
-    <div className="learn-personal-toolbar">
-      <button type="button" className="button button--secondary" onClick={() => { const next = !favorite; if (append(next ? "favorite" : "unfavorite")) setFavorite(next); }}>{favorite ? "Quitar de favoritos" : "Guardar en favoritos"}</button>
-      {props.showProgress !== false && <><span>Mi avance: {props.sectionIds.length ? Math.round(checked.size / props.sectionIds.length * 100) : 0}% ({checked.size} de {props.sectionIds.length} secciones) · {checked.size === props.sectionIds.length ? "Completado" : checked.size ? "En curso" : "Sin empezar"}</span>
-      {checked.size > 0 && <button type="button" className="text-link" onClick={() => { if (append("reset-guide")) { const updated = new Set<string>(); setChecked(updated); props.onCheckedChange?.([...updated]); setLastSection(null); } }}>Reiniciar mi progreso</button>}</>}
+    <div className="learn-progress-panel" role="group" aria-label="Mi avance en esta guía">
+      <div className="learn-personal-toolbar">
+        <button type="button" className="button button--secondary" onClick={() => { const next = !favorite; if (append(next ? "favorite" : "unfavorite")) setFavorite(next); }}>{favorite ? "Quitar de favoritos" : "Guardar en favoritos"}</button>
+        {props.showProgress !== false && <><span>Mi avance: {props.sectionIds.length ? Math.round(checked.size / props.sectionIds.length * 100) : 0}% ({checked.size} de {props.sectionIds.length} secciones) · {checked.size === props.sectionIds.length ? "Completado" : checked.size ? "En curso" : "Sin empezar"}</span>
+        {checked.size > 0 && <button type="button" className="text-link" onClick={() => { if (append("reset-guide")) { const updated = new Set<string>(); setChecked(updated); props.onCheckedChange?.([...updated]); setLastSection(null); } }}>Reiniciar mi progreso</button>}</>}
+      </div>
+      <p className="learn-sync-status">{message || (pending ? `${pending} cambio(s) pendiente(s) de sincronizar.` : "Estado de sincronización listo.")}</p>
+      {conflicts.map((operation) => <div className="learn-sync-conflict" key={operation.operationId}><p>{operation.statusMessage}</p>{operation.status === "conflict" ? <button type="button" className="button button--secondary" onClick={() => retryConflict(operation)}>Volver a aplicar este cambio</button> : <button type="button" className="text-link" onClick={() => discardBlocked(operation)}>Descartar el cambio y los posteriores de este dispositivo</button>}</div>)}
+      {props.showProgress !== false && <details className="learn-section-progress-disclosure">
+        <summary>Actualizar avance por sección <span>{props.sectionIds.length}</span></summary>
+        <div className="learn-section-progress-list" role="group" aria-label="Acciones de progreso por sección">{props.sectionIds.map((sectionId, index) => {
+          const sectionLabel = props.sectionLabels?.[index] ?? `sección ${index + 1}`;
+          return <div className="learn-section-progress" key={sectionId} role="group" aria-label={`Progreso de ${sectionLabel}`}>
+            <span className="learn-section-progress__label">{sectionLabel}</span>
+            <button type="button" className="button button--secondary" aria-label={`${checked.has(sectionId) ? "Marcar como pendiente" : "Marcar como completada"}: ${sectionLabel}`} onClick={() => { const next = !checked.has(sectionId); if (!append(next ? "check-section" : "uncheck-section", sectionId)) return; const updated = new Set(checked); next ? updated.add(sectionId) : updated.delete(sectionId); setChecked(updated); props.onCheckedChange?.([...updated]); }}>{checked.has(sectionId) ? "Pendiente" : "Completar"}</button>
+            <button type="button" className="text-link" aria-pressed={lastSection === sectionId} aria-label={`${lastSection === sectionId ? "Último punto guardado" : "Guardar como último punto"}: ${sectionLabel}`} onClick={() => { if (append("set-last-section", sectionId)) setLastSection(sectionId); }}>{lastSection === sectionId ? "Punto guardado" : "Guardar punto"}</button>
+          </div>;
+        })}</div>
+      </details>}
     </div>
-    <p className="learn-sync-status">{message || (pending ? `${pending} cambio(s) pendiente(s) de sincronizar.` : "Estado de sincronización listo.")}</p>
-    {conflicts.map((operation) => <div className="learn-sync-conflict" key={operation.operationId}><p>{operation.statusMessage}</p>{operation.status === "conflict" ? <button type="button" className="button button--secondary" onClick={() => retryConflict(operation)}>Volver a aplicar este cambio</button> : <button type="button" className="text-link" onClick={() => discardBlocked(operation)}>Descartar el cambio y los posteriores de este dispositivo</button>}</div>)}
-    {props.showProgress !== false && props.sectionIds.map((sectionId) => <div className="learn-section-progress" key={sectionId}>
-      <button type="button" className="button button--secondary" onClick={() => { const next = !checked.has(sectionId); if (!append(next ? "check-section" : "uncheck-section", sectionId)) return; const updated = new Set(checked); next ? updated.add(sectionId) : updated.delete(sectionId); setChecked(updated); props.onCheckedChange?.([...updated]); }}>{checked.has(sectionId) ? "Marcar como pendiente" : "Marcar como completada"}</button>
-      <button type="button" className="text-link" onClick={() => { if (append("set-last-section", sectionId)) setLastSection(sectionId); }}>{lastSection === sectionId ? "Último punto guardado" : "Guardar como último punto"}</button>
-    </div>)}
     {props.access === "licensed" && !props.userId && <p>El avance de esta guía requiere iniciar sesión y tener acceso activo.</p>}
   </div>;
 }

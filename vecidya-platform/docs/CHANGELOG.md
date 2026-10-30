@@ -16,6 +16,11 @@
 
 # Changelog
 
+## 2026-10-29 — UX-COHERENCE-ROUNDED-001 — refinamiento global de interfaz
+
+- Se refina el menú «Soluciones» con panel translúcido, estados más claros y movimiento breve; el foco permanece visible y la animación se desactiva con `prefers-reduced-motion`.
+- En toda la plataforma, tarjetas, paneles, secciones y controles adoptan radios coherentes y los bloques consecutivos reciben más separación. En Aprende, títulos y separaciones se compactan; favoritos, avance y acciones por sección se agrupan arriba, con acciones desplegables y nombres accesibles. El contador destacado mejora su contraste. Typecheck, build y E2E local PASS; sin deploy ni cambios de datos.
+
 ## 2026-10-29 — APRENDE-PLAN-V1 — índice compacto móvil (Fase 7; local)
 
 - El índice de secciones del artículo se vuelve un control desplegable nativo `Índice · NN%` en pantallas de hasta 820 px; escritorio conserva su navegación lateral. El porcentaje comparte el estado de progreso y el panel se cierra al seleccionar una sección. La regresión E2E cubre cuatro viewports, teclado, foco, destinos de ancla, actualización de porcentaje, typecheck y build. No es certificación con lector de pantalla/zoom ni auditoría independiente. Decisión legal/operativa de retención permanece pendiente; no se inventó TTL ni se habilitó purga. Sin deploy ni D1 remota.

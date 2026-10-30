@@ -418,6 +418,8 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
+- UX-COHERENCE-ROUNDED-001 (checkpoint local): toda la plataforma aplica radios redondeados coherentes a tarjetas, paneles, secciones y controles, con separación adicional entre bloques consecutivos. El menú público «Soluciones» gana estados activo/foco claros, chevrón, superficie translúcida y animación respetuosa de movimiento reducido. Aprende reduce el tamaño del H1, compacta espacios y mejora contraste; favoritos, avance y acciones por sección se agrupan en la tarjeta superior y las acciones se despliegan en una lista compacta con nombres accesibles. Typecheck, build y E2E locales PASS; no publicado.
+
 - `/aprende` es la ruta canónica y `/que-debes-saber` conserva el alias legado.
 - Estado histórico de APRENDE-EDITORIAL-FINAL-02 (2026-10-25): **48 guías auditadas, 18 borradores y 30 no marcadas como borrador**, 9 itinerarios y 6 categorías. En ese checkpoint se conservaron las banderas por falta de autorización expresa. El estado fue superado por APRENDE-EDITORIAL-APPROVAL-01 arriba.
 - CI del HEAD `322850f` pasó `Aprende quality` #123, `Main integration quality` #189 y 1740/1740 unitarias; PR #138 se integró posteriormente en `main@4dcc27f`. Esta evidencia es histórica y no certifica el nuevo contrato 48/0.
