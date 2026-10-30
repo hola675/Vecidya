@@ -52,4 +52,16 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t tests < /tmp/v9-focused-tests.txt
-          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test "${tests[@]}"
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test "${tests[@]}" 2>&1 | tee /tmp/v9-focal-test.log
+          {
+            echo "## Diagnostic V9 — focal verification"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Event: \`${GITHUB_EVENT_NAME}\`"
+            echo "- Scope: C03 / C05 / C07 / C08 (three selected files)"
+            echo ""
+            echo "### Node test summary"
+            grep -E "^# (tests|pass|fail|cancelled|skipped|duration_ms) " /tmp/v9-focal-test.log || true
+            echo ""
+            echo "Only focal contract checks; not a full adaptive journey or V9 certification."
+          } >> "$GITHUB_STEP_SUMMARY"
