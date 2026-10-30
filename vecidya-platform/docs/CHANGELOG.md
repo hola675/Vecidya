@@ -1,3 +1,9 @@
+## 0.9.2 — candidata de release (2026-10-29; deploy pendiente)
+
+- Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.
+- El preflight encontró pendientes las migraciones D1 `0031–0033`; deben aplicarse en orden antes del deploy. Los flags de purga Aprende continúan desactivados mientras sigue pendiente la revisión legal/privacidad/costo.
+- No declarar publicado hasta que el Worker se despliegue y un GET anónimo fechado confirme versión y copyright.
+
 ## 0.9.1 — candidata local (2026-10-29; no publicada)
 
 - Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.

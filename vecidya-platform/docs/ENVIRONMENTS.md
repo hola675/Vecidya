@@ -1,6 +1,6 @@
-# Entornos y versión candidata 0.9.1 (2026-10-29; no publicada)
+# Entornos y versión candidata 0.9.2 (2026-10-29; deploy pendiente)
 
-La rama principal integrada fija `package.json` en `0.9.1` para el siguiente release correctivo de seguridad/accesibilidad. PR #201 (`407f1cf3268798214bc8c20ef99887f57a1ea914`) está integrada. CI: typecheck/build/unitarias, bundle, regresión Aprende/Diagnóstico y Worker local PASS. El usuario confirma prueba/aprobación con NVDA y zoom 200 %; faltan los metadatos de navegador, lector y viewport, y esto no declara conformidad WCAG. El checkpoint local implementa y prueba purga Aprende 90/30, pero sus dos flags están en `false` en `wrangler.jsonc` y no se ha publicado esa configuración. No se aplicaron migraciones ni se modificó D1 remota. No existe comprobación HTTP que califique la candidata como publicada.
+`package.json` fija `0.9.2` para publicar `main@900e63e9`, que incluye la entrega de seguridad/accesibilidad/progreso de Aprende registrada como candidata `0.9.1` y el refinamiento transversal del PR #210. Producción sigue en `0.9.0` hasta completar deploy y HTTP anónimo. El preflight RAN 2026-10-29 encontró pendientes `0031_learn-access-grant.sql`, `0032_learn-personal-progress.sql` y `0033_learn-sync-operations.sql` en `vecidya-prod`; deben aplicarse en orden antes de activar el nuevo Worker. Los switches de purga de recibos Aprende siguen `false` por la revisión legal/privacidad/costo pendiente. Sin HTTP público fechado, esta candidata no está publicada.
 
 # Entornos y release de producción 0.9.0 (2026-10-28)
 
