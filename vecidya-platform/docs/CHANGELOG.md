@@ -23,6 +23,11 @@
 
 # Changelog
 
+## 2026-10-30 — UX-PREMIUM-01-HOME — portada local
+
+- Se renueva la composición de `/` con el texto y los CTA existentes, Vico Inicio en primer plano sobre el borde del recuadro, el símbolo completo de marca sin placa decorativa y una visualización WebP fotorrealista de fondo transparente. Se elimina el pin azul. Vico, la visualización y el logotipo incorporan movimiento ambiental sutil con una variante de fundido para movimiento reducido. La imagen presenta Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende sin cifras inventadas, burbujas ni brújulas. Se mantienen rutas y contenido funcional.
+- Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR #219 abierta como borrador; sin deploy, D1 remota ni declaración de publicación.
+
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 
 - La conversión voluntaria trunca descripción y zona de servicio al máximo del contrato V2 y deja constancia explícita en el reporte; se valida el documento antes de persistirlo.

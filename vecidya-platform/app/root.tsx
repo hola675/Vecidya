@@ -13,6 +13,7 @@ import { PublicLayout } from "./components/public-layout";
 import "./app.css";
 import "./styles/cookie-consent.css";
 import "./styles/vecidya-polish.css";
+import "./styles/home-premium.css";
 
 export function meta() {
   return [{ title: "Vecidya" }, { name: "description", content: "Comunidad digital para ordenar presencia, aprendizaje y próximos pasos." }];
