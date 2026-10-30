@@ -1,3 +1,10 @@
+## 0.9.2 — publicado (2026-10-29)
+
+- Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.
+- PR #213 quedó integrada en `main@8ed60e51`. D1 de producción recibió `0031–0033` antes del deploy; Wrangler desplegó Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %.
+- GET anónimo a `/` y `/aprende` confirmó HTTP 200, versión `0.9.2`, copyright y 48 guías; `/__health/db` dio 200. Evidencia fechada en `docs/ENVIRONMENTS.md`.
+- La purga de recibos Aprende continúa desactivada; su revisión legal/privacidad/costo sigue pendiente. Sin deploy a staging.
+
 ## 0.9.1 — candidata local (2026-10-29; no publicada)
 
 - Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.
@@ -15,6 +22,11 @@
 - Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; `pnpm audit --prod --json` quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché. La CI final del PR #201 pasó la certificación del Worker. La propuesta 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purga implementada. El usuario confirma que la pauta NVDA/zoom 200 % fue ejecutada y aprobada. Sin deploy ni D1 remota.
 
 # Changelog
+
+## 2026-10-29 — UX-COHERENCE-ROUNDED-001 — refinamiento global de interfaz
+
+- Se refina el menú «Soluciones» con panel translúcido, estados más claros y movimiento breve; el foco permanece visible y la animación se desactiva con `prefers-reduced-motion`.
+- En toda la plataforma, tarjetas, paneles, secciones y controles adoptan radios coherentes y los bloques consecutivos reciben más separación. En Aprende, títulos y separaciones se compactan; favoritos, avance y acciones por sección se agrupan arriba, con acciones desplegables y nombres accesibles. El contador destacado mejora su contraste. Typecheck, build y E2E local PASS; sin deploy ni cambios de datos.
 
 ## 2026-10-29 — APRENDE-PLAN-V1 — índice compacto móvil (Fase 7; local)
 

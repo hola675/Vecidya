@@ -216,6 +216,18 @@ try {
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
+      const progressPanel = activePage.locator(".learn-progress-panel");
+      assert(await progressPanel.isVisible(), "Los controles personales deben quedar agrupados en el bloque superior de avance.");
+      const progressDisclosure = progressPanel.locator(".learn-section-progress-disclosure");
+      await progressDisclosure.locator("summary").click();
+      assert(await progressDisclosure.getAttribute("open") !== null, "Las acciones compactas por sección se pueden desplegar.");
+      assert.equal(await progressPanel.locator(".learn-section-progress").count(), sample.sections.length, "El panel agrupa las acciones de todas las secciones.");
+      const firstSectionAction = progressPanel.locator(".learn-section-progress").first();
+      assert((await firstSectionAction.getAttribute("aria-label"))?.includes(sample.sections[0].heading), "Las acciones identifican la sección correspondiente.");
+      if (width >= 1366) {
+        const controlHeight = await firstSectionAction.locator(".button").evaluate((button) => button.getBoundingClientRect().height);
+        assert(controlHeight <= 44, "Los controles de sección deben tener altura compacta: " + controlHeight);
+      }
       const isMobileIndex = width <= 820;
       const mobileDetails = activePage.locator(".learn-article-toc-mobile details");
       const mobileSummary = mobileDetails.locator("summary");
