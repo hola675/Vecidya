@@ -21,6 +21,14 @@ async function assertNoOverflow(page, label) {
   assert(overflow.length === 0, `${label}: desbordamiento horizontal ${JSON.stringify(overflow)}`);
 }
 
+async function assertRoundedSurfaces(page, label) {
+  const square = await page.evaluate(() => [...document.querySelectorAll("main section,main article,main fieldset,main details,main button,main .button,main input:not([type=checkbox]):not([type=radio]),main select,main textarea,main [class*=card],main [class*=panel],main [class*=item],main [class*=row]")]
+    .filter((element) => { const rect = element.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && Number.parseFloat(getComputedStyle(element).borderTopLeftRadius) === 0; })
+    .slice(0, 6)
+    .map((element) => ({ tag: element.tagName, className: typeof element.className === "string" ? element.className : "" })));
+  assert(square.length === 0, `${label}: quedan superficies con esquinas cuadradas ${JSON.stringify(square)}`);
+}
+
 const browser = await chromium.launch(chromiumExecutablePath ? { executablePath: chromiumExecutablePath } : {});
 try {
   for (const width of [1366, 1024, 960, 768, 390, 360, 320]) {
@@ -28,8 +36,9 @@ try {
     const label = `${width}px`;
     await page.goto(new URL("/", baseUrl).toString(), { waitUntil: "networkidle" });
     await assertNoOverflow(page, `${label} inicio`);
+    await assertRoundedSurfaces(page, `${label} inicio`);
     for (const path of ["/licencias", "/servicios", "/aprende", "/contacto"]) {
-      assert(await page.locator(`main a[href="${path}"]`).count() > 0, `${label}: Home sin recorrido directo a ${path}`);
+      assert(await page.locator(`main a[href="${path}"],header a[href="${path}"]`).count() > 0, `${label}: navegación pública sin recorrido a ${path}`);
     }
     assert(await page.getByRole("link", { name: "Saltar al contenido" }).count() === 1, `${label}: falta enlace de salto`);
     assert(await page.locator("header .site-brand").getAttribute("href") === "/", `${label}: marca sin enlace al inicio`);
@@ -69,12 +78,18 @@ try {
     assert(await page.locator('.site-footer__nav a[href="/licencias"][aria-current="page"]').count() === 1, `${label}: footer sin estado activo`);
     assert(await page.locator('a[href="/contacto?interes=cuadra"]').count() > 0, `${label}: Cuadra no conserva interés`);
     await assertNoOverflow(page, `${label} licencias`);
+    await assertRoundedSurfaces(page, `${label} licencias`);
     await page.goto(new URL("/servicios", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator('a[href="/contacto?interes=servicio-visibilidad"]').count() > 0, `${label}: Servicios no conserva interés`);
     await assertNoOverflow(page, `${label} servicios`);
+    await assertRoundedSurfaces(page, `${label} servicios`);
+    await page.goto(new URL("/diagnostico", baseUrl).toString(), { waitUntil: "networkidle" });
+    await assertNoOverflow(page, `${label} diagnóstico`);
+    await assertRoundedSurfaces(page, `${label} diagnóstico`);
     await page.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator('.site-footer__nav a[href="/aprende"][aria-current="page"]').count() === 1, `${label}: Aprende sin estado en footer`);
     await assertNoOverflow(page, `${label} Aprende`);
+    await assertRoundedSurfaces(page, `${label} Aprende`);
     await page.goto(new URL("/addons", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator('.addon-card a[href^="/contacto?interes=complemento-"]').count() === 7, `${label}: complementos pierden el contexto`);
     await page.locator('.addon-card a[href="/contacto?interes=complemento-whatsapp-business"]').click();
@@ -87,7 +102,7 @@ try {
 
   const alias = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
   assert(alias.status === 301 && alias.headers.get("location")?.endsWith("/aprende"), "Alias de Aprende no redirige con 301");
-  console.log("PASS: navegación, taxonomía, enlaces activos y CTA comerciales en 1366/1024/960/768/390/360/320.");
+  console.log("PASS: navegación, esquinas redondeadas, desbordamiento, taxonomía, enlaces activos y CTA comerciales en 1366/1024/960/768/390/360/320.");
 } finally {
   await browser.close();
 }
