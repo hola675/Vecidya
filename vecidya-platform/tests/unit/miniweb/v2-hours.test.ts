@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { createEmptyV2HoursSection, validateV2HoursSection } from "../../../app/features/miniweb-v2/hours";
+import { createEmptyV2HoursSection, getV2LocalDate, validateV2HoursSection } from "../../../app/features/miniweb-v2/hours";
 
 describe("MiniWeb V2 hours isolation", () => {
   it("creates a completely empty section without importing V1 hours", () => {
@@ -23,12 +23,12 @@ describe("MiniWeb V2 hours isolation", () => {
     assert.equal(validateV2HoursSection(section).valid, true);
   });
 
-  it("rejects overlaps and inverted ranges", () => {
+  it("rejects overlaps and zero-width ranges", () => {
     const section = createEmptyV2HoursSection();
     section.timezone = "America/Bogota";
     section.days[0] = { day: "monday", closed: false, ranges: [{ start: "09:00", end: "12:00" }, { start: "11:00", end: "13:00" }] };
     assert.equal(validateV2HoursSection(section).valid, false);
-    section.days[0].ranges = [{ start: "20:00", end: "08:00" }];
+    section.days[0].ranges = [{ start: "08:00", end: "08:00" }];
     assert.equal(validateV2HoursSection(section).valid, false);
   });
 
@@ -38,6 +38,25 @@ describe("MiniWeb V2 hours isolation", () => {
     section.days[1] = { ...section.days[0] };
     assert.equal(validateV2HoursSection(section).valid, false);
     section.days[1] = { day: "tuesday", closed: true, ranges: [{ start: "09:00", end: "10:00" }] };
+    assert.equal(validateV2HoursSection(section).valid, false);
+  });
+
+  it("supports overnight ranges and rejects overlap with the next day", () => {
+    const section = createEmptyV2HoursSection();
+    section.timezone = "America/New_York";
+    section.days[0] = { day: "monday", closed: false, ranges: [{ start: "22:00", end: "02:00" }] };
+    assert.equal(validateV2HoursSection(section).valid, true);
+    section.days[1] = { day: "tuesday", closed: false, ranges: [{ start: "01:00", end: "04:00" }] };
+    assert.equal(validateV2HoursSection(section).valid, false);
+  });
+
+  it("validates IANA zones and calendar exceptions, and resolves DST-local dates", () => {
+    const section = createEmptyV2HoursSection();
+    section.timezone = "America/New_York";
+    section.exceptions = [{ date: "2026-03-08", closed: false, ranges: [{ start: "03:00", end: "05:00" }], note: "Cambio de horario" }];
+    assert.equal(validateV2HoursSection(section).valid, true);
+    assert.equal(getV2LocalDate(new Date("2026-03-08T07:30:00Z"), section.timezone), "2026-03-08");
+    section.exceptions.push({ ...section.exceptions[0] });
     assert.equal(validateV2HoursSection(section).valid, false);
   });
 });

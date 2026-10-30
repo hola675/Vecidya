@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { MINIWEB_V2_SECTION_TYPES, validateMiniWebV2Document, validateMiniWebV2Section } from "../../app/features/miniweb-v2/sections";
+import { createEmptyV2HoursSection } from "../../app/features/miniweb-v2/hours";
 
 const content: Record<string, unknown> = {
   hero: { title: "Welcome", subtitle: "Local business", cta: null, image: null },
@@ -9,7 +10,7 @@ const content: Record<string, unknown> = {
   contact: { phone: null, email: null, links: [], cta: null },
   location: { address: null, city: null, area: null, mapUrl: null }, faq: { items: [] },
   team: { people: [] }, certifications: { items: [] }, testimonials: { items: [] },
-  hours: { schemaVersion: 2 },
+  hours: { ...createEmptyV2HoursSection(), timezone: "America/New_York" },
 };
 const section = (type: string, order = 0) => ({ id: `s-${type}`, type, schemaVersion: 1, order, visible: true, content: content[type] });
 
