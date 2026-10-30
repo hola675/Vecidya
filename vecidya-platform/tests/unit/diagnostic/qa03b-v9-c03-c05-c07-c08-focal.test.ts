@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
+import { evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
 import { classifyV9Activity } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
@@ -9,12 +10,20 @@ const get = (id: string) => {
   return q;
 };
 
+const eligible = (id: string, answers: Record<string, string>) => {
+  const rule = get(id).appliesWhen;
+  assert.ok(rule, `Missing eligibility rule for ${id}`);
+  // These selected gates use answer references only; no context fields are read.
+  return evaluateRuleV2Trace(rule, answers, {} as Parameters<typeof evaluateRuleV2Trace>[2]).result;
+};
+
 test("C03: paused activity with historical customers is not current operation", () => {
   const state = classifyV9Activity("paused", "yes");
   assert.equal(state.canAssertCurrentOperation, false);
   assert.equal(state.canAssertHistoricalDemand, true);
   const donation = get("q2_nonprofit_donation_clarity");
   assert.match(JSON.stringify(donation.appliesWhen), /"question":"q2_operational_status","value":"operating"/);
+  assert.equal(eligible("q2_nonprofit_donation_clarity", { q2_operational_status: "paused", q2_entity: "organization", q2_nonprofit_support_type: "donations" }), false);
 });
 
 test("C05: nonprofit without donations or dues has distinct gated questions", () => {
@@ -27,6 +36,9 @@ test("C05: nonprofit without donations or dues has distinct gated questions", ()
     assert.ok(gate.includes(id.includes("donation") ? "donations" : "membership_dues"));
   }
   assert.notEqual(get("q2_nonprofit_donation_clarity").id, get("q2_nonprofit_membership_lifecycle").id);
+  const answers = { q2_operational_status: "operating", q2_entity: "organization", q2_nonprofit_support_type: "other" };
+  assert.equal(eligible("q2_nonprofit_donation_clarity", answers), false);
+  assert.equal(eligible("q2_nonprofit_membership_lifecycle", answers), false);
 });
 
 test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
@@ -42,6 +54,7 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.ok(gate.includes("q2_presence_digital_base"));
   assert.ok(gate.includes("reliable_presence") && gate.includes("partial_presence"));
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "clarity_positioning")?.answers.unknown, "uncertainty");
+  assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_presence" }), false);
   const generic = get("q2_presence_offer_clarity");
   assert.ok(generic.appliesWhen || generic.materialAppliesWhen);
 });
