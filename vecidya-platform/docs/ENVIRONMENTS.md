@@ -1,6 +1,12 @@
-# Entornos y versión candidata 0.9.2 (2026-10-29; deploy pendiente)
+# Entornos y release de producción 0.9.2 (2026-10-29)
 
-`package.json` fija `0.9.2` para publicar `main@900e63e9`, que incluye la entrega de seguridad/accesibilidad/progreso de Aprende registrada como candidata `0.9.1` y el refinamiento transversal del PR #210. Producción sigue en `0.9.0` hasta completar deploy y HTTP anónimo. El preflight RAN 2026-10-29 encontró pendientes `0031_learn-access-grant.sql`, `0032_learn-personal-progress.sql` y `0033_learn-sync-operations.sql` en `vecidya-prod`; deben aplicarse en orden antes de activar el nuevo Worker. Los switches de purga de recibos Aprende siguen `false` por la revisión legal/privacidad/costo pendiente. Sin HTTP público fechado, esta candidata no está publicada.
+PR #213 quedó integrada en `main@8ed60e51ecc295c5ef897c95ca0f6dd3ba7305a9`; `package.json` fija `0.9.2`. Incluye el refinamiento global de interfaz del PR #210 y la entrega de seguridad/accesibilidad/progreso de Aprende previamente candidata como `0.9.1`.
+
+**D1 RAN 2026-10-29 (hora local):** se aplicaron en orden `0031_learn-access-grant.sql`, `0032_learn-personal-progress.sql` y `0033_learn-sync-operations.sql` en `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`). Las migraciones crean/ajustan tablas e índices de grants, progreso y recibos; no incluyen backfill de filas de usuario. La consulta posterior confirmó `No migrations to apply`.
+
+**Deploy RAN 2026-10-30T03:40:09Z:** Wrangler 4.152.0 desplegó `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %. Rutas `vecidya.com/*` y `www.vecidya.com/*`, `DB=vecidya-prod`, R2 `vecidya-business-media-prod` y Cron `17 3 * * *` se conservaron. Los flags `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` permanecen `false`; la revisión legal/privacidad/costo sigue pendiente.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-30T03:40:21Z (2026-10-29 hora local):** `GET /` y `GET /aprende` → 200, versión `0.9.2` y `© 2026 Vecidya`; `/aprende` muestra 48 guías. `GET /__health/db` → 200. Sin sesión ni acceso a datos de usuario. Esto acredita publicación pública; no es certificación WCAG ni activa las políticas de purga pendientes.
 
 # Entornos y release de producción 0.9.0 (2026-10-28)
 
