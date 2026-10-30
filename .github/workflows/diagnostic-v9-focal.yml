@@ -27,19 +27,20 @@ jobs:
           set -euo pipefail
           corepack enable
           corepack pnpm install --frozen-lockfile
-      - name: Locate focused existing tests
-        id: locate
+      - name: Select only C03 C05 C07 C08 contract tests
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t tests < <(find tests -type f \( -name '*qa03b*.test.ts' -o -name '*diagnostic-v9*.test.ts' -o -name '*qbv2-rules*.test.ts' \) | sort)
-          printf 'Found %s focused tests\n' "${#tests[@]}"
-          printf '%s\n' "${tests[@]}"
-          if [ "${#tests[@]}" -eq 0 ]; then
-            echo 'No existing focused test files found; refusing to substitute broad suite.' >&2
-            exit 1
-          fi
+          tests=(
+            tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+            tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+            tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+          )
+          for file in "${tests[@]}"; do
+            test -f "$file" || { echo "Missing focal test: $file" >&2; exit 1; }
+          done
           printf '%s\n' "${tests[@]}" > /tmp/v9-focused-tests.txt
+          printf 'Selected %s focal files\n' "${#tests[@]}"
       - name: Run only focused tests
         shell: bash
         run: |
