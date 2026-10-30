@@ -1,6 +1,6 @@
 ## Mi Vecidya / MiniWeb V2 — IMP-11, preparación sin release (2026-10-30)
 
-Se preparó en `STATUS.md` el checklist versionado de release, el registro de gates abiertos y el procedimiento de reversión candidato. El IMP-10 de la cadena está en PR #215 (`c6a1481a9abb598821a12c31641a84cfef277474`) y no integrado; por ello no existe aún SHA integrado listo para release. VIS-01 y SEC-QA requieren aceptación humana, COM-01 y las decisiones operativas aplicables siguen pendientes. Las migraciones `0034–0039` no se aplicaron remotamente; respaldo/restauración y rollback de schema no se han ensayado. No se solicitó ni concedió autorización para merge/deploy, y no hubo cambios remotos. El paquete IMP-11 queda preparado; la publicación permanece bloqueada por sus gates explícitos.
+Se preparó en `STATUS.md` el checklist versionado de release, el registro de gates abiertos y el procedimiento de reversión candidato. El IMP-10 de la cadena está en PR #215 (`fda10f35b1f177afdfe2d0c8d44605ad14936ca0`) y no integrado; por ello no existe aún SHA integrado listo para release. VIS-01 y SEC-QA requieren aceptación humana, COM-01 y las decisiones operativas aplicables siguen pendientes. Las migraciones `0034–0039` no se aplicaron remotamente; respaldo/restauración y rollback de schema no se han ensayado. No se solicitó ni concedió autorización para merge/deploy, y no hubo cambios remotos. El paquete IMP-11 queda preparado; la publicación permanece bloqueada por sus gates explícitos.
 
 ## MiniWeb V2 — IMP-10, evidencia QA local (2026-10-29)
 

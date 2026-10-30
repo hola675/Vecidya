@@ -1,6 +1,6 @@
 # Mi Vecidya / MiniWeb V2 — IMP-11 paquete de release y reversión (2026-10-30)
 
-**Preparación documental lista; release NO autorizado.** La cadena técnica IMP-01–10 sigue en PRs apiladas y no integradas; IMP-10 está en PR #215 (`c6a1481a9abb598821a12c31641a84cfef277474`), sobre IMP-09. La matriz de IMP-10 es automatizada/sintética, por lo que VIS-01 humana y revisión SEC-QA siguen pendientes. COM-01 y gates operativos/comerciales del plan tampoco se presumen resueltos. No se hicieron cambios remotos, migraciones remotas, merge ni deploy.
+**Preparación documental lista; release NO autorizado.** La cadena técnica IMP-01–10 sigue en PRs apiladas y no integradas; IMP-10 está en PR #215 (`fda10f35b1f177afdfe2d0c8d44605ad14936ca0`), sobre IMP-09. La matriz de IMP-10 es automatizada/sintética, por lo que VIS-01 humana y revisión SEC-QA siguen pendientes. COM-01 y gates operativos/comerciales del plan tampoco se presumen resueltos. No se hicieron cambios remotos, migraciones remotas, merge ni deploy.
 
 **Checklist release (estado al preparar IMP-11):**
 
