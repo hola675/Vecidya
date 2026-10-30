@@ -151,3 +151,14 @@ test("F03 graph audit: cycles, missing refs and duplicates block activation", ()
   assert.throws(() => inspectV9Graph([{ id: "a" }, { id: "a" }]), /duplicate/);
   assert.deepEqual(inspectV9Graph([{ id: "self", appliesWhen: { op: "answered", ref: { question: "self" } } }]).cycles, [["self", "self"]]);
 });
+
+test("F03 V9 graph: neutral and empty multi-answer cannot authorize a specialist", () => {
+  const multi = { op: "multiExcluding", ref: { question: "channels" }, exclude: ["blocked"] } as const;
+  assert.equal(evaluateV9Rule(multi, { answers: { channels: [] } }).status, "pending");
+  assert.equal(evaluateV9Rule(multi, { answers: { channels: ["unknown"] } }).status, "ineligible");
+  assert.equal(evaluateV9Rule(multi, { answers: { channels: ["not_applicable"] } }).status, "ineligible");
+  assert.equal(evaluateV9Rule(multi, { answers: { channels: ["website", "unknown"] } }).status, "ineligible");
+  assert.equal(evaluateV9Rule(multi, { answers: { channels: ["website"] } }).status, "eligible");
+  assert.equal(evaluateV9Rule({ op: "answered", ref: { question: "channels" } }, { answers: { channels: [] } }).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "multiIntersects", ref: { question: "channels" }, values: ["website"] }, { answers: { channels: ["website", "unknown"] } }).status, "ineligible");
+});
