@@ -1,3 +1,9 @@
+# MiniWeb V2 — IMP-04 renderer público inicial (2026-10-29)
+
+**CODE local:** `/miniweb/:siteId` solo lee mediante el puntero de publicación activa y valida el snapshot antes de renderizar. Salida React escapada, sin consultar borrador ni horario V1; equipo/testimonios requieren consentimiento. Se añadió renderizado base para S01–S12. Typecheck/build PASS. Medios aún muestran alt/caption sin resolver URLs, y falta matriz de variantes, headers/cache y runtime E2E. No certificado ni publicado.
+# MiniWeb V2 — IMP-03 editor inicial (2026-10-29)
+
+**CODE local:** ruta `/app/miniweb-v2` con guard de sesión/membership, UI inicial de portada, API tenant-scoped para crear/leer/guardar/publicar, CAS y conflictos recuperables. El estado React se remonta por organización/sitio, evitando que al cambiar tenant se guarde el borrador anterior; los documentos persistidos sin portada reciben una portada editable al cargar. Publicar requiere rol owner/admin y licencia activa; V1 y su horario no se consultan. Pruebas unitarias focales 5/5, typecheck y build PASS. Pendiente: editor de las doce secciones, renderer público, E2E Worker de guards/concurrencia integral y QA accesible. PR #207 sigue en revisión; no certificado ni desplegado.
 # MiniWeb V2 — IMP-02 persistencia inicial (2026-10-29)
 
 **CODE local:** tablas aisladas de sitio V2, borrador mutable y snapshots publicados inmutables; queries iniciales de creación, guardado con CAS y publicación con revisión esperada/organización. La inserción del snapshot ahora incluye `created_at` explícito y convierte conflictos de `(site_id, revision)` en resultado controlado, sin excepción. Migraciones `0034`–`0035` generadas; aplicadas solo a D1 local. Test de contrato de query PASS, typecheck/build PASS; la competencia en runtime Worker queda para el E2E de integración posterior. No conectado aún a UI ni publicado. IMP-01 se integró a `main@8e2438ea` por PR #204.

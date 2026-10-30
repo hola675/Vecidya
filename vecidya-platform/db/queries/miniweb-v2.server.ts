@@ -1,10 +1,17 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import type { Database } from "../client.server";
 import { miniWebV2Draft, miniWebV2Publication, miniWebV2Site } from "../schema/miniweb";
 
 export type MiniWebV2SiteInput = {
   id: string; organizationId: string; ownerUserId: string; familyKey: string; visualVariant: string;
 };
+
+export async function getMiniWebV2EditorState(database: Database, organizationId: string) {
+  const [site] = await database.select().from(miniWebV2Site).where(eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt).limit(1);
+  if (!site) return null;
+  const [draft] = await database.select().from(miniWebV2Draft).where(eq(miniWebV2Draft.siteId, site.id)).limit(1);
+  return draft ? { site, draft } : null;
+}
 
 /** Creates an empty V2 site and revision-zero draft atomically. Caller must authorize org membership. */
 export async function createMiniWebV2Site(database: Database, input: MiniWebV2SiteInput) {
@@ -58,4 +65,12 @@ export async function getPublishedMiniWebV2(database: Database, siteId: string, 
   const [publication] = await database.select().from(miniWebV2Publication)
     .where(sql`${eq(miniWebV2Publication.id, site.publicationId)} AND ${eq(miniWebV2Publication.siteId, site.id)}`).limit(1);
   return publication ?? null;
+}
+
+/** Public lookup follows only the site's active publication pointer, never its draft. */
+export async function getPublicMiniWebV2BySiteId(database: Database, siteId: string) {
+  const [row] = await database.select({ siteId: miniWebV2Site.id, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
+    .from(miniWebV2Site).innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
+    .where(and(eq(miniWebV2Site.id, siteId), eq(miniWebV2Publication.siteId, miniWebV2Site.id))).limit(1);
+  return row ?? null;
 }

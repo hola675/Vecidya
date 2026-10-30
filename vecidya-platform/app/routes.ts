@@ -57,6 +57,7 @@ export default [
   ),
   route("api/organizations/:organizationId/integrations", "routes/api-organization-integrations.ts"),
   route("api/organizations/:organizationId/miniweb-config", "routes/api-miniweb-config.ts"),
+  route("api/organizations/:organizationId/miniweb-v2", "routes/api-miniweb-v2.ts"),
   route("api/organizations/:organizationId/business-media", "routes/api-organization-business-media.ts"),
   route("api/organizations/:organizationId/business-media/:assetId", "routes/api-organization-business-media-asset.ts"),
   route("media/business/:slug/:assetId", "routes/api-public-business-media.ts"),
@@ -107,9 +108,11 @@ export default [
   route("app/owner-invitations/:invitationId", "routes/platform-owner-invitation.tsx"),
   route("app/business-profile", "routes/business-profile.tsx"),
   route("app/miniweb", "routes/miniweb-editor.tsx"),
+  route("app/miniweb-v2", "routes/miniweb-v2-editor.tsx"),
   route("app/crm", "routes/crm-app.tsx"),
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
+  route("miniweb/:siteId", "routes/public-miniweb-v2.tsx"),
   route("__health/db", "routes/health-db.ts"),
   // FUNNEL-01D.1 y herramientas QA locales: métricas agregadas, previews y fixtures; solo se registran en desarrollo.
   ...(isDevelopmentServer ? [

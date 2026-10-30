@@ -2314,3 +2314,10 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 9. `test:e2e` ya existe; queda pendiente una decisión sobre CI y sustituir `agent-browser` por Playwright.
 10. Extender `rp001a` únicamente cuando se resuelvan nombre, identidad y marca; cualquier publicación remota requiere un bloque separado y autorización explícita.
 
+
+## MiniWeb V2 IMP-03
+
+**RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-editor-state.test.ts tests/unit/miniweb-v2-sections.test.ts` — 5/5 PASS. Verifica identidad del destino por organización/sitio e inicialización de una portada editable cuando el draft persistido está vacío. Typecheck/build PASS. Falta E2E real en Worker para sesión/roles/cross-tenant, crear/guardar/CAS/publicar y acceso a licencia; no declarar certificación funcional ni accesibilidad.
+## MiniWeb V2 IMP-04
+
+Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nunca público, snapshot activo únicamente, 404 sin publicación, contenido consentido y regresión V1.
