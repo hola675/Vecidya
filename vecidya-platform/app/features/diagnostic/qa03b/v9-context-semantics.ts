@@ -35,8 +35,6 @@ export function interpretV9SelectedOption(
 ): V9AnswerState {
   const state = interpretV9AnswerState(answer, isApplicable);
   if (state !== "answered") return state;
-  // The raw answer takes precedence: a mismatched option descriptor must not invent uncertainty.
-  if (answer === "unknown") return "unknown";
   if (optionKind === "not_applicable") return "not_applicable";
   if (optionKind === "unknown") return "unknown";
   return state;
