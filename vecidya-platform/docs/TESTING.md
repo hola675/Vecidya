@@ -2308,3 +2308,6 @@ Ver la tabla «Fases: estado declarado vs reconciliado» en [STATUS.md](STATUS.m
 ## MiniWeb V2 IMP-03
 
 Typecheck y build ejecutados en el checkpoint local. Falta E2E real en Worker para sesión/roles/cross-tenant, crear/guardar/CAS/publicar y acceso a licencia; no declarar certificación funcional ni accesibilidad.
+## MiniWeb V2 IMP-04
+
+Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nunca público, snapshot activo únicamente, 404 sin publicación, contenido consentido y regresión V1.

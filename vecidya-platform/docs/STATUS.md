@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-04 renderer público inicial (2026-10-29)
+
+**CODE local:** `/miniweb/:siteId` solo lee mediante el puntero de publicación activa y valida el snapshot antes de renderizar. Salida React escapada, sin consultar borrador ni horario V1; equipo/testimonios requieren consentimiento. Se añadió renderizado base para S01–S12. Typecheck/build PASS. Medios aún muestran alt/caption sin resolver URLs, y falta matriz de variantes, headers/cache y runtime E2E. No certificado ni publicado.
 # MiniWeb V2 — IMP-03 editor inicial (2026-10-29)
 
 **CODE local:** ruta `/app/miniweb-v2` con guard de sesión/membership, UI inicial de portada, API tenant-scoped para crear/leer/guardar/publicar, CAS y conflictos recuperables. Publicar requiere rol owner/admin y licencia activa; V1 y su horario no se consultan. Typecheck/build local PASS. Pendiente: editor de las doce secciones, renderer público V2, pruebas Worker de autorización/concurrencia y QA accesible. No certificado ni desplegado.

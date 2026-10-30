@@ -238,3 +238,4 @@ FUNNEL-01B separa el flujo público `AnonymousDiagnosticFlow` de `DiagnosticFlow
 - `tsconfig.json`, `tsconfig.cloudflare.json`, `tsconfig.node.json`; `pnpm-workspace.yaml` (build de `esbuild`/`workerd`, excepciones de `minimumReleaseAge` para Better Auth).
 
 **MiniWeb V2 — IMP-03 (local):** `app/routes/miniweb-v2-editor.tsx` ofrece una edición inicial de portada y preview; `app/routes/api-miniweb-v2.ts` guarda borradores/publicaciones tras guards de organización y permisos; `db/queries/miniweb-v2.server.ts` aísla revisiones y snapshots. Ruta `/app/miniweb-v2` y API `/api/organizations/:organizationId/miniweb-v2`. El renderer público y el editor completo de secciones permanecen pendientes.
+**MiniWeb V2 IMP-04:** `app/routes/public-miniweb-v2.tsx` sirve `/miniweb/:siteId` desde snapshot activo; `app/components/miniweb-v2-renderer.tsx` renderiza contratos allowlisted S01–S12 y no consulta V1. Medios e integración visual avanzada pendientes.

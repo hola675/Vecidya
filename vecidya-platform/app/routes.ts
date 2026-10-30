@@ -112,6 +112,7 @@ export default [
   route("app/crm", "routes/crm-app.tsx"),
   route("app/services", "routes/services-app.tsx"),
   route("vecindario/:slug", "routes/public-business-profile.tsx"),
+  route("miniweb/:siteId", "routes/public-miniweb-v2.tsx"),
   route("__health/db", "routes/health-db.ts"),
   // FUNNEL-01D.1 y herramientas QA locales: métricas agregadas, previews y fixtures; solo se registran en desarrollo.
   ...(isDevelopmentServer ? [
