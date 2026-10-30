@@ -42,3 +42,16 @@ test("IMP-08 creates fresh V2 section identities without copying V1 layout ident
   assert.notEqual(first.sections.find((section) => section.type === "services")?.content.items[0]?.id, "svc-1");
   assert.notEqual(first.sections.find((section) => section.type === "faq")?.content.items[0]?.id, "faq-1");
 });
+
+test("IMP-08 adapts oversized published V1 text to V2 limits and reports truncation", () => {
+  const result = convertPublishedV1ContentToV2({
+    profile: { ...profile, description: "d".repeat(4500), serviceArea: "a".repeat(250) },
+    offerings: [], faqs: [], media: [], branding: { logoAssetId: null },
+  });
+  const about = result.document.sections.find((section) => section.type === "about");
+  const location = result.document.sections.find((section) => section.type === "location");
+  assert.equal(about?.type === "about" ? about.content.description.length : -1, 4000);
+  assert.equal(location?.type === "location" ? location.content.area?.length : -1, 200);
+  assert.equal(validateMiniWebV2Document(result.document).valid, true);
+  assert.equal(result.omitted.length, 2);
+});

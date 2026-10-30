@@ -46,7 +46,7 @@ export async function action(args: Route.ActionArgs) {
     await createMiniWebV2Site(database, { id, organizationId: organization.id, ownerUserId: owner.userId, familyKey, visualVariant });
     const saved = await saveMiniWebV2Draft(database, { siteId: id, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: 0, schemaVersion: 1, documentJson: JSON.stringify(document) });
     if (!saved.ok) return Response.json({ error: "No fue posible inicializar el borrador." }, { status: 409 });
-    return Response.json({ ok: true, siteId: id, revision: saved.revision }, { status: 201 });
+    return Response.json({ ok: true, siteId: id, revision: saved.revision, document }, { status: 201 });
   }
   if (input.operation === "create-from-published-v1") {
     await requireOrganizationPermission(env, args.request, organization.id, "business-profile:update");
@@ -65,7 +65,7 @@ export async function action(args: Route.ActionArgs) {
       media: snapshot.media.map((asset) => ({ id: asset.id, purpose: asset.purpose, altText: asset.altText, mediaType: asset.mediaType })),
       branding: snapshot.branding,
     });
-    const report = { migrationVersion: 1, sourcePublicationVersion: publishedVersion, imported: converted.imported, omitted: ["horario V1 (exclusión absoluta)", "configuración y estilos V1", "datos privados/CRM", "referencias de media no incluidas en la publicación"] };
+    const report = { migrationVersion: 1, sourcePublicationVersion: publishedVersion, imported: converted.imported, omitted: [...converted.omitted, "horario V1 (exclusión absoluta)", "configuración y estilos V1", "datos privados/CRM", "referencias de media no incluidas en la publicación"] };
     const siteId = crypto.randomUUID();
     const created = await createMiniWebV2Site(database, {
       id: siteId, organizationId: organization.id, ownerUserId: owner.userId, familyKey, visualVariant,

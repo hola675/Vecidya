@@ -12,7 +12,7 @@ const allowedUrl = (value: string | null): value is string => {
   if (!value) return false;
   try { return ["http:", "https:"].includes(new URL(value).protocol); } catch { return false; }
 };
-export function convertPublishedV1ContentToV2(source: PublishedV1ContentAllowlist): { document: MiniWebV2Document; imported: Record<string, number> } {
+export function convertPublishedV1ContentToV2(source: PublishedV1ContentAllowlist): { document: MiniWebV2Document; imported: Record<string, number>; omitted: string[] } {
   const types: MiniWebV2SectionType[] = ["hero", "about", "services", "products", "gallery", "contact", "location", "faq"];
   const document = createEmptyMiniWebV2Document(types);
   const media = new Map(source.media.filter((asset) => asset.mediaType === "image").map((asset) => [asset.id, asset]));
@@ -23,18 +23,25 @@ export function convertPublishedV1ContentToV2(source: PublishedV1ContentAllowlis
   };
   const services = source.offerings.filter((item) => item.isActive && item.kind === "service");
   const products = source.offerings.filter((item) => item.isActive && item.kind === "product");
+  const sourceDescription = source.profile.description ?? source.profile.shortDescription ?? "";
+  const description = sourceDescription.slice(0, 4000);
+  const area = source.profile.serviceArea?.slice(0, 200) ?? null;
+  const omitted = [
+    ...(sourceDescription.length > 4000 ? ["La descripción del perfil superaba 4000 caracteres; se truncó al máximo de V2."] : []),
+    ...(source.profile.serviceArea && source.profile.serviceArea.length > 200 ? ["La zona de servicio superaba 200 caracteres; se truncó al máximo de V2."] : []),
+  ];
   const images = source.media.filter((asset) => asset.mediaType === "image" && (asset.purpose === "gallery" || asset.purpose === "cover"));
   const links = [source.profile.websiteUrl, source.profile.instagramUrl, source.profile.facebookUrl, source.profile.linkedinUrl, source.profile.tiktokUrl ?? null, source.profile.youtubeUrl ?? null]
     .filter(allowedUrl).map((href) => ({ label: new URL(href).hostname, href }));
   set("hero", { title: source.profile.displayName, subtitle: source.profile.shortDescription ?? "", cta: null, image: logo ? { assetId: logo, alt: media.get(logo)?.altText ?? "" } : null });
-  set("about", { headline: source.profile.displayName, description: source.profile.description ?? source.profile.shortDescription ?? "", blocks: [] });
+  set("about", { headline: source.profile.displayName, description, blocks: [] });
   set("services", { items: services.map((item) => ({ id: crypto.randomUUID(), title: item.title, description: item.description, image: item.imageAssetId && media.has(item.imageAssetId) ? { assetId: item.imageAssetId, alt: media.get(item.imageAssetId)?.altText ?? "" } : null, cta: null })) });
   set("products", { items: products.map((item) => ({ id: crypto.randomUUID(), title: item.title, category: null, description: item.description, image: item.imageAssetId && media.has(item.imageAssetId) ? { assetId: item.imageAssetId, alt: media.get(item.imageAssetId)?.altText ?? "" } : null, cta: null })) });
   set("gallery", { images: images.map((item) => ({ assetId: item.id, alt: item.altText })) });
   set("contact", { phone: source.profile.phone, email: source.profile.publicEmail, links, cta: null });
-  set("location", { address: null, city: source.profile.city, area: source.profile.serviceArea, mapUrl: null });
+  set("location", { address: null, city: source.profile.city, area, mapUrl: null });
   set("faq", { items: source.faqs.filter((item) => item.isActive).map(({ question, answer }) => ({ id: crypto.randomUUID(), question, answer })) });
-  return { document, imported: {
+  return { document, omitted, imported: {
     profile: 1,
     about: Number(Boolean(source.profile.description || source.profile.shortDescription)),
     logo: Number(Boolean(logo)),

@@ -61,4 +61,27 @@ describe("MiniWeb V2 hours isolation", () => {
     section.exceptions.push({ ...section.exceptions[0] });
     assert.equal(validateV2HoursSection(section).valid, false);
   });
+
+  it("returns validation errors for malformed day entries without throwing", () => {
+    const section = createEmptyV2HoursSection();
+    section.timezone = "America/New_York";
+    (section.days as unknown[])[0] = null;
+    assert.equal(validateV2HoursSection(section).valid, false);
+  });
+
+  it("uses declared weekday even when day entries are reordered", () => {
+    const section = createEmptyV2HoursSection();
+    section.timezone = "America/New_York";
+    section.days[0] = { day: "monday", closed: false, ranges: [{ start: "22:00", end: "02:00" }] };
+    [section.days[1], section.days[2]] = [section.days[2], section.days[1]];
+    section.days[2] = { day: "tuesday", closed: false, ranges: [{ start: "01:00", end: "04:00" }] };
+    assert.equal(validateV2HoursSection(section).valid, false);
+  });
+
+  it("rejects overlapping ranges in a dated exception, including overnight overlap", () => {
+    const section = createEmptyV2HoursSection();
+    section.timezone = "America/New_York";
+    section.exceptions = [{ date: "2026-12-24", closed: false, ranges: [{ start: "09:00", end: "13:00" }, { start: "12:00", end: "15:00" }], note: null }];
+    assert.equal(validateV2HoursSection(section).valid, false);
+  });
 });

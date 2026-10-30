@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useFetcher, useLoaderData } from "react-router";
+import { useFetcher, useLoaderData, useRevalidator } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { getMiniWebV2EditorState, listMiniWebV2Sites } from "../../db/queries/miniweb-v2.server";
 import { requireOrganizationPermission } from "../../server/auth/authorization.server";
 import { requireOrganization } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
+import { ensureMiniWebV2Hero, miniWebV2EditorKey } from "../features/miniweb-v2/editor-state";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Button, Card } from "../components/ui";
 import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
@@ -24,10 +25,18 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   return { ...shell, organization: { id: organization.id, name: organization.name }, canEdit: membership.role === "owner" || membership.role === "admin", sites, state: state ? { site: state.site, revision: state.draft.revision, document: JSON.parse(state.draft.documentJson) as MiniWebV2Document } : null };
 }
 
+type MiniWebV2EditorData = Awaited<ReturnType<typeof loader>>;
+
 export default function MiniWebV2Editor() {
   const data = useLoaderData<typeof loader>();
+  const editorKey = miniWebV2EditorKey(data.organization.id, data.state?.site.id ?? null);
+  return <MiniWebV2EditorState key={editorKey} data={data} />;
+}
+
+function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const fetcher = useFetcher();
-  const [document, setDocument] = useState<MiniWebV2Document>(data.state?.document ?? { schemaVersion: 1, sections: [{ id: "hero-main", type: "hero", schemaVersion: 1, order: 0, visible: true, content: { title: "", subtitle: "", cta: null, image: null } }] });
+  const { revalidate } = useRevalidator();
+  const [document, setDocument] = useState<MiniWebV2Document>(() => ensureMiniWebV2Hero(data.state?.document));
   const [revision, setRevision] = useState(data.state?.revision ?? 0);
   const [notice, setNotice] = useState("");
   const [sectionInput, setSectionInput] = useState<Record<string, string>>({});
@@ -37,12 +46,12 @@ export default function MiniWebV2Editor() {
   const [variant, setVariant] = useState<MiniWebV2Variant>((data.state?.site.visualVariant as MiniWebV2Variant | undefined) ?? "base");
   useEffect(() => {
     if (fetcher.data?.siteId && fetcher.data.imported) { window.location.assign(`/app/miniweb-v2?site=${encodeURIComponent(fetcher.data.siteId)}`); }
-    else if (fetcher.data?.ok && typeof fetcher.data.revision === "number") { setRevision(fetcher.data.revision); setNotice("Borrador guardado."); }
-    else if (fetcher.data?.siteId) { window.location.assign(`/app/miniweb-v2?site=${encodeURIComponent(fetcher.data.siteId)}`); }
+    else if (fetcher.data?.ok && typeof fetcher.data.revision === "number") { setRevision(fetcher.data.revision); if (fetcher.data.document) setDocument(ensureMiniWebV2Hero(fetcher.data.document)); setNotice(fetcher.data.siteId ? "Borrador creado." : "Borrador guardado."); if (fetcher.data.siteId) revalidate(); }
+    else if (fetcher.data?.siteId) { setNotice("Espacio V2 creado."); revalidate(); }
     else if (fetcher.data?.error) setNotice(fetcher.data.error);
   }, [fetcher.data]);
   useEffect(() => {
-    if (data.state && data.state.revision !== revision) { setRevision(data.state.revision); setDocument(data.state.document); }
+    if (data.state && data.state.revision > revision) { setRevision(data.state.revision); setDocument(ensureMiniWebV2Hero(data.state.document)); }
   }, [data.state, revision]);
   const endpoint = `/api/organizations/${encodeURIComponent(data.organization.id)}/miniweb-v2`;
   function editSection(sectionId: string, raw: string) {

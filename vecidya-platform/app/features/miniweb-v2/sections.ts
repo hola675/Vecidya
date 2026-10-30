@@ -68,7 +68,7 @@ export function createEmptyMiniWebV2Document(types: readonly MiniWebV2SectionTyp
   const unique = [...new Set(types)];
   if (unique.length !== types.length || unique.some((type) => !MINIWEB_V2_SECTION_TYPES.includes(type))) throw new TypeError("Invalid initial section list");
   const ordered: MiniWebV2SectionType[] = unique.includes("hero") ? ["hero", ...unique.filter((type) => type !== "hero")] : unique;
-  return { schemaVersion: MINIWEB_V2_SCHEMA_VERSION, sections: ordered.map((type, order) => ({ id: crypto.randomUUID(), type, schemaVersion: 1, order, visible: true, content: factories[type]() })) as MiniWebV2Section[] };
+  return { schemaVersion: MINIWEB_V2_SCHEMA_VERSION, sections: ordered.map((type, order) => ({ id: crypto.randomUUID(), type, schemaVersion: 1, order, visible: type !== "hours", content: factories[type]() })) as MiniWebV2Section[] };
 }
 
 export function validateMiniWebV2Section(value: unknown): SectionValidation {
