@@ -47,6 +47,18 @@ jobs:
           done
           printf '%s\n' "${tests[@]}" > /tmp/v9-focused-tests.txt
           printf 'Selected %s focal files\n' "${#tests[@]}"
+      - name: Publish summary on failure
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "## Diagnostic V9 — focal verification failed"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Event: \`${GITHUB_EVENT_NAME}\`"
+            echo "- Scope: C03 / C05 / C07 / C08"
+            echo "- Review the failed step logs; this commit is not certified."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Run only focused tests
         shell: bash
         run: |
