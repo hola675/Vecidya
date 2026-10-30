@@ -1,13 +1,13 @@
 # Mi Vecidya / MiniWeb V2 — IMP-11 paquete de release y reversión (2026-10-30)
 
-**Preparación documental lista; release NO autorizado.** La cadena técnica IMP-01–10 sigue en PRs apiladas y no integradas; IMP-10 está en PR #215 (`fda10f35b1f177afdfe2d0c8d44605ad14936ca0`), sobre IMP-09. La matriz de IMP-10 es automatizada/sintética, por lo que VIS-01 humana y revisión SEC-QA siguen pendientes. COM-01 y gates operativos/comerciales del plan tampoco se presumen resueltos. No se hicieron cambios remotos, migraciones remotas, merge ni deploy.
+**Preparación documental lista; release NO autorizado.** IMP-10 se integró en la rama de checkpoint `feat/app-mini-imp-09` mediante PR #215 (merge `e1ef6ea0597ca4a0f6f9e39d1d0d5650ffdfe075`); IMP-11 se integró en `feat/app-mini-imp-10` mediante PR #216 (merge `cfbfaf951584b31ddf626d839a7d676bf4760d4d`). La secuencia sigue apilada fuera de `main`. La matriz de IMP-10 es automatizada/sintética, por lo que VIS-01 humana y revisión SEC-QA siguen pendientes. COM-01 y gates operativos/comerciales del plan tampoco se presumen resueltos. No hubo cambios a D1 remoto, migraciones remotas ni deploy.
 
 **Checklist release (estado al preparar IMP-11):**
 
 | Gate | Estado | Evidencia / acción pendiente |
 |---|---|---|
 | Decisiones de producto/comercio aplicables | BLOCKED | COM-01 y decisión de comportamiento público ante suspensión siguen pendientes; no activar cobros ni inventar políticas. |
-| Diff/SHA de release integrado | BLOCKED | Revisión final y SHA de release aún no existen; IMP-10 está en PR #215, no integrada. Revalidar cualquier SHA tras cambios. |
+| Diff/SHA de release integrado | BLOCKED | No existe SHA integrado a `main`; PR #215/#216 se integraron solo en ramas de checkpoint. Revalidar el diff completo tras integrar la cadena. |
 | VIS-01 | PENDING | 45 capturas automatizadas locales en fixtures sintéticos; falta revisión visual humana con decisión por alcance/SHA. |
 | SEC-QA | PENDING | Falta informe/revisión técnica humana independiente y severidad residual por SHA; pruebas focales locales no equivalen a aprobación. |
 | Migraciones y respaldo/restauración | NOT RUN | `0034–0039` solo forman parte de la cadena local apilada. No se ha aplicado en remoto ni se probó backup/restore o rollback de schema. |
@@ -21,7 +21,7 @@
 
 # MiniWeb V2 — IMP-10 QA focal local (2026-10-29)
 
-El checkpoint endurece la publicación con comprobación atómica de licencia/cupo dentro del batch, añade IDs de sección y fragmentos locales seguros para CTA, y extiende el harness Worker+Playwright. **RAN local:** typecheck/build PASS; 13 pruebas unitarias MiniWeb V2 PASS; `pnpm run test:e2e:miniweb-v2-conversion` PASS con D1/Worker local, publicación sin licencia rechazada, carrera de cuatro publicaciones con tres aceptadas, extensión Cuadra habilitando la cuarta, contenido escapado y 45 capturas (5 familias × 3 variantes × 3 viewports), además de teclado, contraste, reduced-motion y contacto visible cuando una sección de contacto anterior está oculta. La revisión detectó y se corrigieron dos hallazgos: selección de ancla que incluía secciones ocultas y aserción de XSS dependiente del ganador de la carrera. Evidencia visual local: `.playwright-mcp/miniweb-v2-vis01-5993d17e-cf4d-46bc-8911-d510cf47099c/manifest.json`. Las capturas son sintéticas y automatizadas; no constituyen aprobación humana VIS-01 ni auditoría SEC-QA/WCAG. Sin D1 remoto, merge ni deploy.
+El checkpoint endurece la publicación con comprobación atómica de licencia/cupo dentro del batch, añade IDs de sección y fragmentos locales seguros para CTA, y extiende el harness Worker+Playwright. **RAN local:** typecheck/build PASS; 13 pruebas unitarias MiniWeb V2 PASS; `pnpm run test:e2e:miniweb-v2-conversion` PASS con D1/Worker local, publicación sin licencia rechazada, carrera de cuatro publicaciones con tres aceptadas, extensión Cuadra habilitando la cuarta, contenido escapado y 45 capturas (5 familias × 3 variantes × 3 viewports), además de teclado, contraste, reduced-motion y contacto visible cuando una sección de contacto anterior está oculta. La revisión detectó y se corrigieron dos hallazgos: selección de ancla que incluía secciones ocultas y aserción de XSS dependiente del ganador de la carrera. Evidencia visual local: `.playwright-mcp/miniweb-v2-vis01-5993d17e-cf4d-46bc-8911-d510cf47099c/manifest.json`. Las capturas son sintéticas y automatizadas; no constituyen aprobación humana VIS-01 ni auditoría SEC-QA/WCAG. PR #215 integró el checkpoint en `feat/app-mini-imp-09`; sigue sin integrar en `main` ni desplegar.
 
 # MiniWeb V2 — IMP-09 P6A, capacidad Cuadra ampliable (2026-10-29)
 
