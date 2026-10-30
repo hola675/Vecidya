@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { selectV9Questions } from "../../../app/features/diagnostic/v9/question-selection.ts";
-import { evaluateV9Rule, evaluateV9Question, planV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation.ts";
+import { evaluateV9Rule, evaluateV9Question, planV9GraphQuestions, inspectV9Graph, orderV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation.ts";
 import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption, classifyV9EvidenceContribution } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
 
 test("V9: pausa con clientes históricos no acredita operación actual", () => {
@@ -117,4 +117,37 @@ test("F03 V9 graph: material-only eligibility is opt-in and pending does not con
   assert.equal(graph.selection.remainingBeforeSelection, 24);
   assert.equal(selectV9Questions([{ id: "unknown", eligible: false, pending: true }], []).skipped[0]?.reason, "pending_dependencies");
   assert.throws(() => selectV9Questions([{ id: "invalid", eligible: true, pending: true }], []), /eligible and pending/);
+});
+
+test("F03 graph audit: prerequisites precede dependants without rearranging unrelated questions", () => {
+  const questions = [
+    { id: "assessment", appliesWhen: { op: "and", rules: [
+      { op: "eq", ref: { question: "sector" }, value: "food_hospitality" },
+      { op: "eq", ref: { question: "niche" }, value: "restaurant" },
+    ] } },
+    { id: "niche", appliesWhen: { op: "eq", ref: { question: "sector" }, value: "food_hospitality" } },
+    { id: "sector" },
+    { id: "unrelated" },
+  ] as const;
+  const audit = inspectV9Graph(questions);
+  assert.deepEqual(audit.missingDependencies, []);
+  assert.deepEqual(audit.cycles, []);
+  assert.deepEqual(audit.orderedIds, ["sector", "niche", "assessment", "unrelated"]);
+  assert.deepEqual(orderV9GraphQuestions(questions).map((item) => item.id), audit.orderedIds);
+});
+
+test("F03 graph audit: cycles, missing refs and duplicates block activation", () => {
+  const cycle = [
+    { id: "a", appliesWhen: { op: "eq", ref: { question: "b" }, value: "yes" } },
+    { id: "b", appliesWhen: { op: "eq", ref: { question: "a" }, value: "yes" } },
+  ] as const;
+  assert.deepEqual(inspectV9Graph(cycle).cycles, [["a", "b", "a"]]);
+  assert.throws(() => orderV9GraphQuestions(cycle), /cycles/);
+  const missing = [{ id: "a", materialAppliesWhen: { op: "eq", ref: { question: "known_external" }, value: "yes" } }] as const;
+  assert.deepEqual(inspectV9Graph(missing).missingDependencies, [{ questionId: "a", dependencyId: "known_external" }]);
+  assert.throws(() => orderV9GraphQuestions(missing), /missing/);
+  assert.deepEqual(inspectV9Graph(missing, ["known_external"]).missingDependencies, []);
+  assert.deepEqual(orderV9GraphQuestions(missing, ["known_external"]).map((item) => item.id), ["a"]);
+  assert.throws(() => inspectV9Graph([{ id: "a" }, { id: "a" }]), /duplicate/);
+  assert.deepEqual(inspectV9Graph([{ id: "self", appliesWhen: { op: "answered", ref: { question: "self" } } }]).cycles, [["self", "self"]]);
 });
