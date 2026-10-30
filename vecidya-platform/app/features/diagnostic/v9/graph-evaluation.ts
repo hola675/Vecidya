@@ -5,9 +5,15 @@ import { selectV9Questions, type V9SelectionResult } from "./question-selection"
  * domain code. Legacy candidate rules can be read at the migration boundary
  * because their JSON operators are structurally compatible.
  */
+export type V9AnswerRef = { readonly question: string };
 export type V9Rule =
-  | { readonly op: "answered" | "eq" | "notEq" | "in" | "multiExcluding" | "multiIntersects"; readonly ref: { readonly question: string }; readonly value?: string; readonly values?: readonly string[]; readonly exclude?: readonly string[] }
-  | { readonly op: "contextResolvedEquals" | "contextResolvedIn" | "contextUnresolved"; readonly field: string; readonly value?: string; readonly values?: readonly string[] }
+  | { readonly op: "answered"; readonly ref: V9AnswerRef }
+  | { readonly op: "eq" | "notEq"; readonly ref: V9AnswerRef; readonly value: string }
+  | { readonly op: "in" | "multiIntersects"; readonly ref: V9AnswerRef; readonly values: readonly string[] }
+  | { readonly op: "multiExcluding"; readonly ref: V9AnswerRef; readonly exclude: readonly string[] }
+  | { readonly op: "contextResolvedEquals"; readonly field: string; readonly value: string }
+  | { readonly op: "contextResolvedIn"; readonly field: string; readonly values: readonly string[] }
+  | { readonly op: "contextUnresolved"; readonly field: string }
   | { readonly op: "archetypeIncludes"; readonly value: string }
   | { readonly op: "and" | "or"; readonly rules: readonly V9Rule[] }
   | { readonly op: "not"; readonly rule: V9Rule };
@@ -53,14 +59,14 @@ function evaluate(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
     const components = facts.context?.archetypeComponents;
     return { op: rule.op, status: components ? (components.includes(rule.value) ? "eligible" : "ineligible") : "pending", dependency: "context:archetype" };
   }
-  if (rule.op.startsWith("context")) {
+  if (rule.op === "contextResolvedEquals" || rule.op === "contextResolvedIn" || rule.op === "contextUnresolved") {
     const field = facts.context?.fields[rule.field];
     if (!field) return { op: rule.op, status: "pending", dependency: `context:${rule.field}` };
     if (rule.op === "contextUnresolved") {
       return { op: rule.op, status: field.status === "unresolved" ? "eligible" : "ineligible" };
     }
     if (field.status === "unresolved") return { op: rule.op, status: "ineligible" };
-    const pass = rule.op === "contextResolvedEquals" ? field.value === rule.value : (rule.values ?? []).includes(field.value);
+    const pass = rule.op === "contextResolvedEquals" ? field.value === rule.value : rule.values.includes(field.value);
     return { op: rule.op, status: pass ? "eligible" : "ineligible" };
   }
   const answer = facts.answers[rule.ref.question];
@@ -78,9 +84,9 @@ function evaluate(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
   switch (rule.op) {
     case "eq": pass = typeof answer === "string" && answer === rule.value; break;
     case "notEq": pass = typeof answer === "string" && answer !== rule.value; break;
-    case "in": pass = typeof answer === "string" && (rule.values ?? []).includes(answer); break;
-    case "multiExcluding": pass = values.length > 0 && !(rule.exclude ?? []).some((item) => values.includes(item)); break;
-    case "multiIntersects": pass = (rule.values ?? []).some((item) => values.includes(item)); break;
+    case "in": pass = typeof answer === "string" && rule.values.includes(answer); break;
+    case "multiExcluding": pass = values.length > 0 && !rule.exclude.some((item) => values.includes(item)); break;
+    case "multiIntersects": pass = rule.values.some((item) => values.includes(item)); break;
   }
   return { op: rule.op, status: pass ? "eligible" : "ineligible" };
 }
@@ -113,15 +119,14 @@ export function evaluateV9Question(
   if (!question.appliesWhen && !materialEvidenceRequested) {
     return { id: question.id, status: "ineligible", source: "material_not_requested" };
   }
-  const base = question.appliesWhen && evaluate(ruleOrFail(question.appliesWhen), facts);
+  const base = question.appliesWhen && evaluate(question.appliesWhen, facts);
   const material = materialEvidenceRequested && question.materialAppliesWhen
-    ? evaluate(ruleOrFail(question.materialAppliesWhen), facts)
+    ? evaluate(question.materialAppliesWhen, facts)
     : undefined;
   const status = base && material ? orStatus([base.status, material.status]) : (base ?? material)!.status;
   return { id: question.id, status, source: base && base.status === "eligible" ? "base" : material ? "material" : "base", trace: base && material ? { op: "or", status, children: [base, material] } : (base ?? material)! };
 }
 
-function ruleOrFail(rule: V9Rule): V9Rule { return rule; }
 
 export type V9GraphPlan = {
   readonly evaluations: readonly V9GraphQuestionResult[];
