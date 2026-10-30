@@ -46,6 +46,8 @@ La certificación pública integrada verifica rutas, navegación por teclado y v
 
 **Checkpoints:** UX-PREMIUM-01A cubrió el hero y CTA principal de Inicio. Cada grupo de rutas de las fases 2–6 se trabaja en checkpoints propios desde `origin/main`, incluyendo revisión de las páginas índice, sus rutas hijas, enlaces internos, responsive y estilo visual. No se altera scoring, contratos, esquema, autorización, licencias, precios, GHL, datos de negocio, rutas de publicación ni configuración remota. El gate de publicación R2 documentado arriba continúa independiente de este plan.
 
+**UX-PREMIUM-02C — Servicios (2026-10-30, checkpoint local):** `/servicios` cambia la composición de tarjetas a filas editoriales, con recorrido tipográfico y accesos rápidos conservados. Contenido, destinos comerciales y funciones no cambian. Dos pruebas E2E focales, typecheck, build, revisión visual a cinco anchos, teclado y movimiento reducido PASS. Zoom real al 200 %, lector de pantalla y axe siguen pendientes; no publicado. Los siguientes bloques de fase 2 continúan separados por ruta.
+
 **Estado (UX-PREMIUM-01A, 2026-10-24):** integrado en `origin/main@530235d`: el CTA principal del hero de Inicio lleva al Diagnóstico, Vecindario queda como acción secundaria y el adorno se oculta a tecnologías asistivas. Typecheck, build y diff-check PASS; Worker local y revisión visual de escritorio PASS. No se declara accesibilidad integral.
 
 **Checkpoint UX-PREMIUM-02A — catálogo de Servicios:** PR #65 abierto, sin integrar. Añade un recorrido de tres pasos y retícula bento al índice `/servicios`; evidencia y deuda registradas en esa rama, no incluidas en el `origin/main` usado para los checkpoints siguientes.

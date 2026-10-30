@@ -23,6 +23,11 @@
 
 # Changelog
 
+## 2026-10-30 — UX-PREMIUM-02C — Servicios
+
+- `/servicios` adopta una portada tipográfica, recorrido escalonado, accesos rápidos en filas y siete ofertas editoriales con alcance y CTA visibles. Se conservan contenido, destinos y contratos; no se añaden datos ni funciones.
+- Dos E2E focales, typecheck, build y diff-check PASS; QA visual en cinco anchos, teclado y movimiento reducido. PR local pendiente; sin publicación ni despliegue.
+
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 
 - La conversión voluntaria trunca descripción y zona de servicio al máximo del contrato V2 y deja constancia explícita en el reporte; se valida el documento antes de persistirlo.

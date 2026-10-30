@@ -156,6 +156,10 @@ Los registros por checkpoint anteriores describían ramas y estados candidatos. 
 
 La revisión manual comprobó navegación por teclado en el menú desktop y móvil, foco visible, desplazamiento horizontal del comparador con flecha derecha y alternativa compacta sin overflow a 320 px. Typecheck, build y diff-check PASS. **Límite:** muestra de rutas, no auditoría WCAG completa ni conformidad; lector de pantalla, zoom real al 200 % y el resto de rutas siguen pendientes. Sin cambios de datos/permisos y sin HTTP público fechado.
 
+## UX-PREMIUM-02C — refinamiento público de Servicios (2026-10-30)
+
+Checkpoint local en `feat/app-mini-ux-premium-services-02`, basado en `origin/main@f6cad631`. `/servicios` usa una portada tipográfica, un recorrido escalonado, accesos rápidos en filas y siete áreas editoriales con alcance visible. Se preservan catálogo, contenido, detalles y CTA por servicio; no se añaden funciones, rutas ni datos. La navegación global mantiene `Acceder` (`/login`) y `Únete a Vecidya` (`/unete`), por lo que no se duplica un acceso de cuenta ni se modifica su contrato. Dos E2E focales, typecheck, build y diff-check PASS; revisión visual a cinco anchos, teclado y movimiento reducido. No se probó zoom real al 200 %, lector de pantalla ni axe; no es certificación WCAG. Sin D1 remota, deploy ni HTTP pública fechada.
+
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
 **Implementada en local en `feat/app-mini-ux-03-services`, iniciada en `origin/main@ac2c8e8` y reconciliada con `origin/main@c70057f`.** `/servicios` combina el recorrido de tres pasos y la retícula bento integrados en PR #65 con accesos directos a cada familia; reorganiza las tarjetas para separar promesa, audiencia y alcance, y elimina el beneficio redundante y el CTA final duplicado. Contenido, precios, catálogo y rutas permanecen iguales. Typecheck/build/diff-check PASS; inspección visual manual en escritorio y 390 px. Sin suites E2E en este checkpoint, D1 remota, publicación ni deploy.

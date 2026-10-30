@@ -224,23 +224,12 @@
     transition: transform 550ms var(--vx-ease);
   }
 }
-:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid,.services-core-grid) > * {
+:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid) > * {
   min-width: 0;
 }
-:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid,.services-core-grid) :is(a,button):focus-visible {
+:is(.home-business-grid,.home-diagnostic-grid,.home-services-grid) :is(a,button):focus-visible {
   outline: 3px solid var(--orange);
   outline-offset: 3px;
-}
-.services-core-card {
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow var(--vx-duration) var(--vx-ease), border-color var(--vx-duration) ease, transform var(--vx-duration) var(--vx-ease);
-}
-@media (hover:hover) and (prefers-reduced-motion:no-preference) {
-  .services-core-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--vx-shadow-hover);
-  }
 }
 .home-section-heading, .services-section-heading {
   max-width: 75ch;
@@ -724,8 +713,7 @@
 
 
 /* COM-CATALOG-BENEFITS-02 — concise proof of value in product grids. */
-.addon-card__benefit,
-.services-core-card__benefit {
+.addon-card__benefit {
   min-width: 0;
   margin: .5rem 0;
   border-left: 3px solid #5988b7;
@@ -736,7 +724,6 @@
   line-height: 1.55;
   overflow-wrap: anywhere;
 }
-.addon-card__benefit strong,
-.services-core-card__benefit strong {
+.addon-card__benefit strong {
   color: #163957;
 }
