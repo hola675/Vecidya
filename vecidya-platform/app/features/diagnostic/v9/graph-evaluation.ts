@@ -73,13 +73,16 @@ function evaluate(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
   if (answer === undefined) {
     return { op: rule.op, status: "pending", dependency: `answer:${rule.ref.question}` };
   }
+  const values = typeof answer === "string" ? [answer] : answer;
+  // An empty multi-choice response is not an answer; it is still pending.
+  if (values.length === 0) return { op: rule.op, status: "pending", dependency: `answer:${rule.ref.question}` };
   if (rule.op === "answered") return { op: rule.op, status: "eligible" };
-  // A selected neutral option cannot turn a negative comparison into proof.
-  if (answer === "unknown" || answer === "not_applicable") {
+  // Neutral selections, including in multi-choice arrays, must not assert a
+  // negative comparison or establish specialist eligibility.
+  if (values.some((value) => value === "unknown" || value === "not_applicable")) {
     return { op: rule.op, status: "ineligible" };
   }
 
-  const values = typeof answer === "string" ? [answer] : answer;
   let pass: boolean;
   switch (rule.op) {
     case "eq": pass = typeof answer === "string" && answer === rule.value; break;
