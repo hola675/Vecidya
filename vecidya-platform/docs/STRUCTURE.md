@@ -1,5 +1,7 @@
 # Estructura del código
 
+**MiniWeb V2 — IMP-10:** publicación usa en `db/queries/miniweb-v2.server.ts` un chequeo atómico de licencia y cupo junto con la reserva y snapshot; `miniweb-v2-renderer.tsx` emite IDs de sección y `sections.ts` admite fragmentos locales validados. `tests/e2e/miniweb-v2-conversion-check.mjs` ejercita seguridad de publicación, concurrencia, contenido y la matriz local VIS-01 de 45 capturas con controles automatizados. La ejecución local no implica aprobación humana ni publicación.
+
 **FIX-BUSINESS-PROFILE-SECTION-SCROLL (checkpoint local):** `app/routes/business-profile.tsx` organiza identidad, presentación, contacto, redes, atención y horarios en pasos; `app/app.css` reutiliza el workspace MiniWeb con navegación sticky en escritorio y barra horizontal en móvil. Se conserva el guardado conjunto del perfil y el guardado independiente de horarios. `app/routes/miniweb-editor.tsx` continúa administrando logo y portada. Sin rutas nuevas ni cambios a guardas; validación pendiente.
 
 **APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.
