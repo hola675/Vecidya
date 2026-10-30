@@ -18,7 +18,8 @@ export type V2HoursSection = {
 };
 export type V2HoursValidation = { valid: true; value: V2HoursSection } | { valid: false; errors: string[] };
 
-const clock = /^([01]\d|2[0-3]):[0-5]\d$/;
+const clockStart = /^([01]\d|2[0-3]):[0-5]\d$/;
+const clockEnd = /^([01]\d|2[0-3]):[0-5]\d$|^24:00$/;
 function minutes(value: string): number {
   const [hours, mins] = value.split(":").map(Number);
   return hours * 60 + mins;
@@ -34,6 +35,12 @@ export function createEmptyV2HoursSection(): V2HoursSection {
     note: null,
     exceptions: [],
   };
+}
+
+/** Split a local overnight shift across two local dates. 24:00 is an exclusive end only. */
+export function splitV2OvernightRange(start: string, end: string) {
+  if (!clockStart.test(start) || !clockStart.test(end) || minutes(end) >= minutes(start)) throw new TypeError("Expected a valid overnight local time range");
+  return [{ start, end: "24:00" }, { start: "00:00", end }] as const;
 }
 
 export function validateV2HoursSection(value: V2HoursSection, options: { requireTimezone?: boolean } = { requireTimezone: true }): V2HoursValidation {
@@ -53,25 +60,24 @@ export function validateV2HoursSection(value: V2HoursSection, options: { require
     if (day.ranges.length > 4) errors.push(day.day + ": too many ranges");
     const ranges: { start: number; end: number }[] = [];
     for (const range of day.ranges) {
-      if (!range || typeof range !== "object" || typeof range.start !== "string" || typeof range.end !== "string" || !clock.test(range.start) || !clock.test(range.end)) {
+      if (!range || typeof range !== "object" || typeof range.start !== "string" || typeof range.end !== "string" || !clockStart.test(range.start) || !clockEnd.test(range.end)) {
         errors.push(day.day + ": invalid time");
         continue;
       }
       const start = minutes(range.start);
       const end = minutes(range.end);
-      if (start === end) errors.push(day.day + ": start and end cannot be equal");
-      ranges.push({ start, end: end > start ? end : end + 1440 });
+      if (start >= end) errors.push(day.day + ": range must end after start on the same local date");
+      ranges.push({ start, end });
     }
     ranges.sort((a, b) => a.start - b.start);
     for (let i = 1; i < ranges.length; i++) {
       if (ranges[i].start < ranges[i - 1].end) errors.push(day.day + ": overlapping ranges");
     }
   }
-  // Check weekly intervals on a circular timeline so an overnight shift cannot overlap
-  // the following day's first shift, including the Sunday-to-Monday boundary.
-  const weekly = days.flatMap((day, index) => day.ranges.filter((r) => r && typeof r.start === "string" && typeof r.end === "string" && clock.test(r.start) && clock.test(r.end) && r.start !== r.end).map((r) => {
+  // Check weekly intervals on a circular timeline, including the Sunday-to-Monday boundary.
+  const weekly = days.flatMap((day, index) => day.ranges.filter((r) => r && typeof r.start === "string" && typeof r.end === "string" && clockStart.test(r.start) && clockEnd.test(r.end) && minutes(r.start) < minutes(r.end)).map((r) => {
     const start = index * 1440 + minutes(r.start);
-    const end = index * 1440 + minutes(r.end) + (minutes(r.end) < minutes(r.start) ? 1440 : 0);
+    const end = index * 1440 + minutes(r.end);
     return { start, end };
   }));
   const circular = [...weekly, ...weekly.map((r) => ({ start: r.start + 10080, end: r.end + 10080 }))].sort((a, b) => a.start - b.start);
@@ -86,7 +92,7 @@ export function validateV2HoursSection(value: V2HoursSection, options: { require
       if (typeof entry.date === "string" && dates.has(entry.date)) errors.push("Duplicate exception date");
       if (typeof entry.date === "string") dates.add(entry.date);
       if (typeof entry.closed !== "boolean" || !Array.isArray(entry.ranges) || entry.ranges.length > 4 || (entry.closed && entry.ranges.length > 0)) errors.push("Invalid exception schedule");
-      if (Array.isArray(entry.ranges)) for (const range of entry.ranges) if (!range || typeof range.start !== "string" || typeof range.end !== "string" || !clock.test(range.start) || !clock.test(range.end) || range.start === range.end) errors.push("Invalid exception time range");
+      if (Array.isArray(entry.ranges)) for (const range of entry.ranges) if (!range || typeof range.start !== "string" || typeof range.end !== "string" || !clockStart.test(range.start) || !clockEnd.test(range.end) || minutes(range.start) >= minutes(range.end)) errors.push("Invalid exception time range");
       if (entry.note !== null && (typeof entry.note !== "string" || entry.note.length > 500)) errors.push("Exception note too long");
     }
   }

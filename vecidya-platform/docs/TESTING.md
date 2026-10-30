@@ -2313,7 +2313,7 @@ Typecheck y build ejecutados en el checkpoint local. Falta E2E real en Worker pa
 Typecheck, build y diff-check PASS local. Falta Worker E2E que confirme draft nunca público, snapshot activo únicamente, 404 sin publicación, contenido consentido y regresión V1.
 ## MiniWeb V2 IMP-06
 
-`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 9/9 PASS (2026-10-29): horario vacío, rangos, cruces de medianoche/solapamiento semanal, zona IANA, excepciones y fecha local DST. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb/v2-hours.test.ts tests/unit/miniweb-v2-sections.test.ts` — 9/9 PASS (2026-10-29): horario vacío, rangos, partición nocturna a 24:00 y solapamiento semanal, zona IANA, excepciones y fecha local DST. Typecheck PASS. Falta Worker E2E y casos de fixture DST exhaustivos.
 ## MiniWeb V2 IMP-05
 
 `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-families.test.ts tests/unit/miniweb/v2-hours.test.ts` — 8/8 PASS. Verifica cinco composiciones, tres tiers, documentos draft incompletos válidos, publicación incompleta rechazada y regresiones del horario. Capturas y revisión VIS-01 siguen pendientes.
