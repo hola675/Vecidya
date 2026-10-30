@@ -2,7 +2,7 @@ import { createDatabase } from "../../db/client.server";
 import { getBusinessPublicationSnapshotForOrganization } from "../../db/queries/business-publication.server";
 import { member } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
-import { createMiniWebV2Site, getMiniWebV2EditorState, getMiniWebV2PublicationCapacity, publishMiniWebV2Draft, saveMiniWebV2Draft } from "../../db/queries/miniweb-v2.server";
+import { createMiniWebV2Site, getMiniWebV2EditorState, publishMiniWebV2Draft, saveMiniWebV2Draft } from "../../db/queries/miniweb-v2.server";
 import { createEmptyMiniWebV2Document, validateMiniWebV2Document } from "../features/miniweb-v2/sections";
 import { convertPublishedV1ContentToV2 } from "../features/miniweb-v2/conversion";
 import { isMiniWebV2Family, isMiniWebV2Variant, MINIWEB_V2_FAMILY_CATALOG } from "../features/miniweb-v2/visual-families";
@@ -89,8 +89,7 @@ export async function action(args: Route.ActionArgs) {
     if (!current || current.site.id !== input.siteId || current.draft.revision !== input.expectedRevision) return Response.json({ error: "La revisión cambió.", code: "REVISION_CONFLICT" }, { status: 409 });
     const validation = validateMiniWebV2Document(JSON.parse(current.draft.documentJson), { publishable: true });
     if (!validation.valid) return Response.json({ error: "El borrador no se puede publicar.", details: validation.errors }, { status: 400 });
-    const capacity = await getMiniWebV2PublicationCapacity(database, current.site.ownerUserId);
-    const published = await publishMiniWebV2Draft(database, { siteId: input.siteId, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: input.expectedRevision as number, publicationId: crypto.randomUUID(), capacity: capacity.capacity });
+    const published = await publishMiniWebV2Draft(database, { siteId: input.siteId, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: input.expectedRevision as number, publicationId: crypto.randomUUID() });
     if (published.ok) return Response.json(published);
     return published.reason === "capacity" ? Response.json({ error: "No hay cupos de publicación disponibles para el titular.", code: "PUBLICATION_CAPACITY" }, { status: 409 }) : Response.json({ error: "La revisión ya cambió; vuelve a cargar el borrador.", code: "REVISION_CONFLICT" }, { status: 409 });
   }

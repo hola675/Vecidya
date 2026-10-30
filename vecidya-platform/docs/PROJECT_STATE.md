@@ -1,3 +1,7 @@
+## MiniWeb V2 — IMP-10, evidencia QA local (2026-10-29)
+
+El checkpoint refuerza la publicación con entitlement/cupo comprobado dentro de la misma operación batch que reserva y publica, permite CTAs hacia IDs locales seguros y asigna identidad DOM estable a las secciones. La validación Worker+Playwright local cubrió negativa sin licencia, concurrencia 4→3 por cupo, extensión Cuadra, escape de contenido, y una matriz automatizada de 45 capturas; el manifiesto local contiene resultados de teclado, contraste y movimiento reducido. 13 unitarias, typecheck y build PASS. Esto es evidencia del harness sobre fixtures sintéticos, no aceptación VIS-01, revisión humana SEC-QA ni certificación WCAG. Sigue sin merge/deploy; gates de COM-01/OPS-01 y autorización de release continúan aplicando.
+
 ## MiniWeb V2 — IMP-09 P6A, cupos ampliables (2026-10-29)
 
 El control plane de licencias permite registrar manualmente una ampliación explícita Cuadra de +3 sitios para el titular de una organización objetivo con licencia activa. Cada concesión conserva razón, actor, vigencia y deduplicación idempotente; suspender o cancelar requiere motivo y queda auditado; el ledger no crea cargo, factura, pago ni licencia CRM. La reserva V2 usa el cupo base 3 del titular con licencia activa más tres por ampliación activa y vigente. Migraciones `0038–0039`, prueba unitaria focal, Worker local de regresión MiniWeb V2, typecheck y build PASS en D1 local. P6A no está autorizado para producción mientras sigan pendientes COM-01/OPS-01 y otros gates de §75/§77; sin despliegue.
