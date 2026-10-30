@@ -13,8 +13,8 @@ test("C03: paused activity with historical customers is not current operation", 
   const state = classifyV9Activity("paused", "yes");
   assert.equal(state.canAssertCurrentOperation, false);
   assert.equal(state.canAssertHistoricalDemand, true);
-  const measurement = get("q2_measurement_practice");
-  assert.ok(measurement.appliesWhen || measurement.materialAppliesWhen, "measurement must have an eligibility guard");
+  const donation = get("q2_nonprofit_donation_clarity");
+  assert.match(JSON.stringify(donation.appliesWhen), /"question":"q2_operational_status","value":"operating"/);
 });
 
 test("C05: nonprofit without donations or dues has distinct gated questions", () => {
