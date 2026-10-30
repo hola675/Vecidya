@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
 import { collectContextDependencies, evaluateRuleV2Trace } from "../../../app/features/diagnostic/qbv2-rules";
-import { classifyV9Activity } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
+import { classifyV9Activity, interpretV9AnswerState } from "../../../app/features/diagnostic/qa03b/v9-context-semantics";
 
 const get = (id: string) => {
   const q = bank.find((item) => item.id === id);
@@ -50,6 +50,7 @@ test("C07: unauthorized ecommerce follow-up remains not applicable", () => {
   const q = get("q2_ecommerce_cart_followup");
   assert.equal(q.options.find((option) => option.value === "no_authorized_contact")?.kind, "not_applicable");
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "relationship_recurrence")?.answers.no_authorized_contact, "not_applicable");
+  assert.equal(interpretV9AnswerState("no_authorized_contact", false), "not_applicable");
 });
 
 test("C08: restaurant menu question is guarded; no presence cannot be assumed clear", () => {
@@ -61,6 +62,9 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.equal(q.evidenceV3?.dimensions.find((d) => d.dimension === "clarity_positioning")?.answers.unknown, "uncertainty");
   assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "no_presence" }), false);
   assert.equal(eligible("q2_food_menu_visibility", { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" }), true);
+  assert.equal(interpretV9AnswerState(undefined, true), "unanswered");
+  assert.equal(interpretV9AnswerState("unknown", true), "unknown");
+  assert.equal(interpretV9AnswerState(undefined, false), "not_applicable");
   const generic = get("q2_presence_offer_clarity");
   assert.ok(generic.appliesWhen || generic.materialAppliesWhen);
 });
