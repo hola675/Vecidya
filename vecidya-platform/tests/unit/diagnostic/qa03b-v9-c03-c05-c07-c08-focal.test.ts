@@ -69,4 +69,10 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
   assert.equal(interpretV9AnswerState(undefined, false), "not_applicable");
   const generic = get("q2_presence_offer_clarity");
   assert.ok(generic.appliesWhen || generic.materialAppliesWhen);
+  // This generic is a material-eligibility question; do not mistake appliesWhen for the full gate.
+  const materialGate = generic.materialAppliesWhen;
+  assert.ok(materialGate, "Generic offer clarity must have a material eligibility gate");
+  assert.match(JSON.stringify(materialGate), /q2_presence_digital_base/);
+  assert.match(JSON.stringify(materialGate), /reliable_presence/);
+  assert.match(JSON.stringify(materialGate), /partial_presence/);
 });
