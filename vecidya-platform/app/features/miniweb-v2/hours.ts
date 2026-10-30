@@ -36,14 +36,14 @@ export function createEmptyV2HoursSection(): V2HoursSection {
   };
 }
 
-export function validateV2HoursSection(value: V2HoursSection): V2HoursValidation {
+export function validateV2HoursSection(value: V2HoursSection, options: { requireTimezone?: boolean } = { requireTimezone: true }): V2HoursValidation {
   const candidate = value as unknown as Record<string, unknown>;
   const errors: string[] = [];
   if (!candidate || candidate.schemaVersion !== 2 || typeof candidate.title !== "string" || typeof candidate.timezone !== "string" || !Array.isArray(candidate.days)) return { valid: false, errors: ["Invalid hours section shape"] };
   const days = candidate.days as V2DayHours[];
   const exceptions = candidate.exceptions;
   if (!candidate.title.trim() || candidate.title.length > 120) errors.push("Invalid title");
-  if (!candidate.timezone.trim() || candidate.timezone.length > 100 || !isValidTimeZone(candidate.timezone)) errors.push("Valid IANA timezone required");
+  if (candidate.timezone.trim() ? candidate.timezone.length > 100 || !isValidTimeZone(candidate.timezone) : options.requireTimezone) errors.push("Valid IANA timezone required");
   if (candidate.note !== null && (typeof candidate.note !== "string" || candidate.note.length > 500)) errors.push("Note too long");
   if (days.length !== 7 || days.some((d) => !d || typeof d !== "object") || new Set(days.map((d) => d?.day)).size !== 7
       || days.some((d) => !V2_WEEKDAYS.includes(d?.day))) errors.push("Exactly seven distinct weekdays required");

@@ -1,3 +1,6 @@
+# MiniWeb V2 — IMP-05 familias y variantes visuales iniciales (2026-10-29)
+
+Se registran cinco familias editoriales y las tres variantes Base/Pro/Premium, todas con el mismo contrato funcional. La creación de borrador permite elegir family/variant y genera secciones iniciales vacías ordenadas; el renderer aplica tratamientos CSS por `data-family`/`data-variant`. Draft admite contenido incompleto; publicar exige título de portada y horario completo si está visible. Prueba focal familias/variantes PASS; typecheck PASS. Visuales son una primera implementación, aún requieren VIS-01, revisión humana, 45 capturas y accesibilidad; no certificados ni publicados.
 # MiniWeb V2 — IMP-06 horario independiente (2026-10-29)
 
 `hours.ts` mantiene un modelo V2 autónomo, valida zona IANA, siete días, rangos, cruces de medianoche sin solapamiento semanal, fechas/excepciones y resolución de fecha local mediante Intl/tzdata. El validador de secciones invoca validación completa del horario y rechaza estructuras malformadas. Pruebas focales 9/9 y typecheck PASS. No lee/importa horarios V1. Todavía sin editor visual de horas ni E2E Worker/fixtures de todas las transiciones DST; no certificado ni publicado.
