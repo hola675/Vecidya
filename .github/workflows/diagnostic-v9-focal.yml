@@ -9,6 +9,7 @@ on:
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
       - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
       - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
       - vecidya-platform/app/features/diagnostic/v9/graph-evaluation.ts
@@ -20,6 +21,7 @@ on:
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
       - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
       - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
       - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
       - vecidya-platform/app/features/diagnostic/v9/graph-evaluation.ts
@@ -51,6 +53,7 @@ jobs:
             tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
             tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
             tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+            tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
           )
           for file in "${tests[@]}"; do
             test -f "$file" || { echo "Missing focal test: $file" >&2; exit 1; }
@@ -68,7 +71,7 @@ jobs:
             echo ""
             echo "- Commit: \`${GITHUB_SHA}\`"
             echo "- Event: \`${GITHUB_EVENT_NAME}\`"
-            echo "- Scope: C03 / C05 / C07 / C08 (three selected files)"
+            echo "- Scope: C03 / C05 / C07 / C08 and F03 full-bank graph (four selected files)"
             echo ""
             echo "### Node test summary"
             grep -E "^(#|ℹ) (tests|pass|fail|cancelled|skipped|duration_ms) " /tmp/v9-focal-test.log || true
