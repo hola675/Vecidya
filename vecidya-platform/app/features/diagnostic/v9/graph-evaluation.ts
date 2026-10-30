@@ -252,3 +252,40 @@ export function planV9AuditedGraphQuestions(
   const ordered = orderV9GraphQuestions(questions, options.externalQuestionIds ?? []);
   return planV9GraphQuestions(ordered, facts, presentedQuestionIds, options);
 }
+
+export type V9NextQuestionDecision = {
+  readonly nextQuestionId: string | null;
+  readonly reason: "ready" | "budget_exhausted" | "awaiting_dependencies" | "no_eligible_questions";
+  readonly remainingBudgetBeforeAsk: number;
+  readonly pendingQuestionIds: readonly string[];
+};
+
+/**
+ * Session-facing single-step decision. Only one question is proposed at a
+ * time; the next decision must be recomputed after each recorded answer.
+ * The returned budget counts every previously presented unique question.
+ */
+export function decideV9NextQuestion(
+  questions: readonly V9GraphQuestion[],
+  facts: V9GraphFacts,
+  presentedQuestionIds: readonly string[],
+  options: {
+    readonly extendedInterviewConsented?: boolean;
+    readonly materialEvidenceRequested?: boolean;
+    readonly externalQuestionIds?: readonly string[];
+  } = {},
+): V9NextQuestionDecision {
+  const plan = planV9AuditedGraphQuestions(questions, facts, presentedQuestionIds, options);
+  const nextQuestionId = plan.selection.selectedIds[0] ?? null;
+  const pendingQuestionIds = plan.evaluations
+    .filter((question) => question.status === "pending" && !presentedQuestionIds.includes(question.id))
+    .map((question) => question.id);
+  const reason = nextQuestionId
+    ? "ready"
+    : plan.selection.remainingBeforeSelection === 0
+      ? "budget_exhausted"
+      : pendingQuestionIds.length > 0
+        ? "awaiting_dependencies"
+        : "no_eligible_questions";
+  return { nextQuestionId, reason, remainingBudgetBeforeAsk: plan.selection.remainingBeforeSelection, pendingQuestionIds };
+}
