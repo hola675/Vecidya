@@ -1,7 +1,8 @@
 import { and, eq, sql } from "drizzle-orm";
 import type { Database } from "../client.server";
 import { miniWebV2Draft, miniWebV2Publication, miniWebV2PublicationSlot, miniWebV2Site } from "../schema/miniweb";
-import { billingAccount, organizationLicense } from "../schema/licensing";
+import { billingAccount, billingMiniwebCapacityExtension, organizationLicense } from "../schema/licensing";
+import { calculateMiniWebCapacity } from "../../app/features/miniweb-v2/capacity";
 
 export type MiniWebV2SiteInput = {
   id: string; organizationId: string; ownerUserId: string; familyKey: string; visualVariant: string;
@@ -24,8 +25,13 @@ export async function getMiniWebV2EditorState(database: Database, organizationId
 export async function getMiniWebV2PublicationCapacity(database: Database, ownerUserId: string, now = new Date()) {
   const active = await database.select({ id: organizationLicense.id }).from(organizationLicense)
     .innerJoin(billingAccount, eq(billingAccount.id, organizationLicense.billingAccountId))
-    .where(and(eq(billingAccount.ownerUserId, ownerUserId), eq(organizationLicense.status, "active"), sql`(${organizationLicense.endsAt} IS NULL OR ${organizationLicense.endsAt} > ${now.getTime()})`));
-  const capacity = active.length ? 3 : 0;
+    .where(and(eq(billingAccount.ownerUserId, ownerUserId), eq(organizationLicense.status, "active"), sql`(${organizationLicense.startedAt} IS NULL OR ${organizationLicense.startedAt} <= ${now.getTime()})`, sql`(${organizationLicense.endsAt} IS NULL OR ${organizationLicense.endsAt} > ${now.getTime()})`));
+  const extensions = await database.select({ id: billingMiniwebCapacityExtension.id }).from(billingMiniwebCapacityExtension)
+    .innerJoin(billingAccount, eq(billingAccount.id, billingMiniwebCapacityExtension.billingAccountId))
+    .where(and(eq(billingAccount.ownerUserId, ownerUserId), eq(billingMiniwebCapacityExtension.status, "active"),
+      sql`${billingMiniwebCapacityExtension.startsAt} <= ${now.getTime()}`,
+      sql`(${billingMiniwebCapacityExtension.endsAt} IS NULL OR ${billingMiniwebCapacityExtension.endsAt} > ${now.getTime()})`));
+  const capacity = calculateMiniWebCapacity(active.length > 0, extensions.length);
   const slots = await database.select({ siteId: miniWebV2PublicationSlot.siteId }).from(miniWebV2PublicationSlot).where(eq(miniWebV2PublicationSlot.ownerUserId, ownerUserId));
   return { capacity, occupied: slots.length, available: Math.max(0, capacity - slots.length) };
 }

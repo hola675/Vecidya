@@ -3,9 +3,9 @@ import { Form, Link, redirect, useActionData, useLoaderData, useLocation } from 
 import { eq } from "drizzle-orm";
 
 import { createDatabase } from "../../db/client.server";
-import { getCurrentLicensePrice, getOrganizationLicense, getOrganizationLicenseAuditHistory, planCodes, assignOrganizationLicense, cancelOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, reassignOrganizationLicenseBillingAccount, reactivateCancelledOrganizationLicense, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
+import { getCurrentLicensePrice, getOrganizationLicense, getOrganizationLicenseAuditHistory, planCodes, assignOrganizationLicense, cancelOrganizationLicense, changeOrganizationLicensePlan, setOrganizationLicenseStatus, reassignOrganizationLicenseBillingAccount, reactivateCancelledOrganizationLicense, grantMiniWebCapacityExtension, changeMiniWebCapacityExtensionStatus, LicensingConflictError, LicensingError, isPlanCode } from "../../db/queries/licensing.server";
 import { listPlatformOrganizations } from "../../db/queries/platform-organizations.server";
-import { billingAccount, licensePrice, user } from "../../db/schema";
+import { billingAccount, billingMiniwebCapacityExtension, licensePrice, user } from "../../db/schema";
 import type { PlanCode } from "../../db/pricing/calculator";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
@@ -31,11 +31,11 @@ export async function loader({ context, request }: Route.LoaderArgs) {
   const [plans, rows] = await Promise.all([
     Promise.all(planCodes.map(async (code) => ({ code, price: await getCurrentLicensePrice(database, code, now) }))),
     Promise.all(organizations.map(async (organization) => {
-      const [license, history] = await Promise.all([getOrganizationLicense(database, organization.id), getOrganizationLicenseAuditHistory(database, organization.id)]);
+      const [license, history, capacityExtensions] = await Promise.all([getOrganizationLicense(database, organization.id), getOrganizationLicenseAuditHistory(database, organization.id), database.select().from(billingMiniwebCapacityExtension).where(eq(billingMiniwebCapacityExtension.organizationId, organization.id))]);
       const price = license ? await database.query.licensePrice.findFirst({ where: eq(licensePrice.id, license.priceId) }) : null;
       const billing = license ? await database.query.billingAccount.findFirst({ where: eq(billingAccount.id, license.billingAccountId) }) : null;
       const canReactivate = Boolean(license?.status === "cancelled" && license.endsAt && history.some((event) => event.action === "organization_license.cancelled" && event.entityId === license.id && event.createdAt.getTime() === license.endsAt!.getTime()));
-      return { organization, license, price, billingOwnerUserId: billing?.ownerUserId ?? null, history, canReactivate };
+      return { organization, license, price, billingOwnerUserId: billing?.ownerUserId ?? null, history, capacityExtensions, activeCapacityExtensions: capacityExtensions.filter((extension) => extension.status === "active" && extension.startsAt <= now && (!extension.endsAt || extension.endsAt > now)).length, canReactivate, capacityIdempotencyKey: crypto.randomUUID() };
     })),
   ]);
   return { rows, plans, users, billingAccounts, updated: new URL(request.url).searchParams.get("updated") === "1", workspaceUser: access.workspaceUser };
@@ -53,7 +53,22 @@ export async function action({ context, request }: Route.ActionArgs) {
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
 
   try {
-    if (intent === "assign") {
+    if (intent === "change-miniweb-capacity") {
+      const extensionId = String(form.get("extensionId") ?? "");
+      const expectedStatus = String(form.get("expectedStatus") ?? "");
+      const status = String(form.get("status") ?? "");
+      if (!extensionId || (expectedStatus !== "active" && expectedStatus !== "suspended") || (status !== "active" && status !== "suspended" && status !== "cancelled")) return { error: "La ampliación indicada no tiene un cambio de estado válido." };
+      await changeMiniWebCapacityExtensionStatus(database, { organizationId, extensionId, expectedStatus, status, actorUserId: actor.userId, reason: String(form.get("reason") ?? "") });
+    } else if (intent === "grant-miniweb-capacity") {
+      const license = await getOrganizationLicense(database, organizationId);
+      const billingAccountId = String(form.get("billingAccountId") ?? "");
+      const reason = String(form.get("reason") ?? "");
+      const idempotencyKey = String(form.get("idempotencyKey") ?? "");
+      if (!license || license.status !== "active" || license.billingAccountId !== billingAccountId || !idempotencyKey) {
+        return { error: "La organización objetivo debe tener una licencia activa del titular seleccionado." };
+      }
+      await grantMiniWebCapacityExtension(database, { organizationId, billingAccountId, actorUserId: actor.userId, reason, idempotencyKey });
+    } else if (intent === "assign") {
       const planCode = String(form.get("planCode") ?? "");
       const initialStatus = String(form.get("initialStatus") ?? "pending");
       const ownerUserId = String(form.get("ownerUserId") ?? "");
@@ -153,7 +168,7 @@ export default function InternalLicenses() {
       </section>
 
       {actionData?.error ? <p className="alert alert--error" role="alert">{actionData.error}</p> : null}
-      {updated ? <p className="alert alert--success" role="status">Licencia actualizada y acción registrada en auditoría.</p> : null}
+      {updated ? <p className="alert alert--success" role="status">El cambio quedó actualizado y registrado en auditoría.</p> : null}
 
       <div className="admin-toolbar">
         <label className="admin-search"><Icon name="eye" /><input aria-label="Buscar cliente o negocio" onChange={(event) => setSearch(event.target.value)} placeholder="Buscar por cliente, correo o nombre del negocio…" type="search" value={search} /></label>
@@ -170,6 +185,9 @@ export default function InternalLicenses() {
             <p><strong>Perfil público:</strong> {organization.profile ? "Configurado" : "Todavía no creado"}</p>
             <details><summary>Referencia del espacio de trabajo</summary><p>{organization.name} · ID interno {organization.id}</p></details>
             <p><strong>Licencia:</strong> {license ? <><Badge tone={license.status === "active" ? "success" : license.status === "suspended" ? "danger" : "neutral"}>{statusNames[license.status] ?? license.status}</Badge> {planNames[license.planCode]} · {price ? `${price.currency} ${(price.amountCents / 100).toFixed(2)} / mes` : "precio histórico"}</> : "Sin asignar"}</p>
+            <p><strong>Ampliaciones MiniWeb:</strong> {row.activeCapacityExtensions} activas (+3 sitios cada una) · {row.capacityExtensions.length} registradas</p>
+            {row.capacityExtensions.map((extension) => <div className="admin-license-actions" key={extension.id}><p>+3 sitios · {extension.status === "active" ? "Activa" : extension.status === "suspended" ? "Suspendida" : "Cancelada"} · {extension.reason}</p>{extension.status !== "cancelled" ? <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="intent" type="hidden" value="change-miniweb-capacity" /><input name="extensionId" type="hidden" value={extension.id} /><input name="expectedStatus" type="hidden" value={extension.status} /><input name="status" type="hidden" value="cancelled" /><label>Motivo del retiro<input name="reason" minLength={8} maxLength={500} required placeholder="Motivo y referencia de autorización" /></label><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Cancelar esta ampliación de cupo? Los sitios y snapshots existentes se conservarán.")) event.preventDefault(); }} type="submit">Cancelar ampliación</button></Form> : null}</div>)}
+            {license?.status === "active" ? <Form className="admin-license-form" method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="billingAccountId" type="hidden" value={license.billingAccountId} /><input name="idempotencyKey" type="hidden" value={row.capacityIdempotencyKey} /><input name="intent" type="hidden" value="grant-miniweb-capacity" /><label>Ampliación MiniWeb Cuadra (+3 sitios)<input name="reason" minLength={8} maxLength={500} required placeholder="Motivo y referencia de autorización" /></label><button className="button button--secondary" onClick={(event) => { if (!window.confirm("¿Conceder +3 sitios MiniWeb al titular de esta licencia? La operación quedará auditada y no crea una licencia CRM ni un cobro.")) event.preventDefault(); }} type="submit">Conceder ampliación</button></Form> : null}
             <Link className="text-link" to={`${routeBase}/organizations/${organization.id}`}>Ver espacio de trabajo →</Link>
 
             {license?.status === "cancelled" && row.canReactivate ? <Form method="post"><input name="organizationId" type="hidden" value={organization.id} /><input name="currentLicenseId" type="hidden" value={license.id} /><input name="intent" type="hidden" value="reactivate" /><button className="button button--primary" onClick={(event) => { if (!window.confirm("¿Reactivar esta licencia y restaurar el estado que tenía antes de cancelarla?")) event.preventDefault(); }} type="submit">Reactivar licencia anterior</button></Form> : null}

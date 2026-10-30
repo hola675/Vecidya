@@ -1,7 +1,7 @@
 import { and, asc, desc, eq, gt, isNull, lte, like, ne, or } from "drizzle-orm";
 
 import type { Database } from "../client.server";
-import { billingAccount, licensePrice, organization, organizationLicense, platformAuditLog, portfolioPricingTier, user } from "../schema";
+import { billingAccount, billingMiniwebCapacityExtension, licensePrice, organization, organizationLicense, platformAuditLog, portfolioPricingTier, user } from "../schema";
 import { calculateLicensePricing, type LicenseLine, type PlanCode, type PortfolioTier } from "../pricing/calculator";
 
 export const planCodes = ["cuadra", "barrio", "ciudad"] as const;
@@ -15,6 +15,65 @@ export function isPlanCode(value: unknown): value is PlanCode {
 export class LicensingError extends Error {}
 export class LicensingConflictError extends LicensingError {}
 export class LicensingNotFoundError extends LicensingError {}
+
+export async function grantMiniWebCapacityExtension(database: Database, input: {
+  organizationId: string; billingAccountId: string; actorUserId: string; reason: string; idempotencyKey: string; startsAt?: Date; endsAt?: Date | null; now?: Date;
+}) {
+  const reason = input.reason.trim();
+  if (reason.length < 8 || reason.length > 500) throw new LicensingError("Indica un motivo de entre 8 y 500 caracteres.");
+  const previous = await database.query.billingMiniwebCapacityExtension.findFirst({ where: eq(billingMiniwebCapacityExtension.idempotencyKey, input.idempotencyKey) });
+  if (previous) {
+    if (previous.organizationId !== input.organizationId || previous.billingAccountId !== input.billingAccountId || previous.reason !== reason) throw new LicensingConflictError("La clave de idempotencia ya se usó para otra ampliación.");
+    return previous;
+  }
+  const now = input.now ?? new Date();
+  const startsAt = input.startsAt ?? now;
+  if (input.endsAt && input.endsAt <= startsAt) throw new LicensingError("La fecha de fin debe ser posterior a la fecha de inicio.");
+  const account = await database.query.billingAccount.findFirst({ where: eq(billingAccount.id, input.billingAccountId) });
+  if (!account) throw new LicensingNotFoundError("No se encontró el titular de facturación.");
+  const activeLicense = await database.query.organizationLicense.findFirst({ where: and(
+    eq(organizationLicense.organizationId, input.organizationId), eq(organizationLicense.billingAccountId, input.billingAccountId), eq(organizationLicense.status, "active"),
+    lte(organizationLicense.startedAt, startsAt), or(isNull(organizationLicense.endsAt), gt(organizationLicense.endsAt, startsAt)),
+  ) });
+  if (!activeLicense) throw new LicensingError("Se requiere una licencia activa del titular para conceder una ampliación Cuadra.");
+  const id = crypto.randomUUID();
+  try {
+    await database.batch([
+      database.insert(billingMiniwebCapacityExtension).values({ id, organizationId: input.organizationId, billingAccountId: input.billingAccountId, kind: "cuadra_extra", status: "active", startsAt, endsAt: input.endsAt ?? null, reason, grantedByUserId: input.actorUserId, idempotencyKey: input.idempotencyKey, createdAt: now, updatedAt: now }),
+      database.insert(platformAuditLog).values({ id: crypto.randomUUID(), actorUserId: input.actorUserId, action: "billing_miniweb_capacity_extension.grant", entityType: "billing_miniweb_capacity_extension", entityId: id, organizationId: input.organizationId, previousValue: null, newValue: "active:+3", metadata: JSON.stringify({ billingAccountId: input.billingAccountId, reason, startsAt: startsAt.toISOString(), endsAt: input.endsAt?.toISOString() ?? null }), createdAt: now }),
+    ]);
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) throw error;
+    const winner = await database.query.billingMiniwebCapacityExtension.findFirst({ where: eq(billingMiniwebCapacityExtension.idempotencyKey, input.idempotencyKey) });
+    if (winner) return winner;
+    throw error;
+  }
+  return database.query.billingMiniwebCapacityExtension.findFirst({ where: eq(billingMiniwebCapacityExtension.id, id) });
+}
+
+export async function changeMiniWebCapacityExtensionStatus(database: Database, input: {
+  organizationId: string; extensionId: string; expectedStatus: "active" | "suspended"; status: "active" | "suspended" | "cancelled"; actorUserId: string; reason: string; now?: Date;
+}) {
+  const reason = input.reason.trim();
+  if (reason.length < 8 || reason.length > 500) throw new LicensingError("Indica un motivo de entre 8 y 500 caracteres.");
+  if (input.expectedStatus === input.status) throw new LicensingError("El estado solicitado no cambia la ampliación.");
+  const current = await database.query.billingMiniwebCapacityExtension.findFirst({ where: and(eq(billingMiniwebCapacityExtension.id, input.extensionId), eq(billingMiniwebCapacityExtension.organizationId, input.organizationId)) });
+  if (!current) throw new LicensingNotFoundError("No se encontró la ampliación para esta organización.");
+  if (current.status !== input.expectedStatus) throw new LicensingConflictError("La ampliación cambió en otra operación; recarga e inténtalo de nuevo.");
+  if (input.status === "active") {
+    const activeLicense = await database.query.organizationLicense.findFirst({ where: and(eq(organizationLicense.organizationId, input.organizationId), eq(organizationLicense.billingAccountId, current.billingAccountId), eq(organizationLicense.status, "active")) });
+    if (!activeLicense) throw new LicensingError("No se puede reactivar la ampliación sin una licencia activa del mismo titular.");
+  }
+  const now = input.now ?? new Date();
+  const result = await database.$client.batch([
+    database.$client.prepare("UPDATE billing_miniweb_capacity_extension SET status = ?, updated_at = ? WHERE id = ? AND organization_id = ? AND status = ?")
+      .bind(input.status, now.getTime(), input.extensionId, input.organizationId, input.expectedStatus),
+    database.$client.prepare("INSERT INTO platform_audit_log (id, actor_user_id, action, entity_type, entity_id, organization_id, previous_value, new_value, metadata, created_at) SELECT ?, ?, ?, 'billing_miniweb_capacity_extension', ?, ?, ?, ?, ?, ? WHERE changes() = 1")
+      .bind(crypto.randomUUID(), input.actorUserId, `billing_miniweb_capacity_extension.${input.status}`, input.extensionId, input.organizationId, input.expectedStatus, input.status, JSON.stringify({ reason, billingAccountId: current.billingAccountId }), now.getTime()),
+  ]);
+  if (result[0]?.meta.changes !== 1) throw new LicensingConflictError("La ampliación cambió en otra operación; recarga e inténtalo de nuevo.");
+  return { id: input.extensionId, status: input.status };
+}
 
 function isUniqueConstraintError(error: unknown) {
   return error instanceof Error && /unique constraint failed|constraint failed: organization_license/i.test(error.message);
@@ -112,7 +171,7 @@ export async function getOrganizationLicenseAuditHistory(database: Database, org
     actorEmail: user.email,
   }).from(platformAuditLog)
     .innerJoin(user, eq(platformAuditLog.actorUserId, user.id))
-    .where(and(eq(platformAuditLog.organizationId, organizationId), eq(platformAuditLog.entityType, "organization_license"), like(platformAuditLog.action, "organization_license.%")))
+    .where(and(eq(platformAuditLog.organizationId, organizationId), or(eq(platformAuditLog.entityType, "organization_license"), eq(platformAuditLog.entityType, "billing_miniweb_capacity_extension"))))
     .orderBy(asc(platformAuditLog.createdAt), asc(platformAuditLog.id));
 }
 

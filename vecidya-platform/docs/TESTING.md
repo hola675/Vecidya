@@ -5,6 +5,10 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## MiniWeb V2 IMP-09 — capacidad de publicación
+
+**RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-capacity.test.ts` PASS (0/3/6/9 según licencia y ampliaciones explícitas); `pnpm wrangler d1 migrations apply DB --local` aplicó `0038–0039`; `pnpm run test:e2e:miniweb-v2-conversion` Worker local PASS; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El E2E existente cubre conversión y aislamiento; no certifica P6A ni sustituye aprobación humana/SEC-QA/VIS-01. Sin remoto ni deploy.
+
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
 
 Revisión de código de `api-learn-sync`, `api-organization-learn-access`, entitlement, sesión, consultas y configuración de Better Auth. Se verificaron guardas de sesión/membresía/licencia/lifecycle/grant, organización explícita, permisos owner, auditoría, Origin same-site en mutaciones, límites de cuerpo/operaciones, validación de IDs/secciones/tiempos, protección no-store, revocación por solicitud, control de versión/reset y recibos de replay. La revisión de código no sustituye la certificación de runtime.

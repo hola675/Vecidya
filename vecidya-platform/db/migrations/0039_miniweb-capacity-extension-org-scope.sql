@@ -1,0 +1,1 @@
+ALTER TABLE `billing_miniweb_capacity_extension` ADD `organization_id` text NOT NULL REFERENCES organization(id);
