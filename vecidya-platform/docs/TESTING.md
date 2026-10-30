@@ -1,8 +1,10 @@
 # Pruebas
 
-## UX-COHERENCE-ROUNDED-001 — verificación visual local (2026-10-29)
+## UX-COHERENCE-ROUNDED-001 — verificación local y release 0.9.2 (2026-10-29)
 
-**RAN:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` valida el catálogo Aprende y el panel de progreso compacto/desplegable. `BASE_URL=http://127.0.0.1:5175 node tests/e2e/public-navigation-a11y-check.mjs` valida navegación pública, superficies redondeadas y ausencia de desbordamiento en Diagnóstico en 1366/1024/960/768/390/360/320 px. Typecheck, build y `git diff --check` deben pasar antes de entregar. La prueba visual automatizada no es certificación WCAG; se hizo sobre Worker/DB locales, sin D1 remota ni deploy.
+**RAN local:** `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` valida el catálogo Aprende y el panel de progreso compacto/desplegable. `BASE_URL=http://127.0.0.1:5175 node tests/e2e/public-navigation-a11y-check.mjs` valida navegación pública, superficies redondeadas y ausencia de desbordamiento en Diagnóstico en 1366/1024/960/768/390/360/320 px. Typecheck, build y `git diff --check` **PASS**. La prueba visual automatizada no es certificación WCAG; se hizo sobre Worker/DB locales, sin D1 remota ni deploy.
+
+**Release RAN:** CI del PR #213 terminó PASS en quality, Playwright/publication guard y typecheck/build/unit regression. Localmente también pasaron typecheck, build y `wrangler deploy --dry-run`. Después del deploy, GET anónimo a `/`, `/aprende` y `/__health/db` pasó con HTTP 200; portada/Aprende mostraron `0.9.2` y `© 2026 Vecidya`, y Aprende mostró 48 guías (HTTP RAN 2026-10-30T03:40:21Z). D1 remota quedó sin migraciones pendientes tras aplicar `0031–0033`. Esto no certifica WCAG ni prueba rutas que requieren autenticación; purga Aprende sigue deshabilitada.
 
 ## APRENDE-PLAN-V1 — revisión de seguridad local (2026-10-29)
 

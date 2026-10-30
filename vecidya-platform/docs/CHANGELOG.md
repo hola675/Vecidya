@@ -1,8 +1,9 @@
-## 0.9.2 — candidata de release (2026-10-29; deploy pendiente)
+## 0.9.2 — publicado (2026-10-29)
 
 - Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.
-- El preflight encontró pendientes las migraciones D1 `0031–0033`; deben aplicarse en orden antes del deploy. Los flags de purga Aprende continúan desactivados mientras sigue pendiente la revisión legal/privacidad/costo.
-- No declarar publicado hasta que el Worker se despliegue y un GET anónimo fechado confirme versión y copyright.
+- PR #213 quedó integrada en `main@8ed60e51`. D1 de producción recibió `0031–0033` antes del deploy; Wrangler desplegó Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %.
+- GET anónimo a `/` y `/aprende` confirmó HTTP 200, versión `0.9.2`, copyright y 48 guías; `/__health/db` dio 200. Evidencia fechada en `docs/ENVIRONMENTS.md`.
+- La purga de recibos Aprende continúa desactivada; su revisión legal/privacidad/costo sigue pendiente. Sin deploy a staging.
 
 ## 0.9.1 — candidata local (2026-10-29; no publicada)
 
