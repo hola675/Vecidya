@@ -89,3 +89,11 @@ test("C08: restaurant menu question is guarded; no presence cannot be assumed cl
     assert.notEqual(dimension.answers.not_applicable, "weak", `Inapplicable menu evidence cannot be weak in ${dimension.dimension}`);
   }
 });
+
+// Specialty replacement must preserve the generic fallback when specialty evidence is absent.
+test("F03: restaurant menu specialty replaces generic offer clarity only when eligible", () => {
+  const base = { q2_operational_status: "operating", q2_has_customers: "yes", q2_niche_food_hospitality: "restaurant", q2_goal: "explain", q2_presence_digital_base: "partial_presence" };
+  assert.equal(eligible("q2_food_menu_visibility", base), true);
+  assert.equal(eligible("q2_food_menu_visibility", { ...base, q2_presence_digital_base: "no_reliable_presence" }), false);
+  assert.equal(eligible("q2_food_menu_visibility", { ...base, q2_niche_food_hospitality: "unknown" }), false);
+});
