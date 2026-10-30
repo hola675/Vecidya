@@ -407,6 +407,7 @@ Los nombres son orientativos; el agente deberá elegir ramas nuevas sin colision
 
 | Fecha | Hito | Estado | Evidencia |
 | --- | --- | --- | --- |
+| 2026-10-29 | Refinamiento de interfaz pública, progreso y esquinas redondeadas | IMPLEMENTADO / PRODUCCIÓN 0.9.2 | PR #210 y release PR #213; CI/local typecheck/build/E2E PASS; HTTP anónimo `/` y `/aprende` 200, 48 guías, `/__health/db` 200; sin certificación WCAG integral |
 | 2026-10-29 | Preparación de perfiles, auditoría y revisión humana | ACEPTADA POR EL USUARIO / PR #198 | Aprobación expresa de las seis guías gratuitas en sus revisiones vigentes, selección 6/42 y cambios editoriales; la revisión manual de accesibilidad fue aprobada por el usuario; solo retención legal/operativa sigue abierta |
 | 2026-10-28 | Modelo 6 gratuitas/42 con licencia, progreso personal, permisos explícitos y contratación central | APROBADO / DISEÑO | decisiones de producto |
 | 2026-10-29 | Fase 1: identidad editorial y DTOs | IMPLEMENTADA / selección editorial 6/42 aceptada; distribución no desplegada | PR #183 integrada; 48 guideId, 390 sectionId actuales; aprobación de seis revisiones vigentes registrada abajo; tests de catálogo y privacidad ejecutados |
