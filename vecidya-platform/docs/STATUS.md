@@ -26,6 +26,12 @@ Se registran cinco familias editoriales y las tres variantes Base/Pro/Premium, t
 
 # Estado de implementación
 
+## UX-PREMIUM-02G — refinamiento visual de Licencias (2026-10-30)
+
+**CODE local / RAN local; PR #221 abierta en borrador, no publicado.** En `/licencias`, el hero y el comparador reciben mayor contraste y aire; las cuatro notas comerciales se ordenan en una cuadrícula 2×2; las tarjetas mantienen tres columnas en escritorio y pasan a una columna desde 900 px. Se añadió elevación sutil al hover, anulada con `prefers-reduced-motion: reduce`. Precios, activaciones, catálogo, contenido, rutas y CTA se conservan.
+
+`licenses-experience-check.mjs` PASS (1366/768/390/360). Typecheck, build y `git diff --check` PASS. Comparación visual antes/después con capturas completas en 1366/1024/768/390/360 px; el baseline usa CSS exacto de `origin/main`, inyectado sobre la misma página local. No hay overflow horizontal. El foco del CTA y el comparador móvil quedan cubiertos por el E2E; Chromium confirma que `reduce` lleva la transición de las tarjetas a duración casi cero. No implica certificación WCAG ni revisión con lector de pantalla/zoom 200 %. Sin cambios de datos, D1, deploy ni HTTP pública fechada.
+
 ## UX-COHERENCE-ROUNDED-001 — refinamiento global publicado en 0.9.2 (2026-10-29)
 
 La plataforma aplica esquinas redondeadas coherentes a secciones, tarjetas, paneles, formularios y controles, con separación adicional entre bloques consecutivos. «Soluciones» mejora foco/estado activo, indicador, superficie translúcida y movimiento reducido. Aprende compacta títulos y lectura, y agrupa arriba favoritos, avance y acciones desplegables por sección con nombres accesibles. Integrado por PR #210 y publicado en `0.9.2` mediante PR #213. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/` y `/aprende` en 200 con versión/copyright y 48 guías. E2E, typecheck y build PASS (ver `docs/TESTING.md`). No implica certificación WCAG integral.
