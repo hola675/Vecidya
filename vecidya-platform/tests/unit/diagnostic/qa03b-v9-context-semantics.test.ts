@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { selectV9Questions } from "../../../app/features/diagnostic/v9/question-selection.ts";
+import { evaluateV9Rule, evaluateV9Question, planV9GraphQuestions } from "../../../app/features/diagnostic/v9/graph-evaluation.ts";
 import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption, classifyV9EvidenceContribution } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
 
 test("V9: pausa con clientes históricos no acredita operación actual", () => {
@@ -69,4 +70,51 @@ test("F03: replayed presentations and ineligible candidates never inflate budget
   assert.equal(result.skipped.find((item) => item.id === "question_0")?.reason, "already_presented");
   assert.equal(result.skipped.filter((item) => item.reason === "budget_exhausted").length, 3);
   assert.throws(() => selectV9Questions([{ id: "same", eligible: true }, { id: "same", eligible: false }], []), /duplicate/);
+});
+
+test("F03 V9 graph: missing dependencies stay pending, never pass through notEq or negation", () => {
+  const equalsRestaurant = { op: "eq", ref: { question: "niche" }, value: "restaurant" } as const;
+  const withoutAnswers = { answers: {} };
+  const unknownNiche = { answers: { niche: "unknown" } };
+  assert.equal(evaluateV9Rule(equalsRestaurant, withoutAnswers).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "not", rule: equalsRestaurant }, withoutAnswers).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "notEq", ref: { question: "niche" }, value: "restaurant" }, withoutAnswers).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "notEq", ref: { question: "niche" }, value: "restaurant" }, unknownNiche).status, "ineligible");
+  assert.equal(evaluateV9Rule(equalsRestaurant, { answers: { niche: "restaurant" } }).status, "eligible");
+  assert.equal(evaluateV9Rule(equalsRestaurant, { answers: { niche: "agency" } }).status, "ineligible");
+
+  const conjunction = { op: "and", rules: [equalsRestaurant, { op: "eq", ref: { question: "status" }, value: "operating" }] } as const;
+  assert.equal(evaluateV9Rule(conjunction, { answers: { status: "paused" } }).status, "ineligible");
+  assert.equal(evaluateV9Rule(conjunction, { answers: { status: "operating" } }).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "or", rules: conjunction.rules }, { answers: { status: "paused" } }).status, "pending");
+});
+
+test("F03 V9 graph: resolved context, explicit unresolved, and missing context are distinct", () => {
+  const active = { op: "contextResolvedIn", field: "activity", values: ["active", "prelaunch"] } as const;
+  const missing = { answers: {} };
+  assert.equal(evaluateV9Rule(active, missing).status, "pending");
+  assert.equal(evaluateV9Rule(active, { answers: {}, context: { fields: { activity: { status: "resolved", value: "active" } } } }).status, "eligible");
+  assert.equal(evaluateV9Rule(active, { answers: {}, context: { fields: { activity: { status: "unresolved" } } } }).status, "ineligible");
+  const unresolved = { op: "contextUnresolved", field: "activity" } as const;
+  assert.equal(evaluateV9Rule(unresolved, missing).status, "pending");
+  assert.equal(evaluateV9Rule(unresolved, { answers: {}, context: { fields: { activity: { status: "unresolved" } } } }).status, "eligible");
+  assert.equal(evaluateV9Rule({ op: "archetypeIncludes", value: "appointments" }, missing).status, "pending");
+  assert.equal(evaluateV9Rule({ op: "archetypeIncludes", value: "appointments" }, { answers: {}, context: { fields: {}, archetypeComponents: ["appointments", "professional"] } }).status, "eligible");
+});
+
+test("F03 V9 graph: material-only eligibility is opt-in and pending does not consume budget", () => {
+  const material = { id: "offer_clarity", materialAppliesWhen: { op: "eq", ref: { question: "presence" }, value: "partial_presence" } } as const;
+  assert.equal(evaluateV9Question(material, { answers: { presence: "partial_presence" } }).source, "material_not_requested");
+  assert.equal(evaluateV9Question(material, { answers: { presence: "partial_presence" } }, true).status, "eligible");
+  const graph = planV9GraphQuestions([
+    { id: "foundation" },
+    { id: "specialist", appliesWhen: { op: "eq", ref: { question: "niche" }, value: "restaurant" } },
+    material,
+  ], { answers: { presence: "partial_presence" } }, [], { materialEvidenceRequested: true });
+  assert.deepEqual(graph.selection.selectedIds, ["foundation", "offer_clarity"]);
+  assert.equal(graph.evaluations.find((item) => item.id === "specialist")?.status, "pending");
+  assert.equal(graph.selection.skipped.find((item) => item.id === "specialist")?.reason, "pending_dependencies");
+  assert.equal(graph.selection.remainingBeforeSelection, 24);
+  assert.equal(selectV9Questions([{ id: "unknown", eligible: false, pending: true }], []).skipped[0]?.reason, "pending_dependencies");
+  assert.throws(() => selectV9Questions([{ id: "invalid", eligible: true, pending: true }], []), /eligible and pending/);
 });
