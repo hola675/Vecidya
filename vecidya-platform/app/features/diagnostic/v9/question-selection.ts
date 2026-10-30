@@ -12,10 +12,13 @@ export type V9EligibilityCandidate = {
   readonly id: string;
   /** True only after the graph has evaluated applicable rules and context. */
   readonly eligible: boolean;
+  /** Graph is waiting for facts: never turn uncertainty into definitive ineligibility. */
+  readonly pending?: boolean;
 };
 
 export type V9SelectionSkipReason =
   | "not_eligible"
+  | "pending_dependencies"
   | "already_presented"
   | "budget_exhausted";
 
@@ -49,8 +52,12 @@ export function selectV9Questions(
     if (encountered.has(question.id)) throw new Error(`V9 selection received duplicate question id: ${question.id}`);
     encountered.add(question.id);
 
+    if (question.pending && question.eligible) throw new Error(`V9 question cannot be eligible and pending: ${question.id}`);
+
     if (presented.has(question.id)) {
       skipped.push({ id: question.id, reason: "already_presented" });
+    } else if (question.pending) {
+      skipped.push({ id: question.id, reason: "pending_dependencies" });
     } else if (!question.eligible) {
       skipped.push({ id: question.id, reason: "not_eligible" });
     } else if (selectedIds.length >= remainingBeforeSelection) {
