@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
+import { classifyV9Activity, evaluateV9TrendCapacityGate, interpretV9AnswerState, interpretV9SelectedOption, classifyV9EvidenceContribution } from "../../../app/features/diagnostic/qa03b/v9-context-semantics.ts";
 
 test("V9: pausa con clientes históricos no acredita operación actual", () => {
   assert.deepEqual(classifyV9Activity("paused", "yes"), {
@@ -33,4 +33,13 @@ test("V9: neutral option does not require marking the whole question inapplicabl
   assert.equal(interpretV9SelectedOption("clear", true, undefined), "answered");
   assert.equal(interpretV9SelectedOption(undefined, true, undefined), "unanswered");
   assert.equal(interpretV9SelectedOption("clear", false, undefined), "not_applicable");
+});
+
+test("V9: evidence contribution distinguishes answered, unknown, and neutral", () => {
+  assert.equal(classifyV9EvidenceContribution("answered"), "evaluate");
+  assert.equal(classifyV9EvidenceContribution("unknown"), "uncertainty");
+  assert.equal(classifyV9EvidenceContribution("unanswered"), "skip");
+  assert.equal(classifyV9EvidenceContribution("not_applicable"), "skip");
+  const neutral = interpretV9SelectedOption("no_authorized_contact", true, "not_applicable");
+  assert.equal(classifyV9EvidenceContribution(neutral), "skip");
 });
