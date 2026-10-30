@@ -26,3 +26,16 @@ export function interpretV9AnswerState(answer: string | undefined, isApplicable:
   if (answer === undefined) return "unanswered";
   return answer === "unknown" ? "unknown" : "answered";
 }
+
+/** Distinguish a neutral selected option from a question that was not applicable. */
+export function interpretV9SelectedOption(
+  answer: string | undefined,
+  isApplicable: boolean,
+  optionKind: "unknown" | "not_applicable" | string | undefined,
+): V9AnswerState {
+  const state = interpretV9AnswerState(answer, isApplicable);
+  if (state !== "answered") return state;
+  if (optionKind === "not_applicable") return "not_applicable";
+  if (optionKind === "unknown") return "unknown";
+  return state;
+}
