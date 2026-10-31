@@ -555,7 +555,7 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 
 ### Gates de cierre y resumen
 
-- **Estado editorial delegado:** 8 fichas de este lote con decisión de diseño; **16/16 fichas de Lotes 01+02 tienen dictamen documental**, no certificación de los 77 componentes del banco completo. En Lote 02: **3 KEEP**, **5 REWRITE**; ninguna pregunta se elimina o activa.
+- **Estado editorial delegado:** 8 fichas de este lote con decisión de diseño; **16/16 fichas de Lotes 01+02 tienen dictamen documental**, no certificación de los 77 componentes del banco completo. En Lote 02: **2 KEEP**, **6 REWRITE**; ninguna pregunta se elimina o activa.
 - **Cuestiones verificadas:** q2_delivery es multi (no error de tipo); no hay duplicación literal demostrada de valor nonprofit_community en sector compuesto. Queda **mezcla conceptual de ejes**, no duplicado de ID probado.
 - **Bloqueos P0 del próximo agente, no autorizados aún:** cerrar taxonomía sectorial con migración de selector B2B/creadores/ONG; corregir ausencia de neutralidad en fricción; preservar C05 sin financiación; no inventar evidencia de madurez. La separación de no publicado/no aplica/no sé de la decisión SEM-A será aplicada al lote de preguntas de presencia digital, donde corresponde.
 - **Pruebas futuras (NO EJECUTADAS):** opciones únicas en sector; elegibilidad de todos los nichos, cambio sector/nicho y replay; validación multi/exclusividad delivery; C02/C03/C05/C06/C08/C09/C10; ausencia de score por objetivo, fricción, sector, modalidad o financiación; equivalencia es/en; presupuesto 24+5 y consentimiento; V8 sin cambios.
