@@ -2699,3 +2699,35 @@ Clasificar cada pregunta y opción del banco ensamblado como **KEEP** (conservar
 
 ## Changelog adicional
 - **1.51.0 / 2026-10-29:** contrato de hasta cuatro variantes editoriales equivalentes por pregunta, rotación estable y fase posterior al cierre del banco; solo documentación.
+
+
+## 60. Aprobaciones de diseño y arranque editorial (2026-10-30)
+
+**Estado: DECISIONES DE DISEÑO APROBADAS / CONTENIDO EN PROPUESTA / PLAN_ONLY.** El responsable confirmó explícitamente cuatro elecciones para desbloquear la preparación editorial. Este registro precisa las decisiones D-V9-015/016/027–033 y las tensiones de la sección 42; **no aprueba ninguna implementación ni elimina decisiones pendientes**.
+
+| Registro | Decisión expresa | Alcance autorizado | Límites y gate pendiente |
+| --- | --- | --- | --- |
+| V9-TAX-A | Mantener ocho dimensiones candidatas y revisarlas | Continuar la matriz 8×10 y comprobar solapamientos, cobertura, pertinencia, evidencias y abstenciones | **No aprobadas todavía** la taxonomía final, los pesos, umbrales, calibración ni resultados numéricos; requieren decisión separada |
+| V9-SEM-A | Separar semánticamente «no publicado», «no aplicable» y «no lo sé» | Diseñar opciones y formulaciones específicas, especialmente en preguntas de visibilidad/publicación; conservar ausencia de evidencia como incertidumbre | No convertir automáticamente no publicado en «débil», no reinterpretar values existentes ni modificar scoring sin aprobación editorial, ID/versión/replay y pruebas focalizadas posteriores |
+| V9-PERSIST-A | Conservar informes estructurados en la cuenta autenticada | Diseñar acceso autorizado, propiedad por persona/organización, historial, rectificación/eliminación y finalidad del almacenamiento | Falta definir/validar retención, esquema, finalidad, controles tenant, privacidad y borrado antes de implementación. Sin cambios al borrador anónimo local de 7 días ni autorización de registrar datos personales en D1 de analítica agregada |
+| V9-LOTES-8 | Revisar contenido editorial en lotes de ocho preguntas | Preparar fichas completas ES/EN para revisión y aprobación individual del responsable | No equivale a aprobación automática de las preguntas, opciones, variantes, evidenceV3 o adiciones al banco. Mantener cobertura de C01–C10 y presupuesto 24+5 |
+
+### Primer entregable de contenido
+
+Documento propietario existente actualizado: [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), versión documental 0.3.0. Contiene ocho fichas con **34 opciones actuales**: q2_entity, q2_has_customers, q2_operational_status, q2_customer_buyer, q2_monetization, q2_regularity, q2_demand_trend y q2_capacity_signal. Cada una separa value de texto ES/EN propuesto, contexto/guardias, semántica neutra, señales y riesgos. Estado **CONTENT_DRAFT_8_OF_8 / HUMAN_APPROVAL_0_OF_8**.
+
+**Alertas de revisión inicial, no correcciones autorizadas:** en monetización falta unknown y la variante prelaunch nombra services donde el value existente es time_or_project; en regularidad y tendencia falta unknown; la señal demandTrend=flat_or_unknown mezcla semántica de observación y desconocimiento; la opción stable de capacidad necesita contrastar si ausencia de cambio significa ausencia de presión. No sustituir values ni publicar nuevos textos sin la revisión correspondiente.
+
+### Continuidad de trabajo autorizada
+
+1. Presentar al responsable el lote de ocho fichas para dictamen por pregunta (KEEP / REVISE / REPLACE / DEFER y eventual ADD por hueco comprobado). Las opciones y traducciones son propuestas, no aprobaciones humanas.
+2. Preparar Lote 02 de sector, especialidad, modalidades y objetivos, conservando los IDs y sin confundir clasificación con nivel de madurez.
+3. Consolidar la taxonomía 8×10 y los criterios de evidencia suficiente/abstención para ratificación expresa. Resolver semánticas de publicación en el lote donde corresponda.
+4. Completar contratos de informe autenticado y privacidad; luego cerrar el handoff F00–F10.
+5. Mantener **PLAN_ONLY**: no cambiar TS/TSX, tests, CI, migraciones, rutas, D1, Worker ni producción; no merge/deploy. Solo cambios de documentación para diseño con evidencias de origen.
+
+**Evidencia de esta actualización:** lectura de los archivos del HEAD inicial 382632efca39ee52d8458440347e567151b91af4 y registro de aprobación expresa del responsable. No se han ejecutado pruebas ni afirmado validación lingüística/cognitiva. Las revisiones editoriales y gates del producto permanecen abiertos.
+
+### Changelog adicional
+
+- **1.52.0 / 2026-10-30:** se registran TAX-A, SEM-A, PERSIST-A y LOTES-8 con restricciones; se vincula el primer lote bilingüe (8 preguntas, 34 opciones) pendiente de dictamen humano. PLAN_ONLY; sin cambios al runtime.
