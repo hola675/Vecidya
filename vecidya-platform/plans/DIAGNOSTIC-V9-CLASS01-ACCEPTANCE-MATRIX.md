@@ -1,5 +1,5 @@
 # V9 — CLASS-01: criterios de aceptación y evidencia de cierre
-Versión 0.1.0 · 2026-10-31 · PLAN_ONLY
+Versión 0.1.1 · 2026-10-31 · PLAN_ONLY
 
 ## Alcance y fuente de autoridad
 Deriva de DIAGNOSTIC-V9-TAX-CLASS-COMPATIBILITY.md, cuyo gate CLASS-01 exige inventario literal de values y ocho selectores con SHA. No reemplaza CLASS-02..05 ni autoriza pruebas.
@@ -16,7 +16,7 @@ Deriva de DIAGNOSTIC-V9-TAX-CLASS-COMPATIBILITY.md, cuyo gate CLASS-01 exige inv
 |---|---|---|---|
 | A01 | q2_sector V2=15, V3=16, V4=20 | Comparación literal value/kind/produces y test focal | PENDIENTE TEST |
 | A02 | 14 sectores heredados mantienen señal nicheGroup | Diff de opciones heredadas por versión | PENDIENTE DIFF |
-| A03 | other y unknown no fabrican nicho | Inspección de produces y replay | PENDIENTE TEST |
+| A03 | other produce nicheGroupOther=true; unknown no produce señal; ninguno declara nicho concreto | Diff de produces y replay | PENDIENTE TEST |
 | A04 | 4 valores nuevos solo existen en V4 | Diff y restauración con bancos anteriores | PENDIENTE TEST |
 | A05 | 8 selectores dependen de igualdad literal sector | Inventario con IDs, grupos y SHA | DOCUMENTADO ESTÁTICAMENTE |
 | A06 | Edición sector invalida selector incompatible | Replay de elegibilidad y señales | PENDIENTE TEST |
@@ -30,3 +30,8 @@ Inventario literal completo de 20 values y ocho selectores con SHAs vigentes; di
 
 ## Changelog
 0.1.0: matriz de aceptación A01–A10 y reglas de cierre sin ejecución.
+## Corrección de trazabilidad (0.1.1)
+A03 distingue declaración explícita de sector fuera de catálogo (`other` → `nicheGroupOther=true`) frente a desconocimiento (`unknown` → ninguna producción). Fuente: DIAGNOSTIC-V9-CLASS01-LITERAL-SECTOR-INVENTORY.md, qbv2-reviewed-classification.ts. Pendiente comprobar ambos con replay focal; no se han ejecutado pruebas.
+
+## Changelog adicional
+0.1.1: corregida semántica de A03 sin cambiar estado de aprobación.
