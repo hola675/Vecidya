@@ -1,0 +1,57 @@
+name: Diagnostic V9 bank 90 focused verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [feat/diagnostic-v9-lex-graph-p1b]
+    paths:
+      - .github/workflows/diagnostic-v9-bank90-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/specialty-branches-wave1.ts
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/diagnostic-v9-bank90-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/specialty-branches-wave1.ts
+permissions:
+  contents: read
+jobs:
+  bank90:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      - name: Enable pnpm and install locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack pnpm install --frozen-lockfile
+      - name: Run ONLY the V9 bank-90 focal unit tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts 2>&1 | tee /tmp/diagnostic-v9-bank90.log
+      - name: Summarize focused run
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## V9 — 90-question candidate focal verification'
+            echo ''
+            echo "- Commit: `${GITHUB_SHA}`"
+            echo '- Scope: qa03b-v9-general-dimension-probes.test.ts (one file)'
+            echo '- No broad test suite, production service, Worker or D1'
+            echo ''
+            if test -f /tmp/diagnostic-v9-bank90.log; then
+              grep -E '^(#|ℹ) (tests|pass|fail|cancelled|skipped|duration_ms) ' /tmp/diagnostic-v9-bank90.log || true
+            else
+              echo 'Focused test step did not produce a log; check installation logs.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
