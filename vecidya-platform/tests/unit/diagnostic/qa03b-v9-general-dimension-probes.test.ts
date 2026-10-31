@@ -222,8 +222,8 @@ test("candidate event correlation preserves independent events and removes doubl
   assert.equal(same.deduplicated.length, 1);
   assert.deepEqual(same.conflicts, []);
   assert.deepEqual(same.unmapped, []);
-  assert.equal(same.accepted[0]?.questionId, general.questionId,
-    "deterministic tie-break, not answer order");
+  assert.equal(same.accepted[0]?.questionId, specialist.questionId,
+    "deterministic lexical tie-break, not answer order");
 
   const independent = correlateCandidateObservationsV1([general, specialist], [
     confirmed(general.questionId, "inquiry-1"),
