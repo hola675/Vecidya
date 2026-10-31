@@ -3038,3 +3038,52 @@ La lectura estática de QA03B specialty-candidate-bank.ts, specialty-branches-wa
 ### Changelog adicional
 
 - **1.63.0 / 2026-10-31:** cinco preguntas nuevas añadidas al candidato experimental V9, catálogo extendido 82 preservando base 77; documento complementario ES/EN, guardias neutrales y riesgos de cobertura, sin activación pública.
+
+
+## 73. Reconciliación 82: sustituciones, complementos y paridad de evidencia
+
+**F02 — CONCILIACIÓN FOCAL DOCUMENTADA / NO CERTIFICADA / PLAN_ONLY.** En respuesta a la continuación del proyecto, se contrastaron las cinco preguntas complementarias de QA03B_EXTENDED_CANDIDATE_BANK_V3 con las 77 anteriores, usando los contratos actuales y las fichas de Lotes 01–10. El detalle de valores, criterios ES/EN y prueba de aceptación propuesta está en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), «Conciliación transversal de 82 preguntas — matriz de convivencia 77+5», versión 1.5.0. Lectura de HEAD 71e8609df1a0bdf1eaa14f3712510d509559f7e5 (specialty-branches-wave1.ts, reviewed-evidence.ts, reviewed-local-appointments-professional.ts, reviewed-transversal.ts, reviewed-commerce.ts, qa03b/bank.ts); sin test runner, sin UI ni sesiones reales.
+
+### Decisión ejecutiva para las cinco adiciones
+
+| Nuevo ID | Clasificación de convivencia | Preguntas anteriores vinculadas | Resultado |
+| --- | --- | --- | --- |
+| q2_nonprofit_participation_entry | Complemento condicional | nonprofit_membership_lifecycle, nonprofit_donation_clarity y presence_offer_clarity | Participación gratuita no implica cuotas o donaciones; no duplicar el acceso de una misma invitación |
+| q2_education_enrollment_entry | Complemento condicional | presence_offer_clarity | Inscripción/acceso ≠ descripción de la oferta. El intake profesional existente **no** es elegible en education_coaching, así que no se debe retirar por un falso duplicado |
+| q2_real_estate_inquiry_entry | Sustitución futura, **P0 BLOQUEADA** | **professional_intake_flow**, presence_offer_clarity | Professional intake@v2 sí tiene clarity_positioning evidenceV3 directa; la nueva inmobiliaria@v1 sigue pending. Nunca retirar puntuación válida por reemplazo sin evidencia ni fallback |
+| q2_creative_brief_intake | Complemento condicional | process_systemization, operations_information_base y process_ownership | Requisitos y entregables de un encargo no equivalen a repetibilidad, acceso a registros ni responsabilidades; evitar doble score y digitalización inferida |
+| q2_retail_purchase_next_step | Complemento condicional | retail_product_visibility, presence_offer_clarity y ecommerce_checkout_friction | Cómo pagar presencialmente difiere de productos visibles y checkout digital; negocio híbrido requiere separar hechos |
+
+**Resultado:** cinco ADD siguen en banco candidato extendido, sin altas públicas ni puntuaciones. **4 complementos condicionales, 1 sustitución futura condicionada, 0 sustituciones activadas.** Las cinco son deepening/refinement, evidenceMigration=pending, no evidenceV3 y cinco opciones cada una. El banco original de 77 y el ampliado de 82 conservan sus contadores y sus exports.
+
+### Decisiones normativas para F03 y F05
+
+1. **La elegibilidad real no equivale a necesidad de preguntar.** Los cinco ADD poseen hoy gates de operating+historial+sector/entidad+objetivo o fricción; aún falta criterio de brecha informativa para que el planner los seleccione, no solo elegibilidad. Ninguna pregunta refinamiento ocupa turno reservado.
+2. **Sustitución con paridad.** No suppress q2_professional_intake_flow hasta disponer de evidencia V3 para la inmobiliaria (misma dimensión, semántica neutral, versionado y fallback para no aplica/desconocido). La pregunta general seguirá vigente donde la especialidad no corresponda o no se pueda evaluar.
+3. **Selección por constructo.** Crear en diseño una clave sector×evento×atributo observado; elegir una sola contribución puntuable para el mismo hecho. Conservar respuestas adicionales como contexto sin doble suma, sobre todo en ONG, operaciones y negocio físico+ecommerce.
+4. **No ventas obligatorias.** Acceso educativo, participación comunitaria, derivación inmobiliaria y pedidos a medida no implican compra ni canal pagado. No usar unknown o N/A como weak ni suponer contacto autorizado.
+5. **Estados editables.** La edición de sector, etapa, objetivo o fricción invalida elegibilidad y score anteriores, pero preserva historial de respuestas por ID/version para replay.
+6. **Presupuesto:** ruta estándar ≤24, y hasta cinco turnos adicionales SOLO con consentimiento explícito y causa material. Omisión de profundización no crea evidencia negativa.
+7. **Separación:** no interpretar ninguna respuesta como permiso para WhatsApp/email, uso de GHL, confirmación de stock o datos sensibles. No fusionar el CRM de Vecidya con GHL.
+8. **Sin código:** las decisiones anteriores no son reglas implementadas ni nuevas pruebas superadas. Se requiere una integración futura al planner V9 aislado, con tests focales autorizados y sin afectar V8.
+
+### Nueva tabla de salida para F02/F03
+
+| Gate | Requisito de aceptación futuro | Estado al cierre de esta revisión |
+| --- | --- | --- |
+| G82-01 | 77 IDs base + 5 nuevos = 82 únicos, con semántica de versiones preservada | **Declarado en código; no ejecutado** |
+| G82-02 | El planner no ofrece preguntas sectoriales a sectores equivocados ni proyectos sin historial | **Diseñado; no ejecutado** |
+| G82-03 | Real estate sustituye genérica solo con paridad de evidencia/fallback | **P0 bloqueado** |
+| G82-04 | ONG sin cuotas/donaciones no recibe módulos de membresía/dinero por participar | **Diseñado; pendiente TAX-G1** |
+| G82-05 | Retail físico y checkout online no duplican una venta | **Diseñado; no ejecutado** |
+| G82-06 | Cada unknown/N/A queda neutral y no dispara contacto o score negativo | **Diseñado; no ejecutado** |
+| G82-07 | Cobertura C01–C10, 8×10 dimensiones×casos, y 24+5 bajo consentimiento | **No ejecutado/certificado** |
+| G82-08 | ES/EN, WCAG móvil, privacidad y persistencia por versión | **Sin certificación** |
+
+**Plan inmediato:** (1) construir matriz completa ID×versión×sector×gate×constructo×evidencia de 82 preguntas; (2) priorizar bloqueos P0 de taxonomía y puntuación antes de implementar sustitución; (3) preparar y ejecutar únicamente tests focalizados cuando el desarrollo esté autorizado; (4) revisar requisitos F00/F03/F05/F07/F08 para activar banco extendido, sin merge ni producción.
+
+**Estado:** PR #162 permanece draft. **El avance documental no cierra F02, F03 ni el motor V9.** A partir de los 77 IDs originales y los 5 ADD, la cifra de 82 describe solo catálogo candidato, no número de preguntas mostradas en una entrevista.
+
+### Changelog adicional
+
+- **1.64.0 (2026-10-31):** conciliación de las cinco incorporaciones del catálogo 82, detección de la sustitución inmobiliaria bloqueada por evidence parity, cuatro complementos condicionales y gates G82-01 a G82-08. Solo documentación.
