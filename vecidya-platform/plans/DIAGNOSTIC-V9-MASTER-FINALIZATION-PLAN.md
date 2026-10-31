@@ -3087,3 +3087,37 @@ La lectura estática de QA03B specialty-candidate-bank.ts, specialty-branches-wa
 ### Changelog adicional
 
 - **1.64.0 (2026-10-31):** conciliación de las cinco incorporaciones del catálogo 82, detección de la sustitución inmobiliaria bloqueada por evidence parity, cuatro complementos condicionales y gates G82-01 a G82-08. Solo documentación.
+
+
+## 74. Matriz completa 82 — trazabilidad estática y discrepancias de versión
+
+**MATRIZ DOCUMENTAL COMPLETADA / F02 ABIERTA / PLAN_ONLY.** Se incorporó a [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), versión documental **1.6.0**, una tabla de trazabilidad para **82/82 IDs únicos**, ordenada según las 77 fichas editoriales existentes y cinco ADD. La extracción examinó 11 ficheros reviewed, qa03b/bank.ts, specialty-candidate-bank.ts, recovery-wave2.ts, specialty-branches-wave1.ts, reviewed-evidence.ts y las fichas. Fue una **reconstrucción estática** de composición; no ejecutó TypeScript, tests, compilación ni simuló sesiones.
+
+**Composición rastreada:** 38 definiciones reviewed de origen + 7 inline QA03B + 8 selectores derivados de NICHE_REGISTRY + 6 recuperaciones piloto + 15 wave2 + 3 ramas especialistas + 5 ADD = **82**. Dentro de las 38 reviewed, nueve tienen override normal y una (q2_sector) se sustituye por v4. El banco de 77 anterior y el export extendido de 82 permanecen aislados del público.
+
+**Resultados observados con este extractor:** 82 IDs únicos; **40 con mapeo de evidencia V3 y versión coincidente**, **42 sin mapa V3 detectado** y **0 desacuerdos de versión entre mapas detectados**. Estos contadores no son el PASS del validador validateEvidenceMigrationsV3 y no prueban si cada contribución es material o está calibrada. «Sin mapa» puede significar clasificación, contexto o migración pendiente; no es score cero.
+
+### Incidencias de versión: rectificación basada en la capa final
+
+**Cuatro encabezados de fichas antiguas** mostraban v1 cuando la versión reconstruida desde código candidato es v2: q2_regularity, q2_demand_trend, q2_capacity_signal y q2_goal. Antes de diseñar versionado/replay, comprobar con pruebas focales el contrato ejecutable real de cada una y corregir encabezados informativos sin alterar las respuestas históricas.
+
+**Rectificación importante:** q2_customer_reach es v2 en el fichero reviewed-classification.ts, pero el replacement de qa03b/bank.ts lo eleva a v3 en el candidato. Por tanto **no** hay contradicción entre la ficha que declara v3 y la versión de composición QA03B; citar únicamente el módulo reviewed como «versión del candidato» omite una capa y es incorrecto. La matriz utiliza la capa final reconstruida. Del mismo modo, q2_ecommerce_cart_followup es v1 en QBV2 legacy y **v2 en QA03B recovery-wave2.ts**; no utilizar la versión legacy para migración del candidato.
+
+### Gates que bloquean la certificación
+
+| Identificador | Requisito concreto | Estado |
+| --- | --- | --- |
+| F02-82A | Confirmar mediante contratos tipados/ejecución 82 identidades y unicidad; reconciliar versions/source overrides | **Inventario estático preparado; prueba no ejecutada** |
+| F02-82B | Construir AST expandido de appliesWhen/materialAppliesWhen con las guardias por arquetipo, sector/etapa y rutas de sustitución | **Pendiente**; tabla actual muestra extractos locales y no equivale a gate real final |
+| F02-82C | Analizar 40 mapas V3 coincidentes y 42 no detectados; clasificar contexto legítimo, cobertura faltante o versión futura | **Pendiente de calibración y validación F05** |
+| F02-82D | Evitar preguntar nuevas refinements cuando ya existe una observación del mismo evento y preservar el score antiguo | **Diseñado; no implementado**; paridad inmobiliaria P0 |
+| F02-82E | 8 dimensiones × 10 escenarios, casos C01–C10, abstención N/A/unknown, 24+5 con consentimiento | **Sin pruebas ejecutadas** |
+| F02-82F | Equivalencia ES/EN, comprensión cognitiva, accesibilidad, privacidad y replay por ID/version | **No certificado** |
+
+**Prioridad inmediata:** elaborar un mapa de *constructos y dimensiones* que separe las 40 evidencias observadas de las 42 preguntas sin mapeo detectable, aplicando política anti-duplicación. Tras ello, verificar los cuatro encabezados de versiones, paridad de reemplazos food/dental/agency/real-estate, taxonomía TAX-G1/TAX-G3 y gate combinado final; preparar solo pruebas focalizadas sobre el candidato V9 cuando se autorice. No transformar automáticamente señales de organización manual, ventas, retorno o participación en digital_readiness.
+
+**Aislamiento y alcance:** no TypeScript ni TSX editado en este paso; no cambios en Worker, D1, SQL, UI, GHL, endpoints, CI, merges ni producción. Los cinco ADD incorporados anteriormente continúan exclusivamente en el export candidato de 82. PR #162 draft; F00, F02, F03, F05, F07 y F08 siguen sujetos a sus gates.
+
+### Changelog adicional
+
+- **1.65.0 / 2026-10-31:** matriz 82 IDs con versiones compuestas y evidencia rastreable, rectificación de q2_customer_reach y q2_ecommerce_cart_followup por capas, cuatro discrepancias reales de encabezados; trazabilidad documental sin certificación.
