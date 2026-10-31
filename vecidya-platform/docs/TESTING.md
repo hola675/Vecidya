@@ -9,6 +9,12 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
+
+**RAN en Worker local:** `BASE_URL=http://localhost:5173 node tests/e2e/services-catalog-layout-check.mjs` — **PASS**. En 1366/1024/768/390/320 px verifica siete ofertas, ancho de fila consistente, los siete atajos con destino existente, los 14 CTA de detalle/consulta y cero overflow horizontal. `BASE_URL=http://localhost:5173 node tests/e2e/web-commercial-contact-check.mjs` — **PASS** en 1366/390 px; confirma las siete familias y el contexto de consulta, además de las rutas Contacto y Únete.
+
+**RAN:** `pnpm run typecheck`, `pnpm run build` y `git diff --check` — **PASS**. Build conserva los avisos conocidos de secretos locales opcionales ausentes (no se leyeron), imports dinámicos ineficaces y sourcemap CSS. La inspección del navegador comprobó el H1 en dos líneas a 1366/1024 px y tres a 390/320 px, árbol de headings/navegación, foco visible al tabular y movimiento reducido sin transformaciones ni transición perceptible. Capturas visuales completas revisadas a 1366/1024/768/390/320 px. No se ejecutó lector de pantalla, zoom real al 200 %, axe ni auditoría independiente de rendimiento; esto no es certificación WCAG. Sin D1 remota, deploy ni HTTP pública.
+
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.

@@ -31,6 +31,10 @@
 
 - Se renueva la composición de `/` con el texto y los CTA existentes, Vico Inicio en primer plano sobre el borde del recuadro, el símbolo completo de marca sin placa decorativa y una visualización WebP fotorrealista de fondo transparente. Se elimina el pin azul. Vico, la visualización y el logotipo incorporan movimiento ambiental sutil con una variante de fundido para movimiento reducido. La imagen presenta Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende sin cifras inventadas, burbujas ni brújulas. Se mantienen rutas y contenido funcional.
 - Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR #219 abierta como borrador; sin deploy, D1 remota ni declaración de publicación.
+## 2026-10-30 — UX-PREMIUM-02C — Servicios
+
+- `/servicios` adopta una portada tipográfica, recorrido escalonado, accesos rápidos en filas y siete ofertas editoriales con alcance y CTA visibles. Se conservan contenido, destinos y contratos; no se añaden datos ni funciones.
+- Dos E2E focales, typecheck, build y diff-check PASS; QA visual en cinco anchos, teclado y movimiento reducido. PR local pendiente; sin publicación ni despliegue.
 
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 
