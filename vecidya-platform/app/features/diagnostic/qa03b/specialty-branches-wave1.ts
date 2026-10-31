@@ -512,3 +512,90 @@ if (QA03B_GENERAL_DIMENSION_PROBES_V1.length !== 8 || QA03B_GENERAL_BALANCED_CAN
 if (new Set(QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4.map((question) => question.id)).size !== 90) {
   throw new Error("QA-03B balanced candidate contains duplicate IDs");
 }
+
+
+/**
+ * Diseño de evidencia QA03B V9 — NO es un mapa evidenceV3 ni se consume desde
+ * scoring/planner. F02/F05 deben validar aplicabilidad, hechos independientes,
+ * estados neutrales, calibración y paridad con preguntas especializadas.
+ * La tabla hace auditable la propuesta sin cambiar los porcentajes actuales.
+ */
+export const QA03B_GENERAL_PROBE_EVIDENCE_DRAFT_V1 = [
+  {
+    questionId: "q2_general_offer_comprehension",
+    dimension: "clarity_positioning",
+    construct: "offer_understanding",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_presence_offer_clarity","q2_startup_offer_readiness","q2_retail_product_visibility"],
+    provisionalAnswerStates: {"clear":"established","partial":"partial","unclear":"weak","not_presented":null,"unknown":null},
+    guard: "Distinguir la comprensión al explicar de una publicación digital; un mismo intercambio no da dos señales.",
+  },
+  {
+    questionId: "q2_general_contact_information_consistency",
+    dimension: "digital_foundation",
+    construct: "contact_information_accuracy",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_presence_digital_base","q2_local_presence_consistency"],
+    provisionalAnswerStates: {"consistent":"established","partial":"partial","incorrect":"weak","no_public_channel":null,"unknown":null},
+    guard: "Una sola ficha puede demostrar exactitud pero no coherencia entre varios canales. N/A de pregunta no implica N/A de dimensión.",
+  },
+  {
+    questionId: "q2_general_discoverability_path",
+    dimension: "discovery",
+    construct: "discoverability_entry_route",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_discovery_reliable_reach"],
+    provisionalAnswerStates: {"clear_path":"established","partial_path":"partial","no_path":"weak","not_seeking":null,"unknown":null},
+    guard: "Una vía existente no demuestra llegada regular; no usar el mismo cliente referido para puntuar disponibilidad y constancia.",
+  },
+  {
+    questionId: "q2_general_verifiable_trust_signals",
+    dimension: "trust_reputation",
+    construct: "appropriate_trust_proof",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_reputation_flow","q2_professional_authority_signals"],
+    provisionalAnswerStates: {"accessible":"established","limited":"partial","not_accessible":"weak","private_only":null,"unknown":null},
+    guard: "No exigir reseñas ni revelar datos protegidos; credenciales solo mediante confirmación externa válida.",
+  },
+  {
+    questionId: "q2_general_first_action_path",
+    dimension: "conversion_access",
+    construct: "entry_next_step",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_service_response_speed","q2_professional_intake_flow","q2_education_enrollment_entry","q2_real_estate_inquiry_entry","q2_retail_purchase_next_step","q2_nonprofit_participation_entry"],
+    provisionalAnswerStates: {"clear":"established","partial":"partial","unclear":"weak","no_open_action":null,"unknown":null},
+    guard: "Prioridad a una pregunta sectorial calibrada si evalúa el mismo primer paso; no retirar evidence V3 previa por un ADD pending.",
+  },
+  {
+    questionId: "q2_general_pending_step_continuity",
+    dimension: "relationship_recurrence",
+    construct: "pending_step_recoverability",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_followup_general_process","q2_followup_status_visibility","q2_b2b_pipeline","q2_appointments_confirmation_reminders"],
+    provisionalAnswerStates: {"reliable":"established","partial":"partial","lost":"weak","no_followup_needed":null,"unknown":null},
+    guard: "Seguimiento observado no implica permiso de contacto; no puntuar dos veces la misma interacción.",
+  },
+  {
+    questionId: "q2_general_outcome_measure_definition",
+    dimension: "measurement_optimization",
+    construct: "outcome_metric_definition",
+    proposedRole: "supporting_only",
+    potentialOverlap: ["q2_measurement_practice","q2_measurement_result_recording","q2_measurement_review_cycle","q2_measurement_rate_estimate"],
+    provisionalAnswerStates: {"defined":"partial","partial":"weak","none":"missing","insufficient_activity":null,"unknown":null},
+    guard: "Definir qué medir es una condición de apoyo, no acredita registro, comparación, aprendizaje ni optimización.",
+  },
+  {
+    questionId: "q2_general_digital_execution_reliability",
+    dimension: "digital_readiness",
+    construct: "digital_task_reliability",
+    proposedRole: "conditional_direct",
+    potentialOverlap: ["q2_digital_tools_in_use","q2_process_systemization","q2_operations_information_base","q2_operations_process_ownership","q2_b2b_qualification"],
+    provisionalAnswerStates: {"reliable":"established","partial":"partial","unreliable":"weak","not_needed":null,"unknown":null},
+    guard: "Solo hechos sobre tareas que requieren tecnología; organización manual o tener una herramienta no demuestra fiabilidad digital.",
+  },
+] as const;
+
+if (QA03B_GENERAL_PROBE_EVIDENCE_DRAFT_V1.length !== QA03B_GENERAL_DIMENSION_PROBES_V1.length ||
+    QA03B_GENERAL_PROBE_EVIDENCE_DRAFT_V1.some((item, index) => item.questionId !== QA03B_GENERAL_DIMENSION_PROBES_V1[index]?.id)) {
+  throw new Error("QA-03B general evidence draft must match the eight general probes");
+}
