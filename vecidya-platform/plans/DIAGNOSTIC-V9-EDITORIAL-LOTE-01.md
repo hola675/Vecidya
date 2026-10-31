@@ -2279,3 +2279,122 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 
 ### Changelog
 - **1.5.0 (2026-10-31):** conciliación específica de las cinco adiciones contra el banco base, sustitución inmobiliaria bloqueada por paridad y cuatro complementos condicionales; sin activar puntuaciones ni rutas.
+
+## Matriz de trazabilidad 82 — código frente a decisiones editoriales
+
+**Edición documental 1.6.0; reconstrucción estática desde HEAD 78a49f3e4464895b4ffb5548ead4f3d064db40b4.** 82 IDs: 38 definiciones reviewed, siete inline, ocho selectores, seis pilotos, quince recuperadas wave2, tres ramas y cinco añadidas. Versiones reconstruidas a partir de las capas de código, **sin ejecutar TypeScript**. La guardia es solo un **extracto local** de appliesWhen/materialAppliesWhen; no representa el gate final expandido por módulo, overrides, rules y planner. La familia de módulo no es una dimensión de puntuación.
+
+### Tabla de trazabilidad
+
+| # | ID | Fuente / módulo | v fuente | Regla local (extracto) | Evidencia V3 (fuente) | Decisión editorial |
+| ---: | --- | --- | :---: | --- | --- | --- |
+| 1 | q2_entity | R2:foundation / core | v3 | no consta localmente | sin mapa V3 detectado | KEEP v3 |
+| 2 | q2_has_customers | R2:foundation / maturity | v3 | no consta localmente | sin mapa V3 detectado | KEEP v3 |
+| 3 | q2_operational_status | Q:bank / core | v1 | answeredV2("q2_has_customers"), | sin mapa V3 detectado | KEEP v1 |
+| 4 | q2_customer_buyer | R2:classification / classification | v3 | no consta localmente | sin mapa V3 detectado | REWRITE (revisar ficha 4) |
+| 5 | q2_monetization | R2:foundation / classification | v3 | undefined, | sin mapa V3 detectado | REWRITE (revisar ficha 5) |
+| 6 | q2_regularity | R2:context / maturity | v2 | eqV2("q2_has_customers", "yes"), | sin mapa V3 detectado | REWRITE (revisar ficha 6) |
+| 7 | q2_demand_trend | R2:context / maturity | v2 | eqV2("q2_regularity", "regular"), | sin mapa V3 detectado | REWRITE (revisar ficha 7) |
+| 8 | q2_capacity_signal | R2:operational-context / maturity | v2 | eqV2("q2_regularity", "regular"), | sin mapa V3 detectado | REWRITE (revisar ficha 8) |
+| 9 | q2_sector | R2:classification / core | v4 | no consta localmente | sin mapa V3 detectado | REWRITE→v5 |
+| 10 | q2_delivery | R2:foundation / classification | v4 | no consta localmente | sin mapa V3 detectado | REWRITE→v5 |
+| 11 | q2_customer_reach | R2:classification / classification | v3 | undefined, | sin mapa V3 detectado | KEEP v3 |
+| 12 | q2_buyer_recipient_relation | Q:bank / nonprofit | v1 | BUYER_RECIPIENT_RULE, | sin mapa V3 detectado | REWRITE→v2 |
+| 13 | q2_goal | R2:context / goal_friction | v2 | no consta localmente | sin mapa V3 detectado | KEEP v2 |
+| 14 | q2_friction | R2:context / goal_friction | v2 | inV2("q2_goal", ["other", "unsure"]), | sin mapa V3 detectado | REWRITE→v2 |
+| 15 | q2_nonprofit_support_type | Q:specialty-candidate-bank / nonprofit | v1 | andV2(eqV2("q2_operational_status", "operating"), nonprofitContext), | sin mapa V3 detectado | REWRITE→v2 |
+| 16 | q2_niche_food_hospitality | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "food_hospitality") | sin mapa V3 detectado | REWRITE→v2 |
+| 17 | q2_presence_digital_base | R2:transversal / presence | v2 | contextIn("activity", ["active", "prelaunch"]), | digital_foundation/direct | REWRITE→v3 |
+| 18 | q2_presence_offer_clarity | R2:transversal / presence | v2 | andV2(contextIn("activity", ["active", "prelaunch"]), inV2("q2_presen… | clarity_positioning/direct | REWRITE→v3 |
+| 19 | q2_local_presence_consistency | R2:local-trust / local | v2 | andV2(contextEquals("activity", "active"), archetypeIncludesAny(["loc… | digital_foundation/direct | REWRITE→v3 |
+| 20 | q2_discovery_reliable_reach | R2:discovery / discovery | v1 | contextEquals("activity", "active"), | discovery/direct | KEEP v1 |
+| 21 | q2_reputation_flow | R2:local-trust / reputation | v3 | contextEquals("activity", "active"), | trust_reputation/direct | REWRITE→v4 |
+| 22 | q2_service_response_speed | R2:local-appointments-professional / local_service | v2 | activeLocalService, | conversion_access/direct | REWRITE→v3 |
+| 23 | q2_professional_authority_signals | R2:local-appointments-professional / professional | v2 | andV2(activeProfessional, orV2(contextEquals("primaryGoal", "trust"),… | trust_reputation/direct | REWRITE→v3 |
+| 24 | q2_food_menu_visibility | Q:specialty-branches-wave1 / hospitality | v1 | foodSpecialistEligible, | clarity_positioning/direct | REWRITE→v2 |
+| 25 | q2_retail_customer_capture | R2:commerce / retail | v2 | andV2(activeRetail, orV2(contextEquals("primaryGoal", "stop_losing"),… | relationship_recurrence/direct | REWRITE→v3 |
+| 26 | q2_creator_audience_ownership | R2:business-audience / creator | v2 | andV2(contextEquals("activity", "active"), contextEquals("businessMod… | sin mapa V3 detectado | REWRITE→v3 |
+| 27 | q2_followup_general_process | R2:transversal / follow_up | v2 | andV2(contextEquals("activity", "active"), eqV2("q2_friction", "follo… | relationship_recurrence/direct | KEEP v2 |
+| 28 | q2_service_quote_followup | R2:local-appointments-professional / local_service | v2 | andV2(activeLocalService, orV2( | relationship_recurrence/direct | REWRITE→v3 |
+| 29 | q2_appointments_rebooking | R2:local-appointments-professional / appointments | v2 | andV2(activeAppointments, orV2( | relationship_recurrence/direct | KEEP v2 |
+| 30 | q2_b2b_pipeline | R2:specialized-entry / b2b | v2 | andV2(futureB2BApplicability(), eqV2("q2_has_customers", "yes")), | relationship_recurrence/direct | REWRITE→v3 |
+| 31 | q2_b2b_status_visibility | R2:business-audience / b2b | v2 | andV2(contextEquals("activity", "active"), contextIn("customerBuyer",… | digital_readiness/supporting | KEEP v2 |
+| 32 | q2_appointments_confirmation_reminders | R2:local-appointments-professional / appointments | v2 | andV2(activeAppointments, contextIn("appointmentAttendance", ["someti… | relationship_recurrence/direct | REWRITE→v3 |
+| 33 | q2_measurement_rate_estimate | Q:bank / measurement | v1 | andV2(operating, history), | measurement_optimization/direct | REWRITE→v2 |
+| 34 | q2_measurement_result_recording | Q:bank / measurement | v1 | andV2(operating, history, eqV2("q2_measurement_rate_estimate", "unkno… | measurement_optimization/direct | REWRITE→v2 |
+| 35 | q2_measurement_review_cycle | Q:bank / measurement | v1 | andV2(operating, history), evidenceMigration: "migrated", | measurement_optimization/direct | KEEP v1 |
+| 36 | q2_measurement_practice | Q:bank / operations | v1 | operating, | measurement_optimization/direct | REWRITE→v2 |
+| 37 | q2_process_systemization | R2:operational-context / maturity | v2 | eqV2("q2_has_customers", "yes"), | digital_readiness/direct | REWRITE→v3 |
+| 38 | q2_operations_information_base | R2:transversal / operations | v2 | operatingNeed, | digital_readiness/direct | REWRITE→v3 |
+| 39 | q2_operations_handoffs | R2:transversal / operations | v2 | andV2(operatingNeed, eqV2("q2_other_staff", "yes")), | digital_readiness/supporting | KEEP v2 |
+| 40 | q2_digital_tools_in_use | Q:bank / operations | v1 | andV2(operating, orV2( | sin mapa V3 detectado | KEEP v1 |
+| 41 | q2_appointments_noshow | R2:specialized-entry / appointments | v2 | andV2(archetypeIncludes("appointments"), eqV2("q2_has_customers", "ye… | sin mapa V3 detectado | REWRITE→v3 |
+| 42 | q2_appointments_lead_to_booking | R2:local-appointments-professional / appointments | v2 | activeAppointments, | sin mapa V3 detectado | REWRITE→v3 |
+| 43 | q2_appointments_booking_friction | R2:local-appointments-professional / appointments | v2 | andV2(activeAppointments, inV2("q2_appointments_lead_to_booking", ["m… | conversion_access/direct | KEEP v2 |
+| 44 | q2_ecommerce_traffic_sources | R2:specialized-entry / ecommerce | v3 | andV2(archetypeIncludes("ecommerce"), eqV2("q2_has_customers", "yes")), | sin mapa V3 detectado | REWRITE→v4 |
+| 45 | q2_ecommerce_product_discovery | R2:commerce / ecommerce | v2 | andV2(contextEquals("activity", "active"), archetypeIncludes("ecommer… | digital_foundation/direct | REWRITE→v3 |
+| 46 | q2_professional_intake_flow | R2:local-appointments-professional / professional | v2 | activeProfessional, | clarity_positioning/direct | REWRITE→v3 |
+| 47 | q2_dental_care_continuation | Q:specialty-branches-wave1 / appointments | v1 | dentalSpecialistEligible, | relationship_recurrence/direct | KEEP v1 |
+| 48 | q2_marketing_agency_scope_clarity | Q:specialty-branches-wave1 / b2b | v1 | agencySpecialistEligible, | clarity_positioning/direct | REWRITE→v2 |
+| 49 | q2_other_staff | R2:foundation / classification | v3 | no consta localmente | sin mapa V3 detectado | KEEP v3 |
+| 50 | q2_retail_product_visibility | R2:commerce / retail | v2 | andV2(activeRetail, contextEquals("primaryGoal", "explain")), | clarity_positioning/direct | REWRITE→v3 |
+| 51 | q2_startup_problem_clarity | Q:specialty-candidate-bank / startup | v1 | startup, | clarity_positioning/direct | REWRITE→v2 |
+| 52 | q2_startup_validation_evidence | Q:specialty-candidate-bank / startup | v1 | startup, | clarity_positioning/supporting | REWRITE→v2 |
+| 53 | q2_startup_offer_readiness | Q:specialty-candidate-bank / startup | v1 | startup, | clarity_positioning/direct | REWRITE→v2 |
+| 54 | q2_ecommerce_cart_visibility | Q:recovery-wave2 / ecommerce | v1 | ecommerce, | measurement_optimization/supporting | REWRITE→v2 |
+| 55 | q2_ecommerce_cart_followup | Q:recovery-wave2 / ecommerce | v2 | no consta localmente | relationship_recurrence/direct | REWRITE→v3 |
+| 56 | q2_nonprofit_donation_clarity | Q:specialty-candidate-bank / nonprofit | v1 | andV2( | conversion_access/direct | REWRITE→v2 |
+| 57 | q2_hospitality_flow_type | Q:recovery-wave2 / hospitality | v2 | hospitality, | sin mapa V3 detectado | KEEP v2 |
+| 58 | q2_hospitality_reservation_noshow | Q:recovery-wave2 / hospitality | v2 | andV2(hospitality, inV2("q2_hospitality_flow_type", ["reservation", "… | sin mapa V3 detectado | REWRITE (revisar ficha 58) |
+| 59 | q2_hospitality_peak_capacity | Q:recovery-wave2 / hospitality | v1 | hospitality, | sin mapa V3 detectado | REWRITE (revisar ficha 59) |
+| 60 | q2_nonprofit_membership_lifecycle | Q:recovery-wave2 / nonprofit | v1 | andV2(nonprofit, inV2("q2_nonprofit_support_type", ["membership_dues"… | conversion_access/direct | KEEP v1 |
+| 61 | q2_local_repeat_customers | Q:recovery-wave2 / local | v2 | andV2(activeWithHistory, archetypeIncludesAny(["local", "retail", "ho… | sin mapa V3 detectado | REWRITE (revisar ficha 61) |
+| 62 | q2_ecommerce_repeat_purchase | Q:recovery-wave2 / ecommerce | v1 | ecommerce, | sin mapa V3 detectado | REWRITE (revisar ficha 62) |
+| 63 | q2_creator_channel_concentration | Q:recovery-wave2 / creator | v1 | creator, | sin mapa V3 detectado | REWRITE (revisar ficha 63) |
+| 64 | q2_service_area_clarity | Q:recovery-wave2 / local_service | v1 | andV2(inV2("q2_operational_status", ["operating", "preparing"]), arch… | sin mapa V3 detectado | REWRITE (revisar ficha 64) |
+| 65 | q2_startup_demand_signal | Q:recovery-wave2 / startup | v1 | prelaunch, | sin mapa V3 detectado | REWRITE (revisar ficha 65) |
+| 66 | q2_b2b_qualification | Q:recovery-wave2 / b2b | v1 | b2b, | digital_readiness/direct | REWRITE (revisar ficha 66) |
+| 67 | q2_operations_process_ownership | Q:recovery-wave2 / operations | v1 | operations, | digital_readiness/direct | REWRITE (revisar ficha 67) |
+| 68 | q2_followup_status_visibility | Q:recovery-wave2 / follow_up | v1 | followup, | relationship_recurrence/direct | REWRITE (revisar ficha 68) |
+| 69 | q2_measurement_source_confidence | Q:recovery-wave2 / measurement | v1 | measurement, | measurement_optimization/direct | REWRITE (revisar ficha 69) |
+| 70 | q2_ecommerce_checkout_friction | Q:specialty-candidate-bank / ecommerce | v1 | ecommerceOperating, | conversion_access/direct | REWRITE (revisar ficha 70) |
+| 71 | q2_niche_health_wellness | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "health_wellness") | sin mapa V3 detectado | KEEP v1 |
+| 72 | q2_niche_b2b_services | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "b2b_services") | sin mapa V3 detectado | REWRITE (revisar ficha 72) |
+| 73 | q2_niche_beauty_personal_care | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "beauty_personal_care") | sin mapa V3 detectado | REWRITE (revisar ficha 73) |
+| 74 | q2_niche_financial_tax_insurance | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "financial_tax_insurance") | sin mapa V3 detectado | REWRITE (revisar ficha 74) |
+| 75 | q2_niche_home_services | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "home_services") | sin mapa V3 detectado | REWRITE (revisar ficha 75) |
+| 76 | q2_niche_automotive | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "automotive") | sin mapa V3 detectado | REWRITE (revisar ficha 76) |
+| 77 | q2_niche_technology_software | Q:specialty-candidate-bank / classification | v1 | eqV2("q2_sector", "technology_software") | sin mapa V3 detectado | REWRITE (revisar ficha 77) |
+| 78 | q2_nonprofit_participation_entry | Q:specialty-branches-wave1 / nonprofit | v1 | andV2( | sin mapa V3 detectado | ADD v1 |
+| 79 | q2_education_enrollment_entry | Q:specialty-branches-wave1 / professional | v1 | andV2( | sin mapa V3 detectado | ADD v1 |
+| 80 | q2_real_estate_inquiry_entry | Q:specialty-branches-wave1 / professional | v1 | andV2( | sin mapa V3 detectado | ADD v1 |
+| 81 | q2_creative_brief_intake | Q:specialty-branches-wave1 / professional | v1 | andV2( | sin mapa V3 detectado | ADD v1 |
+| 82 | q2_retail_purchase_next_step | Q:specialty-branches-wave1 / retail | v1 | andV2( | sin mapa V3 detectado | ADD v1 |
+
+### Contrastes de versión y estado de evidencia
+
+- **Identidades:** 82 filas de código frente a 77 fichas editoriales antiguas y cinco incorporaciones. Cada ID aparece una vez. No es una prueba de ejecución del banco de 82.
+
+- **Evidencia detectada en el código consultado:** 40 mapeos V3 con versión coincidente, 42 sin mapa V3 detectable y 0 mapeos con versión diferente en esta reconstrucción. Estos son **datos de inspección estática**, no resultados de la función validateEvidenceMigrationsV3, y podrían requerir ajuste al resolver las capas de composición.
+
+- **Versiones con encabezado de ficha discordante respecto del código reconstruido:** q2_regularity (ficha v1 / código v2); q2_demand_trend (ficha v1 / código v2); q2_capacity_signal (ficha v1 / código v2); q2_goal (ficha v1 / código v2). Los encabezados históricos quedan como trazabilidad de la discusión, no se cambian silenciosamente.
+
+- **Mapas con posible conflicto versión/identidad:** no detectados por este extractor. Verificar mediante validador focal autorizado antes de marcar migración PASS.
+
+- **Leyenda:** R2 = archivo qbv2-reviewed-*; Q = qa03b/*, ambos bajo vecidya-platform/app/features/diagnostic. «Sin mapa V3 detectable» no implica que un valor sea débil: puede ser classification/context only/pending. Cada fila enlaza conceptualmente a la Ficha # correspondiente y al fichero de origen.
+
+### Bloqueos de la reconciliación transversal
+
+1. **TAX-G1 y rutas:** expandir los gates reales de las ocho preguntas de nicho, los tres reemplazos sectoriales y el nuevo grupo 78–82 antes de reubicar sector, canal o business model. Comprobar arquetipos híbridos y edición/replay por versión.
+
+2. **Paridad de scoring:** q2_real_estate_inquiry_entry pending no debe suprimir professional_intake_flow, que cuenta con claridad_positioning V3 directa; los otros cuatro ADD solo compiten por necesidad material, sin puntuación nueva ni dobles evidencias.
+
+3. **Medición y digitalización:** no convertir procesos manuales, miembros, retornos, flujo de citas, intereses prelaunch o visibilidad de productos en señales digitales equivalentes sin calibración F05; una respuesta N/A/unknown es neutral según su contrato.
+
+4. **Política 24+5:** el catálogo de 82 no son 82 turnos; preguntas refinement son opcionales tras observación y no desplazan anchors. Los cinco extras solo mediante consentimiento. No se ha verificado dinámicamente este presupuesto.
+
+5. **F02 permanece ABIERTA:** faltan matriz dimensión×escenario 8×10, C01–C10, reglas AST expandidas, equivalencia ES/EN validada, accesibilidad, privacidad, estabilidad de sesión/replay y pruebas focales autorizadas. No merge, UI ni producción.
+
+### Changelog
+
+- **1.6.0 / 2026-10-31:** matriz documental de 82 filas que separa versión de código, diseño editorial, guardias y evidencia; señala discrepancias sin ejecutar pruebas.
