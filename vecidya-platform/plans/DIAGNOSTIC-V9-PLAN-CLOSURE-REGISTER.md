@@ -1,5 +1,5 @@
 # Diagnóstico V9 — Registro de cierre del plan de implementación
-Versión: 0.1.0 | Fecha: 2026-10-31 | Estado: PLAN_ONLY / PENDIENTE DE APROBACIÓN
+Versión: 0.2.0 | Fecha: 2026-10-31 | Estado: PLAN_ONLY / PENDIENTE DE APROBACIÓN
 Repositorio: hola675/Vecidya | PR: #162 | Rama: feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Propósito y fuentes
@@ -64,3 +64,46 @@ Consolidar DEC-01–DEC-12 contra las decisiones aprobadas en secciones posterio
 
 ## Changelog
 - 0.1.0 / 2026-10-31: registro inicial de decisiones, bloqueos, paquetes P00–P06 y gates; solo documentación.
+
+## 9. Reconciliación de decisiones existentes (lectura del plan maestro v1.70.0)
+**Corrección de interpretación:** DEC-01–DEC-12 del apartado 3 son un índice de verificación técnica, NO doce preguntas de producto nuevas. El plan maestro contiene aprobaciones expresas D-V9-001–033 que deben respetarse. No reabrir decisiones aprobadas por estar pendientes de implementación.
+
+| DEC | Política ya aprobada en plan maestro | Pendiente real |
+| --- | --- | --- |
+| 01 | D-V9-016 y V9-TAX-A: mantener ocho dimensiones candidatas y auditarlas frente a C01–C10 | Taxonomía final, nombres, aplicabilidad, pesos |
+| 02 | D-V9-005: resumen anónimo e informe detallado con cuenta; D-V9-027–033: borrador local anónimo 7 días, datos mínimos y D1 solo analítica agregada anónima | Contrato exacto del informe identificado, propiedad y retención de resultados |
+| 03 | D-V9-006: impacto, urgencia, esfuerzo y objetivos; D-V9-011: Ahora/Después/Más adelante | Fórmula, desempates, dependencia y ejemplos; cantidad de prioridades no fijada por D006 |
+| 04 | D-V9-004 y D-V9-018–020: objetivo 24, extensión máxima de cinco con consentimiento explícito; cuenta cada turno de decisión/aclaración, no navegación | Algoritmo de presupuesto y trazas por escenario |
+| 05 | Política antiduplicación documentada y helper candidate-only 13/13 focal PASS en SHA histórico | Fuente confiable de correlación, consentimiento, conflicto, replay y scorer aislado |
+| 06 | D-V9-003 y D-V9-017: modelo híbrido; preguntar adicional solo por evidencia crítica y abstenerse de nivel si sigue insuficiente | Esquema de incertidumbre y contratos exactos |
+| 07 | D-V9-003 y D-V9-013: números solo con calibración/cobertura y comparación histórica compatible | Umbrales definitivos, confianza, versiones y pruebas |
+| 08 | D-V9-015: núcleo certificado y lotes progresivos con cobertura completa antes de lanzamiento | Revisión humana por pregunta/opción de banco 90; selección final |
+| 09 | D-V9-007: Aprende contextual y biblioteca opcional; D-V9-008: servicios contextuales opcionales y sección independiente | Adaptadores reales, elegibilidad y enlaces verificados |
+| 10 | D-V9-012: seguimiento manual, revisión voluntaria y reevaluación explícita; D-V9-027–033: reglas de borrador anónimo | Persistencia de informe autenticado, historial, controles y retención |
+| 11 | V8 se conserva hasta corte autorizado; D-V9-013 exige compatibilidad para comparar números históricos | Decidir si se ofrece importación histórica opcional, con adaptador aislado |
+| 12 | Gates F09/F10: piloto, staging, rollback, aprobación explícita | Checklist operativo y evidencia de certificación |
+
+### Otras aprobaciones que NO deben volver a preguntarse
+- D-V9-001 DIGITAL; D-V9-002 cobertura completa desde V9; D-V9-009 objetivos iniciales opcionales, sugeridos y confirmados.
+- D-V9-010 conclusiones con explicación breve (sin panel técnico de trazabilidad pública aprobado).
+- D-V9-014 español e inglés completos certificados.
+- D-V9-021–026 acompañamiento premium, progreso por hitos, tono cercano/elegante, una pregunta principal por vista y autoavance contextual reversible.
+- D-V9-029–032 borrador exclusivamente local, consentimiento global reversible para texto libre con exclusiones individuales y avisos contextuales.
+- D-V9-033 es SOLO arquitectura simple (borrador local + D1 agregado anónimo). La propuesta homónima anterior de repreguntar textos no persistidos fue retirada y NO está aprobada.
+
+### Lista reducida de decisiones realmente abiertas
+A. Taxonomía final de ocho dimensiones, etiquetas y criterios de aplicabilidad tras auditoría 8×10.
+B. Calibración, umbrales de puntuación, confianza y condiciones de score global; sin imponer puntuación donde no hay evidencia.
+C. Matriz editorial completa y aceptación de preguntas/opciones del catálogo 90.
+D. Identidad y fuente de confirmación de eventos correlacionados, consentimiento y versionado de evidencia.
+E. Contrato detallado de informe identificado, retención, acceso y seguimiento.
+F. Algoritmos de priorización, presupuesto adaptativo y fallbacks, respetando políticas ya aprobadas.
+G. Contratos técnicos y aceptación de Aprende/servicios y separación de GHL.
+H. Estrategia de reconciliación main→V9, sustitución V8, certificación y rollback.
+Ninguna de A–H se considera aprobada por este registro.
+
+## 10. Siguiente paquete documental: backlog atómico
+Preparar matriz F00–F10 con: ID, prerequisito, ruta/contrato, cambio permitido, prueba focal, evidencia y condición de parada. En PLAN_ONLY solo documentar tareas; no ejecutarlas.
+
+## Changelog adicional
+- 0.2.0 / 2026-10-31: reconciliación de DEC-01–12 con aprobaciones D-V9-001–033; reduce consultas pendientes y evita reabrir decisiones cerradas. Sin runtime ni CI.
