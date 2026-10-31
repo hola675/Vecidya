@@ -27,3 +27,9 @@ CLASS-02-UNKNOWN: la ruta candidata especializada v4 carece de la respuesta neut
 
 ## Changelog
 0.1.0: origen de q2_sector v4 trazado hasta clasificación reviewed v2; conteo 19 sustentado estáticamente; brecha unknown registrada.
+
+
+## FE DE ERRATAS — 2026-10-31 (v0.1.1)
+**La conclusión anterior sobre 19 opciones y ausencia de unknown es INCORRECTA.** `qa03b/specialty-candidate-bank.ts` importa explícitamente `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` desde `./bank`, no desde `../qbv2-reviewed-evidence`. `qa03b/bank.ts` construye el export local con `historicalBank.map(evolve)`; `evolve` aplica `replacement.q2_sector`, que añade `unknown` y version=3. Luego la rama especializada crea v4 con las opciones de esa base editorial y cuatro valores nuevos. La expectativa estática es **20 opciones (15 reviewed + unknown + 4)**, sujeta a confirmar la lista exacta de historicalBank. La supuesta ausencia de unknown en v4 no está sustentada; no crear trabajo de implementación para agregarla sin prueba. Esta fe de erratas prevalece sobre el análisis previo.
+
+Changelog v0.1.1: corregido origen real de importación y expectativa de opciones.
