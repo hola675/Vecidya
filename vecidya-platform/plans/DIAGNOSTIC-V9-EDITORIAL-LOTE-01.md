@@ -2111,3 +2111,108 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 ### Changelog
 
 - **v1.3.0 (2026-10-31):** cierre editorial delegado de cinco selectores ES/EN, cobertura documental 77/77, 18 KEEP/59 REWRITE; taxonomía de mascotas/automotriz/software y compatibilidad histórica explícitas. Sin cambios de motor.
+
+
+## Ampliación complementaria del candidato V9 — banco 82
+
+**Edición editorial 1.4.0 / CANDIDATE_ONLY / NO PUBLICADO.** A petición del propietario se añadieron **cinco preguntas nuevas** al código candidato aislado, sin sustituir ni reinterpretar las 77 del conjunto anterior. La definición ejecutable de estas cinco preguntas —en español, con opciones, guardias y sin evidencia calibrada— reside en qa03b/specialty-branches-wave1.ts, en QA03B_COMPLEMENTARY_QUESTIONS_V1. El nuevo catálogo es QA03B_EXTENDED_CANDIDATE_BANK_V3: 77+5=82. El export original QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 permanece con 77 y sin modificaciones en su composición. El flujo público no importa el nuevo catálogo; no se han realizado migraciones ni deploy.
+
+**Alcance de la autorización actual:** incorporación acotada al candidato V9. Los valores, preguntas y guardias de la nueva colección son **propuestas comprobables**, no evidencia de rutas adaptativas funcionando o de una entrega pública. Ninguna pregunta genera puntuación automática; las cinco se marcan evidenceMigration=pending y no tienen evidenceV3. Cada una tiene cinco opciones, incluyendo desconocimiento y una salida neutral de no aplicabilidad. Las cinco se identifican únicamente con IDs nuevos, versión 1.
+
+### Complemento 78 — q2_nonprofit_participation_entry · ADD v1
+
+**ES:** «Si alguien nuevo quiere participar en tu iniciativa comunitaria, ¿sabe cómo dar el primer paso?»  
+**EN:** “If someone new wants to participate in your community initiative, do they know how to take the first step?”  
+**Ayuda ES:** «Cuenta actividades reales y abiertas. Participar no exige donar, pagar cuotas ni ser cliente.»  
+**Help EN:** “Consider actual activities open to participants. Participation doesn't require donating, paying dues, or becoming a customer.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| clear | Sí, el primer paso para participar está claro. | Yes, the first step to participate is clear. |
+| partial | Se puede participar, pero algunas indicaciones son confusas. | Participation is possible, but some instructions are confusing. |
+| unclear | Recibimos interés, pero no está claro cómo incorporarse. | People express interest, but how to join isn't clear. |
+| no_open_entry | La actividad no tiene actualmente una vía de participación abierta. | The activity doesn't currently have an open participation route. |
+| unknown | No sé qué encuentra una persona nueva. | I don't know what a newcomer would find. |
+
+**Gate:** operating + has_customers=yes + entity=organization o monetization=mission + goal explain/opportunities o friction conversion. **Valor neutral:** no_open_entry es not_applicable; unknown es incertidumbre. **Diferencia respecto a las 77:** participación comunitaria no es el ciclo de membresía ni una donación; tampoco equivale a contar participantes regulares. **Aceptación futura:** C05 entidad con voluntariado sin donaciones ni cuotas, C09 iniciativa multiactividad; no exigir pago, CRM ni permiso de contacto.
+
+### Complemento 79 — q2_education_enrollment_entry · ADD v1
+
+**ES:** «Cuando alguien quiere empezar tu formación o acompañamiento, ¿entiende cómo inscribirse o solicitar acceso?»  
+**EN:** “When someone wants to start your course or coaching service, do they understand how to enroll or request access?”  
+**Ayuda ES:** «Puede ser una clase, un programa o tutoría. No presupone pagos ni plataforma de cursos.»  
+**Help EN:** “It may be a class, program, or tutoring. Payment and a course platform aren't assumed.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| clear | Los pasos de inscripción o acceso se entienden bien. | Enrollment or access steps are clear. |
+| partial | Se entiende la idea, pero faltan algunos pasos. | The general process is understandable, but some steps are missing. |
+| unclear | Hay información, pero no permite saber cómo empezar. | Information exists, but doesn't explain how to begin. |
+| no_open_enrollment | Actualmente no existe inscripción o acceso abierto. | Enrollment or access isn't currently open. |
+| unknown | No he comprobado qué entiende alguien nuevo. | I haven't checked what a newcomer understands. |
+
+**Gate:** operating + has_customers=yes + sector education_coaching + goal explain/opportunities o friction conversion. **Distinción:** acceso al programa no demuestra pago, asistencia, resultado educativo ni certificación; inscripción no abierta es N/A, no fallo digital. **Aceptación:** C04 tutor independiente y C05 curso gratuito; no asumir checkout ni agenda.
+
+### Complemento 80 — q2_real_estate_inquiry_entry · ADD v1
+
+**ES:** «Si una persona pregunta por una propiedad o servicio inmobiliario, ¿entiende cómo solicitar información?»  
+**EN:** “If someone asks about a property or real-estate service, is it clear how to request information?”  
+**Ayuda ES:** «No implica confirmar disponibilidad, precio, aprobación ni concertar una visita.»  
+**Help EN:** “This doesn't confirm availability, price, approval, or a scheduled viewing.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| clear | Está claro cómo enviar una consulta pertinente. | It's clear how to send a relevant inquiry. |
+| partial | Puede consultarse, pero faltan indicaciones importantes. | Inquiries are possible, but important instructions are missing. |
+| unclear | La información no aclara cómo iniciar la consulta. | The information doesn't explain how to inquire. |
+| referral_only | Solo atendemos consultas a través de un proceso de derivación definido. | Inquiries are handled through a defined referral process only. |
+| unknown | No lo he comprobado desde fuera. | I haven't reviewed it from an outsider's perspective. |
+
+**Gate:** operating + has_customers=yes + sector real_estate + goal explain/opportunities o friction conversion. **Neutralidad:** referral_only es N/A de consulta pública; no demuestra falta de accesibilidad en el proceso alternativo. **Diferencia:** no se evalúa inventario ni disponibilidad de inmuebles, tampoco la conversión de consultas en operaciones. **Aceptación:** agente independiente y inmobiliaria con captación por recomendación, cambios sectoriales C10.
+
+### Complemento 81 — q2_creative_brief_intake · ADD v1
+
+**ES:** «Cuando aceptas un encargo creativo, ¿queda claro qué necesita el cliente y qué entregarás?»  
+**EN:** “When you accept a creative assignment, is it clear what the client needs and what you will deliver?”  
+**Ayuda ES:** «Piensa en encargos reales; una conversación o nota puede servir, sin software obligatorio.»  
+**Help EN:** “Think of actual assignments; a conversation or note may be enough, without requiring software.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| clear | Normalmente se acuerdan necesidades y entregables antes de comenzar. | Needs and deliverables are usually agreed before starting. |
+| partial | A veces faltan detalles y hay que aclararlos después. | Some details are missing and clarified later. |
+| improvised | Con frecuencia comenzamos sin aclarar necesidades o entregables. | We often start without clarifying needs or deliverables. |
+| no_comparable_projects | No hemos tenido encargos comparables recientes. | We haven't had comparable recent assignments. |
+| unknown | No tengo información suficiente para responder. | I don't have enough information to answer. |
+
+**Gate:** operating + has_customers=yes + sector creative_media + goal organize o friction operations. **Distinción:** claridad de encargo y entregables es un hecho operativo, no automatización ni prueba de digital_readiness. **Neutralidad:** sin proyectos comparables es N/A/insuficiencia contextual. **Doble observación:** no sumar con q2_process_systemization y q2_operations_information_base por el mismo incidente. **Aceptación:** fotografía por encargo y servicios de diseño, profesionales independientes y equipos mixtos.
+
+### Complemento 82 — q2_retail_purchase_next_step · ADD v1
+
+**ES:** «Cuando alguien elige un producto de tu tienda física, ¿sabe cómo concretar la compra?»  
+**EN:** “When someone chooses a product in your physical store, do they know how to complete the purchase?”  
+**Ayuda ES:** «Se evalúa el paso para comprar, no si el producto está disponible o si la venta se completó.»  
+**Help EN:** “This checks the purchase step, not product availability or whether a sale was completed.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| clear | El paso para concretar una compra está claro. | The next step to complete a purchase is clear. |
+| partial | Se puede comprar, pero algunos pasos generan dudas. | Purchasing is possible, but some steps cause confusion. |
+| unclear | Hay interés en productos, pero cuesta saber cómo comprarlos. | There is product interest, but how to purchase is unclear. |
+| not_direct_sales | No realizamos ventas directas al público en esta actividad. | This activity doesn't sell directly to the public. |
+| unknown | No sé qué experimenta una persona nueva. | I don't know what a newcomer experiences. |
+
+**Gate:** operating + has_customers=yes + sector retail + goal explain/opportunities o friction conversion. **Distinción:** completar una compra física no es ver el catálogo, localizar un producto online o confirmar stock. **Neutralidad:** not_direct_sales=N/A y no permite inventar ventas. **Aceptación:** tienda de ropa, showroom informativo y negocio híbrido retail+ecommerce, sin repetir q2_ecommerce_checkout_friction.
+
+### Reglas de convivencia 77 ↔ 82, cobertura y pruebas pendientes
+
+1. **Identidades:** la nueva colección contiene exactamente 5 IDs nuevos y 25 options; la composición QA03B_EXTENDED_CANDIDATE_BANK_V3 contiene 82 preguntas. Los assert originales de 77 se mantienen en su export propio. Las validaciones estáticas de duplicación de ID del nuevo candidato se agregaron en el propio fichero; estos asserts no sustituyen ejecutar pruebas.
+2. **No se implanta todo lo diseñado en los diez lotes:** los 59 REWRITE siguen siendo propuesta editorial. Los cinco ADD tampoco reescriben ninguna de las 77 preguntas ni su evidencia. Las opciones v1 de las nuevas preguntas son su primer contrato, no un cambio semántico retroactivo de las 77.
+3. **Sin score artificial:** los cinco ADD son profundización sectorial y evidenceMigration=pending, evidenceV3 ausente. No se puede afirmar que atienden déficit de cobertura por dimensión antes de validar el grafo y calibrar evidencia F05.
+4. **Sin duplicados:** nueva inscripción vs claridad de oferta genérica; consulta inmobiliaria vs inicio de servicio profesional; participación comunitaria vs membresía/donaciones; briefing creativo vs proceso general; compra presencial vs productos visibles/checkout. El futuro planner debe seleccionar la observación más específica y no hacer dos preguntas del mismo constructo sin valor informativo nuevo.
+5. **Ajuste de aplicabilidad:** las cinco aparecen solo si se cumplen sus guardias de operación, historial, sector/contexto y objetivo/fricción, y aun así compiten por presupuesto: máximo 24 turnos + hasta 5 adicionales con consentimiento. Si un usuario cambia sector/entidad/etapa, invalidar la elegibilidad anterior y replanificar; conservar historia sin puntuar hechos ya inaplicables.
+6. **Revisión manual requerida:** contratos EN son drafts editoriales de esta sección, no translations activadas en el motor. Antes de activar, medir cobertura real de los 5 casos, resolver la separación TAX-G1, diseñar evidencia por versión si corresponde, validar opciones N/A/unknown, test focal C04/C05/C07/C09/C10 y seguridad/privacidad. No generar datos de clientes ni acceso a GHL.
+7. **Cambio de alcance delimitado:** el propietario autorizó añadir preguntas al banco candidato; no solicitó activar el flujo público, permitir contactabilidad comercial o pasar el proyecto a producción. PR #162 sigue draft; F02/F03/F05/F07 abiertos, F00/main pendiente.
+
+### Changelog
+- **v1.4.0 / 2026-10-31:** añadidas cinco preguntas complementarias al banco candidato V9 (82 aisladas, 77 base preservadas), fichas ES/EN y reglas de no duplicación/abstención; sin despliegue.
