@@ -102,7 +102,7 @@ test("new and neutral probe answers do not produce uncalibrated scoring", () => 
   const withoutAnswers = scoreCandidateContextualDimensionsV3({ answers: base }, bank90);
   assert.deepEqual(withoutAnswers.dimensions, baseline.dimensions);
   for (const optionKind of ["unknown", "not_applicable"] as const) {
-    const answers: AnswersV2 = { ...base };
+    const answers: Record<string, string | readonly string[]> = { ...base };
     for (const q of probes) {
       const option = q.options.find((item) => item.kind === optionKind);
       assert.ok(option, q.id);
