@@ -566,3 +566,187 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 ### Changelog
 
 - **0.5.0 / 2026-10-31:** Lote 02 completo ES/EN, ocho decisiones editoriales delegadas, neutralidad y guardias; corregidas dos hipótesis iniciales de auditoría tras consultar el banco compuesto. No se alteró código ni se ejecutaron tests.
+
+
+## Lote editorial 03 — presencia, descubrimiento, confianza y acceso (2026-10-31)
+
+**Versión documental acumulada 0.6.0 — DECISIONES EDITORIALES DELEGADAS / PLAN_ONLY.** Ocho preguntas del candidato V9 analizadas desde fuentes del HEAD inicial ed4375b7b0046ec39b34b8b2a6fca01e5e8a5dd1. Se conserva este documento editorial y se amplía por lotes sin crear archivos Markdown adicionales. La aprobación delegada comprende únicamente la especificación de diseño ES/EN; **ningún texto, value, regla, scoring ni versionado ha sido modificado en la aplicación**. Las pruebas de comprensión lingüística, evaluación y E2E no se han ejecutado.
+
+### Contratos y fronteras comprobados antes de decidir
+
+- Composición: qa03b/specialty-branches-wave1.ts ← specialty-candidate-bank.ts ← qa03b/editorial-copy.ts aplicado sobre qa03b/bank.ts ← qbv2-reviewed-evidence.ts, qbv2-reviewed-transversal.ts, qbv2-reviewed-local-trust.ts, qbv2-reviewed-discovery.ts y qbv2-reviewed-local-appointments-professional.ts. Las elegibilidades adicionales se deben componer sin invalidar el fallback genérico.
+- En el candidato, q2_presence_digital_base admite active/prelaunch a través de override en bank.ts; q2_presence_offer_clarity requiere una presencia reliable/partial y su sustitución gastronómica depende de **más** condiciones. No extender la pregunta de claridad a negocios sin presencia solo porque «falta digitalización».
+- q2_reputation_flow conserva guardia añadida de operating AND historial de personas reales, incluso si las reseñas originales tenían criterio de activity=active. q2_service_response_speed exige servicio local y operación. q2_professional_authority_signals depende además de necesidad de confianza y sector profesional.
+- La evidencia V3 existente asocia base y datos locales a digital_foundation; claridad a clarity_positioning; adquisición regular a discovery; reseñas y experiencia profesional a trust_reputation; primera respuesta a conversion_access. Estas son **dimensiones candidatas**, no taxonomía final ratificada. q2_food_menu_visibility declara evidencia directa de clarity_positioning solo cuando resulta elegible.
+- **Regla editorial obligatoria D-V9-SEM-A:** not_published = ausencia observada de publicación; not_applicable = una exigencia que legítimamente no corresponde al modelo; unknown = no hay conocimiento fiable. No son intercambiables ni significan automáticamente weak. La ausencia de presencia pública puede ser evidencia de digital_foundation=missing *si aplica*, pero **no** prueba clarity_positioning=weak ni trust_reputation=weak. Los valores existentes se preservan históricamente por versión.
+
+### Resumen de las ocho resoluciones
+
+| Ficha | ID | Versión fuente → versión objetivo* | Resolución | Motivo principal |
+| --- | --- | --- | --- | --- |
+| 17 | q2_presence_digital_base | 2 → 3* | **REWRITE** | Distinguir presencia ausente, presencia no necesaria en contexto y desconocimiento sin inferir calidad de oferta |
+| 18 | q2_presence_offer_clarity | 2 → 3* | **REWRITE** | Añadir estado sin oferta publicada, preservar no aplicable auténtico y fallback |
+| 19 | q2_local_presence_consistency | 2 → 3* | **REWRITE** | Separar datos publicados incorrectos, datos sin publicar y campos legítimamente no aplicables |
+| 20 | q2_discovery_reliable_reach | 1 → 1 | **KEEP / COPY_REFINED** | Cinco opciones ya distinguen fiabilidad, búsqueda no activa y desconocimiento |
+| 21 | q2_reputation_flow | 3 → 4* | **REWRITE** | No exigir reseñas por volumen; reconocer ausencia de publicación y confidencialidad |
+| 22 | q2_service_response_speed | 2 → 3* | **REWRITE** | Separar respuesta tardía de ausencia de nuevas consultas e inaplicabilidad real |
+| 23 | q2_professional_authority_signals | 2 → 3* | **REWRITE** | No exigir cartera pública con datos confidenciales; separar falta de publicación y N/A |
+| 24 | q2_food_menu_visibility | 1 → 2* | **REWRITE / SEM-A crítica** | La opción actual not_applicable significa «todavía no muestro», contradicción semántica |
+
+*Versiones objetivo **propuestas** para una futura implementación V9, no nuevos contratos activos ni autorización de cambios de valores en QBV2/V8. La pregunta 20 no necesita nueva identidad semántica por esta revisión. Decisiones: **1 KEEP, 7 REWRITE, 0 REMOVE**.
+
+### Ficha 17 — q2_presence_digital_base · v2 actual, v3 objetivo
+
+**ES editorial:** «Si alguien busca tu actividad en internet, ¿encuentra información pública vigente para conocerte y contactarte?»  
+**EN editorial:** “If someone looks for your activity online, can they find up-to-date public information to learn about you and contact you?”  
+**Ayuda ES:** «Puede ser una web, ficha, perfil o plataforma. Importa que la información sea correcta y accesible; no necesitas tener una web propia.»  
+**Help EN:** “It may be a website, listing, public profile, or platform. The information should be accurate and accessible; you don't need to own a website.”
+
+| value existente | ES futuro | EN futuro | Lectura de diseño |
+| --- | --- | --- | --- |
+| reliable_presence | Sí, encuentro al menos un lugar con información correcta y actualizada. | Yes, there is at least one place with accurate, current information. | Evidencia de digital_foundation establecida, si aplica y está respaldada |
+| partial_presence | Hay información pública, pero está incompleta o desactualizada. | Public information exists, but it is incomplete or out of date. | Parcial, no inferir claridad de oferta |
+| no_reliable_presence | No encuentro un lugar público con información fiable y actualizada. | There is no public place with reliable, up-to-date information. | Puede ser foundation=missing si la presencia resulta pertinente; equivale a ausencia/no publicación en el canal, NO a «claridad débil» |
+| not_applicable | La actividad no necesita que el público pueda encontrarla directamente por internet. | This activity does not need to be directly discoverable by the public online. | Neutral solo con justificación del modelo y gate; «no lo necesito» sin contexto no prueba N/A |
+| unknown | No lo he comprobado o no tengo información suficiente. | I haven't checked or don't have enough information. | kind=unknown; abstención |
+
+**Elegibilidad observada:** override de bank.ts admite active/prelaunch; en pausa no inferir disponibilidad presente. **Tipo:** single. **Evidencia:** mapeo directness=direct de digital_foundation v2, pero el diseño necesita rúbrica de pertinencia para validar not_applicable. **Decisión:** REWRITE semántica de opción N/A y ayuda con identidad futura; evitar añadir un nuevo value not_published redundante con no_reliable_presence sin demostrar diferencia observable. **Controles:** C02, C03, C08, C10 y negocio que depende de un marketplace.
+
+### Ficha 18 — q2_presence_offer_clarity · v2 → v3 objetivo
+
+**ES editorial:** «Cuando alguien ve tu información pública en internet, ¿entiende qué ofreces sin tener que preguntarte?»  
+**EN editorial:** “When someone sees your public information online, can they understand what you offer without having to ask?”  
+**Ayuda ES:** «Evalúa lo que aparece publicado, no las ventas. Si no has publicado aún la oferta, indícalo; no confundas eso con información publicada que resulta difícil de entender.»  
+**Help EN:** “Assess what is published, not sales. If the offer hasn't been published yet, say so; that is different from published information that is hard to understand.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| clear | La oferta publicada se entiende claramente. | The published offer is clear. | clarity_positioning: established si hay evidencia directa |
+| partial | Se entiende en parte, pero faltan detalles importantes. | It is partly clear, but important details are missing. | partial |
+| unclear | La oferta está publicada, pero resulta difícil entenderla. | The offer is published but hard to understand. | weak sobre contenido existente, no sobre ausencia de sitio |
+| not_published **NEW** | Todavía no he publicado qué ofrezco en ese lugar. | I haven't published what I offer there yet. | Estado de publicación contextual; **no** convertir automáticamente en clarity weak |
+| not_applicable | Mostrar una oferta pública en ese lugar no corresponde a mi actividad. | Publishing an offer in that location isn't appropriate for this activity. | Neutral con justificación; no alternativa fácil a no publicado |
+| unknown | No lo he comprobado desde la perspectiva de alguien nuevo. | I haven't checked it from a new visitor's perspective. | incertidumbre |
+
+**Tipo:** single. **Elegibilidad observada:** materialAppliesWhen exige actividad active/prelaunch y base digital reliable/partial; specialty branch agrega exclusión cuando reemplazo gastronómico o agencia es efectivamente elegible. **Evidencia:** clarity_positioning v2 con directness=direct; nuevo not_published debe pasar a context_only/abstención de claridad hasta rúbrica aprobada. **Decisión:** REWRITE v3 para separar tres valores y no quitar la pregunta genérica si su reemplazo no es elegible. **Controles:** C02, C08 y agencia con presencia incompleta. No preguntar cuando q2_presence_digital_base=no_reliable_presence.
+
+### Ficha 19 — q2_local_presence_consistency · v2 → v3 objetivo
+
+**ES editorial:** «Cuando alguien busca tu actividad en internet, ¿encuentra correctos los datos necesarios para contactarte o visitarte?»  
+**EN editorial:** “When someone finds your activity online, are the details they need to contact or visit you accurate?”  
+**Ayuda ES:** «Considera teléfono, WhatsApp, dirección y horarios solo cuando correspondan. No se exige local físico a un negocio que no atiende presencialmente.»  
+**Help EN:** “Consider phone, messaging, address, and opening hours only when relevant. A physical address isn't required for an activity that doesn't serve people in person.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| consistent | Los datos que corresponden a mi actividad son correctos y actuales. | The relevant details are accurate and up to date. | digital_foundation established |
+| partial | Algunos datos publicados están incompletos o desactualizados. | Some published details are incomplete or outdated. | partial |
+| no | Los datos publicados son incorrectos o no permiten contactarme. | Published details are wrong or don't allow people to contact me. | weak solo de datos publicados si la actividad los necesita |
+| not_published **NEW** | No he publicado todavía los datos que corresponden a mi actividad. | I haven't yet published the details relevant to my activity. | Estado de publicación; evaluar relevancia antes de asignar missing |
+| not_applicable **NEW** | No necesito publicar datos locales de visita o atención presencial. | I don't need to publish local visit or in-person service details. | Neutral solo respecto a datos locales, no equivale a «sin contacto digital» |
+| unknown | No lo he revisado recientemente. | I haven't checked recently. | incertidumbre |
+
+**Tipo:** single. **Elegibilidad observada:** active + arquetipos local/retail/hospitality, sin guardia de presencia digital explícita en pregunta base; diseñar gate que no repita pregunta cuando ya se sabe que no existe ubicación pública. **Evidencia:** digital_foundation directness=direct v2; **no sumar** esta observación y q2_presence_digital_base como dos pruebas independientes del mismo fallo. **Decisión:** REWRITE para separar disponibilidad, corrección y N/A de ubicación; evitar penalización de quien trabaja exclusivamente a domicilio. **Controles:** C06, C08 y negocio sin local físico.
+
+### Ficha 20 — q2_discovery_reliable_reach · KEEP v1
+
+**ES editorial:** «En los últimos meses, ¿has logrado llegar con constancia a personas nuevas interesadas en lo que ofreces?»  
+**EN editorial:** “In recent months, have you consistently reached new people interested in what you offer?”  
+**Ayuda ES:** «Cuenta cualquier medio: recomendaciones, búsqueda, redes sociales, anuncios o contactos directos. Si ahora no buscas personas nuevas, indícalo.»  
+**Help EN:** “Count any channel: referrals, search, social media, advertising, or direct outreach. If you aren't trying to reach new people right now, say so.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| reliable | Sí, llega gente nueva de forma bastante constante. | Yes, new people reach us fairly consistently. | discovery established, sujeto a evidencia |
+| irregular | Algunas veces, pero de manera poco constante. | Sometimes, but not consistently. | partial |
+| weak | No tengo una vía que genere interés nuevo con constancia. | I don't have a channel that consistently generates new interest. | weak solo si captar personas nuevas es objetivo pertinente |
+| not_seeking | Ahora mismo no estamos buscando llegar a personas nuevas. | We're not currently trying to reach new people. | context_only, no weak ni not_applicable universal |
+| unknown | No tengo datos para determinarlo. | I don't have enough information to tell. | incertidumbre |
+
+**Tipo:** single. **Elegibilidad de origen:** activity=active; no pregunta de resultados reales en un proyecto en preparación ni en pausa. **Evidencia:** discovery directness=direct v1, pero «consistencia» no significa necesariamente ventas. **Decisión:** KEEP sin introducir values nuevos; matizar el objetivo y respetar not_seeking. **Controles:** C02, C03, C05, C09; si no hay evidencia digital específica, no afirmar crecimiento por canal.
+
+### Ficha 21 — q2_reputation_flow · v3 → v4 objetivo
+
+**ES editorial:** «¿Las personas que quieren conocerte pueden consultar reseñas, testimonios u otras experiencias públicas verificables?»  
+**EN editorial:** “Can people who want to learn about you find public reviews, testimonials, or other verifiable accounts of past experience?”  
+**Ayuda ES:** «No necesitas un número mínimo de reseñas. Respeta las obligaciones de confidencialidad y los casos en que publicar experiencias de clientes no corresponde.»  
+**Help EN:** “There is no minimum review count. Respect confidentiality and situations where publishing client experiences isn't appropriate.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| strong | Hay referencias públicas suficientes y vigentes para conocer experiencias reales. | There are enough current public references to understand real experiences. | established solo tras rúbrica de calidad, no cantidad arbitraria |
+| partial | Hay algunas referencias, pero son limitadas o incompletas. | Some references exist, but they're limited or incomplete. | partial |
+| weak | Las referencias publicadas son difíciles de verificar o aportan muy poca información útil. | Published references are hard to verify or provide little useful information. | weak del contenido publicado cuando es pertinente |
+| not_published **NEW** | No publicamos reseñas ni testimonios actualmente. | We don't currently publish reviews or testimonials. | Contextual; no etiquetar automáticamente confianza débil |
+| not_applicable **NEW** | Publicar experiencias individuales no corresponde por confidencialidad u otra razón legítima. | Publishing individual experiences isn't appropriate because of confidentiality or another legitimate reason. | N/A condicionado, no penalizar sector legal/salud |
+| unknown | No sé qué puede encontrar una persona nueva. | I'm not sure what a new person can find. | incertidumbre |
+
+**Elegibilidad compuesta:** q2_operational_status=operating AND q2_has_customers=yes, más condición activity=active. **Evidencia:** trust_reputation directness=direct v3; distinguir referencias reales, autorización para publicarlas y calidad de evidencia. **Decisión:** REWRITE; no imponer reseñas como única señal de confianza; estudiar sustitución por credenciales autorizadas cuando la privacidad impide testimonios, sin sumar la misma evidencia dos veces. **Controles:** C04, C05 y especialidades con confidencialidad.
+
+### Ficha 22 — q2_service_response_speed · v2 → v3 objetivo
+
+**ES editorial:** «Cuando alguien te contacta por primera vez, ¿recibe una respuesta útil dentro de un plazo razonable para tu actividad?»  
+**EN editorial:** “When someone contacts you for the first time, do they receive a useful reply within a reasonable time for your activity?”  
+**Ayuda ES:** «Cuenta llamadas, mensajes y formularios reales. No presupongas atención inmediata o 24/7; considera el horario y tipo de servicio.»  
+**Help EN:** “Consider actual calls, messages, and forms. Don't assume immediate or 24/7 service; consider your operating hours and service type.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| strong | Casi siempre respondemos de manera útil y a tiempo. | We almost always provide a helpful, timely response. | conversion_access established si hay casos observables |
+| partial | Respondemos, pero a veces con demoras relevantes. | We reply, but sometimes with meaningful delays. | partial |
+| weak | Frecuentemente las primeras consultas quedan sin respuesta o llegan demasiado tarde. | Initial inquiries are often unanswered or answered too late. | weak |
+| no_inquiries **NEW** | Todavía no hemos recibido primeras consultas de ese tipo. | We haven't received initial inquiries of that kind yet. | insuficiencia de observaciones, no N/A ni weak |
+| not_applicable **NEW** | Nuestra actividad no recibe consultas iniciales directas por este medio/proceso. | Our activity doesn't receive direct first inquiries through this process. | N/A con verificación de modalidad; no usar si existe otro canal donde sí responder |
+| unknown | No tengo registros o información suficiente. | I don't have records or enough information. | incertidumbre |
+
+**Elegibilidad:** servicio local activo por arquetipo local_service y guardia operating en bank.ts; actualmente no exige historial positivo, lo que justifica no_inquiries. **Evidencia:** conversion_access directness=direct v2; la ausencia de consultas no prueba mala atención. **Decisión:** REWRITE con dos states adicionales y reglas de plazo contextual, no SLA ficticio. **Controles:** C02, C06 y negocio sin mensajes entrantes; respuesta automática no equivale a respuesta útil.
+
+### Ficha 23 — q2_professional_authority_signals · v2 → v3 objetivo
+
+**ES editorial:** «Si alguien no te conoce, ¿puede verificar información apropiada que respalde tu experiencia profesional?»  
+**EN editorial:** “If someone doesn't know you, can they verify appropriate information about your professional experience?”  
+**Ayuda ES:** «Puede ser trayectoria, credenciales, trabajos públicos o información permitida. No reveles expedientes ni datos de clientes.»  
+**Help EN:** “This may include experience, credentials, publicly shareable work, or other permitted information. Don't disclose client records or private data.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| clearly_visible | Sí, hay información pública suficiente, pertinente y fácil de comprobar. | Yes, relevant public information is easy to find and verify. | trust_reputation established si demuestra experiencia relevante |
+| partial | Existe algo de información, pero está dispersa o incompleta. | Some information exists, but it's scattered or incomplete. | partial |
+| not_really | Hay información pública, pero no permite comprobar adecuadamente la experiencia. | Some public information exists, but it doesn't adequately support the claimed experience. | weak solo respecto a evidencia publicada |
+| not_published **NEW** | No publicamos información sobre experiencia o credenciales. | We don't currently publish experience or credential information. | publicación ausente; confianza general en abstención |
+| not_applicable **NEW** | Publicar ese tipo de evidencia no está permitido o no corresponde en esta actividad. | Publishing that type of evidence isn't allowed or isn't appropriate for this activity. | N/A condicionado; revisar alternativa segura |
+| unknown | No sé qué puede encontrar o comprobar alguien nuevo. | I'm not sure what a new person can find or verify. | incertidumbre |
+
+**Elegibilidad observada:** activity=active, sector profesional legal/finanzas/servicios profesionales/inmobiliario y meta o fricción de confianza; no universal. **Evidencia:** trust_reputation directness=direct v2. **Decisión:** REWRITE para no penalizar ausencia de portafolio público por deberes de privacidad; evaluar credenciales verificables no confidenciales. **Controles:** C04 y profesiones reguladas; no inferir legalidad ni permiso de uso de marcas/certificaciones.
+
+### Ficha 24 — q2_food_menu_visibility · v1 → v2 objetivo
+
+**ES editorial:** «Si alguien encuentra tu restaurante, cafetería o comida móvil en internet, ¿puede ver una selección actual de lo que ofreces?»  
+**EN editorial:** “If someone finds your restaurant, café, or mobile food business online, can they see an up-to-date selection of what you offer?”  
+**Ayuda ES:** «La selección puede estar en tu web, perfil o ficha pública. No hace falta mostrar todo el inventario ni revelar precios si no corresponde. Distingue no publicado de una oferta publicada poco clara.»  
+**Help EN:** “The selection may appear on your website, public profile, or listing. You don't need to show every item or disclose prices where inappropriate. Distinguish unpublished information from an unclear published offer.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| clear | Sí, la selección publicada es suficientemente clara y está actualizada. | Yes, the published selection is clear enough and up to date. | clarity_positioning established si evidencia directa |
+| partial | Se muestra una parte, pero faltan datos importantes o actualidad. | Part of the offer is shown, but important details or updates are missing. | partial |
+| unclear | Hay una oferta publicada, pero cuesta saber qué se puede pedir. | An offer is published, but it's hard to tell what can be ordered. | weak respecto a contenido publicado |
+| not_published **NEW** | Todavía no hemos publicado una selección de la oferta en ese lugar. | We haven't published a selection of our offer there yet. | estado de publicación; **no equivale a not_applicable ni a claridad weak automática** |
+| not_applicable | No existe una selección predeterminada que corresponda publicar para este tipo de servicio. | There is no predefined selection appropriate to publish for this service. | N/A con validación de modelo; no usar por ausencia de página |
+| unknown | No lo hemos comprobado desde la perspectiva de quien nos encuentra. | We haven't checked what someone finding us can see. | incertidumbre |
+
+**Elegibilidad del banco vigente:** operating AND has_customers=yes AND q2_sector=food_hospitality AND nicho restaurant/cafe/food_truck AND q2_goal=explain AND base digital reliable/partial. No preguntar a un alojamiento puro, negocio pausado o restaurante sin presencia digital fiable; en esos casos conservar respuesta de base digital y abstenerse de declarar claridad débil sin observación directa. **Evidencia actual:** clarity_positioning directness=direct, not_applicable actualmente mapea N/A aunque la etiqueta dice «todavía no muestro». **Decisión:** REWRITE v2 y value nuevo not_published, versionar evidenceV3; no remapear las respuestas v1 de forma silenciosa. **Controles:** C08 y sustitución segura de q2_presence_offer_clarity cuando el reemplazo efectivamente sea elegible.
+
+### Contrato único de evidencia, elegibilidad y riesgos
+
+1. **Inventario focal de fuente:** ocho preguntas actuales, **36 opciones** (5+5+4+5+4+4+4+5). Es inventario por lectura de las definiciones citadas y overrides conocidos, no extracción ejecutada del banco final. **Propuesta de diseño:** 46 opciones (5+6+6+5+6+6+6+6), 10 opciones netas adicionales, sujeto a revisión de identidad/versiones. Los ocho IDs siguen siendo los mismos; **siete requieren futura versión** y uno solo copy. No afirmar que las 46 opciones existen en runtime.
+2. **No mezclar dimensiones:** digital_foundation puede estar missing; eso no asigna automáticamente weak a claridad, confianza o adquisición. La calidad de respuesta inicial es acceso, no volumen de venta. No duplicar evidencia entre base y consistencia local, ni entre reseñas y credenciales.
+3. **Reglas neutrales:** unknown implica incertidumbre; not_applicable exige justificación y gate contextual; not_published representa una observación de publicación ausente. No decidir automáticamente un score de madurez global por ausencia de sitio, menú o testimonios. Donde «no publicado» sea una ausencia relevante, discutir rúbrica de fundamento digital, no reinterpretar claridad desde otra dimensión.
+4. **F03/F04 futura:** activar solo cuando el selector/engine independiente valide los contextos con respuestas reales, fallback de oferta genérica, replanificación al editar sector o presencia, versiones, replay y 24+5. No heredar imports QBV2 activos en el motor nuevo.
+5. **Casos negativos futuros:** C02 (prelaunch, sin historial), C03 (pausa), C04 (profesional sin portafolio público por privacidad), C05 (organización sin donaciones/reseñas), C06 (servicios locales), C07 (ecommerce sin autorización de contacto), C08 (restaurante sin presencia), C09 (híbrido; evitar doble puntaje), C10 (sector cambiado/no conocido). Especificaciones para pruebas focalizadas posteriores; **no pruebas ejecutadas**.
+6. **Gates no cumplidos:** validar equivalencia ES/EN con usuarios, comprensión cognitiva, categoría not_applicable por contexto, concordancia de cada value con evidencia, aprobación de taxonomía final y recorridos de extremo a extremo. Ningún cambio de scoring se encuentra autorizado por esta documentación.
+
+**Estado documental:** Lote 03 **8/8 decisiones delegadas**, 1 KEEP / 7 REWRITE; acumulado **24/24 fichas editoriales decididas** (6 KEEP / 18 REWRITE), no 24/77 preguntas implantadas ni certificadas. F02 sigue ABIERTA; V9 sigue PLAN_ONLY; no se ha hecho merge, deploy, ejecución CI, cambio TS/TSX/SQL/test ni publicación.
+
+### Changelog
+- **0.6.0 (2026-10-31):** Lote 03 completo con ocho fichas bilingües, semántica publicada/N/A/unknown, gates de evidencia y replanificación; 1 KEEP / 7 REWRITE, sin cambios en código o producción.
