@@ -1732,3 +1732,220 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 ### Changelog
 
 - **1.1.0 / 2026-10-31:** Lote 08 de ocho fichas ES/EN sobre hospitalidad, recurrencia, público creador, membresías y zona de servicio; gates de no historial/N-A y sin scoring ficticio; exclusivamente documentos.
+
+## Lote editorial 09 — datos, operación y selectores de nicho
+
+**Documento acumulado v1.2.0 | DECISIONES EDITORIALES DELEGADAS | PLAN_ONLY.** Revisión de ocho preguntas existentes y no repetidas del candidato experimental V9, a partir del HEAD 24ee1e40aea8969e778095244354c83558008e5e. Fuente de valores originales: qbv2-lote-f.ts, lote-c.ts, lote-d.ts, lote-e.ts, qa03b/recovery-wave2.ts, qa03b/specialty-candidate-bank.ts y taxonomy.ts. El ensamblaje contiene selectores dinámicos; se enumeraron sus opciones por grupos reales de NICHE_REGISTRY. Se aprobaron decisiones de contenido, no se cambió ningún contrato TS, valor runtime, score, base de datos ni producción.
+
+### Dictamen transversal del Lote 09
+
+- La demanda prelaunch no se confunde con ventas completadas; compromiso futuro y entrega real son estados diferentes. Ante piloto ya entregado, reexaminar la etapa sin inferirla automáticamente.
+
+- Cualificación B2B y responsable de una tarea son comportamientos operativos; las señales actuales directas hacia digital_readiness deberán reconsiderarse. Software o CRM no es prerrequisito y la organización manual no acredita digitalización.
+
+- Revisión de pendientes, seguimiento efectivo y visibilidad de estado son constructos distintos pero solapados. Evitar sumarlos como pruebas independientes de relationship_recurrence sin una política de evidencia por constructo.
+
+- Saber por dónde llega una persona requiere datos o preguntas verificables; suponer origen o publicar en un canal no acredita atribución. Las variantes nonprofit/health deben preservar terminología pertinente y privacidad.
+
+- En ecommerce, no tener checkout es N/A de esa medición; tener checkout sin intentos es insuficiencia de historial, no weak. Abandono de pago no autoriza contacto ni demuestra la causa de fricción.
+
+- La selección de nicho es clasificación explícita, nunca prueba de madurez. El cambio previsto del sector b2b_services exige reconectar marketing_agency y wholesale_distribution, sin romper la ruta especialista ni mezclar actividad económica y comprador.
+
+### Matriz de decisiones
+
+| Ficha | ID | Contrato actual → objetivo propuesto* | Resolución |
+| --- | --- | --- | --- |
+| 65 | q2_startup_demand_signal | v1 → v2 | **REWRITE** |
+| 66 | q2_b2b_qualification | v1 → v2 | **REWRITE** |
+| 67 | q2_operations_process_ownership | v1 → v2 | **REWRITE** |
+| 68 | q2_followup_status_visibility | v1 → v2 | **REWRITE** |
+| 69 | q2_measurement_source_confidence | v1 → v2 | **REWRITE** |
+| 70 | q2_ecommerce_checkout_friction | v1 → v2 | **REWRITE** |
+| 71 | q2_niche_health_wellness | v1 → v1 | **KEEP** |
+| 72 | q2_niche_b2b_services | v1 → v2 | **REWRITE** |
+
+*Las versiones y los values NEW son exclusivamente propuestas para V9 y requieren migración, replay y aceptación antes de implementarse. KEEP respeta el contrato actual.*
+
+### Fichas completas
+
+#### Ficha 65 — q2_startup_demand_signal · single · REWRITE
+
+**ES:** «Cuando has mostrado tu idea o propuesta a personas reales, ¿cuál es la acción más concreta que ha ocurrido hasta ahora?»  
+**EN:** “When you've shown your idea or offer to real people, what's the most concrete action that has actually happened so far?”  
+**Ayuda ES:** Distingue interés, solicitud, piloto pagado, compromiso y primera entrega real. Que alguien diga que compraría no significa que ya haya pagado o recibido algo. Incluye proyectos comunitarios sin ventas.  
+**Help EN:** Distinguish interest, a request, a paid pilot, a commitment, and an actual first delivery. Someone saying they would buy doesn't mean they paid or received anything. Include community projects without sales.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| none | Todavía no ha ocurrido ninguna acción concreta. | No concrete action has happened yet. |
+| interest | Algunas personas preguntaron o mostraron interés. | Some people asked questions or showed interest. |
+| request | Una persona solicitó una propuesta o pidió comenzar. | Someone requested a proposal or asked to get started. |
+| paid_trial | Una persona pagó una prueba o piloto. | Someone paid for a trial or pilot. |
+| commitment_pending NEW | Hay un compromiso confirmado, pero todavía no se ha entregado el servicio o producto. | There is a confirmed commitment, but the service or product hasn't been delivered yet. |
+| first_real_delivery NEW | Ya se entregó una primera actividad, servicio, producto o apoyo real. | An initial activity, service, product, or real support has already been delivered. |
+| unknown | No tengo información suficiente para distinguir estas situaciones. | I don't have enough information to distinguish these situations. |
+
+**Origen:** none, interest, request, paid_trial, commitment, unknown (6). El valor histórico commitment agrupaba preventa, compromiso y primer cliente; se RETIRA solo del diseño de destino y se sustituye por dos estados nuevos. No remapear commitment v1 a un valor nuevo sin evidencia.  
+**Elegibilidad/guardia:** qa03b/recovery-wave2.ts aplica solo a q2_operational_status=preparing, deriva del LOTE_F v1, evidenceMigration=pending, evidenceV3=undefined. Si la persona informa primera entrega real o piloto pagado, solicitar revisión explícita de estado operativo e historial, nunca cambiar etapa automáticamente.  
+**Evidencia, dimensión y abstención:** Señal de validación/preparación; ninguna respuesta certifica conversión, venta recurrente, base digital, plataforma o madurez global. El valor first_real_delivery incluye primera participación comunitaria sin pago. No sumar tres preguntas de startup como pruebas independientes de claridad de oferta.  
+**Pruebas focales futuras, NO EJECUTADAS:** C02 antes de operar sin consultas y con piloto; C05 proyecto comunitario con beneficiario; edición de estado y q2_has_customers; no fabricar clientes a partir de interés.
+
+#### Ficha 66 — q2_b2b_qualification · single · REWRITE
+
+**ES:** «Cuando una empresa u organización consulta por lo que ofreces, ¿utilizas criterios pertinentes para decidir si conviene avanzar?»  
+**EN:** “When a company or organization inquires about what you offer, do you use relevant criteria to decide whether to proceed?”  
+**Ayuda ES:** Pueden ser necesidad, encaje, capacidad de atención, plazos o proceso de decisión; el presupuesto solo corresponde cuando realmente existe contratación comercial. No necesitas un CRM para tener criterios.  
+**Help EN:** Criteria may include need, fit, service capacity, timing, or decision process; budget matters only when it's genuinely a commercial contract. A CRM isn't required to have criteria.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| yes_clear | Sí, utilizo criterios claros de forma habitual. | Yes, I routinely use clear criteria. |
+| somewhat | Tengo algunos criterios, pero no siempre los aplico. | I have some criteria, but don't always apply them. |
+| no | Hay consultas reales, pero no contamos con criterios para priorizarlas. | We receive real inquiries but don't have criteria for prioritizing them. |
+| no_real_inquiries NEW | Todavía no hemos recibido suficientes consultas de ese tipo. | We haven't received enough inquiries of that kind yet. |
+| not_applicable NEW | Este proceso no requiere calificar oportunidades antes de atenderlas. | This process doesn't require screening opportunities before serving them. |
+| unknown | No tengo información suficiente sobre cómo se decide. | I don't have enough information about how those decisions are made. |
+
+**Origen:** yes_clear, somewhat, no, unknown (4), con produces de fricción conversion en no; futura neutralidad requiere versionado.  
+**Elegibilidad/guardia:** Wave2: operating AND q2_has_customers=yes AND buyer=b2b/mixed. La existencia de clientes históricos no prueba consultas nuevas B2B ni decisión comercial. Si mission/no_direct_purchase, usar condiciones de servicio comunitario y abstención, sin exigir presupuesto.  
+**Evidencia, dimensión y abstención:** Candidato v1 asocia digital_readiness direct para yes_clear/somewhat/no/unknown. Diseñar como criterio de cualificación OPERATIVA o señal supporting, no madurez digital directa. No duplicar q2_b2b_pipeline (Lote 04), que mide continuidad posterior; no calificar a quien no tiene solicitudes.  
+**Pruebas focales futuras, NO EJECUTADAS:** C04 consultor B2B con agenda manual, C05 organización que atiende sin cobrar, C09 híbrido B2B/B2C y ausencia de consultas; no forzar CRM.
+
+#### Ficha 67 — q2_operations_process_ownership · single · REWRITE
+
+**ES:** «Cuando hay tareas importantes que se repiten, ¿está claro quién se responsabiliza de realizarlas?»  
+**EN:** “When important tasks recur, is it clear who is responsible for carrying them out?”  
+**Ayuda ES:** Puede haber una sola persona responsable o varias; evalúa tareas habituales reales, no títulos de puesto, organigramas ni software. Si todavía no existen tareas repetibles, indícalo.  
+**Help EN:** One person or several may be responsible. Consider recurring real work, not job titles, organization charts, or software. If no comparable tasks recur yet, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| yes_clear | Sí, la responsabilidad está claramente definida. | Yes, responsibility is clearly defined. |
+| somewhat | En algunas tareas está clara, pero en otras debemos decidirlo cada vez. | It's clear for some tasks, but must be decided each time for others. |
+| improvised | Las tareas repetidas suelen asignarse de forma improvisada. | Recurring tasks are usually assigned ad hoc. |
+| no_recurring_tasks NEW | No tenemos tareas habituales comparables para evaluar esta situación. | We don't have comparable recurring tasks to assess this. |
+| unknown | No tengo información suficiente sobre la asignación de tareas. | I don't have enough information about task ownership. |
+
+**Origen:** yes_clear, somewhat, improvised, unknown (4).  
+**Elegibilidad/guardia:** Wave2: operating AND has_customers=yes AND (goal organize OR friction operations). La restricción no exige necesariamente más de una persona; debe seguir válida para independientes sin equipo. La variante sin tareas necesita abstención.  
+**Evidencia, dimensión y abstención:** Actualmente evidenceV3 digital_readiness directness=direct. En V9 la claridad de responsabilidades sin software es evidencia de organización operativa, NO prueba digital directa; nueva versión/rúbrica y calibración en F05, sin reinterpretar respuestas históricas. Evitar doble puntuación con q2_process_systemization y q2_operations_handoffs.  
+**Pruebas focales futuras, NO EJECUTADAS:** C04 autónomo, C05 organización con voluntarios, C09 equipo y tareas; sin penalización por papel o trabajo manual.
+
+#### Ficha 68 — q2_followup_status_visibility · single · REWRITE
+
+**ES:** «Cuando existen consultas, pedidos o tareas pendientes, ¿con qué frecuencia los revisas para detectar lo que necesita una respuesta?»  
+**EN:** “When inquiries, orders, or tasks are pending, how often do you review them to see what needs a reply?”  
+**Ayuda ES:** Se trata de una revisión deliberada de pendientes reales; no hace falta un CRM. Recordar un caso por casualidad no equivale a revisar una lista. Si hoy no hay pendientes, indícalo.  
+**Help EN:** This is about deliberately reviewing real pending matters; a CRM isn't required. Remembering an item by chance isn't the same as checking pending work. If none are open, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| regularly | Los reviso habitualmente como parte de una rutina. | I review them routinely as part of a regular process. |
+| only_when_remember | Los reviso solo cuando recuerdo que quedan pendientes. | I review them only when I remember there are outstanding items. |
+| rarely | Hay pendientes reales que casi nunca reviso. | There are real pending matters I rarely review. |
+| no_open_pending NEW | Actualmente no hay asuntos pendientes comparables para evaluarlo. | There are no comparable open matters to assess right now. |
+| unknown | No sé con qué frecuencia se revisan los pendientes. | I don't know how often pending matters are reviewed. |
+
+**Origen:** regularly, only_when_remember, rarely, unknown (4), con materialAppliesWhen amplio en origen QBV2 pero anulado deliberadamente por QA03B.  
+**Elegibilidad/guardia:** Wave2: operating AND has_customers=yes AND (goal stop_losing OR friction follow_up), además materialAppliesWhen:undefined para no eludir la guardia con OR. Contrastar con q2_followup_general_process (Lote 04), que mide si se retoma a tiempo, no si se inspecciona el estado.  
+**Evidencia, dimensión y abstención:** Candidato v1 relationship_recurrence direct: regularly established, only_when_remember partial, rarely weak, unknown uncertainty. No_open_pending=context_only/insufficient_history; no equivale a revisión perfecta ni deficiente. Regla de selección por constructo para evitar dos pruebas independientes del mismo proceso.  
+**Pruebas focales futuras, NO EJECUTADAS:** C03 actividad pausada, C06 servicio con pocas solicitudes, C09 casos de seguimiento resueltos, edición de objetivo y control de duplicación.
+
+#### Ficha 69 — q2_measurement_source_confidence · single · REWRITE
+
+**ES:** «Cuando una persona comienza a comprar, participar o solicitar atención, ¿sabes por qué canal conoció tu actividad?»  
+**EN:** “When someone starts buying, participating, or seeking your service, do you know which channel led them to your activity?”  
+**Ayuda ES:** Responde por información que preguntas o registras con cierta fiabilidad, no por suposiciones. En organizaciones usa participación/apoyo y en salud solicitudes de atención, sin recopilar información clínica. Si no ha habido personas nuevas recientemente, indícalo.  
+**Help EN:** Answer based on information you ask or reliably record, not assumptions. For organizations consider participation or support; for healthcare consider inquiries, without collecting medical information. If there have been no new people recently, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| yes_confident | Sí, normalmente contamos con una fuente conocida y fiable. | Yes, we usually have a known, reliable source. |
+| sometimes | Solo conocemos la fuente de algunas personas. | We know the source for some people only. |
+| rarely_no_idea | Ha habido personas nuevas, pero casi nunca sabemos de dónde llegan. | New people have arrived, but we rarely know where they came from. |
+| no_recent_arrivals NEW | No hemos tenido entradas recientes suficientes para evaluarlo. | We haven't had enough recent arrivals to assess this. |
+| unknown | No sé si obtenemos datos fiables de origen. | I'm not sure whether we collect reliable source information. |
+
+**Origen:** yes_confident, sometimes, rarely_no_idea, unknown (4). Hay variantes legacy nonprofit/clinical y wave2 nonprofit/health_wellness: preservar terminología contextual sin universalizar cliente pagador.  
+**Elegibilidad/guardia:** Wave2: operating AND has_customers=yes AND goal=measure. Las preguntas q2_ecommerce_traffic_sources del Lote 06 y esta pueden coincidir: elegir evidencia mejor sustentada, no duplicar. Si en pausa no afirmar atribución actual.  
+**Evidencia, dimensión y abstención:** Candidato v1 measurement_optimization directness=direct basado en declaración. En V9 distinguir conocer fuente por registro de suponerla: una respuesta no demuestra atribución estadística ni rendimiento de publicidad. No_recent_arrivals neutral, unknown incertidumbre.  
+**Pruebas focales futuras, NO EJECUTADAS:** C05 ONG participante, C04 servicio profesional clínico, C07 tienda multicanal, ausencia de primeros contactos y sin permiso para usar contactos en campañas.
+
+#### Ficha 70 — q2_ecommerce_checkout_friction · single · REWRITE
+
+**ES:** «Entre las personas que realmente comienzan el proceso de pago en tu tienda online, ¿con qué frecuencia la compra queda sin finalizar?»  
+**EN:** “Among people who actually start checkout in your online store, how often is the purchase left unfinished?”  
+**Ayuda ES:** Cuenta compras iniciadas que no terminan en pago, no visitas al catálogo. Si vendes por conversación sin checkout, o todavía no ha habido compras iniciadas que comparar, elige la opción correspondiente.  
+**Help EN:** Consider purchases that entered checkout but weren't completed, not visits to the catalog. If you sell through conversation without checkout, or haven't had comparable checkout attempts, choose that option.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| rarely | Casi todas las compras iniciadas se completan. | Most checkouts that start are completed. |
+| sometimes | Algunas compras iniciadas quedan sin completar. | Some initiated checkouts remain unfinished. |
+| often | Muchas compras iniciadas quedan sin completar. | Many initiated checkouts remain unfinished. |
+| no_checkout NEW | Esta actividad no utiliza un proceso de pago en línea. | This activity doesn't use an online checkout process. |
+| no_started_checkouts NEW | No hemos observado suficientes procesos de pago iniciados para evaluar su resultado. | We haven't observed enough initiated checkouts to assess their outcome. |
+| unknown | No contamos con datos suficientes para determinarlo. | We don't have enough data to tell. |
+
+**Origen:** rarely, sometimes, often, unknown (4), con produces fricción conversion en often.  
+**Elegibilidad/guardia:** qa03b/specialty-candidate-bank.ts piloto v1: operating AND has_customers=yes AND archetypeIncludes ecommerce, evidencia migrada. El arquetipo histórico define ecommerce como checkout online; si se declara no_checkout, solicitar revisión de clasificación sin asignar otro arquetipo automáticamente.  
+**Evidencia, dimensión y abstención:** Candidato v1 conversion_access directa. El valor often puede deberse a precio, medios de pago, confianza o decisión de compra, NO prueba por sí solo fallo técnico ni permiso para recuperación de carrito. No_checkout=N/A según modelo; no_started_checkouts=sin historial; unknown=incertidumbre. No doble scoring con q2_ecommerce_cart_visibility/followup.  
+**Pruebas focales futuras, NO EJECUTADAS:** C07 venta chat vs web checkout, sin intentos de compra, muchas visitas sin checkout y ecommerce con fricciones; ninguna campaña automática.
+
+#### Ficha 71 — q2_niche_health_wellness · single · KEEP
+
+**ES:** «¿Qué especialidad de salud o bienestar describe mejor la actividad que quieres evaluar?»  
+**EN:** “Which health or wellness specialty best describes the activity you want to assess?”  
+**Ayuda ES:** Elige una especialidad real, sin indicar información de pacientes. Si no aparece, selecciona otra especialidad; si todavía no lo sabes, utiliza la respuesta de incertidumbre.  
+**Help EN:** Choose a real specialty without sharing patient information. If yours isn't listed, choose another specialty; if you're unsure, use the uncertainty option.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| dentist | Odontología / dentista. | Dental care / dentist. |
+| primary_care | Medicina general. | Primary care / general medicine. |
+| psychiatry | Psiquiatría. | Psychiatry. |
+| medspa | Estética médica / medspa. | Medical aesthetics / medspa. |
+| other | Otra especialidad de salud o bienestar. | Another health or wellness specialty. |
+| unknown | Todavía no tengo clara la especialidad. | I'm not sure of the specialty yet. |
+
+**Origen:** El selector se genera mediante NICHE_REGISTRY.filter(group=health_wellness), cuatro IDs dentist/primary_care/psychiatry/medspa + other + unknown (6), sin lista manual duplicada en fuente.  
+**Elegibilidad/guardia:** qa03b/specialty-candidate-bank.ts genera id q2_niche_health_wellness cuando q2_sector=health_wellness. El selector no exige operación, puede clasificar preparación; al cambiar sector desactiva respuestas de nicho dependientes con replay. La rama dental sólo si dentist + appointments + historial + meta/fricción pertinente; no asumir citas por escoger dentista.  
+**Evidencia, dimensión y abstención:** Clasificación explícita de nicho, evidenceMigration=pending; ninguna especialidad produce madurez digital, diagnóstico clínico ni capacidad de atender pacientes. No inferir credenciales, licencia, cumplimiento normativo o información de salud.  
+**Pruebas focales futuras, NO EJECUTADAS:** C02 actividad sanitaria antes de operar, C06 dentista independiente con arquetipo professional (no appointments), C10 cambio de sector, unknown/other y privacidad.
+
+#### Ficha 72 — q2_niche_b2b_services · single · REWRITE
+
+**ES:** «¿Qué actividad especializada describe mejor lo que ofreces principalmente a empresas u organizaciones?»  
+**EN:** “Which specialized activity best describes what you mainly offer to businesses or organizations?”  
+**Ayuda ES:** Identifica la actividad, no solo el tipo de comprador. Una agencia de marketing, una distribuidora mayorista y un servicio profesional distinto tienen modelos diferentes. Si tu actividad no aparece, selecciona otra.  
+**Help EN:** Identify the activity, not just who buys it. A marketing agency, a wholesale distributor, and another professional service have different models. Choose another if yours isn't listed.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| marketing_agency | Agencia de marketing. | Marketing agency. |
+| wholesale_distribution | Distribución mayorista de productos. | Wholesale product distribution. |
+| other | Otro servicio o actividad especializada para organizaciones. | Another specialized service or activity for organizations. |
+| unknown | Todavía no puedo especificar la actividad. | I can't specify the activity yet. |
+
+**Origen:** El selector v1 genera dos nichos marketing_agency y wholesale_distribution a partir de NICHE_REGISTRY + other + unknown (4). Sin nuevos values; cambia semántica/guardia futura por reubicación sectorial del Lote 02.  
+**Elegibilidad/guardia:** En el candidato actual se presenta únicamente si q2_sector=b2b_services. Este value se propone mover fuera de sector por ser modelo de comprador; futura V9 debe declarar nicho específico por actividad + comprador b2b/mixed y preservar q2_niche_b2b_services como identidad versionada mientras se migra. No activar wholesale_distribution como servicios profesionales; no presumir marketing_agency a partir de B2B.  
+**Evidencia, dimensión y abstención:** Clasificación/routing exclusivamente, sin evidenceV3 directa. **Bloqueo P0:** q2_marketing_agency_scope_clarity depende de sector b2b_services y nicho marketing_agency; mover la clasificación sin puente rompe el sustituto de claridad (Lote 06). Cambios implican mapa/guardias/replay y pruebas focales, jamás fallback silencioso.  
+**Pruebas focales futuras, NO EJECUTADAS:** C04 consultoría B2B, C09 agencia híbrida y distribución mayorista, C10 cambio sector/actividad, rama agency elegible sólo con comprador/goal/presencia/operación reales.
+
+### Recuento, calidad y siguiente gate
+
+- **Inventario de origen por lectura focal:** ocho preguntas y **36 opciones** (6+4+4+4+4+4+6+4). **Diseño destino:** ocho preguntas y **44 opciones** (7+6+5+5+5+6+6+4); nuevas +8 netas y siete contratos/versiones hipotéticos (no desplegados). Una opción histórica commitment v1 se desagrega; no trasladar registros sin evidencias de su significado.
+
+- **Dictamen:** 1 KEEP (q2_niche_health_wellness) + 7 REWRITE. Lotes 01–08 = 64 (17 KEEP / 47 REWRITE), Lote 09 = 8 (1 KEEP / 7 REWRITE), total **72 fichas de diseño** sobre 77 IDs (18 KEEP / 54 REWRITE); quedan cinco selectores para el Lote 10. No confundir 72/77 con preguntas implementadas, cobertura, certificación o readiness de release.
+
+- **Gates P0:** TAX-G1 sector/actividad vs comprador; preservar mapping specialty agency; no inferir madurez digital de criterios B2B/responsabilidad operativa; contrato de consulta sin casos reales; evidencia directness y double count; edición/replanificación, abstención, 24+5 y consentimiento.
+
+- **Pruebas futuras (NO EJECUTADAS):** C02 proyecto en preparación, C04 profesional B2B, C05 ONG sin venta, C06 salud/citas sin inferencia clínica, C07 checkout por chat vs online, C09 híbridos, C10 cambio de sector/nicho, variantes ES/EN, replay por versión. No ejecutar test generales ni cambiar runtime mientras PLAN_ONLY.
+
+- **Siguiente:** Lote 10 final — cinco selectores q2_niche_beauty_personal_care, q2_niche_financial_tax_insurance, q2_niche_home_services, q2_niche_automotive y q2_niche_technology_software. Después reconciliar auditoría editorial transversal y el alcance de F02; la existencia de 77 fichas no equivale a certificación.
+
+- **Límites:** exclusivamente documentos Markdown; sin TS/TSX, pruebas, CI, Worker, D1, UI, rutas, migraciones, cambios de versión runtime, merge ni despliegue. ES/EN pendiente de validación cognitiva externa. F02 y TAX-G1/TAX-G3 abiertas.
+
+### Changelog
+
+- **v1.2.0 / 2026-10-31:** Lote 09, ocho decisiones ES/EN con seis preguntas de recorrido y dos selectores; corrección semántica de demanda, checkout, digital_readiness y gate de agencia. PLAN_ONLY.
