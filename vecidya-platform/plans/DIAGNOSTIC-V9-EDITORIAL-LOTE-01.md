@@ -1530,3 +1530,205 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 ### Changelog
 
 - **1.0.0:** Lote 07 editorial delegado ES/EN; rectificación de la existencia de q2_ecommerce_cart_followup recuperada en wave2; cierre de 8 fichas con guardias, opciones y evidencia, sin cambios en producción ni motor.
+
+## Lote editorial 08 — hostelería, recurrencia y membresías
+
+**Documento editorial acumulado v1.1.0; DISEÑO DELEGADO / PLAN_ONLY.** Ocho preguntas inéditas respecto de los Lotes 01–07, escogidas del candidato QA03B V9. Fuentes leídas desde HEAD 44fdfcda8056c9103d2034fa0f4655c7a00c0f2d: qa03b/recovery-wave2.ts, qbv2-lote-b.ts, qbv2-lote-c.ts, qbv2-lote-d.ts y el ensamblaje de specialty-candidate-bank.ts. Las fuentes explican versiones/opciones/guardias, pero esta edición no ejecuta el banco ni acredita comportamiento runtime. Ningún texto, versionado, puntuación ni ruta se incorpora a la aplicación.
+
+### Política editorial transversal
+
+- **Reserva de hostelería ≠ cita de servicios:** una mesa, habitación o pedido anticipado no activa automáticamente las preguntas de citas profesionales. Las ausencias son incidencias operativas, no debilidad digital sin evidencia de causa.
+
+- **Historial insuficiente ≠ rendimiento malo:** no_observed_peak, no_recent_reservations, not_enough_history y no_active_audience representan falta de base de observación; unknown implica desconocimiento; not_applicable requiere modelo justificado. No usar respuestas neutrales como señales weak.
+
+- **Recurrencia ≠ seguimiento:** retorno de visitantes, recompra de clientes, membresía y concentración de audiencia describen sucesos distintos. No deducir CRM, consentimiento, automatización, fidelización efectiva ni capacidad digital a partir de frecuencia de retorno.
+
+- **Gates de apoyo y sector:** q2_nonprofit_support_type=mixed no demuestra cuotas de membresía si el Lote 02 amplía su significado a voluntariado/otros apoyos; exige señal expresa de membresía. Sector=creator es una clasificación susceptible de cambio en Lote 02: preservar señal de modelo de audiencia.
+
+- **Preguntas especializadas y presupuesto:** 8 fichas de catálogo no equivalen a 8 turnos por entrevista. Mantener máximo de 24 y hasta 5 adicionales bajo consentimiento, con sustitución y ausencia de double scoring.
+
+### Resumen de decisiones
+
+| Ficha | ID | Versión de fuente → objetivo V9* | Dictamen |
+| --- | --- | --- | --- |
+| 57 | q2_hospitality_flow_type | v2 → v2 | **KEEP** |
+| 58 | q2_hospitality_reservation_noshow | v2 → v3 | **REWRITE** |
+| 59 | q2_hospitality_peak_capacity | v1 → v2 | **REWRITE** |
+| 60 | q2_nonprofit_membership_lifecycle | v1 → v1 | **KEEP** |
+| 61 | q2_local_repeat_customers | v2 → v3 | **REWRITE** |
+| 62 | q2_ecommerce_repeat_purchase | v1 → v2 | **REWRITE** |
+| 63 | q2_creator_channel_concentration | v1 → v2 | **REWRITE** |
+| 64 | q2_service_area_clarity | v1 → v2 | **REWRITE** |
+
+*Las versiones objetivo no están implementadas; el cambio de identidad queda supeditado a compatibilidad de sesión/replay, rúbrica y tests focalizados.*
+
+### Fichas completas
+
+#### Ficha 57 — q2_hospitality_flow_type · single · KEEP
+
+**ES:** «¿Cómo suelen solicitar atención o llegar las personas a tu restaurante, establecimiento de comidas o alojamiento?»  
+**EN:** “How do people usually arrive or request service at your restaurant, food business, or accommodation?”  
+**Ayuda ES:** Elige la modalidad predominante en la actividad real. Una reserva de mesa o habitación es distinta de una cita profesional; si se combinan modalidades, elige la mezcla habitual.  
+**Help EN:** Choose the main method in actual operations. A table or room reservation is different from a professional appointment; choose a mix when methods are routinely combined.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| reservation | Principalmente con reserva previa. | Mainly with an advance reservation. |
+| walk_in | Principalmente llegan sin reserva. | Mainly without a reservation. |
+| order_ahead | Principalmente realizan pedidos anticipados para recoger o entregar. | Mainly by placing orders ahead for pickup or delivery. |
+| mixed | Es habitual combinar varias de estas modalidades. | A combination of these methods is common. |
+| unknown | No sé cuál de estas modalidades predomina. | I don't know which method is most common. |
+
+**Guardia observada y objetivo:** Candidato wave2 v2: operating + historial real + arquetipo hospitality. El valor mixed incluye reservas, pero no demuestra que existan reservas suficientes en el período reciente. Separar restaurante de alojamiento al interpretar order_ahead.  
+**Evidencia y neutralidad:** Pregunta de routing/contexto con evidenceMigration=pending y evidenceV3 ausente. No produce prueba de madurez digital, sistema de reservas, venta online ni automatización; permite decidir si procede preguntar por reservas reales.  
+**Pruebas focales futuras NO EJECUTADAS:** C08 restaurante solo walk_in, hospedaje por reserva, comida para llevar y negocio mixto; N/A de noshow si no hay reservas; equivalencia ES/EN.
+
+#### Ficha 58 — q2_hospitality_reservation_noshow · single · REWRITE
+
+**ES:** «De las reservas confirmadas de mesas o alojamiento, ¿con qué frecuencia la persona no se presenta sin cancelar a tiempo?»  
+**EN:** “Of confirmed table or accommodation reservations, how often do guests fail to arrive without canceling in time?”  
+**Ayuda ES:** Cuenta únicamente reservas confirmadas, no consultas. No confundas las reservas de mesas o habitaciones con las citas clínicas o profesionales. Si no hubo suficientes reservas recientes, indícalo.  
+**Help EN:** Count confirmed reservations only, not inquiries. Don't confuse table or room reservations with clinical or professional appointments. If there haven't been enough recent reservations, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| rarely | Casi nunca se produce una ausencia. | Guests rarely fail to arrive. |
+| sometimes | A veces sucede. | It sometimes happens. |
+| often | Sucede con frecuencia. | It happens often. |
+| no_recent_reservations NEW | No tuvimos reservas confirmadas recientes suficientes para evaluarlo. | We haven't had enough recent confirmed reservations to assess this. |
+| unknown | No tengo información suficiente para determinarlo. | I don't have enough information to tell. |
+
+**Guardia observada y objetivo:** Candidato wave2 v2: hospitality operating con clientes previos Y flow_type=reservation/mixed. El gate por mixed no garantiza reservas observadas; no_recent_reservations resuelve esta laguna. No activar por arquetipo appointments sin hospitality.  
+**Evidencia y neutralidad:** Origin v2: evidenceMigration=pending/evidenceV3=undefined; often conserva produces de friction operations heredado. En diseño futuro no derivar automáticamente una fricción digital de un no-show; context_only hasta estudiar causa, políticas de cancelación y base observada. No registrar porcentaje ficticio.  
+**Pruebas focales futuras NO EJECUTADAS:** C08 mesa sin reservas recientes; hotel con pocos check-ins; mix walk-in+reserva; C06 clínica no debe recibir esta pregunta; no activar recordatorios automáticamente.
+
+#### Ficha 59 — q2_hospitality_peak_capacity · single · REWRITE
+
+**ES:** «En los momentos de demanda alta que realmente has tenido, ¿con qué frecuencia has tenido que hacer esperar demasiado o rechazar solicitudes por falta de capacidad?»  
+**EN:** “During periods of high demand you've actually experienced, how often have you had to make people wait too long or turn requests away because of limited capacity?”  
+**Ayuda ES:** Considera personas, espacio, horarios y recursos reales. La demanda alta no significa por sí sola un problema digital. Si aún no has vivido un período comparable, indícalo.  
+**Help EN:** Consider actual staff, space, schedules, and resources. High demand isn't itself a digital problem. If you haven't experienced a comparable busy period, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| rarely | Casi nunca hemos tenido esa limitación. | We have rarely faced that limitation. |
+| sometimes | A veces debemos hacer esperar o rechazar solicitudes. | We sometimes have to delay or turn requests away. |
+| often | Sucede con frecuencia en períodos de mayor demanda. | It happens often during busy periods. |
+| no_observed_peak NEW | Todavía no hemos tenido períodos recientes comparables de demanda alta. | We haven't yet had comparable recent periods of high demand. |
+| unknown | No tenemos información fiable para responder. | We don't have reliable information to answer. |
+
+**Guardia observada y objetivo:** Candidato wave2 usa operating+historial+hospitality, no exige registros de temporada pico. No usar con actividad pausada ni prelaunch como hecho presente.  
+**Evidencia y neutralidad:** Origin v1 evidenceMigration=pending, no evidenceV3; capacidad de operación y estacionalidad contextuales, nunca puntuar digital_foundation débil por espera/rechazo. La opción nueva indica historial insuficiente y no equivalencia con rarely.  
+**Pruebas focales futuras NO EJECUTADAS:** C08 restaurante estacional, alojamiento de baja ocupación, capacidad suficiente vs no probado, posible presión aunque no hay web; evitar score automatización.
+
+#### Ficha 60 — q2_nonprofit_membership_lifecycle · single · KEEP
+
+**ES:** «Si tu organización admite miembros, ¿está claro cómo incorporarse y cómo renovar cuando corresponde?»  
+**EN:** “If your organization accepts members, is it clear how to join and how to renew when renewal applies?”  
+**Ayuda ES:** Cuenta solo membresías existentes. Si el alta es clara pero la renovación no, o al revés, utiliza la respuesta intermedia. La membresía no es lo mismo que participar como voluntario ni realizar una donación.  
+**Help EN:** Consider existing memberships only. If joining is clear but renewal isn't, or vice versa, choose the middle option. Membership is not the same as volunteering or making a donation.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| yes_clear | Los pasos de alta y renovación aplicables son claros. | The applicable joining and renewal steps are clear. |
+| somewhat | Algunos pasos están claros, pero otros generan dudas. | Some steps are clear, but others cause confusion. |
+| no | El proceso es informal o no se explica con claridad. | The process is informal or not clearly explained. |
+| unknown | No sé cómo lo vive una persona que desea incorporarse o renovar. | I'm not sure how someone experiences joining or renewal. |
+
+**Guardia observada y objetivo:** Wave2: operating+organización o mission AND support_type in [membership_dues,mixed]. Bloqueo P0 relacionado con Lote 02: si mixed se amplía a combinaciones de apoyo no monetario, no se debe inferir cuotas ni membresías. Exigir evidencia explícita de membresía activa antes de preguntar; evitar pedir renovación si no existe modalidad renovable.  
+**Evidencia y neutralidad:** Wave2 migrada con conversion_access directa (yes_clear=established,somewhat=partial,no=weak,unknown=uncertainty). La claridad de incorporación es diferente de número de miembros y de participación comunitaria. No convertir falta de cuotas en una debilidad. Validez de la rúbrica queda pendiente.  
+**Pruebas focales futuras NO EJECUTADAS:** C05 ONG voluntaria sin membresías, ONG con cuotas, membresía vitalicia sin renovación, alta clara pero renovación confusa; gate mixed no implica cuotas.
+
+#### Ficha 61 — q2_local_repeat_customers · single · REWRITE
+
+**ES:** «Entre las personas que ya han comprado, visitado o recibido atención, ¿con qué frecuencia las mismas personas vuelven cuando tiene sentido para tu actividad?»  
+**EN:** “Among people who have bought, visited, or received service before, how often do the same people return when that makes sense for your activity?”  
+**Ayuda ES:** Cuenta personas que regresan, no el total de ventas o visitas. Una compra única, una actividad que no necesita repetirse o pocos casos recientes no indican por sí solos mala relación.  
+**Help EN:** Count returning people, not total sales or visits. A one-off purchase, an activity that doesn't require repetition, or too little recent history doesn't itself mean a poor relationship.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| yes_regular | Las mismas personas regresan con cierta regularidad. | The same people return fairly regularly. |
+| rarely | Algunas regresan, pero pocas veces. | Some return, but infrequently. |
+| no | Casi nunca regresan, aunque el servicio podría repetirse. | They rarely return, even though the activity could repeat. |
+| not_enough_history NEW | Todavía no hay historial comparable suficiente para saberlo. | There isn't enough comparable history yet to tell. |
+| not_applicable | Normalmente se trata de una compra, visita o servicio que no necesita repetirse. | It is usually a one-off purchase, visit, or service with no need to repeat. |
+| unknown | No tengo información sobre las personas que repiten. | I don't have information about returning people. |
+
+**Guardia observada y objetivo:** Wave2 v2: operating+has_customers=yes+arquetipo local/retail/hospitality. La variante nonprofit del origen puede hablar de participantes/beneficiarios, pero su reutilización necesita verificar arquetipo y privacidad; no exigir retorno a quien solo necesita una intervención.  
+**Evidencia y neutralidad:** Wave2 evidenceMigration=pending, sin evidenceV3; la recurrencia observada es **resultado contextual**, no prueba directa de seguimiento digital, CRM, ni calidad de captación. La opción not_enough_history no es no ni weak. La repetición normal puede depender del tipo de producto.  
+**Pruebas focales futuras NO EJECUTADAS:** C05 ONG sin recurrencia necesaria, C08 visitantes de paso, retail de bienes duraderos, negocio nuevo con 1 cliente, C09 evitar doble observación con e-commerce repeat.
+
+#### Ficha 62 — q2_ecommerce_repeat_purchase · single · REWRITE
+
+**ES:** «Entre quienes ya compraron en tu tienda online, ¿con qué frecuencia vuelve a comprar una misma persona cuando el producto permite hacerlo?»  
+**EN:** “Among people who have bought from your online store, how often does the same person buy again when the product can reasonably be purchased repeatedly?”  
+**Ayuda ES:** No confundas muchas ventas con compras repetidas de una misma persona. Si vendes artículos de adquisición única o tienes muy poco historial de compradores, indícalo.  
+**Help EN:** Don't confuse many sales with repeat purchases by the same person. If you sell one-off products or have too little customer history, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| frequently | Las mismas personas vuelven a comprar con cierta frecuencia. | The same people buy again fairly often. |
+| occasionally | Algunas vuelven a comprar de vez en cuando. | Some buy again occasionally. |
+| rarely | Casi nunca repiten, aunque el producto permite hacerlo. | They rarely return even though repeat purchases are possible. |
+| not_enough_history NEW | Todavía no hay compras suficientes de personas identificables para evaluarlo. | There isn't enough repeat-customer purchase history to assess this. |
+| not_applicable | Son productos que normalmente se adquieren una sola vez. | These products are normally purchased only once. |
+| unknown | No sé si hay compras repetidas de las mismas personas. | I don't know whether the same people make repeat purchases. |
+
+**Guardia observada y objetivo:** Wave2 v1: operating + historial + arquetipo ecommerce. Si se presenta la variante e-commerce, no sumar simultáneamente q2_local_repeat_customers para los mismos compradores de un negocio mixto.  
+**Evidencia y neutralidad:** Wave2 evidenceMigration=pending; la frecuencia de recompra es un hecho contextual, no demuestra CRM, permiso para enviar campañas, ni madurez digital. No inferir identidad o derecho a contactar por poder calcular la recurrencia.  
+**Pruebas focales futuras NO EJECUTADAS:** C07 tienda sin cookies personales, compra de artículos duraderos, C09 tienda física+ecommerce; not_enough_history no equivale a rarely; sin datos personales capturados en diagnóstico.
+
+#### Ficha 63 — q2_creator_channel_concentration · single · REWRITE
+
+**ES:** «¿Qué parte de tu audiencia realmente activa depende hoy de una sola plataforma o canal?»  
+**EN:** “How much of your genuinely active audience currently depends on a single platform or channel?”  
+**Ayuda ES:** Considera dónde participa o sigue contenido la audiencia real, no el número de perfiles abiertos. Si aún no tienes una audiencia activa suficiente para compararla, indícalo.  
+**Help EN:** Consider where the real audience engages, not how many profiles you have created. If you don't yet have enough active audience to compare channels, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| highly_concentrated | Casi toda la audiencia activa está en un solo canal. | Almost all active audience is on one channel. |
+| somewhat_spread | Está repartida entre unos pocos canales. | It's spread across a few channels. |
+| well_diversified | Participa de forma significativa en varios canales. | It's meaningfully active across several channels. |
+| no_active_audience NEW | Todavía no tengo una audiencia activa suficiente para compararlo. | I don't yet have enough active audience to make a comparison. |
+| unknown | No tengo información fiable sobre dónde está la audiencia activa. | I don't have reliable information on where the active audience is. |
+
+**Guardia observada y objetivo:** Wave2: operating+historial real y monetization=audience o sector=creator. La clasificación sector→modelo del Lote 02 requiere migración de este gate para no desactivar a creadores que trabajan en otra industria.  
+**Evidencia y neutralidad:** Wave2 evidenceMigration=pending, sin mapeo directo; concentración de canal puede significar riesgo de dependencia, no mala presencia digital ni autorización de contacto. No usar este resultado como sustituto de q2_creator_audience_ownership del Lote 04.  
+**Pruebas focales futuras NO EJECUTADAS:** C09 creador+retail, una plataforma con público real, varias cuentas sin audiencia, ONG que crea contenido pero no monetiza por audiencia.
+
+#### Ficha 64 — q2_service_area_clarity · single · REWRITE
+
+**ES:** «Cuando tu servicio requiere desplazarte, ¿tienes definida la zona en la que puedes atender de forma viable?»  
+**EN:** “When your service requires travel, have you defined the area you can reasonably serve?”  
+**Ayuda ES:** Se trata de hasta dónde te desplazas tú, no de dónde viven todas las personas interesadas. Si estás preparando el servicio, responde por la zona prevista; si no hay desplazamientos, indícalo.  
+**Help EN:** This is about how far you travel, not where everyone interested in your service lives. If you're preparing to launch, answer for the planned area; if your service requires no travel, say so.
+
+| value de opción | Español (diseño) | English (draft) |
+| --- | --- | --- |
+| defined_area | Sí, tengo definida una zona viable de desplazamiento. | Yes, I've defined a viable travel service area. |
+| flexible_but_aware | Soy flexible, pero tengo claros los límites de desplazamiento. | I'm flexible, but I know my travel limits. |
+| no_limit | Me desplazo sin evaluar habitualmente distancias o condiciones. | I travel without routinely assessing distances or conditions. |
+| not_applicable NEW | El servicio no requiere que me desplace hasta la persona. | The service doesn't require me to travel to the customer. |
+| unknown | Todavía no tengo claro ese límite. | I'm not yet sure about those limits. |
+
+**Guardia observada y objetivo:** Wave2: operating o preparing AND arquetipo local_service. Debe derivar la necesidad real de desplazamiento de q2_delivery.travels cuando esté declarada; si solo presta atención remota, no penalizar. No forzar resultados actuales en prelaunch.  
+**Evidencia y neutralidad:** Wave2 evidenceMigration=pending, sin V3 directa; definir territorio operativo es contexto logístico, no alcance real de clientes, digital_foundation ni capacidad de marketing.  
+**Pruebas focales futuras NO EJECUTADAS:** C02 local_service prelaunch, C06 servicio a domicilio, profesional remoto con arquetipo local_service, C10 cambio de modalidad; no confundir customer_reach con service_area.
+
+### Recuento y gates del Lote 08
+
+- **Inventario focal por lectura:** 8 preguntas, **35 opciones de origen** (5+4+4+4+5+5+4+4), objetivo documental de **41 opciones** (5+5+5+4+6+6+5+5): +6 opciones propuestas, ninguna runtime. 2 KEEP (hospitality_flow_type y nonprofit_membership_lifecycle) y 6 REWRITE; versiones futuras únicamente para estas seis.
+
+- **Acumulado Lotes 01–08:** **64 fichas con dictamen** sobre los 77 IDs de referencia, 17 KEEP y 47 REWRITE. Quedan **13 IDs** por revisar editorialmente, sin equiparar la revisión de contenido con implementación, cobertura efectiva ni certificación.
+
+- **BLOQUEOS P0 de diseño para F03/F05:** no usar mixed de apoyo como prueba de membresía; no puntuar no-show/capacidad/recurrencia/seguidor como medición digital; no duplicar recompra local+ecommerce; no suponer consentimiento para contacto por observar cliente repetido; cambios de sector/modelo y arquetipo requieren replanificación y replay.
+
+- **Escenarios y validación focal futura:** C02 proyecto en preparación, C03 pausado, C05 ONG con voluntarios sin cuotas, C06 servicio a domicilio, C07 ecommerce con compra única, C08 reserva/visitas sin reservas y picos estacionales, C09 mixtos creador/retail/hospitality, C10 cambiar sector y modalidad. Añadir equivalencia ES/EN, not_applicable/unknown, guardias, 24+5 y ausencia de doble score; no ejecutar tests generales.
+
+- **PLAN_ONLY se mantiene:** sin TS/TSX, SQL, D1, tests, CI, Workers, rutas, UI, deploy ni merge. F02 aún ABIERTA hasta revisar el total, y certificación cognitiva, taxonomía 8×10, scoring, seguridad/privacidad y F00–F10 pendientes.
+
+### Changelog
+
+- **1.1.0 / 2026-10-31:** Lote 08 de ocho fichas ES/EN sobre hospitalidad, recurrencia, público creador, membresías y zona de servicio; gates de no historial/N-A y sin scoring ficticio; exclusivamente documentos.
