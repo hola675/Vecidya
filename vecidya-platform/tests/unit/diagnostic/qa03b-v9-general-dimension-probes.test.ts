@@ -289,3 +289,20 @@ test("candidate correlation prefers direct over supporting without inventing a s
   assert.equal(result.accepted[0]?.questionId, specialist.questionId);
   assert.equal(result.deduplicated[0]?.questionId, general.questionId);
 });
+
+
+test("candidate correlation accepts shared observation IDs across independent dimensions", () => {
+  const first = correlatedReading("q2_general_pending_step_continuity");
+  const second: ContextualEvidence = {
+    ...first, dimension: "digital_foundation",
+  };
+  const sameSourceInTwoDimensions = correlateCandidateObservationsV1([first, second], [
+    confirmed(first.questionId, "inquiry-1"),
+    { ...confirmed(first.questionId, "inquiry-1"), dimension: "digital_foundation" },
+  ]);
+  assert.equal(sameSourceInTwoDimensions.scoreSafe, true);
+  assert.equal(sameSourceInTwoDimensions.accepted.length, 2);
+  assert.equal(sameSourceInTwoDimensions.unmapped.length, 0);
+  assert.equal(sameSourceInTwoDimensions.deduplicated.length, 0);
+  assert.deepEqual(sameSourceInTwoDimensions.conflicts, []);
+});
