@@ -3000,3 +3000,41 @@ La lectura estática de QA03B specialty-candidate-bank.ts, specialty-branches-wa
 ### Changelog adicional
 
 - **1.62.0 / 2026-10-31:** cierre del inventario editorial de 77 preguntas en diez lotes, cinco selectores finales ES/EN y preauditoría transversal documentada; P0/P1 y gate F02 preservados. Solo Markdown.
+
+
+## 72. Ampliación autorizada y aislada del banco candidato: 82 preguntas
+
+**ALCANCE AMPLIADO A PETICIÓN DEL PROPIETARIO / NO PRODUCCIÓN / SIN LEVANTAR GATES DE F02–F10.** Después de completar la revisión editorial de los 77 IDs se autorizó incorporar preguntas nuevas para crecer y complementar el banco actual. Se efectuó una excepción concreta al régimen PLAN_ONLY **únicamente para ampliar de manera aditiva el banco V9 experimental**, conservando los contratos actuales y el código público intactos.
+
+### Entrega efectiva y separación entre catálogos
+
+- **Código modificado:** archivo existente qa03b/specialty-branches-wave1.ts, únicamente al final del catálogo base de 77. Se introdujo QA03B_COMPLEMENTARY_QUESTIONS_V1 con cinco QuestionDefinitionV2 nuevos: q2_nonprofit_participation_entry, q2_education_enrollment_entry, q2_real_estate_inquiry_entry, q2_creative_brief_intake y q2_retail_purchase_next_step.
+- **Nuevo candidato exportado:** QA03B_EXTENDED_CANDIDATE_BANK_V3 = QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 (77) + QA03B_COMPLEMENTARY_QUESTIONS_V1 (5) = **82**. Se preservaron sin edición y con sus asserts originales de 77 QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2, sus preguntas y sus importadores. El nuevo export es experimental y **no importado por el flujo público**.
+- **Protecciones incorporadas en la definición candidata:** aserciones por longitud 5/82 y por unicidad de 82 IDs. Son verificaciones al importar el módulo, **NO** evidencias de tests ejecutados. Cinco preguntas single v1, cada una con cinco opciones; cada una es routingRole=deepening, priority=refinement, evidenceMigration=pending y sin evidenceV3. No se introducen puntuaciones, signals, sesiones ni integraciones.
+- **Diseño y contratos ES/EN:** especificación adicional en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Ampliación complementaria del candidato V9 — banco 82», v1.4.0. El código mantiene copy español como el candidato existente; EN sigue como traducción propuesta no publicada.
+- **Razón de cobertura:** se añadieron rutas de participación comunitaria sin donación/membresía, inscripción a formación sin venta obligatoria, consulta inmobiliaria sin promesas de disponibilidad, briefing de trabajo creativo sin software y paso de compra física sin confundir catálogo/checkout. No son cinco variantes que puntúan una dimensión ya medida; solo se justifican como información suplementaria sobre pasos reales por sector.
+
+### Contrato de elegibilidad y evidencias nuevas
+
+| ID nuevo | Gate acotado | Respuesta neutral | Solapamiento a impedir |
+| --- | --- | --- | --- |
+| q2_nonprofit_participation_entry | operating+historial+organización/misión+explicar/oportunidades/fricción conversión | no_open_entry/unknown | q2_nonprofit_membership_lifecycle y q2_nonprofit_donation_clarity |
+| q2_education_enrollment_entry | operating+historial+sector education_coaching+explicar/oportunidades/fricción conversión | no_open_enrollment/unknown | q2_professional_intake_flow y claridad genérica |
+| q2_real_estate_inquiry_entry | operating+historial+sector real_estate+explicar/oportunidades/fricción conversión | referral_only/unknown | q2_professional_intake_flow y q2_presence_offer_clarity |
+| q2_creative_brief_intake | operating+historial+sector creative_media+organizar/fricción operaciones | no_comparable_projects/unknown | q2_process_systemization y q2_operations_information_base |
+| q2_retail_purchase_next_step | operating+historial+sector retail+explicar/oportunidades/fricción conversión | not_direct_sales/unknown | q2_retail_product_visibility y q2_ecommerce_checkout_friction |
+
+**Límites que no se levantaron:** el ampliado de 82 no redefine las decisiones de las 77 ni implementa los 59 REWRITE. Las cinco preguntas adicionales no demuestran por sí solas madurez, no tienen evidencia calibrada, no se han probado en un recorrido y no implican que deban mostrarse siempre. Conservan 24+5 como presupuesto de entrevista futura y C01–C10 como matriz de prueba, pero ni el planner ni su selección fueron cambiados. F02 continúa abierta.
+
+**No se hicieron:** cambios a V8/QBV2 público, GHL, Workers, D1, SQL, UI, endpoints, API, autenticación, almacenamiento, migración de sesiones, envío de mensajes, merge ni deploy. No se ejecutaron tests focales ni generales; la conexión GitHub permite verificar archivos/commits pero no equivale a un runner. La siguiente verificación técnica autorizada debe ser **focal**, primero compilación/validación de contratos del nuevo export sin tocar main y luego cobertura de gates/uniqueness/neutralidad/deduplicación.
+
+### Próxima fase recomendada dentro del alcance actual
+
+1. Reconciliar **77 antiguas + cinco nuevas = 82 IDs**, mapas de sector y vías genéricas, con matriz de cobertura por escenarios sin declarar F02 certificada.
+2. Revisar en especial las rutas q2_professional_intake_flow vs educación/inmobiliaria y las señales de participación comunitaria vs donaciones/membresía, evitando preguntas duplicadas para un mismo evento.
+3. Diseñar la integración controlada del nuevo export al planner V9 aislado (solo después de prueba focal) y asegurar que sector/etapa/objetivo limiten la presencia de nuevas preguntas, respetando el presupuesto 24+5.
+4. Continuar F00/F01/F02/F03/F05/F07/F08 con su revisión y permisos independientes antes de cualquier publicación. La autorización de ampliar el banco candidato **no** autoriza cambiar scoring, activar sesiones ni lanzar V9.
+
+### Changelog adicional
+
+- **1.63.0 / 2026-10-31:** cinco preguntas nuevas añadidas al candidato experimental V9, catálogo extendido 82 preservando base 77; documento complementario ES/EN, guardias neutrales y riesgos de cobertura, sin activación pública.
