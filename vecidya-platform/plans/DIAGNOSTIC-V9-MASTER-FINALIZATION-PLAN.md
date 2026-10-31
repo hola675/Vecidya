@@ -3231,3 +3231,49 @@ Se registró una matriz **8 dimensiones × C01–C10** con siete clases de oblig
 ### Changelog adicional
 
 - **1.67.0 / 2026-10-31:** ocho preguntas generales candidatas para fortalecer las ocho dimensiones, export 90 aislado y política de porcentaje con pesos existentes, confianza, cobertura y antiduplicación; sin ejecución ni producción.
+
+## 77. Mapeo semántico y reglas de porcentaje de las ocho generales
+
+**F02/F05 — PROPUESTA VERSIONADA, NO SCORING ACTIVADO / 2026-10-31.** En respuesta al refuerzo del banco se contrastaron las ocho preguntas generales con las 40 evidencias V3 detectadas en el catálogo previo y sus respuestas. Se añadió al mismo archivo experimental qa03b/specialty-branches-wave1.ts el export QA03B_GENERAL_PROBE_EVIDENCE_DRAFT_V1: ocho entradas, una por dimensión, con constructKey, posibles coincidencias con preguntas previas, directness propuesta y estado semántico por cada uno de los cinco values. **Es metadata aislada, no evidenceV3 migrada, no importada por scorer/planner ni publicada**.
+
+El registro completo y la tabla de 40 respuestas se incorporaron en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Contrato semántico de evidencia para ocho generales (candidato de 90)», versión documental 1.9.0. El candidato conserva el banco base de 77, la ampliación de 82 y el export equilibrado de 90 sin sustituir sus contratos. La cantidad 90 representa opciones candidatas de pregunta, NO preguntas efectuadas por sesión.
+
+### Decisión editorial por dimensión
+
+| Dimensión | ID general | Papel propuesto | Regla crítica |
+| --- | --- | --- | --- |
+| clarity_positioning | q2_general_offer_comprehension | Directa condicionada | Oferta explicada y presencia digital publicada son hechos distintos; no sumar el mismo intercambio dos veces |
+| digital_foundation | q2_general_contact_information_consistency | Directa condicionada | Un canal correcto no demuestra coherencia multicanal; N/A de esta pregunta no borra la aplicabilidad de la dimensión |
+| discovery | q2_general_discoverability_path | Directa condicionada | Vía de acceso distinta de la regularidad; con un mismo referido, deduplicar |
+| trust_reputation | q2_general_verifiable_trust_signals | Directa condicionada | Verificación apropiada sin reseñas ni publicación de datos privados obligatorias |
+| conversion_access | q2_general_first_action_path | Directa condicionada | Fallback: no sustituir una pregunta sectorial V3 sin paridad; inmobiliaria sigue P0 |
+| relationship_recurrence | q2_general_pending_step_continuity | Directa condicionada | Recuperar contexto no demuestra recordatorio ni contacto autorizado |
+| measurement_optimization | q2_general_outcome_measure_definition | SOLO APOYO | Definir una métrica no demuestra registrarla, revisarla o aprender; supporting por sí sola no produce score |
+| digital_readiness | q2_general_digital_execution_reliability | Directa condicionada | Requiere tarea y herramienta digital necesarias; un proceso manual no certifica capacidad digital |
+
+**Estado de las respuestas:** 40 pares value→state documentales: cada pregunta tiene tres estados potencialmente informativos y dos neutros (unknown y un not_applicable específico). Los estados informativos todavía NO se registran como evidenceV3; los neutrales no aportan 0. En caso de ausencia de actividad comparable o aplicación insuficiente, abstención explicada en vez de porcentaje forzado.
+
+### Porcentajes: parámetros existentes y condición nueva de validez
+
+1. **Puntuación ya existente:** contribuciones strong 1, established 0,75, partial 0,50, weak/dependency 0,25, missing 0; constraint/uncertainty/not_applicable null. Media ponderada por dimensión: direct 1; supporting 0,5 limitado al 50 % del peso directo. Solo supporting no crea nota.
+2. **Calibraciones distintas:** CANDIDATE_CALIBRATION_V3 sigue siendo alias del modelo v2 de compatibilidad; CANDIDATE_CALIBRATION_ACTIVE_V4 señala el modelo activo QA03B quartiles v4. La versión activa exige mínimo tres áreas con score y 60 % de cobertura sobre dimensiones aplicables, y usa bandas 0–25 / 26–50 / 51–75 / 76–100. No confundir alias y modelo activo al registrar porcentajes.
+3. **Corroboración futura:** dos evidencias directas materialmente independientes, si existen, para considerar robusta una lectura; una sola podrá mantenerse preliminar con confianza explícita. El umbral no se implementó ni impone preguntar dos cosas irrelevantes. Cualquier variante necesita validación del presupuesto 24+5.
+4. **Deduplicación antes de puntuar:** dimension × actividad × evento × constructo × periodo × fuente. Para un mismo hecho elegir una sola contribución; preguntas distintas de una misma dimensión pueden aportar hechos distintos. Registrar exclusiones y razonamiento para explicar resultado.
+5. **Índice global:** media igual de las dimensiones aplicables puntuadas según la calibración activa, solo cuando supera suficiencia. Cobertura y confianza se reportan por separado; no son equivalentes a exactitud estadística. La etapa prelaunch no recibe índice global de operación. Una N/A no cuenta como cero.
+
+### Gates focales para la continuación
+
+| Gate | Prueba futura y criterio | Estado |
+| --- | --- | --- |
+| G90-09 | Confirmar ocho registros auditados alineados por ID con ocho preguntas y 40 values; 16 neutros | Cotejo estático realizado; sin TypeScript ejecutado |
+| G90-10 | Validar evidenceV3 y versionado semántico para los siete direct candidatos | PENDIENTE — scoring intacto |
+| G90-11 | Asegurar que outcome_measure_definition solo apoya una medida real directa | PENDIENTE — no genera score hoy |
+| G90-12 | Evitar scoring duplicado en oferta, presencia, descubrimiento, confianza, acceso, seguimiento y capacidad | PENDIENTE — política documentada, planner intacto |
+| G90-13 | Verificar neutralidad, una directa/dos independientes, confianza, bandas, cobertura e índice con calibración v4 | PENDIENTE — casos focales y revisión de informe |
+| G90-14 | C01–C10, edición/replay por versión, prelaunch, ONG, privacidad, ES/EN y máximo 24+5 con consentimiento | PENDIENTE — pruebas por escenario |
+
+**Siguiente fase operativa:** diseñar banco de pruebas focales para los 90 IDs con fuente única de estados/constructos y reglas de exclusión por observación; después validar el scorer aislado en el SHA final, sin modificar cálculos históricos ni V8. Tras aceptación F02/F05, decidir cuáles de las ocho preguntas merecen evidenceV3 directa y cuáles funcionan únicamente como apoyo/contexto. No añadir puntos para rellenar porcentajes. Los resultados de Worker's QA03B/producción, acceso a GHL y MiniWeb no cambian con este lote.
+
+### Changelog adicional
+
+- **1.68.0 / 2026-10-31:** tabla experimental de evidencia para las ocho generales de V9, siete directas condicionadas y una supporting-only; deduplicación por evento/constructo, identidad de calibración v2 vs v4 y pruebas focales futuras. Sin activar scoring ni producción.
