@@ -368,7 +368,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general clarity_positioning.",
+      understand: "Comprobar si una persona nueva comprende el destinatario y la utilidad de la actividad.",
       distinction: "Comprensión de la oferta explicada, no visibilidad online ni volumen de ventas.",
     },
   },
@@ -386,7 +386,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general digital_foundation.",
+      understand: "Comprobar si los canales digitales usados muestran datos de contacto correctos.",
       distinction: "Coherencia entre canales digitales, no existencia de web ni rapidez de respuesta.",
     },
   },
@@ -404,7 +404,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general discovery.",
+      understand: "Conocer si existe una vía real de descubrimiento para personas nuevas.",
       distinction: "Vía real de descubrimiento, no constancia de adquisición ni atribución estadística.",
     },
   },
@@ -422,7 +422,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general trust_reputation.",
+      understand: "Comprobar si una persona nueva encuentra señales de confianza apropiadas y verificables.",
       distinction: "Pruebas legítimas accesibles, sin inferir licencias ni exigir reseñas.",
     },
   },
@@ -440,7 +440,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general conversion_access.",
+      understand: "Comprobar si una persona interesada entiende cómo dar el primer paso.",
       distinction: "Fallback genérico del acceso sectorial, no otra puntuación por el mismo evento.",
     },
   },
@@ -458,7 +458,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general relationship_recurrence.",
+      understand: "Comprobar si se puede recuperar el siguiente paso de una interacción pendiente.",
       distinction: "Estado de un paso pendiente; no frecuencia de retorno ni consentimiento comercial.",
     },
   },
@@ -476,7 +476,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general measurement_optimization.",
+      understand: "Conocer si la actividad cuenta con un resultado observable definido para comparar.",
       distinction: "Definir qué se mide, distinto de registrar o revisar resultados.",
     },
   },
@@ -494,7 +494,7 @@ export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] 
     ],
     evidenceMigration: "pending",
     helpIntent: {
-      understand: "Observar de forma general digital_readiness.",
+      understand: "Comprobar si las tareas que requieren herramientas digitales se pueden completar.",
       distinction: "Ejecución digital observada, no procesos manuales ni posesión de software.",
     },
   },
