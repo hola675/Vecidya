@@ -2927,3 +2927,28 @@ En el apartado 64 se afirmó que q2_ecommerce_cart_followup «no se contó entre
 ### Changelog adicional
 
 - **1.60.0 / 2026-10-31:** Lote 08 de hostelería/recurrencia/membresías cerrado como diseño delegado bilingüe, 64 fichas decididas de 77, sin implementación.
+
+
+## 69. Lote editorial 09 — evidencia operativa y nichos
+
+**DISEÑO EDITORIAL DELEGADO / PLAN_ONLY / NO CERTIFICADO.** Se ha revisado y registrado un noveno lote de ocho preguntas nuevas respecto de los lotes previos en el archivo existente [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Lote editorial 09», versión documental v1.2.0. Se consultaron contratos desde HEAD 24ee1e40aea8969e778095244354c83558008e5e de qbv2-lote-f.ts, qbv2-lote-d.ts, qbv2-lote-e.ts, qbv2-lote-c.ts, qa03b/recovery-wave2.ts, qa03b/specialty-candidate-bank.ts y taxonomy.ts. Fuentes leídas estáticamente, **sin ejecutar el ensamblaje ni pruebas**.
+
+**IDs de fichas 65–72:** q2_startup_demand_signal, q2_b2b_qualification, q2_operations_process_ownership, q2_followup_status_visibility, q2_measurement_source_confidence, q2_ecommerce_checkout_friction, q2_niche_health_wellness y q2_niche_b2b_services. Dictamen: **1 KEEP (selector health_wellness) y 7 REWRITE** de diseño, con **36 opciones actuales y 44 propuestas**. No existen cambios activos ni versiones aprobadas de runtime; una opción histórica commitment (que confundía preventa, compromiso y primer cliente) se plantea separar en dos sin migración automática.
+
+### Decisiones críticas y deuda pendiente
+
+- **Prelaunch:** interés, solicitud, compromiso pendiente, piloto pagado y primera prestación/participación real son observaciones distintas. El estado preparing no permite atribuir operación ni madurez digital: si hubo primera entrega se puede solicitar revisión de etapa, pero no cambiar el estado sin confirmación.
+- **B2B y digital_readiness:** q2_b2b_qualification y q2_operations_process_ownership están mapeados en el candidato como evidencia directa de digital_readiness, pese a que cualificar solicitudes y asignar tareas puede hacerse sin herramientas digitales. Proponer reclasificación supporting/contextual y nueva rúbrica en F05; no reinterpretar respuestas de versiones anteriores.
+- **Seguimiento:** q2_followup_status_visibility (revisión deliberada de pendientes) no es idéntica a cumplimiento de seguimiento ni visibilidad de oportunidades. Debe aplicarse gate de operación, historial y fricción/objetivo explícito; evitar doble puntuar junto a preguntas genéricas del Lote 04 y otras especialidades.
+- **Medición de canal:** q2_measurement_source_confidence debe distinguir fuente realmente preguntada/registrada y suposición; respetar casos nonprofit y sanitarios sin solicitar datos particulares. No sumar automáticamente otra evidencia de atribución de la lista multicanal de e-commerce.
+- **Pago en línea:** q2_ecommerce_checkout_friction requiere checkout realmente disponible y compras iniciadas observables. no_checkout es N/A operativo de esa pregunta; no_started_checkouts representa insuficiencia de casos, no conversión 0 ni prueba de fallo digital. El abandono no autoriza seguimiento ni identifica a personas.
+- **Selector salud:** NICHE_REGISTRY del candidato contiene dentist, primary_care, psychiatry y medspa en health_wellness; +other/+unknown. q2_niche_health_wellness permanece KEEP v1 como clasificación explícita, sin convertir actividad sanitaria en información clínica, credencial o capacidad digital. La ruta dental necesita también guardias de appointments, historial y objetivo/fricción.
+- **Selector B2B y P0 TAX-G1:** q2_niche_b2b_services contiene marketing_agency y wholesale_distribution (+other/+unknown), actualmente se activa por q2_sector=b2b_services. El Lote 02 proyecta separar actividad de modelo B2B; hacer ese cambio sin migrar elegibilidad rompería q2_marketing_agency_scope_clarity del Lote 06. Mantener puente semántico, versión futura y replay antes de retirar el valor como sector.
+
+**Acumulado preciso:** Lotes 01–08 = 64 fichas (17 KEEP/47 REWRITE); Lote 09 = 8 (1 KEEP/7 REWRITE); **72 fichas documentadas sobre 77 IDs de referencia (18 KEEP/54 REWRITE)**, no 72 preguntas implementadas, ni resultado E2E, ni certificación cognitiva. **Quedan cinco IDs por decisión editorial**, correspondientes a los selectores q2_niche_beauty_personal_care, q2_niche_financial_tax_insurance, q2_niche_home_services, q2_niche_automotive y q2_niche_technology_software. Su revisión conformará el Lote 10 final; después procede auditoría transversal de sesgos, traducción, taxonomía, evidencia, presupuesto 24+5, C01–C10 y matriz 8×10. F02 continúa ABIERTA hasta cumplir gates reales.
+
+**Restricciones:** PLAN_ONLY no autoriza TypeScript, SQL, D1, pruebas, CI, UI, Worker, rutas, migraciones, merge ni deploy; el PR #162 seguirá draft y la base/producción intactas. Para implementar se requieren autorizaciones específicas, reconciliación F00 con main, versiones, replay, seguridad y privacidad; únicamente pruebas focales posteriormente.
+
+### Changelog adicional
+
+- **1.61.0 / 2026-10-31:** documentación bilingüe Lote 09, ocho fichas con 1 KEEP/7 REWRITE; dependencia P0 de agencia B2B y correcciones de neutralidad/atribución sin runtime.
