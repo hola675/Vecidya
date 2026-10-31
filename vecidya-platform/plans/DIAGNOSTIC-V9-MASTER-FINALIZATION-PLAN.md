@@ -3180,3 +3180,54 @@ Se registró una matriz **8 dimensiones × C01–C10** con siete clases de oblig
 ### Changelog adicional
 
 - **1.66.0 / 2026-10-31:** distribución de 40 evidencias por las ocho dimensiones (36 direct / 4 supporting), riesgos de doble suma, gates S01–S03/A78–A82 y matriz futura 8×10; ningún test ejecutado.
+
+
+## 76. Refuerzo general de las ocho dimensiones y porcentajes condicionados
+
+**Decisión de avance solicitada / V9 EXPERIMENTAL / NO PRODUCCIÓN.** Antes de calibrar y certificar F02/F05 se amplió la calidad del banco con ocho observaciones generales para las ocho dimensiones. Implementado aditivamente en qa03b/specialty-branches-wave1.ts: QA03B_GENERAL_DIMENSION_PROBES_V1 y QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4 = 77 base + 5 complementarias + 8 generales = **90 IDs**. Los exports de 77 y 82, sus aserciones, todos los importadores y el flujo público permanecen intactos. Se añadieron 40 opciones (5 por pregunta, incluyendo 8 N/A y 8 unknown), sin puntuación. Las ocho preguntas son deepening/refinement, evidenceMigration=pending, sin evidenceV3. **El cambio no implanta un porcentaje V9 nuevo.**
+
+**Documento ES/EN:** [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Reforma transversal de preguntas generales para porcentajes por dimensión», versión **1.8.0**, con fichas completas, las 40 opciones traducidas y correspondencias con el banco anterior.
+
+### Cobertura general propuesta por dimensión
+
+| Dimensión | Nueva pregunta general | Para qué sirve | Antiduplicación |
+| --- | --- | --- | --- |
+| clarity_positioning | q2_general_offer_comprehension | Comprender para quién es y qué se ofrece | presence_offer_clarity y startup_offer_readiness |
+| digital_foundation | q2_general_contact_information_consistency | Verificar datos coherentes entre canales digitales activos | presence_digital_base y local_presence_consistency |
+| discovery | q2_general_discoverability_path | Verificar que existe una vía para que alguien nuevo nos encuentre | discovery_reliable_reach mide constancia, no existencia |
+| trust_reputation | q2_general_verifiable_trust_signals | Verificar señales apropiadas de confianza sin divulgar datos privados | reputation_flow y professional_authority_signals |
+| conversion_access | q2_general_first_action_path | Comprender el primer paso de contacto, compra o participación | service_response_speed, professional_intake_flow, ADD 78–82 |
+| relationship_recurrence | q2_general_pending_step_continuity | Recuperar el estado del siguiente paso pertinente | followup_general_process, b2b_status_visibility y citas |
+| measurement_optimization | q2_general_outcome_measure_definition | Definir un resultado observable comparable | measurement_practice, result_recording y review_cycle |
+| digital_readiness | q2_general_digital_execution_reliability | Comprobar que una tarea que requiere tecnología funciona | digital_tools_in_use, process_systemization e information_base |
+
+**Gates observados:** oferta general = operating o preparing; presencia digital, primera acción y ejecución digital = operating; descubrimiento, confianza, continuidad y medición = operating con historial q2_has_customers=yes. El código no valida todavía si preguntar la general añade información frente a la especialidad. Por tanto, no se puede declarar que el planner elimine duplicados ni que las ocho preguntas se muestren en todas las rutas.
+
+### Fórmula de porcentajes: aprovechar el cálculo ya existente, con calidad de evidencia
+
+**Contribuciones hoy existentes:** strong=1; established=0,75; partial=0,50; weak=0,25; dependency=0,25; missing=0. Los estados constraint, uncertainty y not_applicable tienen contribución null y se excluyen. El scorer de dimensión calcula un porcentaje redondeado sobre evidencias directas y de apoyo, con peso directo 1, apoyo 0,5 y apoyo total limitado al 50 % del peso directo. Sin evidencia directa no genera score. Estos valores son **contratos existentes**, no pesos nuevos adoptados por esta fase.
+
+**Índice global candidato:** la calibración R8-D/V4 vigente usa igual peso por dimensión aplicable con puntuación, al menos 3 dimensiones puntuadas y cobertura mínima del 60 % de dimensiones aplicables. La cobertura, confianza y puntuación son resultados separados; el índice no se muestra para prelaunch. Los rangos candidatos de presentación son 0–25, 26–50, 51–75 y 76–100. No es una precisión estadística validada ni significa que un negocio deba tener web, anuncios, pagos o clientes recurrentes.
+
+**Mejora editorial propuesta, NO IMPLEMENTADA:** mostrar como corroborado el porcentaje de una dimensión solo si hay al menos 2 observaciones directas independientes de hechos pertinentes, sin contradicciones pendientes; con una sola observación, conservar resultado preliminar de confianza limitada o abstenerse según contrato. Se debe evaluar este criterio frente al presupuesto 24+5 y a casos C01–C10: no forzar preguntas irrelevantes solo para alcanzar dos evidencias. Sin datos no se añade cero al denominador ni se inventa una nota global.
+
+**Unidad de deduplicación futura:** dimensión × actividad × evento × constructo × período/fuente. Una general y una especialista pueden ser distintas o equivalentes; si miden la misma situación solo puede existir una contribución puntuable. Los cinco ADD anteriores siguen sin evidenceV3 y la sustitución inmobiliaria por professional_intake_flow sigue bloqueada por paridad de evidencia. No se reescriben resultados históricos.
+
+### Gates de aceptación antes de porcentajes públicos
+
+| Gate | Criterio verificable | Estado |
+| --- | --- | --- |
+| G90-01 | Comprobar contratos y unicidad de los exports 77/82/90, 40 opciones y 16 neutrales nuevos | Aserciones escritas; sin ejecución |
+| G90-02 | Asegurar selección por información nueva, priorización del especialista y presupuesto 24+5 bajo consentimiento | Diseño; planner sin modificar |
+| G90-03 | Evitar evidencia duplicada por evento/constructo y preservar sustituciones y fallbacks | Bloqueado P0 |
+| G90-04 | Corregir el sesgo de digital_readiness al evaluar procesos manuales y dependencias digitales | Bloqueado P0/F05 |
+| G90-05 | Calibrar porcentaje, cobertura, confianza, bandas, abstención e identidad por versión | Pendiente de tests focales |
+| G90-06 | Validar C01–C10, ocho dimensiones, edición/replay, ES/EN, privacidad y accesibilidad | Sin certificación |
+
+**Siguiente:** trazar las ocho generales frente a los 40 mapeos V3 anteriores; resolver qué evento/constructo justifica evidencia nueva; someter a pruebas focales los contratos y rutas cuando se autorice; conservar pesos actuales hasta la calibración final. La ampliación de 90 preguntas es catálogo, **no número de turnos de entrevista**, que sigue limitado a 24+5.
+
+**Aislamiento:** solo se modificó un archivo TypeScript de banco candidato y dos Markdown. No tests, Worker, D1, SQL, UI, scoring, GHL, CI, merge ni deploy. PR #162 permanece draft; F02, F03 y F05 siguen ABIERTAS.
+
+### Changelog adicional
+
+- **1.67.0 / 2026-10-31:** ocho preguntas generales candidatas para fortalecer las ocho dimensiones, export 90 aislado y política de porcentaje con pesos existentes, confianza, cobertura y antiduplicación; sin ejecución ni producción.
