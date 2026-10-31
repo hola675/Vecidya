@@ -15,6 +15,8 @@ import { validateQuestionCopyV2 } from "../../../app/features/diagnostic/qa03b/c
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-scoring";
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
+import { scoreDimensionWithApplicability, type ContextualEvidence } from "../../../app/features/diagnostic/qbv2-contextual-scoring";
+import { CANDIDATE_CALIBRATION_ACTIVE_V4, candidateDimensionCalibrationV3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const base: AnswersV2 = {
@@ -66,7 +68,8 @@ test("eight general probes cover eight different dimensions, with neutral fallba
     assert.ok(row, q.id);
     assert.deepEqual(Object.keys(row.provisionalAnswerStates), q.options.map((o) => o.value), q.id);
     for (const option of q.options) {
-      const value = row.provisionalAnswerStates[option.value as keyof typeof row.provisionalAnswerStates];
+      const states: Readonly<Record<string, string | null>> = row.provisionalAnswerStates;
+      const value = states[option.value];
       assert.equal(value === null, option.kind === "unknown" || option.kind === "not_applicable", `${q.id}/${option.value}`);
     }
   }
@@ -128,4 +131,63 @@ test("editing operation status invalidates a previously answered probe", () => {
   const changed = resolveEligibleQuestionsV2({ ...active, q2_operational_status: "preparing" }, bank90);
   assert.equal(changed.activeAnswers.q2_general_pending_step_continuity, undefined);
   assert.ok(!changed.eligibleQuestionIds.includes("q2_general_pending_step_continuity"));
+});
+
+
+test("focal V4 percentage math separates direct evidence, supporting evidence, and neutral states", () => {
+  const calibration = candidateDimensionCalibrationV3(CANDIDATE_CALIBRATION_ACTIVE_V4);
+  const observation = (
+    questionId: string,
+    state: "established" | "partial" | "not_applicable",
+    directness: "direct" | "supporting",
+    observationId: string = questionId,
+  ): ContextualEvidence => ({
+    questionId, observationId, dimension: "measurement_optimization", directness, state,
+    kind: state, contribution: CANDIDATE_CALIBRATION_ACTIVE_V4.capabilityContribution[state],
+    answer: [state],
+  });
+  const score = (observations: readonly ContextualEvidence[]) =>
+    scoreDimensionWithApplicability("measurement_optimization", observations, "applicable", calibration);
+  const oneDirect = score([observation("record", "established", "direct")]);
+  assert.equal(oneDirect.score, 75);
+  assert.equal(oneDirect.confidence.level, "medium");
+  assert.equal(oneDirect.explainability.gaps.includes("single_direct_observation"), true);
+
+  const supportingOnly = score([
+    observation("definition", "established", "supporting"),
+    observation("anotherDefinition", "partial", "supporting"),
+  ]);
+  assert.equal(supportingOnly.score, null);
+  assert.equal(supportingOnly.confidence.level, "low");
+
+  const mixed = score([
+    observation("record", "partial", "direct"),
+    observation("definition", "established", "supporting"),
+    observation("extraDefinition", "established", "supporting"),
+  ]);
+  assert.equal(mixed.score, 58, "supporting total weight cannot exceed half the direct weight");
+  assert.equal(score([observation("absence", "not_applicable", "direct")]).score, null);
+});
+
+test("dimension score still counts distinct question IDs unless given the same observationId", () => {
+  const calibration = candidateDimensionCalibrationV3(CANDIDATE_CALIBRATION_ACTIVE_V4);
+  const observation = (questionId: string, observationId: string): ContextualEvidence => ({
+    questionId, observationId, dimension: "relationship_recurrence",
+    directness: "direct", state: "established", kind: "established",
+    contribution: 0.75, answer: ["established"],
+  });
+  const sameEvent = scoreDimensionWithApplicability("relationship_recurrence", [
+    observation("q2_followup_general_process", "event:request-1"),
+    observation("q2_general_pending_step_continuity", "event:request-1"),
+  ], "applicable", calibration);
+  assert.equal(sameEvent.confidence.direct, 1, "equal observation IDs are deduplicated");
+
+  const differentIds = scoreDimensionWithApplicability("relationship_recurrence", [
+    observation("q2_followup_general_process", "q2_followup_general_process:relationship_recurrence"),
+    observation("q2_general_pending_step_continuity", "q2_general_pending_step_continuity:relationship_recurrence"),
+  ], "applicable", calibration);
+  assert.equal(differentIds.confidence.direct, 2,
+    "known P0: question-specific observation IDs cannot deduplicate the same real event across questions");
+  assert.equal(differentIds.score, sameEvent.score);
+  assert.notEqual(differentIds.confidence.level, sameEvent.confidence.level);
 });
