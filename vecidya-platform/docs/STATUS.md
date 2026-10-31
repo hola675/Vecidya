@@ -41,6 +41,12 @@ El usuario aprobó extender el trabajo a toda la plataforma: web pública, Mi Ve
 
 `licenses-experience-check.mjs` PASS (1366/768/390/360). Typecheck, build y `git diff --check` PASS. Comparación visual antes/después con capturas completas en 1366/1024/768/390/360 px; el baseline usa CSS exacto de `origin/main`, inyectado sobre la misma página local. No hay overflow horizontal. El foco del CTA y el comparador móvil quedan cubiertos por el E2E; Chromium confirma que `reduce` lleva la transición de las tarjetas a duración casi cero. No implica certificación WCAG ni revisión con lector de pantalla/zoom 200 %. Sin cambios de datos, D1, deploy ni HTTP pública fechada.
 
+## UX-PREMIUM-02H — Complementos (2026-10-30)
+
+**CODE local / RAN local; extensión de PR #222, no publicado.** `/addons` reutiliza la variante WebP optimizada Vico Complementos (294 KB) como imagen accesible en primer plano sobre el panel de decisión. La composición, la paleta, los espacios y las tarjetas se alinean con la guía premium. Se conservan texto comercial, siete complementos, costes, precios, dependencias, rutas y CTAs.
+
+Capturas full-page antes/después en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080: HTTP 200, siete tarjetas y cero overflow en los cinco tamaños. E2E `addons-experience-check.mjs` PASS (1366/768/390/360), incluida imagen/alt correcto, carga de Vico, destino/foco de CTA y movimiento permitido/reducido. Aún no es certificación WCAG; quedan lector de pantalla, axe y zoom real al 200 %. Sin cambios de función/datos, D1 remota, deploy ni HTTP pública fechada.
+
 ## UX-COHERENCE-ROUNDED-001 — refinamiento global publicado en 0.9.2 (2026-10-29)
 
 La plataforma aplica esquinas redondeadas coherentes a secciones, tarjetas, paneles, formularios y controles, con separación adicional entre bloques consecutivos. «Soluciones» mejora foco/estado activo, indicador, superficie translúcida y movimiento reducido. Aprende compacta títulos y lectura, y agrupa arriba favoritos, avance y acciones desplegables por sección con nombres accesibles. Integrado por PR #210 y publicado en `0.9.2` mediante PR #213. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/` y `/aprende` en 200 con versión/copyright y 48 guías. E2E, typecheck y build PASS (ver `docs/TESTING.md`). No implica certificación WCAG integral.
@@ -49,7 +55,7 @@ La plataforma aplica esquinas redondeadas coherentes a secciones, tarjetas, pane
 
 La referencia `https://desig.vecidya.com/` y las rutas públicas actuales se capturaron localmente con Playwright. Inicio se revisó a 320/390/768/1366/1920 px; las otras rutas públicas a 1366 px; App/Admin se revisaron con fixtures locales sintéticos. Se observó competencia entre texto e imagen en el hero de Vecindario, 8 px de overflow horizontal en Diagnóstico a 1366 px, densidad larga en Aprende y una franja que cubre contenido en una captura móvil de Servicios internos. El primer fixture `/app` fue `platform_admin` y abrió contexto de organización; su overflow no se atribuye a la experiencia regular de cliente. La sesión exploratoria alternativa terminó en error React #418. El usuario aprobó el baseline y alcance de fase 0 como punto de partida, no como certificación funcional. No se certifica editor MiniWeb V2, 15 variantes, accesibilidad, teclado, zoom 200 % ni estados interactivos completos. Capturas locales fuera del repo: `C:\Users\Admin\.codex\worktrees\ux-premium-01-baseline\evidence\`. Sin cambios de producto, datos, schema, migraciones, remoto ni deploy.
 
-La rama de integración `feat/app-mini-ux-premium-platform-01` consolida los cambios visuales de Home (#219), Servicios (#220) y Licencias (#221), el baseline documental (#218) y `UX-PREMIUM-FOUNDATION-01`. PR #218–#221 permanecen abiertas; esta rama no se fusionó a `main` ni se desplegó.
+La rama de integración `feat/app-mini-ux-premium-platform-01` y el PR #222 draft reúnen Home (#219), Servicios (#220), Licencias (#221), Complementos (UX-PREMIUM-02H), el baseline documental (#218) y `UX-PREMIUM-FOUNDATION-01`. PR #218–#221 permanecen abiertas; PR #222 no se ha fusionado ni desplegado.
 
 ## APRENDE-PLAN-V1 — estado vigente y release 0.9.2 (2026-10-29)
 

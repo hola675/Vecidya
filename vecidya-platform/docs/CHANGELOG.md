@@ -28,6 +28,11 @@
 
 # Changelog
 
+## 2026-10-30 — UX-PREMIUM-02H — Complementos
+
+- Se alineó `/addons` con la guía visual premium y se agregó la variante optimizada de Vico Complementos, en primer plano sobre el panel conceptual.
+- Se ajustaron hero, catálogo, tarjetas y responsive; se preservaron copy, catálogo, precios/costes, condiciones, rutas y CTAs. El E2E focal cubre Vico, movimiento normal/reducido y el contenido comercial. Extensión local del PR #222; sin deploy ni publicación.
+
 ## 2026-10-30 — UX-PREMIUM-FOUNDATION-01 — base visual compartida
 
 - Se agregan tokens `--v-*` para paleta de referencia, tipografía, radios, sombras y movimiento, junto a una capa común de tipografía/controles/foco en superficies propias de Vecidya. Los botones primarios/secundarios reciben la primera migración explícita de color; otros tokens heredados y la identidad pública de MiniWeb permanecen intactos.

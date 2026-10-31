@@ -1,3 +1,7 @@
+## UX-PREMIUM-02H — refinamiento visual de Complementos (2026-10-30)
+
+Extensión del PR #222 en `/addons`: se incorporó la variante transparente WebP de Vico Complementos sobre el panel conceptual y una capa CSS propia para hero, fórmula, catálogo y acciones. Se conservan contenido comercial, catálogo de siete complementos, precios/costes, rutas y destinos. E2E focal verifica imagen/alt, CTA, foco, contenido y preferencias de movimiento; typecheck/build/diff-check finales en `TESTING.md`. Sin función nueva, schema, migración, D1 remota ni deploy.
+
 ## UX-PREMIUM-02G — refinamiento visual de Licencias (2026-10-30)
 
 Checkpoint local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-licenses-03`; PR #221 abierta en borrador. `/licencias` refina el hero y el comparador, distribuye las notas de alcance en 2×2 y ajusta las tarjetas a una columna desde 900 px; el hover tiene elevación breve con soporte de movimiento reducido. Se preservan catálogo, precios, activaciones, contenido, rutas y CTA. `licenses-experience-check.mjs`, typecheck, build y diff-check PASS. Capturas completas a 1366/1024/768/390/360 px sin overflow; reduced motion verificado en navegador. Sin D1 remota, deploy ni HTTP pública fechada; no es certificación WCAG.

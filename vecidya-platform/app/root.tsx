@@ -14,6 +14,7 @@ import "./app.css";
 import "./styles/cookie-consent.css";
 import "./styles/vecidya-polish.css";
 import "./styles/home-premium.css";
+import "./styles/addons-premium.css";
 import "./styles/premium-foundation.css";
 
 export function meta() {

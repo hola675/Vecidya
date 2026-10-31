@@ -18,6 +18,12 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 **RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/licenses-experience-check.mjs` — PASS. Verifica hero, catálogo y precios, tabla/alternativa móvil, CTAs, destinos, metadata, foco y overflow en 1366/768/390/360 px. Playwright capturó la página completa antes/después en 1366/1024/768/390/360 px; el baseline reproduce CSS de `origin/main` y la revisión confirma que no hay overflow y que las tarjetas pasan a una columna a 768 px. `prefers-reduced-motion: reduce` reduce a casi cero la transición de hover de las tarjetas. No se ejecutaron axe, lector de pantalla ni zoom real a 200 %; no equivale a certificación WCAG. Typecheck, build y diff-check PASS (ver STATUS).
 
+## UX-PREMIUM-02H — Complementos (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/addons-experience-check.mjs` — PASS a 1366/768/390/360 px. Confirma los siete complementos y sus precios/costes, CTAs/destinos, ficha de WhatsApp, metadata, sitemap, foco de teclado, variante y texto alternativo de Vico, carga real del WebP y movimiento animado con preferencia normal/desactivado con `prefers-reduced-motion: reduce`.
+
+Playwright capturó la página completa antes/después en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 contra Workers locales independientes; los cinco viewports dieron HTTP 200, cero overflow y siete tarjetas. Se rechazó el consentimiento opcional para despejar la vista. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build mantiene avisos ya conocidos de secretos opcionales locales ausentes, imports dinámicos ineficaces y sourcemap CSS. Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %.
+
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.

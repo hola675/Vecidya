@@ -51,12 +51,22 @@ export default function Addons() {
               <Link className="button button--secondary" to="/licencias">{PUBLIC_ACTION_LABELS.licenses}</Link>
             </div>
           </div>
-          <div className="addons-hero__formula">
-            <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
-            <div aria-hidden="true" className="addons-hero__operator">+</div>
-            <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
-            <div aria-hidden="true" className="addons-hero__operator">↓</div>
-            <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
+          <div className="addons-hero__visual">
+            <img
+              alt="Vico presenta capacidades digitales conectadas para tu negocio."
+              className="addons-hero__vico"
+              decoding="async"
+              height={1536}
+              src={publicAssets.illustrations.vicoAddons}
+              width={1024}
+            />
+            <div className="addons-hero__formula">
+              <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
+              <div aria-hidden="true" className="addons-hero__operator">+</div>
+              <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
+              <div aria-hidden="true" className="addons-hero__operator">↓</div>
+              <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
+            </div>
           </div>
         </section>
 

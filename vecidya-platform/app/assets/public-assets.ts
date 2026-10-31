@@ -60,6 +60,7 @@ export const publicAssets = {
     mobileCustomerChat: `${selectedAssetBase}/illustrations/illus-mobile-customer-chat.webp`,
     mobileLocalDiscovery: `${selectedAssetBase}/illustrations/illus-mobile-local-discovery.webp`,
     vicoHome: `${selectedAssetBase}/illustrations/vico-home.webp`,
+    vicoAddons: `${selectedAssetBase}/illustrations/vico-addons.webp`,
     homeVecidyaCompanion: `${selectedAssetBase}/illustrations/home-vecidya-companion-v4.webp`,
     neighborhoodMapPins: `${selectedAssetBase}/illustrations/illus-neighborhood-map-pins.webp`,
     platformGrowthDashboard: `${selectedAssetBase}/illustrations/illus-platform-growth-dashboard.webp`,
