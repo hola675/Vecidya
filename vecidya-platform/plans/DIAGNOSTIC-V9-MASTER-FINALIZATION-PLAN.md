@@ -2752,3 +2752,28 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.53.0 / 2026-10-31:** registro de la delegación editorial y resolución crítica de ocho fichas del Lote 01, señalización de deuda semántica y siguiente lote. Exclusivamente documentación; sin implementación.
+
+
+## 62. Cierre editorial delegado del Lote 02 (2026-10-31)
+
+**PLAN_ONLY — PRODUCTO NO CERTIFICADO.** En continuidad del permiso de decisión editorial delegado por el propietario, se resolvió el **segundo lote de ocho preguntas** y se incorporaron textos ES/EN, values existentes, opciones objetivo, condiciones de elegibilidad, neutralidad, contexto/evidencia y riesgos al **documento editorial existente** [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Lote editorial 02», versión 0.5.0. Se utiliza este mismo documento para no abrir archivos Markdown adicionales y mantener las referencias históricas.
+
+### Resultado documental verificable
+
+- **Lote 02:** q2_sector, q2_delivery, q2_customer_reach, q2_buyer_recipient_relation, q2_goal, q2_friction, q2_nonprofit_support_type y q2_niche_food_hospitality.
+- **Decisiones:** 2 KEEP (reach, goal) y 6 REWRITE de diseño (sector, delivery, buyer/recipient, friction, nonprofit support y niche food/hospitality). 8/8 con dictamen ES/EN; no se alteraron sus versiones ni values runtime.
+- **Acumulado:** Lote 01 = 3 KEEP + 5 REWRITE; Lote 02 = 2 KEEP + 6 REWRITE; **16 decisiones de contenido** (5 KEEP / 11 REWRITE), no 16/77 preguntas certificadas. Toda nueva opción requiere versión futura, validación semántica, compatibilidad y pruebas focalizadas.
+- **Hallazgo real:** sector v4 mezcla actividad económica, canal de comercio electrónico, modelo B2B y entidad sin lucro, además del solapamiento conceptual community_social/nonprofit_community. No se ha demostrado un value duplicado. No eliminar sector sin migración explícita de arquetipos y selectores; agricultura, producción y logística se plantean como huecos para TAX-G1, no IDs activos.
+- **Hallazgo real:** q2_friction no permite indicar «ningún obstáculo principal» ni «no sé»; q2_nonprofit_support_type no representa apoyo en especie ni ausencia de financiación; food_hospitality no incluye alojamiento y catering en sus nichos. Se especificaron alternativas V9 futuras sin modificar código.
+- **Hipótesis descartada:** tras inspeccionar qbv2-reviewed-foundation y el ensamblaje efectivo, q2_delivery **sí es multi**; el valor nonprofit_community del sector ampliado no está duplicado literalmente en el listado base, que contiene community_social. No crear defectos ficticios ni claims de test.
+- **Separación de evidencia:** sector, modalidad, alcance geográfico, comprador-beneficiario, objetivo, fricción declarada, apoyo financiero y nicho son clasificación/contexto, **no evidencia directa de nivel digital**.
+
+### Próximo gate editorial
+
+**Lote 03 — evidencia de presencia y descubrimiento:** priorizar ocho preguntas existentes del banco efectivo referentes a presencia digital, claridad de oferta, consistencia local, descubrimiento, reputación y mecanismos de acceso, incluyendo el caso gastronómico donde deben separarse no publicado/no aplicable/no sé. Antes de decidir, verificar identidades actuales y sus reglas; no inventar dimensiones, coverage ni scoring. C02/C03/C05/C07/C08/C10 y matriz 8×10 deberán permanecer trazables. Si una pregunta crítica carece de evidencia, marcar abstención y decidir si reescribir, sustituir o añadir sin ampliar sistemáticamente el presupuesto 24+5.
+
+**Limitaciones persistentes:** PLAN_ONLY. No TypeScript, tests, CI, D1, rutas, UI, Worker, merge, despliegue o cambios en producción. No afirmar pruebas nuevas ni publicar contenido. F02 permanece abierta hasta revisar el núcleo total y certificarlo en su fase posterior; TAX-G1/2/3 y F00 siguen pendientes.
+
+### Changelog adicional
+
+- **1.54.0 / 2026-10-31:** Lote editorial 02 cerrado como diseño delegado, ocho fichas ES/EN y 2 KEEP / 6 REWRITE, acumulado 16/16 decisiones documentales; seguimiento por gates sin implementación.
