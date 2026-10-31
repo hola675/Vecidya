@@ -2216,3 +2216,66 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 
 ### Changelog
 - **v1.4.0 / 2026-10-31:** añadidas cinco preguntas complementarias al banco candidato V9 (82 aisladas, 77 base preservadas), fichas ES/EN y reglas de no duplicación/abstención; sin despliegue.
+
+
+## Conciliación transversal de 82 preguntas — matriz de convivencia 77+5
+
+**Versión documental acumulada 1.5.0 · CONCILIACIÓN FOCAL DE LAS CINCO ADICIONES · PLAN_ONLY.** Esta sección compara las preguntas adicionales del banco de 82 con las preguntas originales relacionadas, sus guardias y evidencia. Fuente: candidato de GitHub en HEAD 71e8609df1a0bdf1eaa14f3712510d509559f7e5, specialty-branches-wave1.ts, reviewed-local-appointments-professional.ts, reviewed-transversal.ts, reviewed-commerce.ts, reviewed-evidence.ts y qa03b/bank.ts. Se trata de decisiones de diseño; **no se ejecutaron tests, rutas ni sesiones**. El conjunto de 77 conserva sus contratos actuales; los 59 REWRITE previos siguen siendo decisiones documentales y no cambios ya implementados.
+
+### A. Matriz de convivencia y evidencia
+
+| Nuevo ID / evento | Preguntas existentes relacionadas | ¿Mismo hecho? | Decisión de futuro | Gate de evidencia |
+| --- | --- | --- | --- | --- |
+| 78: q2_nonprofit_participation_entry / acceso a participación | q2_nonprofit_membership_lifecycle, q2_nonprofit_donation_clarity, q2_presence_offer_clarity | **No necesariamente:** acceso voluntario ≠ membresía ≠ donación ≠ descripción general de la misión | **COMPLEMENTO CONDICIONAL** solo ante participación abierta y duda real sobre primer paso; si solo hay donaciones/cuotas usar módulo correspondiente | La nueva es pending y no puntúa. Membership cuenta con V3 directa de conversion_access; no trasvasar su puntuación a participación gratuita |
+| 79: q2_education_enrollment_entry / inscripción o acceso educativo | q2_presence_offer_clarity, q2_professional_intake_flow | **Diferentes:** qué se ofrece ≠ cómo ingresar. Además professional_intake_flow existente aplica a legal, financial_tax_insurance, professional_services y real_estate, **no education_coaching** | **COMPLEMENTO CONDICIONAL**. Si la dificultad es describir la oferta, priorizar claridad general; si es inscribirse, preferir la nueva. No eliminar professional_intake_flow por un solapamiento inexistente | Solo contextual; no asumir cobro, plataforma ni participación efectiva |
+| 80: q2_real_estate_inquiry_entry / iniciar consulta inmobiliaria | **q2_professional_intake_flow** y q2_presence_offer_clarity | **Sí:** el primer contacto inmobiliario es caso particular del siguiente paso del servicio profesional | **SUSTITUCIÓN FUTURA BLOQUEADA P0** hasta contar con evidencia calibrada, fallback y equivalencia de constructo; actualmente NO suprimir genérica | professional_intake_flow@v2 tiene V3 directa de clarity_positioning en reviewed-evidence.ts. La nueva@v1 tiene evidenceMigration=pending y NO tiene evidenceV3; eliminar la genérica causaría pérdida de cobertura |
+| 81: q2_creative_brief_intake / acordar brief del encargo | q2_process_systemization, q2_operations_information_base, q2_operations_process_ownership | **Distintos, pero solapables** en una misma incidencia: alcance del trabajo ≠ pasos repetidos ≠ recuperar documentación ≠ asignación de responsable | **COMPLEMENTO CONDICIONAL**. Si la brecha está en requisitos y entregables, preferir brief; si se refiere a organización recurrente, conservar observación general; no duplicar por el mismo incidente | La nueva es pending. Las genéricas tienen mapeos preexistentes hacia digital_readiness que requieren recalibración para no llamar digital a un proceso manual |
+| 82: q2_retail_purchase_next_step / concretar compra física | q2_retail_product_visibility, q2_presence_offer_clarity, q2_ecommerce_checkout_friction | **No:** paso de compra física ≠ entender productos ≠ checkout online | **COMPLEMENTO CONDICIONAL** según fricción observada. Productos visibles primero si falta comprensión de catálogo; paso físico si falta claridad de compra; checkout solo en comercio online real | q2_retail_product_visibility@v2 posee V3 directa de clarity_positioning. Nueva contextual; no deducir stock ni tasa de ventas |
+
+**Balance del diseño:** 1 sustitución futura condicionada + 4 complementos condicionales; **0 sustituciones ejecutadas, 0 eliminaciones, 0 nuevas puntuaciones y 0 preguntas convertidas en core**. Los cinco ADD siguen siendo deepening, refinement y evidenceMigration=pending. El futuro selector decidirá si preguntar, no solo si la pregunta es elegible.
+
+### B. Gates existentes frente a criterios propuestos
+
+| Nuevo ID | Gate real en código actual | Criterio adicional propuesto, NO codificado | N/A/unknown |
+| --- | --- | --- | --- |
+| q2_nonprofit_participation_entry | operating + has_customers=yes + organization/mission + goal explain/opportunities o friction conversion | Hay participación abierta pertinente y duda sobre su acceso, no solamente necesidad de donaciones o cuotas | no_open_entry / unknown |
+| q2_education_enrollment_entry | operating + has_customers=yes + sector education_coaching + goal explain/opportunities o friction conversion | Existe inscripción/acceso real y es la etapa desconocida para el interesado | no_open_enrollment / unknown |
+| q2_real_estate_inquiry_entry | operating + has_customers=yes + sector real_estate + goal explain/opportunities o friction conversion | Hay consulta pública relevante y ya se validó paridad de scoring con professional_intake_flow | referral_only / unknown |
+| q2_creative_brief_intake | operating + has_customers=yes + sector creative_media + goal organize o friction operations | Existe un encargo comparable y el problema se localiza en requisitos o entregables | no_comparable_projects / unknown |
+| q2_retail_purchase_next_step | operating + has_customers=yes + sector retail + goal explain/opportunities o friction conversion | Existe venta directa física y el problema consiste en entender cómo comprar | not_direct_sales / unknown |
+
+**Distinción obligatoria:** la columna «gate real» sí describe las reglas del candidato aislado; la columna «criterio propuesto» es diseño futuro, no se ha conectado al planner. El sector de los cuatro módulos especializados no puede migrarse sin resolver TAX-G1: los IDs education_coaching, real_estate, creative_media y retail están presentes en el selector actual y pueden cambiar en un rediseño sector/modelo/canal. La respuesta has_customers=yes indica historial declarado, no actividad reciente suficiente: conservar los N/A.
+
+### C. Política del recorrido adaptativo y puntuación
+
+1. **Anclas primero:** identidad, etapa, sector y modelo, objetivos y fricción deben resolverse antes de una profundización. Preguntas de prioridad refinement no desplazan por defecto observaciones esenciales con evidencia real.
+2. **Una observación por constructo:** usar clave conceptual sector × evento × atributo evaluado. Si dos preguntas describen el mismo evento sin información adicional, formular una sola; si hay dos hechos distintos, no sumar automáticamente sus respuestas a la misma dimensión.
+3. **Paridad para sustituir:** una especialista no reemplaza la genérica puntuable sin igualdad o mejora demostrable de cobertura, mapeo de opciones por versión y fallback para casos N/A/unknown. El caso inmobiliario está BLOQUEADO P0.
+4. **Abstenciones:** unknown ≠ weak. Cada no_open_entry, no_open_enrollment, referral_only, no_comparable_projects y not_direct_sales significa N/A del constructo específico, no defecto de madurez ni autorización para contactar.
+5. **Límite:** máximo 24 preguntas ordinarias y hasta 5 adicionales **solo con consentimiento**. Si la información nueva no es material o se agotó presupuesto, no preguntar; dejar constancia interna de cobertura pendiente sin inventar score. No reservar cinco turnos obligatorios para las nuevas.
+6. **Edición:** cambios en sector/etapa/meta/fricción recalculan elegibilidad y fallback; conservar historial, pero no mantener score ni oferta especializada cuando su gate ya no aplica.
+7. **Privacidad y separación:** ninguna selección implica permiso de marketing, acceso a datos de pacientes/clientes, existencia de inventario ni conexión a HighLevel/GHL. Vecidya y GHL permanecen separados.
+8. **Sin implementación:** estas reglas no se introdujeron en la máquina de estados ni en el scorer. La colección de 82 continúa experimental y no exportada al flujo público.
+
+### D. Matriz focal de aceptación futura (SIN PRUEBAS EJECUTADAS)
+
+| Escenario | Comportamiento requerido | Regresión a impedir |
+| --- | --- | --- |
+| C02: preparación educativa sin alumnos | No mostrar enrollment operativo; mantener etapa preparing y no exigir ventas | Preguntar acceso activo cuando no hay operación |
+| C04: tutor autónomo con formación gratuita | Si falta el paso de inscripción, elegir enrollment sin exigir pago; professional_intake_flow de los sectores listados NO aplica | Eliminar o sumar preguntas generales por una falsa equivalencia |
+| C04/C10: inmobiliaria activa y consulta pública | Conservar cobertura directa de professional_intake_flow hasta que la nueva pregunta tenga evidencia calibrada | Suprimir evidencia V3 directa por un reemplazo pending |
+| C05: ONG sin cuotas ni donaciones, con voluntariado abierto | Evaluar participación sin exigir cuota, donación o contacto comercial | Inferir membresía o donación por participación |
+| C05: ONG sin actividad abierta | no_open_entry=N/A, no weak | Puntuación falsa de debilidad |
+| C07/C09: retail físico + ecommerce | Distinguir paso de compra física de checkout online, priorizando el problema real | Doble scoring de una misma venta |
+| C09: estudio creativo con brief incompleto pero archivos correctos | No confundir claridad de requisitos con capacidad de recuperar información | Puntuar software por proceso manual |
+| C10: cambia sector o meta tras responder | Replanificar, preservar historial sin evidencias ya inaplicables | Doble pregunta, huérfanos y score obsoleto |
+
+### E. Criterios de salida de conciliación y deuda
+
+- **Resuelto como diseño:** cinco decisiones de convivencia, guardias originales diferenciados de los futuros, límites de evidencia, abstención, no doble conteo, prioridad y ocho escenarios focales. **No** se puede declarar que las 82 rutas, las 387 opciones históricas o la matriz 8×10 hayan sido validadas dinámicamente.
+- **Bloquea F03/F05:** paridad de la especialista inmobiliaria, recalibración de digital_readiness, fuente de verdad de sector/modelo, nuevas evidencias V3 (si procede) y selección/adaptación bajo presupuesto. EN existe como propuesta documental, no como traducción activa.
+- **Siguiente trabajo documental:** construir matriz de aceptación ID × fuente × versión × guardia × evento × constructo × evidencia y escenarios C01–C10; identificar primero todas las sustituciones planeadas de Lotes 01–10. Después autorizar focal tests de los contratos nuevos, no tests generales.
+- **Regla de cierre:** F02 permanece ABIERTA para certificación; PR #162 draft; ningún merge, Worker, D1, SQL, UI, API o producción alterados.
+
+### Changelog
+- **1.5.0 (2026-10-31):** conciliación específica de las cinco adiciones contra el banco base, sustitución inmobiliaria bloqueada por paridad y cuatro complementos condicionales; sin activar puntuaciones ni rutas.
