@@ -255,3 +255,124 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 ### Changelog documental
 
 - 0.3.0 / 2026-10-30: se registran las cuatro decisiones de diseño recibidas; ocho fichas ES/EN con opciones, guardias, neutralidad, señales, riesgos y gating editorial. Solo documentación del candidato, sin implementación.
+
+
+## 0.4.0 — Dictamen editorial autónomo delegado (2026-10-31)
+
+**Autorización:** el responsable delegó expresamente el análisis crítico del Lote 01 y la toma de decisiones editoriales. **Alcance:** decisión de diseño y contenido ES/EN, exclusivamente documental. **No autoriza** TS/TSX, SQL, tests, CI, Worker, rutas, merge, despliegue ni activación de banco nuevo. Este apartado prevalece sobre los dictámenes *provisionales* de las versiones 0.1–0.3; no borra su historial.
+
+### Criterios de decisión
+
+- Las ocho fichas son **contexto y clasificación**, no evidencia directa de las ocho dimensiones de madurez digital candidatas. Nunca convertir preparar, pausar, ausencia de compras, estacionalidad, desconocimiento o insuficiencia de historial en una nota digital negativa.
+- Separar *no lo sé* (desconocimiento), *insuficiente historial* (aún no hay periodos comparables), *no aplica* (la comparación no corresponde), *no existe* (hecho conocido) y *estable observado*. Especialmente, «no publicado» no equivale a «no aplicable» ni automáticamente a «débil»; su diseño corresponde al lote especializado.
+- Una pregunta de catálogo **no** implica un turno universal adicional: el grafo seleccionará solo preguntas relevantes, sin romper 24+5 y el consentimiento excepcional.
+- Los valores heredados y evidencias viejas permanecen intactos. Introducir valores nuevos o cambiar sus lecturas requiere identidad de versión V9 nueva y pruebas focalizadas posteriores; ninguna reinterpretación retroactiva V8/QBV2.
+- La aprobación delegada de redacción **no** certifica comprensión cognitiva, accesibilidad, equivalencia lingüística evaluada por usuarios, scoring o implementación.
+
+### Resolución del lote — ocho decisiones
+
+| # | ID | Versión actual → versión objetivo V9* | Resolución editorial delegada | Justificación |
+|---|---|---|---|---|
+| 01 | q2_entity | 3 → 3 | **KEEP / APPROVED_COPY** | Mantiene independiente, negocio, ONG/proyecto y desconocido sin asumir situación legal |
+| 02 | q2_has_customers | 3 → 3 | **KEEP / APPROVED_COPY** | Historial de usuarios/beneficiarios real ≠ ventas ni estado actual |
+| 03 | q2_operational_status | 1 → 1 | **KEEP / APPROVED_COPY** | Preparando, operando, pausado, desconocido separados |
+| 04 | q2_customer_buyer | 3 → 4* | **REWRITE / DESIGN_APPROVED** | No compra directa también cubre actividad gratuita sin donaciones |
+| 05 | q2_monetization | 3 → 4* | **REWRITE / DESIGN_APPROVED** | Falta unknown; la variante prelaunch usa services en lugar del value time_or_project |
+| 06 | q2_regularity | 1 → 2* | **REWRITE / DESIGN_APPROVED** | Dos respuestas obligan a elegir regular/irregular aun con estacionalidad, datos insuficientes o desconocimiento |
+| 07 | q2_demand_trend | 1 → 2* | **REWRITE / DESIGN_APPROVED** | flat no puede producir simultáneamente estabilidad y desconocimiento (señal histórica flat_or_unknown) |
+| 08 | q2_capacity_signal | 1 → 2* | **REWRITE / DESIGN_APPROVED** | stable v1 no demuestra ausencia de presión crónica; distinguir cambios, no aplicabilidad y desconocimiento |
+
+*Las versiones objetivo son **propuestas de futura identidad de banco V9**, pendientes de verificar colisiones y de diseñar replay/migración de opciones. No se han introducido valores en el código.
+
+### Contenido final de diseño del Lote 01 (ES/EN)
+
+**01 · q2_entity (KEEP, v3)**
+
+- **ES:** ¿Qué tipo de actividad quieres evaluar?
+- **EN:** What type of activity would you like to assess?
+- **Ayuda / Help:** No necesitas una empresa registrada; una persona independiente con nombre comercial puede elegir «independiente». / You don't need a registered company; a self-employed professional using a business name can choose “independent”.
+- **Opciones / Options:** individual: Mi actividad profesional o independiente / My independent professional activity; business: Un negocio o empresa / A business or company; organization: Una organización o iniciativa comunitaria sin fines de lucro / A nonprofit or community organization or initiative; project: Un proyecto personal o colectivo que todavía no funciona como negocio u organización / A personal or group project not yet operating as a business or organization; unknown: Todavía no puedo clasificarla / I'm not yet sure how to classify it.
+- **Aplicabilidad:** clasificación general, sin guardia específica observada. **Evidencia:** entidad declarada contextual, no scoring. **Control:** C02, C04, C05 y C10; proyecto con ingresos no se convierte automáticamente en negocio formal.
+
+**02 · q2_has_customers (KEEP, v3)**
+
+- **ES:** ¿Alguna persona ha comprado, contratado, utilizado o recibido realmente lo que ofreces?
+- **EN:** Has anyone actually bought, hired you for, used, or received what you offer?
+- **Ayuda / Help:** Cuenta actividad real anterior, incluso si hoy está en pausa; los seguidores o interesados por sí solos no cuentan. / Count actual past activity, even if you're currently paused; followers or expressions of interest alone don't count.
+- **Opciones / Options:** yes: Sí, al menos una persona / Yes, at least one person; no: No, todavía no / No, not yet; unknown: No tengo información suficiente / I don't have enough information.
+- **Aplicabilidad:** general. **Evidencia:** hasRealCustomers contextual; «sí» no prueba ventas ni actividad actual. **Control:** C03 pausa con historial y C05 beneficiarios sin compra. Una donación sin servicio o participante real no demuestra automáticamente usuarios atendidos.
+
+**03 · q2_operational_status (KEEP, v1)**
+
+- **ES:** ¿En qué situación está actualmente tu actividad?
+- **EN:** What is the current status of your activity?
+- **Ayuda / Help:** Responde sobre hoy, aunque hayas atendido personas anteriormente. / Answer based on today, even if you served people before.
+- **Opciones / Options:** preparing: La estoy preparando o validando / I'm preparing or validating it; operating: Ya está disponible y funciona / It's currently operating and available; paused: Está temporalmente en pausa / It's temporarily paused; unknown: Todavía no lo tengo claro / I'm not yet sure.
+- **Aplicabilidad real observada:** answered(q2_has_customers). La respuesta unknown al historial cuenta como respuesta registrada, **no como evidencia suficiente**. **Evidencia:** etapa operativa contextual, no madurez. **Control:** C02 y C03.
+
+**04 · q2_customer_buyer (REWRITE, v4 objetivo)**
+
+- **ES:** Cuando hay una compra o contratación directa, ¿quién la realiza o la realizaría?
+- **EN:** When there is a direct purchase or contract, who makes it or would make it?
+- **Ayuda / Help:** Quien paga puede ser distinto de quien recibe lo ofrecido. Selecciona «sin compra directa» también cuando la actividad es gratuita, aunque no reciba donaciones. / The payer may differ from the person receiving the service. Choose “no direct purchase” for free activities as well, even without donations.
+- **Opciones / Options:** b2c: Personas individuales / Individuals; b2b: Empresas, organizaciones o instituciones / Businesses, organizations, or institutions; mixed: Personas y organizaciones de manera habitual / Both individuals and organizations regularly; no_direct_purchase: No hay compra ni contratación directa / There is no direct purchase or contract; unknown: Aún no lo sé / I'm not sure yet.
+- **Aplicabilidad:** clasificación general sin asumir clientes previos; en preparación se refiere a posibles compradores. **Evidencia:** customerBuyer para b2c/b2b/mixed; no_direct_purchase es contexto, no «fracaso comercial». **Versionar** la ampliación del sentido original restringido a donaciones. **Control:** C05, C02 y relación comprador-beneficiario.
+
+**05 · q2_monetization (REWRITE, v4 objetivo)**
+
+- **ES:** ¿De dónde provienen, o esperas que provengan, principalmente los ingresos o aportes de esta actividad?
+- **EN:** What is, or do you expect to be, the main source of income or contributions for this activity?
+- **Ayuda / Help:** En pausa, indica la fuente anterior; en preparación, la prevista, sin afirmar que ya existe. / If paused, choose the previous source; if preparing, choose the expected source without claiming it already exists.
+- **Opciones / Options (identidad explícita):**
+  - time_or_project: Honorarios por servicios, tiempo o proyectos / Fees for services, time, or projects
+  - goods: Venta de productos / Sales of products
+  - licensed: Ejercicio profesional sujeto a licencia o habilitación / Licensed or regulated professional practice
+  - commission: Comisiones por ventas, referidos o intermediación / Commissions from sales, referrals, or brokerage
+  - audience: Ingresos por contenido, audiencia o patrocinios / Income from content, audiences, or sponsorships
+  - recurring: Membresías, suscripciones o cuotas recurrentes / Memberships, subscriptions, or recurring fees
+  - mission: Donaciones, subvenciones, fondos o aportes para la misión / Donations, grants, funds, or mission contributions
+  - no_revenue_yet: No genera ingresos ni aportes, o no se esperan todavía / It has no income or contributions, or none are expected yet
+  - unknown **NEW**: No lo tengo claro o no tengo información / I'm not sure or don't have enough information
+- **Aplicabilidad:** transversal, con variante prelaunch que debe usar el value **time_or_project**, no services (clave errónea de la versión actual). **Evidencia:** mecanismo declarado y etapa prevista/real; no_revenue_yet=none conocido, unknown=incertidumbre; ninguno es debilidad digital. **Control:** C02/C03/C05. Ningún proyecto queda obligado a inventar ingresos.
+
+**06 · q2_regularity (REWRITE, v2 objetivo)**
+
+- **ES:** Durante el período reciente en que tu actividad ha operado, ¿qué patrón de atención, pedidos o servicios has observado?
+- **EN:** During your recent period of operation, what pattern of service, orders, or customer activity have you observed?
+- **Ayuda / Help:** Una actividad estacional puede seguir un patrón previsible aunque no funcione todo el año. / Seasonal activity may be predictable even if it doesn't operate year-round.
+- **Opciones / Options:** irregular: Ocasional o imprevisible / Occasional or unpredictable; regular: Regular y repetible / Regular and repeatable; seasonal **NEW**: Por ciclos o temporadas previsibles / In predictable cycles or seasons; insufficient_history **NEW**: Acaba de comenzar; todavía hay poca historia / It just started; there isn't enough history; unknown **NEW**: No tengo información suficiente / I don't have enough information.
+- **Aplicabilidad objetivo:** operating AND has_customers=yes. **Evidencia:** periodicidad observada; nunca nota digital, y seasonal no equivale a irregular. **Control:** C03, turismo/agro y operaciones nuevas. Abrir la tendencia tras seasonal requiere pruebas de períodos equivalentes, no autorización automática.
+
+**07 · q2_demand_trend (REWRITE, v2 objetivo)**
+
+- **ES:** Comparando períodos recientes equivalentes, ¿cómo ha cambiado el número de personas atendidas, citas, pedidos o solicitudes?
+- **EN:** Comparing similar recent periods, how has the number of people served, appointments, orders, or requests changed?
+- **Ayuda / Help:** Compara siempre el mismo indicador adecuado a tu actividad. No inventes una tendencia si faltan datos o períodos comparables. / Compare the same relevant measure. Don't guess a trend if data or comparable periods are missing.
+- **Opciones / Options:** increasing: Ha aumentado / It has increased; flat: Se ha mantenido aproximadamente igual / It has remained about the same; decreasing: Ha disminuido / It has decreased; insufficient_history **NEW**: Aún no hay períodos suficientes para comparar / There aren't enough comparable periods yet; unknown **NEW**: No tengo datos fiables para responder / I don't have reliable information.
+- **Aplicabilidad actual a preservar inicialmente:** operating AND has_customers=yes AND regularity=regular. No abrir automáticamente seasonal hasta definir periodos comparables. **Evidencia futura:** flat se convierte en estabilidad *observada* con señal V9 versionada **stable_observed** o identidad equivalente; la señal V8 flat_or_unknown **no se reinterpreta retroactivamente**. **Control:** ONG, clínica, negocio estacional y actividad recién iniciada; sin puntuar crecimiento como madurez digital.
+
+**08 · q2_capacity_signal (REWRITE, v2 objetivo)**
+
+- **ES:** Durante los últimos meses, ¿qué cambios has observado en tu capacidad para atender personas, pedidos o servicios?
+- **EN:** Over the past few months, which changes have you observed in your capacity to serve people, fulfill orders, or provide services?
+- **Ayuda / Help:** Puedes marcar a la vez una lista de espera creciente y una ampliación de recursos. «Ninguno», «No aplica» y «No lo sé» se responden por separado. / You can select both a growing backlog and expanded resources. “None”, “Not applicable”, and “I'm not sure” are exclusive.
+- **Opciones / Options:**
+  - waitlist_growing: Ha crecido la espera o el trabajo pendiente / Waiting times or the backlog have grown
+  - expanded: Hemos ampliado horas, equipo, espacio o recursos / We have expanded hours, staffing, space, or resources
+  - none_of_these_changes **NEW reemplazo de stable v1**: Ninguno de esos dos cambios / Neither of those two changes
+  - not_applicable **NEW**: Esta comparación de capacidad no corresponde a mi actividad / This capacity comparison doesn't apply to my activity
+  - unknown: No tengo información suficiente / I don't have enough information
+- **Aplicabilidad inicial:** operating AND has_customers=yes AND regularity=regular; estacionalidad requiere comparación especializada. **Regla multi:** waitlist_growing + expanded pueden coexistir; las otras tres opciones son exclusivas. **Evidencia:** «ninguno de estos cambios» **no prueba ausencia de presión crónica** y no debe seguir generando automáticamente capacityPressure=false; modificar señales solo en V9 con nueva versión. Si not_applicable no está respaldado por actividad concreta, abstenerse de asignar evaluación. **Control:** presión crónica sin crecimiento, amplitud variable, actividad sin capacidad medible.
+
+### Contrato de aprobación y deuda técnica
+
+- **Inventario actual:** 8 preguntas, **34 opciones** canónicas del HEAD de origen bf691fcf4ce5ec823532e66ab3820ce85cfc68fd. **Diseño futuro propuesto y aprobado por delegación:** **41 opciones** (5+3+4+5+9+5+5+5), con IDs nuevos propuestos solo para V9, un valor histórico sustituido por identidad diferente y nuevas versiones; no se han añadido a la aplicación.
+- **Resultado de decisión:** 3 KEEP, 5 REWRITE, 0 preguntas eliminadas. **8/8 decisiones editoriales tomadas**, no equivalen a 8/8 implementación ni 8/8 certificación lingüística. El documento 0.3.0 describía el estado previo a la delegación (0/8 decisiones humanas).
+- **Pendiente antes de programar:** versión y replay de opciones, equivalencia es/en comprobada, escenario C01–C10 por pregunta, reglas de aplicabilidad frente a sector, N/A/unknown/insufficient_history, presupuesto de turnos, examen de campos de analítica y pruebas de comprensión. Ninguna dependencia QBV2 se traslada a runtime V9 autónomo.
+- **Pruebas focalizadas futuras (NO ejecutadas):** C02/preparando, C03/pausa con historial, C04/profesional con marca, C05/grupo gratis sin aportes, C06/citas, C08/servicio gastronómico, C09/actividad multicanal/estacional, C10/sector desconocido; edición/replay y protección de V8. Cualquier semántica de v2/v4 exige identidad de banco y contrato de evidencia versionados.
+- **Alcance de la delegación:** decisión editorial aprobada **como especificación de diseño**. No equivale a revisión humana independiente de campo, aceptación lingüística ES/EN real, calibración, auditoría de seguridad ni autorización para desarrollar. El responsable conserva poder de revocar este dictamen.
+
+**Estado resultante: EDITORIAL_DECISIONS_8/8, ES_EN_SPEC_8/8, CODE_CHANGES_0, TESTS_NEW_0, PRODUCTION_CHANGES_0, PLAN_ONLY.**
+
+### Changelog
+- **0.4.0 (2026-10-31):** criterio editorial delegado: 3 KEEP y 5 REWRITE, ocho fichas ES/EN, neutralidad desambiguada y contratos de versiones objetivo, sin cambios de aplicación.
