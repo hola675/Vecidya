@@ -35,3 +35,9 @@ No se ejecutaron tests, no se alteró código ni producción.
 
 ## Changelog
 0.1.0: distinción de dos cadenas de composición y rectificación del conteo condicional.
+
+
+## Fe de erratas v0.1.1 — importación comprobada
+La conclusión anterior de dos ramas independientes para el candidato especializado es incorrecta. El archivo `qa03b/specialty-candidate-bank.ts` importa `REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3` desde `./bank`; el export local de `qa03b/bank.ts` se crea mediante `historicalBank.map(evolve)`, y `evolve` aplica `replacement.q2_sector` con la opción `unknown`. El candidato especializado v4 sí la hereda. Conteo estático esperado: 20 (15 históricas, una unknown y cuatro nuevas). No se ha ejecutado test. Esta nota prevalece sobre las inferencias anteriores.
+
+Changelog v0.1.1: rectificada la procedencia del candidato v4.
