@@ -3309,3 +3309,43 @@ Los workflows de GitHub consultados con éxito corresponden a SHAs históricos d
 ### Changelog adicional
 
 - **1.69.0 / 2026-10-31:** arnés de ocho tests focales para banco90, corrección de texto visible y bloqueo P0 de doble evidencia entre preguntas distintas, sin certificación ni cambios de motor.
+
+## 79. Evidencia focal real del banco 90 y prototipo de correlación
+
+**Estado: TEST RAN FOCAL 13/13 PASS; F02/F05 SIGUEN ABIERTAS; PR #162 DRAFT, SIN MERGE.** Se ha pasado de únicamente escribir tests a ejecutarlos en GitHub Actions con un workflow nuevo y estrictamente focal: `.github/workflows/diagnostic-v9-bank90-focal.yml`. Este workflow instala las dependencias bloqueadas con Node 26 y ejecuta **un solo archivo**: `tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts`. No invoca suites generales, typecheck, build, Worker, D1 ni despliegues.
+
+### Evidencia por SHA y control de errores
+
+| Código commit | Ejecución focal | Resultado | Lección |
+| --- | --- | --- | --- |
+| `bf4e8d5d36ab` | [41200437162](https://github.com/hola675/Vecidya/actions/runs/41200437162) | **8/8 PASS** | Banco 77/82/90, neutralidad, elegibilidad, puntuación no migrada y limitación actual de IDs |
+| `5424a10c860f` | [41200612182](https://github.com/hola675/Vecidya/actions/runs/41200612182) | **11/12; FAIL 1** | La aserción de desempate esperaba general pero el comparador lexical correcto prioriza la ID especialista. Se ajustó el test, no la semántica del motor |
+| `57f05be0d04f` | [41200659419](https://github.com/hola675/Vecidya/actions/runs/41200659419) | **12/12 PASS** | Prototipo de correlación por evento/constructo/período, divergencia de estados bloqueante y preferencia direct vs supporting |
+| `231fba058803` | [41200765557](https://github.com/hola675/Vecidya/actions/runs/41200765557) | **13/13 PASS, 0 FAIL** | Se añade el caso de misma observación/fuente en dimensiones distintas, sin colisión accidental |
+
+**Fuente de pruebas y estado corto:** `docs/TESTING.md` y `docs/STATUS.md`, reconciliados en esta entrega. Los commits de documentación posteriores al SHA `231fba0` no cambian el código probado, pero no se presentan como CI ejecutado sobre el HEAD final. Cada PASS corresponde exclusivamente al código indicado.
+
+### P0 — duplicación por evento, mitigación experimental
+
+**Causa:** `qbv2-contextual-scoring.ts` usa `observationId` basado en ID/version de pregunta V3; dos preguntas sobre el mismo episodio pueden elevar artificialmente la confianza. No es suficiente suprimir duplicados por *dimensión*: hechos distintos en una dimensión deben conservarse.
+
+**Nueva pieza candidate-only:** `app/features/diagnostic/qa03b/v9-observation-correlation.ts`, función pura `correlateCandidateObservationsV1` y contrato `ConfirmedObservationCorrelationV1`. Exige correlación declarada (fuente, `questionId`, `observationId`, dimensión, evento, constructo, período, provenance explícita o registro verificado), agrupa por [dimensión, evento, constructo, período] y desambigua la anotación por [observationId, dimensión]. Elimina duplicados compatibles, prefiere direct sobre supporting y clasifica observaciones sin correlación y estados contradictorios. `scoreSafe=false` impide aprobar por esta vía un conjunto incompleto. **No infiere eventos desde palabras ni sector, no calcula porcentajes y no está conectado al scorer ni planner.**
+
+**Riesgos restantes de integración:** (i) acordar quién y cómo confirma que dos respuestas se refieren al mismo evento/periodo sin tomar datos sensibles; (ii) registrar origen y replay por versión; (iii) conectar exclusiones y conflictos a una ruta V9 autónoma sin tocar V8; (iv) verificar que las opciones de las ocho generales y las cinco sectoriales mantengan evidenceMigration=pending hasta calibración; (v) comprobar confianza/score/porcentaje por escenario con datos sintéticos y límites 24+5, sin preguntar todo el catálogo.
+
+### Estado de gates F02/F05 tras la ejecución
+
+| Gate | Estado real |
+| --- | --- |
+| G90-01 (composición y copy) | **PASS focal** en el código de run 41200765557: 77/82/90, unicidad, copy y evidencias migradas compatibles |
+| G90-02 (gates por etapa) | **PASS focal** para variantes operativa/historial/preparación/pausa; entrevista adaptativa completa todavía pendiente |
+| G90-03 (no doble puntuación) | **PASS del helper aislado**, pero **P0 ABIERTO en scorer V9 público**: falta asociación fiable evento/constructo |
+| G90-04 (digital_readiness manual vs digital) | **ABIERTO**: migración de las siete directas condicionadas y una supporting-only sin activar |
+| G90-05 (porcentaje/cobertura/confianza) | **PASS aritmético focal** con evidencia sintética; no certifica calibración por usuario ni índice global |
+| G90-06 (C01–C10, 24+5, consentimiento, ES/EN) | **ABIERTO**: no se corrieron recorridos completos, UI, E2E ni pruebas cognitivas |
+
+**Próximo checkpoint:** diseñar el contrato fuente de evento confirmado y las trazas de exclusión, conectar el helper únicamente en el motor V9 aislado con prueba focal de invariancia 77/82, y someter después a escenarios C01–C10, simulaciones de porcentaje y revisión de acceso/consentimiento. No autoriza merge ni producción; P0 y F02/F05 siguen abiertos.
+
+### Changelog adicional
+
+- **1.70.0 / 2026-10-31:** ejecución focal real 13/13 PASS, helper aislado de correlación segura, protección multidimensional, documentación `STATUS`/`TESTING` y P0 de integración pendiente.
