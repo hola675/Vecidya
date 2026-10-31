@@ -936,3 +936,186 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 ### Changelog documental
 
 - **0.7.0 / 2026-10-31:** lote 04 de ocho fichas ES/EN sobre contacto, consentimiento, seguimiento, citas y B2B; 3 KEEP / 5 REWRITE; cinco values futuros y gates de no contacto, sin código ni tests nuevos.
+
+
+## Lote editorial 05 — medición, decisiones y operaciones
+
+**Documento editorial acumulado v0.8.0 — DECIDIDO COMO DISEÑO DELEGADO / PLAN_ONLY.** Ocho fichas existentes del banco candidato V9 con opciones ES/EN, guardias, semántica de evidencia y condiciones de revisión. Se conservan los IDs actuales; nuevas versiones/values **solo propuestos**. No se cambia runtime, CI, tests, D1 ni producción. Los textos y contratos propuestos no equivalen a certificación cognitiva o bilingüe.
+
+**Lectura de referencia:** HEAD 16e0a29def75e426e605e78c5dab1ffa70c000d3, qa03b/bank.ts, qa03b/editorial-copy.ts, qbv2-reviewed-operational-context.ts, qbv2-reviewed-transversal.ts y qbv2-reviewed-evidence.ts. Los IDs 33–36 y 40 se definen/añaden en qa03b/bank.ts; 37–39 provienen de las preguntas reviewed ensambladas por el banco. Evidencia de origen es declarativa y puede cambiar en el contrato V9 futuro; no se han ejecutado recorridos.
+
+### Política de interpretación única
+
+1. **Se miden tres hechos diferentes:** disponer de datos, registrar el desenlace de un caso y **utilizar** resultados para decidir. No convertir disponer de hojas/CRM/analytics en «optimización establecida».
+2. **No duplicar evidencia directa de measurement_optimization:** q2_measurement_rate_estimate, result_recording, review_cycle y measurement_practice se solapan parcialmente. Selección sustituta por escenario y jerarquía de evidencias, no cuatro sumandos independientes. La pregunta de práctica global puede ser fallback sectorial mientras la desagregación sirve para resolver incertidumbre real, sin más turnos inútiles.
+3. **No imponer ventas:** comunidades, ONG, proyectos en preparación, actividades sin oportunidades o servicios sin compra directa no deben responder un porcentaje comercial falso. Valor *not_transactional* (nuevo) es distinto de *no_opportunities* (todavía no ha ocurrido el caso) y de *unknown* (no sabe). La ausencia de casos da abstención, no «cero conversiones».
+4. **Operación ≠ digitalización:** tareas repetibles, documentos accesibles, traspasos correctos y datos en papel describen capacidad de proceso; no demuestran por sí solos un sistema digital implantado. Las rúbricas de digital_readiness deben separar evidencia operativa de evidencia de ejecución digital y abstenerse si falta esta última.
+5. **Escalas y reportes:** sin cantidades observadas, no inventar porcentajes, tendencias, ROI, resultados, puntuación de madurez ni comparaciones. «No aplica» y «No lo sé» son salidas válidas; «no uso herramientas» no penaliza cuando no existe necesidad digital pertinente.
+6. **Ruta:** no presentar las ocho preguntas necesariamente a cada usuario; 24 interacciones estándar, +5 excepcional con consentimiento; C01–C10 y matriz 8×10 se auditarán en F03. El contexto del Lote 01 (estado/cliente/entidad) y Lote 02 (modelo/objetivo) gobierna guardias, no una presunción universal de negocio comercial.
+
+### Tabla de decisiones del Lote 05
+
+| # | ID | Fuente → versión objetivo futura* | Decisión | Riesgo que corrige |
+| --- | --- | --- | --- | --- |
+| 33 | q2_measurement_rate_estimate | v1 → v2* | **REWRITE** | Tasa comercial obligatoria en organizaciones sin ventas |
+| 34 | q2_measurement_result_recording | v1 → v2* | **REWRITE** | Fallback solo si respuesta anterior=unknown; confunde tasa con seguimiento de desenlace |
+| 35 | q2_measurement_review_cycle | v1 → v1 | **KEEP** | Se distingue revisión con decisiones del mero registro |
+| 36 | q2_measurement_practice | v1 → v2* | **REWRITE** | Mezcla registrar y revisar, y puede duplicar evidencia de 33–35 |
+| 37 | q2_process_systemization | v2 → v3* | **REWRITE** | Procesos manuales no prueban digital readiness y faltaba N/A de tareas no repetibles |
+| 38 | q2_operations_information_base | v2 → v3* | **REWRITE** | Saber recuperar papel/agenda no demuestra capacidad digital directa |
+| 39 | q2_operations_handoffs | v2 → v2 | **KEEP** | Ya es evidencia supporting, con guardia de más de una persona |
+| 40 | q2_digital_tools_in_use | v1 → v1 | **KEEP** | Inventario de herramientas contextual, sin evidenceV3 directa |
+
+*Los números objetivo implican verificar colisiones, contratos de signal/evidence, versionado y replay antes de programar. **3 KEEP / 5 REWRITE, 0 REMOVE**. Los ocho IDs son del banco candidato y no representan preguntas añadidas.
+
+### Ficha 33 — q2_measurement_rate_estimate · REWRITE v2 objetivo · single
+
+**ES:** «Cuando recibes consultas o solicitudes que pueden terminar en una compra o contratación, ¿puedes estimar qué proporción llega a concretarse?»  
+**EN:** “When you receive inquiries that could lead to a purchase or contract, can you estimate what proportion actually moves forward?”  
+**Ayuda ES:** «No calcules un porcentaje ahora. Importa si podrías obtenerlo habitualmente de información fiable. Si no hay compra directa o aún no existen esas consultas, elige la respuesta correspondiente.»  
+**Help EN:** “Don't calculate a percentage now. What matters is whether your usual records could support a reliable estimate. If you don't use direct purchases or haven't had those inquiries, select that option.”
+
+| value | ES aprobado para diseño | EN draft |
+| --- | --- | --- |
+| can_estimate | Sí, puedo estimarlo habitualmente con datos registrados. | Yes, I can usually estimate it from recorded data. |
+| rough_estimate | Solo puedo hacer una estimación aproximada. | I can only make a rough estimate. |
+| no_method | Hay consultas reales, pero no tengo una forma de calcularlo. | There are real inquiries, but I have no method to calculate it. |
+| unknown | No sé si contamos con datos suficientes para estimarlo. | I don't know whether we have enough data to estimate it. |
+| no_opportunities | Todavía no hemos recibido consultas de ese tipo. | We haven't received inquiries of that kind yet. |
+| not_transactional **NEW** | Esta actividad no utiliza compras o contrataciones directas como resultado. | This activity doesn't use direct purchases or contracts as an outcome. |
+
+**Elegibilidad actual:** operating AND hasRealCustomers=yes, sin verificación de modelo de compra. **Nuevo gate objetivo:** permitir solo si existe resultado transaccional pertinente o usar la salida neutral not_transactional y no continuar con este indicador. **Evidencia actual:** measurement_optimization direct; can_estimate=established, rough_estimate=partial, no_method=missing, unknown=uncertainty, no_opportunities=not_applicable. **Contrato futuro:** not_transactional=context_only/N/A verdadero, nunca missing. No mezclar «no hubo casos» con tasa 0 %, ni suponer que una ONG que atiende personas tiene ventas. **Pruebas a diseñar:** C02 prelaunch, C05 ONG gratis, C07 ecommerce sin consultas, C09 híbrido.
+
+### Ficha 34 — q2_measurement_result_recording · REWRITE v2 objetivo · single
+
+**ES:** «Cuando una consulta o pedido termina, ¿registras si se concretó la compra o contratación?»  
+**EN:** “When an inquiry or order concludes, do you record whether the purchase or contract went ahead?”  
+**Ayuda ES:** «No necesitas calcular un porcentaje. Esta pregunta es sobre anotar el desenlace de casos reales, aunque sea en papel. No corresponde si tu actividad no tiene ese tipo de resultado.»  
+**Help EN:** “You don't need a percentage. This checks whether the outcome of real cases is recorded, even on paper. It doesn't apply if your activity has no such outcome.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| consistent | Sí, normalmente queda registrado el resultado final. | Yes, the final outcome is usually recorded. |
+| sometimes | Solo algunos resultados quedan registrados. | Only some outcomes are recorded. |
+| not_tracked | Hay casos reales, pero no registramos cómo terminaron. | There are real cases, but we don't record how they ended. |
+| unknown | No sé si ese resultado se registra habitualmente. | I'm not sure whether those outcomes are usually recorded. |
+
+**Elegibilidad actual:** operating AND history AND q2_measurement_rate_estimate=unknown. **Decisión REWRITE:** el texto conserva los cuatro values, pero cambia la lógica objetivo: usar como pregunta **sustituta o de aclaración** cuando la tasa no es fiable y existe actividad con desenlace comercial, en vez de abrirla universalmente tras un «no sé». Si la respuesta anterior es no_method o rough_estimate, el motor puede elegirla **solo si aclara evidencia** y cabe en presupuesto; no añadir siempre otro turno. Para no_transactional/no_opportunities, no preguntar, preservar abstención. **Evidencia actual:** measurement_optimization directa (consistent/partial/missing/uncertainty). **No doble contar** registros y estimación comercial. **Pruebas futuras:** cambio y replay de respuesta rate_estimate, deduplicación de evidencia.
+
+### Ficha 35 — q2_measurement_review_cycle · KEEP v1 · single
+
+**ES:** «¿Revisas los resultados de tu actividad con cierta frecuencia para decidir qué mejorar?»  
+**EN:** “Do you review the results of your activity regularly to decide what to improve?”  
+**Ayuda ES:** «Piensa en decisiones reales tomadas a partir de consultas, personas atendidas, pedidos, reservas u otros datos pertinentes. Tener una herramienta no cuenta como revisión.»  
+**Help EN:** “Think of actual decisions based on relevant information such as inquiries, people served, orders, or bookings. Having a tool doesn't count as reviewing results.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| regular_decisions | Sí, reviso resultados con regularidad y los uso para decidir. | Yes, I review results regularly and use them to make decisions. |
+| occasional_review | A veces los reviso, pero no siempre influyen en las decisiones. | I sometimes review them, but they don't always inform decisions. |
+| no_review | No suelo revisar resultados para decidir cambios. | I don't usually review results to decide on changes. |
+| unknown | No tengo información suficiente para responder. | I don't have enough information to answer. |
+
+**Elegibilidad actual:** operating AND history. **Evidencia:** measurement_optimization directness=direct v1. **KEEP:** cuatro values; se evalúa uso efectivo para decidir, sin requerir software ni KPI comercial. **Gate:** si el caso carece de actividad suficiente, evitar la pregunta o seleccionar fallback de práctica con insuficiencia explícita; no convertir unknown en debilidad. **Riesgo:** no presentar junto con measurement_practice como dos pruebas separadas de la misma revisión de resultados.
+
+### Ficha 36 — q2_measurement_practice · REWRITE v2 objetivo · single
+
+**ES:** «En los últimos meses de actividad, ¿cómo has registrado y utilizado resultados para decidir mejoras?»  
+**EN:** “During your recent period of activity, how have you recorded and used results to decide on improvements?”  
+**Ayuda ES:** «Cuenta datos pertinentes para tu actividad: ventas, consultas, personas atendidas, participación, entregas o aportes. No necesitas programas ni estadísticas formales.»  
+**Help EN:** “Consider results relevant to your activity: sales, inquiries, people served, participation, deliveries, or contributions. Formal software or statistics aren't required.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| consistent | Registramos resultados y los utilizamos regularmente para tomar decisiones. | We record results and regularly use them to make decisions. |
+| partial | Registramos algunos resultados, pero los revisamos poco o no suelen orientar decisiones. | We record some results but rarely review them or use them in decisions. |
+| reviews_without_records **NEW** | Revisamos resultados reales, aunque no los dejamos registrados de forma constante. | We review real outcomes, although we don't record them consistently. |
+| none | No registramos ni revisamos resultados de forma habitual. | We don't routinely record or review results. |
+| not_enough_activity | No ha habido actividad reciente suficiente para evaluar esta práctica. | There hasn't been enough recent activity to assess this practice. |
+| unknown | No lo sé o no tengo información suficiente. | I'm not sure or don't have enough information. |
+
+**Elegibilidad actual:** operating sin requisito hasRealCustomers=yes; salida not_enough_activity(kind=not_applicable) previene falso déficit en negocio nuevo. **Evidencia actual:** measurement_optimization direct v1 (consistent=established, partial=partial, none=weak, not_enough_activity=N/A, unknown=uncertainty). **Cambio:** reviews_without_records no puede leerse established: tiene uso observable pero registro débil; definir un estado parcial/contextual con identidad v2 después de calibración. **Regla de sustitución:** preferir esta pregunta inclusiva para ONG, servicios sociales o casos donde tasa y desenlace comercial no sean relevantes; no sumar sus respuestas y la de review_cycle como evidencia independiente. **Pruebas futuras:** C02, C05, actividad reciente insuficiente, revisión verbal sin registros.
+
+### Ficha 37 — q2_process_systemization · REWRITE v3 objetivo · single
+
+**ES:** «Cuando repites un mismo tipo de tarea, ¿sigues habitualmente un procedimiento que permite hacerla de forma consistente?»  
+**EN:** “When you repeat the same kind of task, do you usually follow a process that keeps it consistent?”  
+**Ayuda ES:** «Puede ser un procedimiento personal, con notas o compartido. Importa la repetibilidad, no cuántas personas trabajan ni si usas un sistema informático.»  
+**Help EN:** “It may be a personal routine, written notes, or a shared process. Consistency matters, not team size or whether you use software.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| defined | Sí, la tarea suele seguir pasos claros y repetibles. | Yes, the task usually follows clear, repeatable steps. |
+| partial | Algunas tareas siguen pasos claros y otras se improvisan. | Some tasks follow clear steps, while others are improvised. |
+| informal | Las tareas recurrentes se resuelven sin una forma consistente. | Recurring tasks are handled without a consistent approach. |
+| not_applicable **NEW** | No realizamos actualmente tareas comparables que se repitan. | We don't currently perform comparable recurring tasks. |
+| unknown | No puedo determinar cómo sucede habitualmente. | I'm not sure how it's usually done. |
+
+**Elegibilidad actual del reviewed:** q2_has_customers=yes, sin guardia propia de estado operating; **riesgo:** una operación pausada con historia previa puede parecer proceso presente. **Diseño futuro:** pedir solo sobre tareas actuales en operación o con variante histórica explícita (sin scoring actual para pausados); N/A si no existen tareas repetibles. **Evidencia R3I actual:** digital_readiness directness=direct, defined=established/partial=partial/informal=weak/unknown=uncertainty. **Decisión crítica:** proceso manual repetible **no certifica madurez digital**; redefinir como supporting/contextual de capacidad operativa, o exigir una segunda observación inequívocamente digital para puntuar digital_readiness. Cambiar evidenceV3 y versión **solo** en desarrollo autorizado; no reinterpretar v2. **Pruebas futuras:** profesional independiente sin empleados y ONG con tareas manuales.
+
+### Ficha 38 — q2_operations_information_base · REWRITE v3 objetivo · single
+
+**ES:** «Cuando necesitas retomar un trabajo, ¿puedes recuperar fácilmente la información correcta y actualizada?»  
+**EN:** “When you need to resume work, can you easily find the correct, up-to-date information?”  
+**Ayuda ES:** «La información puede estar en papel, agenda, documentos o aplicaciones. Esta pregunta mide recuperación fiable, no el uso obligatorio de herramientas digitales.»  
+**Help EN:** “Information may be on paper, in a diary, documents, or applications. This checks reliable retrieval, not whether you use digital tools.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| easy_reliable | Sí, normalmente la encuentro completa y actualizada. | Yes, I can usually find complete, current information. |
+| somewhat_scattered | La recupero, pero a veces debo consultar varias fuentes. | I can find it, but sometimes need to check several sources. |
+| difficult_unreliable | A menudo cuesta encontrarla o saber cuál está vigente. | It's often hard to find or know which version is current. |
+| not_applicable | Esta actividad no necesita recuperar información anterior para continuar tareas. | This activity doesn't require retrieving past information to continue tasks. |
+| unknown | No lo sé o no lo he comprobado. | I don't know or haven't checked. |
+
+**Elegibilidad actual:** operating AND (q2_goal=organize OR q2_friction=operations), y guardia de proceso actual agregada en qa03b/bank.ts. **Evidencia actual R3F:** digital_readiness directness=direct con easy_reliable/partial/difficult_unreliable/N/A/unknown. **Decisión REWRITE:** mantener cinco values, pero **versionar la evidencia futura** de recuperación manual como supporting/contextual, no directa de madurez digital; valorar separately si existe acceso digital verificable. No usar «digital tools» como condición obligatoria, tampoco puntuar como digital established solo porque un fichero en papel es fácil de recuperar. **Control:** empresa con carpetas ordenadas, organización sin conexión estable, C05. **No duplicar** con estado B2B (que ya es supporting).
+
+### Ficha 39 — q2_operations_handoffs · KEEP v2 · single
+
+**ES:** «Cuando alguien continúa un trabajo iniciado por otra persona, ¿recibe la información que necesita para seguir?»  
+**EN:** “When someone continues work started by another person, do they receive the information they need?”  
+**Ayuda ES:** «Piensa en entregas reales entre personas, aunque se hagan hablando, con notas, en papel o digitalmente.»  
+**Help EN:** “Think of actual handoffs between people, whether spoken, written on paper, noted down, or shared digitally.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| complete | Sí, recibe información suficiente para continuar. | Yes, they receive enough information to continue. |
+| partial | A veces faltan datos y hay que volver a preguntar. | Sometimes details are missing and someone must ask again. |
+| incomplete | Con frecuencia faltan datos importantes para continuar. | Important information is often missing. |
+| not_applicable | No hay trabajos que se transfieran entre personas. | Work isn't handed from one person to another. |
+| unknown | No sé cómo funcionan normalmente esos traspasos. | I don't know how those handoffs usually work. |
+
+**Elegibilidad actual:** operating + objetivo organize o fricción operations + q2_other_staff=yes; un autónomo sin colegas no recibe esta pregunta. **Evidencia:** digital_readiness **supporting** v2; no scoring directo por tamaño de equipo. **KEEP:** los cinco values ya distinguen N/A y unknown. **Control:** C04 individual, C05 voluntariado, cambios de respuesta sobre empleados con replay; no asumir que un traspaso verbal es necesariamente débil.
+
+### Ficha 40 — q2_digital_tools_in_use · KEEP v1 · multi
+
+**ES:** «¿Qué tipos de herramientas digitales utilizas hoy para organizar o dar seguimiento a tu actividad?»  
+**EN:** “Which kinds of digital tools do you currently use to organize or follow up on your activity?”  
+**Ayuda ES:** «Puedes elegir varias. Tener una herramienta no significa que el proceso funcione. Si ninguna corresponde o no usas herramientas digitales, indícalo sin penalización automática.»  
+**Help EN:** “Choose all that apply. Having a tool doesn't prove the process works. If none apply or you don't use digital tools, say so without an automatic penalty.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| calendar_scheduling | Agenda o calendario para coordinar fechas y citas. | Calendar or scheduling tools for appointments and dates. |
+| documents_records | Documentos, hojas o registros digitales. | Digital documents, spreadsheets, or records. |
+| tasks_projects | Herramientas para tareas y proyectos. | Task or project management tools. |
+| customer_followup | Herramientas para registrar y retomar consultas pendientes. | Tools for logging inquiries and following up. |
+| inventory_operations | Herramientas para inventario u operaciones. | Tools for inventory or operations. |
+| other | Otro tipo de herramienta digital. | Another type of digital tool. |
+| none | No utilizamos herramientas digitales para estas tareas. | We don't use digital tools for these tasks. |
+| not_needed | Estas tareas no requieren herramientas digitales en nuestra actividad. | These tasks don't require digital tools in our activity. |
+| unknown | No sé qué herramientas digitales utilizamos. | I'm not sure which digital tools we use. |
+
+**Elegibilidad actual:** operating AND (objetivo organize/automate/stop_losing/measure OR fricción operations/follow_up). Multi: **none, not_needed y unknown son exclusivos**; other puede acompañar herramientas declaradas. **Evidencia:** el banco actual no declara evidenceV3 directa para esta pregunta; es **inventario de herramientas**, no puntuación de madurez. **KEEP:** no inferir integración, automatización, cumplimiento, licencias, seguridad o mejora de resultados por una casilla seleccionada. Para not_needed, contrastar aplicabilidad; desconocer beneficio de una herramienta no basta por sí solo para certificar N/A. **Control:** actividad con papel y procesos excelentes, empresa con software pero procesos deficientes y C05.
+
+### Criterios de gate y consistencia del lote
+
+- **Recuento de origen por lectura focal:** ocho preguntas y **41 opciones** (5+4+4+5+4+5+5+9). **Propuesta de diseño**: **44 opciones** (6+4+4+6+5+5+5+9); +3 options proyectadas y 5 nuevos contratos/versions objetivo, sin modificación del banco. No se certifica aquí el recuento de todo el conjunto de 77.
+- **Resultado:** Lote 05 = **3 KEEP / 5 REWRITE**. Lotes 01–04 = 9 KEEP/23 REWRITE; **acumulado = 40 fichas con decisión de diseño (12 KEEP/28 REWRITE)**, no 40 rutas ejecutadas ni certificadas.
+- **Matriz de evidencia:** evitar contar cuatro métricas de measurement_optimization como cuatro pruebas independientes. Una observación de uso de datos puede ser directa; un listado de herramientas es contextual; proceso manual/recuperación manual no demuestran por sí solos capacidad digital.
+- **Presupuesto y abstención:** pregunta de tasa comercial solo si outcome transaccional pertinente; en C05 preferir practice/review de participación, beneficiarios o aportes. Proyectos C02 sin historia, C03 pausados y C08 sin presencia deben conservar resultados «no evaluable» allí donde falte observación.
+- **Criterios focales futuros, NO ejecutados:** C02/C03/C05/C07/C09/C10, compatibilidad de score con one-evidence-per-construct, fallback entre tasa/registro/revisión, versionado y edición/replay, cambios de persona a equipo, N/A, multi/exclusivas y 24+5; validar ES/EN y legibilidad en móvil. No activar tests generales ni modificar código mientras PLAN_ONLY.
+- **F02 sigue ABIERTA:** decisiones editoriales delegadas no son aprobación cognitiva humana, medición calibrada, scoring final ni despliegue; revisiones por sector, C01–C10 y matriz de 80 celdas siguen pendientes.
+
+### Changelog
+- **0.8.0:** lote 05 — ocho fichas bilingües con reglas de medición sin ventas, abstención, evidencia no duplicada y proceso manual; 3 KEEP/5 REWRITE, sin cambios TS/TSX, tests, CI ni producción.
