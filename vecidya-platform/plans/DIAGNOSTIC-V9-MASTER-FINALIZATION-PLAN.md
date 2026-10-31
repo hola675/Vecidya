@@ -2731,3 +2731,24 @@ Documento propietario existente actualizado: [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md
 ### Changelog adicional
 
 - **1.52.0 / 2026-10-30:** se registran TAX-A, SEM-A, PERSIST-A y LOTES-8 con restricciones; se vincula el primer lote bilingüe (8 preguntas, 34 opciones) pendiente de dictamen humano. PLAN_ONLY; sin cambios al runtime.
+
+
+## 61. Cierre editorial delegado del lote 01 (2026-10-31)
+
+**Estado: DECISIONES DE CONTENIDO RESUELTAS BAJO DELEGACIÓN / PLAN_ONLY / SIN CERTIFICACIÓN.** El propietario autorizó expresamente al agente a tomar las decisiones editoriales con criterio crítico, evitando nuevas solicitudes de aprobación por cada opción. Esto actualiza el estado documental anterior, en el que las ocho fichas permanecían para revisión manual; **no autoriza programación o despliegue**.
+
+**Fuente única del dictamen:** documento ya existente [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), actualización 0.4.0. Se inspeccionaron los contratos y enunciados del banco de referencia y el catálogo editorial aplicable. Las ocho decisiones de diseño son **3 KEEP y 5 REWRITE**, no ocho aprobaciones sin análisis. Se fijaron textos y opciones objetivo ES/EN, condiciones, semánticas neutrales y tratamiento de evidencia.
+
+**Diferencia de versiones:** banco actual 8 preguntas / 34 opciones en la muestra. El contrato editorial futuro propone 8 preguntas / 41 opciones en esas mismas fichas, con variantes y values **versionados**, sin introducirlos todavía en código. No reusar señales ambiguas: flat de tendencia debe significar estabilidad observada; ausencia de cambio de cola no implica ausencia absoluta de presión; «sin compra directa» incluye actividades gratuitas sin donaciones; «temporada» ≠ «irregular». Ninguna es evidencia directa de madurez digital.
+
+**Autoridad y límite:** aprobación del *diseño editorial propuesto* por delegación; la validación cognitiva y bilingüe, las pruebas focalizadas, la resolución técnica de versionado/replay, la taxonomía definitiva y la calibración siguen pendientes. No se afirma 41 opciones existentes en el motor ni se alteran values heredados. El estado correcto es **EDITORIAL_DESIGN_8/8, CODE_0, CERTIFICATION_PENDING**, no F02 DONE. La CI de 31/31 del SHA anterior no valida estas decisiones documentales.
+
+### Siguiente tarea editorial priorizada
+
+Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: priorizar q2_sector, q2_delivery, q2_customer_reach, q2_buyer_recipient_relation, q2_goal, q2_friction, q2_nonprofit_support_type y q2_niche_food_hospitality (la última sirve de patrón para revisar por separado todos los selectores sectoriales). Su inclusión se verificará contra el banco compuesto vigente antes de redactar y adoptar cambios. El objetivo es separar actividad/sector de canal, comprador de beneficiario y nicho de madurez, sin forzar preguntas a quien no corresponde. Registrar cada lote en el documento editorial de su responsabilidad existente y conservar el límite de documentos canónicos.
+
+**Gates persistentes:** PLAN_ONLY; F00 sigue sin reconciliar main; no tocar archivos de código, tests, CI, bases, servicios, Workers, UI, ni activar flujo V9; no merge ni deploy. Las próximas aprobaciones de diseño se registrarán explícitamente por lote y podrán ser revisadas por el propietario.
+
+### Changelog adicional
+
+- **1.53.0 / 2026-10-31:** registro de la delegación editorial y resolución crítica de ocho fichas del Lote 01, señalización de deuda semántica y siguiente lote. Exclusivamente documentación; sin implementación.
