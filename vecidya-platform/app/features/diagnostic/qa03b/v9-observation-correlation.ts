@@ -29,6 +29,11 @@ export type CorrelatedObservationResultV1 = {
   readonly scoreSafe: boolean;
 };
 
+function annotationKey(observationId: string, dimension: ContextualEvidence["dimension"]): string {
+  // A single question may legitimately contribute to two different dimensions.
+  return JSON.stringify([observationId, dimension]);
+}
+
 function correlationKey(row: ConfirmedObservationCorrelationV1): string {
   // JSON tuple prevents concatenation ambiguity, including arbitrary user labels.
   return JSON.stringify([row.dimension, row.eventKey, row.constructKey, row.periodKey]);
@@ -50,15 +55,17 @@ export function correlateCandidateObservationsV1(
   const byId = new Map<string, ConfirmedObservationCorrelationV1>();
   const duplicateAnnotations = new Set<string>();
   for (const item of correlations) {
-    if (byId.has(item.observationId)) duplicateAnnotations.add(item.observationId);
-    byId.set(item.observationId, item);
+    const key = annotationKey(item.observationId, item.dimension);
+    if (byId.has(key)) duplicateAnnotations.add(key);
+    byId.set(key, item);
   }
 
   const groups = new Map<string, ContextualEvidence[]>();
   const unmapped: ContextualEvidence[] = [];
   for (const reading of evidence) {
-    const row = byId.get(reading.observationId);
-    if (!row || duplicateAnnotations.has(reading.observationId) ||
+    const sourceId = annotationKey(reading.observationId, reading.dimension);
+    const row = byId.get(sourceId);
+    if (!row || duplicateAnnotations.has(sourceId) ||
         row.questionId !== reading.questionId || row.dimension !== reading.dimension ||
         !row.eventKey.trim() || !row.constructKey.trim() || !row.periodKey.trim()) {
       unmapped.push(reading);
