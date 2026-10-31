@@ -2819,3 +2819,28 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.56.0 / 2026-10-31:** diseño delegado del Lote 04, ES/EN, 3 KEEP/5 REWRITE; protecciones de permiso y neutralidad, 32 decisiones acumuladas; sin código ni pruebas.
+
+
+## 65. Lote editorial 05 — medición sin doble evidencia
+
+**DESIGN_DECIDED_BY_DELEGATION / PLAN_ONLY / NO IMPLEMENTADO.** Se revisaron ocho preguntas del banco candidato y se actualizó la fuente editorial existente [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md) a v0.8.0, sección «Lote editorial 05». El origen auditado fue el HEAD 16e0a29def75e426e605e78c5dab1ffa70c000d3 y el banco compuesto QA03B con los módulos reviewed y evidenceV3. No se ejecutaron tests ni se cambiaron archivos de código.
+
+**Ocho IDs:** q2_measurement_rate_estimate, q2_measurement_result_recording, q2_measurement_review_cycle, q2_measurement_practice, q2_process_systemization, q2_operations_information_base, q2_operations_handoffs y q2_digital_tools_in_use. **Resultado editorial delegado:** 3 KEEP (review_cycle, operations_handoffs, digital_tools_in_use) y 5 REWRITE (rate_estimate, result_recording, measurement_practice, process_systemization, operations_information_base). Por lectura de las definiciones existentes, son **41 opciones actuales**; el diseño futuro propone **44**, con tres values nuevos, sujeto a versiones/mapeos/replay. Ningún cambio está activo en V9 runtime.
+
+**Bloqueos de diseño abordados:**
+
+- **No exigir tasa de conversión comercial** a ONG, proyectos de apoyo o actividades sin transacciones directas. Distinguir ausencia de consultas, ausencia real de compra/contratación y desconocimiento; no fabricar porcentaje ni convertir abstención en weak.
+- **No inflar measurement_optimization** sumando como evidencias independientes tasa disponible, registros de desenlace, revisión de resultados y práctica combinada. Requiere contrato de selección / fallback / evidencia por constructo en F03/F04/F05, manteniendo 24+5 y abstención cuando hay poca actividad.
+- **Proceso real frente a herramienta:** q2_process_systemization y q2_operations_information_base poseen evidencia directness=direct hacia digital_readiness en contratos reviewed vigentes, aunque las respuestas pueden describir procesos en papel o memoria. El diseño V9 propone interpretación supporting/contextual hasta confirmar un comportamiento genuinamente digital; no alterar silenciosamente mapeos históricos.
+- **Guardas y estados:** q2_measurement_result_recording depende hoy exclusivamente de rate_estimate=unknown, lo que limita aclaraciones tras no_method/rough_estimate y puede inducir duplicación si se abre sin criterio. q2_process_systemization exige has_customers=yes pero su guardia reviewed no exige explicitamente operating; la futura ruta debe distinguir pausa, operación y preparación.
+- **Diferencias válidas:** datos disponibles ≠ resultados registrados ≠ revisión orientada a decisiones. q2_digital_tools_in_use es un inventario multi de 9 opciones sin evidenceV3 directo en la definición auditada; no se debe inferir calidad de procesos por su existencia. q2_operations_handoffs sigue supporting y necesita traspasos reales entre personas.
+
+**Avance acumulado:** Lote 01 8 (3 KEEP/5 REWRITE), Lote 02 8 (2/6), Lote 03 8 (1/7), Lote 04 8 (3/5), Lote 05 8 (3/5). **40 fichas con decisión documental (12 KEEP/28 REWRITE)**; esto **no** certifica 40/77 preguntas, ni completa F02, ni resuelve TAX-G1/2/3. ES/EN sigue pendiente de pruebas de comprensión, equivalencia lingüística, rúbricas y E2E.
+
+**Siguiente trabajo editorial F02 — Lote 06:** seleccionar ocho preguntas **realmente existentes** y no revisadas en los lotes 01–05, con prioridad en casos especializados (servicios de citas, comercio en línea, salud, tienda, agencia). Verificar previamente el banco compuesto y guards; diferenciar observaciones reales de ausencia de datos, no aplicar módulos de ecommerce a comercios que solo reciben consultas, no recomendar contacto sin permisos, y resolver C01–C10. Si una pregunta está solo en un banco legado, registrar como gap en lugar de presentarla como una de las 77.
+
+**PLAN_ONLY persistente:** ninguna modificación a TypeScript, test, CI, SQL, Worker, D1, UI, rutas, producción, merge o deploy. F00 y la reconciliación de main permanecen bloqueados; los commits documentales no representan validación técnica.
+
+### Changelog adicional
+
+- **1.57.0:** Lote editorial 05 decidido como diseño ES/EN, medición no comercial y no duplicación de evidencia; 40 fichas con decisión acumulada; documentación solamente.
