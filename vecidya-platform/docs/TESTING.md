@@ -1,5 +1,20 @@
 # Pruebas
 
+## DIAG-V9-BANK90 — test focal de correlación por evento (2026-10-31)
+
+**RAN/GIT, PR #162, rama `feat/diagnostic-v9-lex-graph-p1b`:** el workflow aislado `.github/workflows/diagnostic-v9-bank90-focal.yml` ejecuta **únicamente** `tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts` con Node 26, `corepack pnpm install --frozen-lockfile` y `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts`. No corre suite general, build, typecheck global, E2E, Worker ni D1.
+
+| Run Actions | SHA de código | Resultado | Alcance |
+| --- | --- | --- | --- |
+| [41200437162](https://github.com/hola675/Vecidya/actions/runs/41200437162) | `bf4e8d5d36ab` | **8/8 PASS** | Bancos 77/82/90, neutralidad, elegibilidad, porcentaje sintético y brecha de `observationId` |
+| [41200612182](https://github.com/hola675/Vecidya/actions/runs/41200612182) | `5424a10c860f` | **11/12 PASS, 1 FAIL** | Falló únicamente la expectativa de desempate lexical del test nuevo, no una aserción de dominio del motor |
+| [41200659419](https://github.com/hola675/Vecidya/actions/runs/41200659419) | `57f05be0d04f` | **12/12 PASS** | Correlación experimental por evento/constructo/período con abstención por conflictos y falta de correlación |
+| [41200765557](https://github.com/hola675/Vecidya/actions/runs/41200765557) | `231fba058803` | **13/13 PASS, 0 FAIL** | Además, una misma identidad de observación puede contribuir independientemente a dimensiones distintas sin falsa colisión |
+
+**CODE:** el módulo puro experimental `app/features/diagnostic/qa03b/v9-observation-correlation.ts` recibe correlaciones declaradas explícitamente (evento, constructo, período, dimensión y fuente de validación). Devuelve `accepted`, `deduplicated`, `unmapped`, `conflicts`, `scoreSafe`; se niega a considerar apto para puntuar un lote con fuentes sin correlación o estados incompatibles del mismo hecho. La identidad de anotación usa el par `observationId+dimension`. Prioriza evidencia directa antes que supporting cuando el hecho y estado coinciden. **NO** se importa en el scorer, planner, sesión, Worker ni informes públicos.
+
+**Gates todavía pendientes:** typecheck/build del HEAD integrado, correlación real y verificada por evento en sesiones de V9, versionado, replay, combinación con los 40 mapas V3 y sus constructos, C01–C10 completos, consentimiento 24+5, privacidad, equivalencia ES/EN y prueba del índice global con datos sintéticos variados. **13/13 PASS sólo certifica los contratos de este test focal**, no F02/F05 global ni producción. Ningún PASS previo se asigna a un SHA distinto.
+
 ## Release 0.8.4 — evidencia de publicación (2026-10-27)
 
 No se ejecutaron pruebas automatizadas por indicación del usuario. El build de producción terminó correctamente; D1 remota reportó `No migrations to apply`. La verificación anónima de `GET https://vecidya.com/` dio 200 y mostró 0.8.4 + © 2026 Vecidya a las 2026-10-27T23:44:23Z. No se verificaron rutas autenticadas en producción. Detalle del deploy y Version ID en `ENVIRONMENTS.md`.
