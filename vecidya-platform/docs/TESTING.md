@@ -1,3 +1,7 @@
+## UX-PREMIUM-FOUNDATION-01 — base de diseño transversal (2026-10-30; local)
+
+`pnpm run typecheck` y `pnpm run build`: PASS. `pnpm wrangler d1 migrations apply DB --local` preparó la base local limpia (sin acceso remoto). Con Worker local y `BASE_URL=http://127.0.0.1:5173`, `node tests/e2e/public-navigation-a11y-check.mjs`: PASS en 1366/1024/960/768/390/360/320 px, incluyendo navegación, enlaces, CTA, radios y overflow. Se generaron capturas full-page de Home antes (HEAD `f6cad631`) y después en `.playwright-mcp/` para 320×720, 390×844, 768×1024, 1366×768 y 1920×1080. En las cinco: HTTP 200, sin overflow y fuente UI del contenedor `.public-site` resuelta al stack Inter/system-ui. Tab hasta botón primario confirma `:focus-visible` y contorno naranja `rgb(251, 131, 0)`; media `prefers-reduced-motion: reduce` deja transición en `0.01 ms`. La inspección comparativa confirma cambios en tipografía/ajuste de líneas y primarios/degradado, sin cambio de contenido ni enlaces. No se autenticaron vistas de App/Admin ni se probó MiniWeb pública en este checkpoint. No es certificación WCAG.
+
 # MiniWeb V2 IMP-01: contrato de secciones
 
 

@@ -2,7 +2,11 @@
 
 La certificación pública integrada verifica rutas, navegación por teclado y viewports seleccionados, pero no sustituye una auditoría WCAG integral ni pruebas con lector de pantalla. Definir y ejecutar ese alcance antes de declarar accesibilidad completa; registrar resultados y remediación en los documentos canónicos. No cambiar estados editoriales ni publicar contenido como parte de esta deuda.
 
-## UX-PREMIUM-01 — identidad visual propia en tres superficies (plan por fases; 2026-10-24)
+## UX-PREMIUM-01 — identidad visual propia en cuatro superficies (plan por fases; 2026-10-24)
+
+**Actualización 2026-10-30 — alcance ampliado aprobado por el usuario:** aplicar de forma progresiva la guía premium a toda la plataforma: web pública, Mi Vecidya, Admin y experiencia MiniWeb V2. Cada grupo de pantallas tendrá su checkpoint independiente desde `origin/main`; la base compartida comienza en `UX-PREMIUM-FOUNDATION-01`. La identidad de MiniWeb publicada sigue perteneciendo a cada negocio; no se fuerza la marca Vecidya en su renderer. Sin cambios funcionales, despliegue ni merge autorizado.
+
+**UX-PREMIUM-FOUNDATION-01 (checkpoint local):** agrega tokens `--v-*` namespaced y una capa compartida de tipografía, composición de texto, foco visible y feedback en controles de superficies propias de Vecidya. La primera migración explícita aplica el degradado de marca solo a botones primarios y ajusta secundarios; el resto de contratos de color permanece intacto. Excluye la MiniWeb pública de la tipografía global. `typecheck`, `build` y `public-navigation-a11y-check.mjs` PASS. Capturas comparables antes/después de Home en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 están fuera del árbol de código en `.playwright-mcp/`. No hay overflow; teclado muestra foco naranja y `prefers-reduced-motion` reduce la transición a 0,01 ms. El plan de aplicación visual específica por superficie sigue pendiente.
 
 **APP-MINI-02B (2026-10-26):** corrección focal del perfil MiniWeb y tarjetas Vecindario guiada por las capturas del usuario. Logo administrado en medios de MiniWeb; tarjeta toma logo/portada publicados; secciones organizadas en retícula común. Candidato local; resultado de E2E, PR e integración se registra en `STATUS.md`.
 

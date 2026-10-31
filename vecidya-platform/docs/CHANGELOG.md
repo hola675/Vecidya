@@ -23,6 +23,11 @@
 
 # Changelog
 
+## 2026-10-30 — UX-PREMIUM-FOUNDATION-01 — base visual compartida
+
+- Se agregan tokens `--v-*` para paleta de referencia, tipografía, radios, sombras y movimiento, junto a una capa común de tipografía/controles/foco en superficies propias de Vecidya. Los botones primarios/secundarios reciben la primera migración explícita de color; otros tokens heredados y la identidad pública de MiniWeb permanecen intactos.
+- Typecheck/build y E2E de navegación pública pasan. Capturas antes/después de Home cubren 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; sin overflow, el foco de teclado es visible y el movimiento reducido acorta las transiciones a 0,01 ms. La aplicación por rutas y la accesibilidad completa siguen pendientes. Sin deploy ni merge.
+
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 
 - La conversión voluntaria trunca descripción y zona de servicio al máximo del contrato V2 y deja constancia explícita en el reporte; se valida el documento antes de persistirlo.

@@ -1,0 +1,107 @@
+/* Vecidya premium foundation — additive tokens, without replacing legacy contracts. */
+:root {
+  color-scheme: light;
+  --v-blue-950: #071c43;
+  --v-blue-900: #082a65;
+  --v-blue-800: #0a448f;
+  --v-blue-700: #0755bd;
+  --v-blue-600: #0668ed;
+  --v-blue-500: #0786f9;
+  --v-cyan-500: #08ccf3;
+  --v-orange-500: #fb8300;
+  --v-ink: #102648;
+  --v-muted: #60728d;
+  --v-canvas: #f5f9ff;
+  --v-line: rgb(39 95 163 / 14%);
+  --v-gradient-primary: linear-gradient(130deg, #0345b4 0%, #0871ea 57%, #0cd4ec 115%);
+  --v-gradient-night: linear-gradient(145deg, #071b3c 0%, #0b3372 65%, #045aa9 100%);
+  --v-gradient-warm: linear-gradient(135deg, #ffe06b 0%, #ff9c00 45%, #f26900 100%);
+  --v-radius-control: 0.875rem;
+  --v-radius-card: 1.25rem;
+  --v-radius-panel: 1.75rem;
+  --v-shadow-card: 0 1.5rem 4.375rem rgb(4 45 108 / 10%), 0 0.25rem 1rem rgb(0 60 170 / 5%);
+  --v-shadow-focus: 0 0 0 3px rgb(251 131 0 / 55%);
+  --v-font-ui: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --v-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --v-duration-fast: 160ms;
+  --v-duration-interaction: 220ms;
+}
+
+/* Apply the interface font only to Vecidya-owned surfaces. Public business MiniWebs stay business-owned. */
+:is(.public-site, .app-shell, .admin-shell) {
+  font-family: var(--v-font-ui);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(h1, h2, h3, h4) {
+  text-wrap: balance;
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(p, li) {
+  text-wrap: pretty;
+}
+
+/* Shared controls retain their existing colors and sizing; this layer unifies feedback and focus. */
+:is(.public-site, .app-shell, .admin-shell) :is(.button, button, input, select, textarea, summary, [role="tab"]) {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(.button, button, a, input, select, textarea, summary, [role="tab"]):focus-visible {
+  outline: 3px solid var(--v-orange-500);
+  outline-offset: 3px;
+  box-shadow: var(--v-shadow-focus);
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(.button, button, a):focus-visible {
+  border-radius: var(--v-radius-control);
+}
+
+/* Explicit first palette migration: primary/secondary interface actions only. */
+:is(.public-site, .app-shell, .admin-shell) .button--primary {
+  border-color: transparent;
+  color: #fff;
+  background: var(--v-gradient-primary);
+  box-shadow: 0 0.75rem 1.75rem rgb(0 86 196 / 22%);
+}
+
+:is(.public-site, .app-shell, .admin-shell) .button--primary:hover:not(:disabled) {
+  background: linear-gradient(130deg, #073f9e 0%, #075fcf 55%, #08a9d5 115%);
+  box-shadow: 0 0.95rem 2rem rgb(0 86 196 / 28%);
+}
+
+:is(.public-site, .app-shell, .admin-shell) .button--secondary {
+  border-color: rgb(7 85 189 / 30%);
+  color: var(--v-blue-700);
+  background: #fff;
+}
+
+:is(.public-site, .app-shell, .admin-shell) .button--secondary:hover:not(:disabled) {
+  border-color: var(--v-blue-700);
+  background: #f4f9ff;
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(input, select, textarea):focus-visible {
+  border-color: var(--v-blue-700);
+}
+
+:is(.public-site, .app-shell, .admin-shell) :is(.button, button):disabled,
+:is(.public-site, .app-shell, .admin-shell) :is(.button, button)[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is(.public-site, .app-shell, .admin-shell) .button:not(:disabled) {
+    transition-timing-function: var(--v-ease);
+    transition-duration: var(--v-duration-interaction);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.public-site, .app-shell, .admin-shell) *,
+  :is(.public-site, .app-shell, .admin-shell) *::before,
+  :is(.public-site, .app-shell, .admin-shell) *::after {
+    scroll-behavior: auto !important;
+  }
+}
+

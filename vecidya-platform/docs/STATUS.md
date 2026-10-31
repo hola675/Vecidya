@@ -26,6 +26,10 @@ Se registran cinco familias editoriales y las tres variantes Base/Pro/Premium, t
 
 # Estado de implementación
 
+## UX-PREMIUM-01 — aplicación integral de la guía (en curso)
+
+El usuario aprobó extender el trabajo a toda la plataforma: web pública, Mi Vecidya, Admin y MiniWeb V2. `UX-PREMIUM-FOUNDATION-01` introduce tokens propios y refinamientos transversales de tipografía, foco y controles; migra primarios/secundarios a la paleta premium. `typecheck`/`build` y la navegación pública local pasan. Hay capturas antes/después de Home en los cinco viewports acordados, foco por teclado y movimiento reducido verificados. No es un rediseño integral ni certifica todas las rutas: faltan ajustes por pantalla/superficie, estados interactivos de App/Admin/MiniWeb con fixtures sintéticas autorizadas y revisión accesible. El resto de colores heredados y la identidad visual de sitios MiniWeb se preservan. Sin cambios funcionales ni publicación.
+
 ## UX-COHERENCE-ROUNDED-001 — refinamiento global publicado en 0.9.2 (2026-10-29)
 
 La plataforma aplica esquinas redondeadas coherentes a secciones, tarjetas, paneles, formularios y controles, con separación adicional entre bloques consecutivos. «Soluciones» mejora foco/estado activo, indicador, superficie translúcida y movimiento reducido. Aprende compacta títulos y lectura, y agrupa arriba favoritos, avance y acciones desplegables por sección con nombres accesibles. Integrado por PR #210 y publicado en `0.9.2` mediante PR #213. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/` y `/aprende` en 200 con versión/copyright y 48 guías. E2E, typecheck y build PASS (ver `docs/TESTING.md`). No implica certificación WCAG integral.
