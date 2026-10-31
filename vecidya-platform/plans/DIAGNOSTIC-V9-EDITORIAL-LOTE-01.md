@@ -2871,3 +2871,44 @@ Los escenarios mantienen las definiciones del Plan Maestro: C01 negocio local ac
 ### Changelog
 
 - 1.9.0 / 2026-10-31: tabla candidate-only de 8 constructos, 40 respuestas y semántica propuesta (7 directas condicionadas / 1 supporting), reglas anti doble conteo y fórmula preexistente con gates de prueba; sin scoring.
+## Control focal de las 90 preguntas — contratos y límites del porcentaje
+
+**Edición editorial 2.0.0 / 2026-10-31 / F02-F05 pendientes de ejecución.** Se añadió el archivo unitario `tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts` con **ocho pruebas focales de diseño ejecutable**, destinadas únicamente al banco candidato aislado de 90 preguntas, no a las suites generales ni al entorno público. También se corrigieron ocho textos de ayuda visibles en QA03B_GENERAL_DIMENSION_PROBES_V1: los antiguos `helpIntent.understand` contenían identificadores internos de dimensiones prohibidos por `validateQuestionCopyV2` y ahora expresan conceptos comprensibles en español. No se alteraron los IDs, los values, los gates ni las evidencias.
+
+### Ocho pruebas focales escritas (NO ejecutadas)
+
+| Caso | Verificación implementada | Riesgo controlado |
+| --- | --- | --- |
+| T90-01 | Longitud exacta 77/82/90, identidades únicas, prefijos preservados, validador V3 y copia visible | Cambios accidentales al catálogo anterior, copy interno o migraciones inválidas |
+| T90-02 | Ocho probes para ocho dimensiones, una ficha de metadata por ID, cinco values, N/A/unknown y pending | Activación de score sin evidencia y opciones neutras mal tipadas |
+| T90-03 | Elegibilidad en operación con historial, en preparación, en operación sin historial y en pausa | Preguntas fuera de etapa o forzadas cuando no hay casos reales |
+| T90-04 | Resultados del scorer candidato iguales entre banco82 y banco90 mientras los probes sean pending, aun con respuestas neutrales o favorables | Inflar el porcentaje al añadir preguntas sin evidencia homologada |
+| T90-05 | El planner no considera los ocho pending como evidencia útil migrada y su plan no excede 24 preguntas | Rellenar métricas con preguntas sin valor puntuable |
+| T90-06 | Tras cambiar operating a preparing se invalida una respuesta anterior de continuidad | Score obsoleto después de editar etapa |
+| T90-07 | Fórmula V4 focal: una directa established=75, supporting-only=null, directa partial + dos supporting established limitados=58, N/A=null | Confundir porcentaje con confianza, apoyos como puntuación o N/A con cero |
+| T90-08 | Dos preguntas con el mismo observationId se deduplican; si tienen IDs diferentes por pregunta se cuentan como dos directas aunque el hecho fuera uno | Bloqueo P0 de independencia: falsa confianza alta por doble pregunta |
+
+**Comando exacto para un checkout limpio en la rama del PR y dentro de `vecidya-platform`:**
+
+```bash
+node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts
+```
+
+Este comando está previsto para ejecutarse únicamente sobre el HEAD que se verifique entonces, registrar `exit code`, SHA, duración y resultados por test, sin invocar suites generales, CI múltiple, D1, Worker ni despliegues. **En esta sesión no existe checkout completo ejecutable ni dependencias instaladas de ese HEAD; por ello NO se ha ejecutado el archivo focal ni se declara PASS.** Se consultaron los runs anteriores del workflow `Diagnostic V9 focused verification`, pero sus SHAs corresponden al 30 de octubre, no a estos commits. Nunca heredar ese PASS.
+
+### Hallazgos estáticos verificables
+
+- **Copy visible defectuoso corregido:** los ocho `helpIntent.understand` mostraban nombres técnicos como `clarity_positioning` y `digital_readiness`; `validateQuestionCopyV2` prohíbe los identificadores internos en cualquier texto visible. La inspección estática posterior de los ocho bloques ya no detecta marcadores internos y todos los hints están dentro del límite 140; el validador completo queda pendiente de ejecución.
+- **Deduplicación actual insuficiente entre preguntas distintas:** en `qbv2-contextual-scoring.ts`, las observaciones V3 usan `observationId = evidenceMigrationIdentity(question.id,question.version)` y las legacy usan `observationId = questionId`. `observationsFor()` elimina duplicados por ese identificador. El mismo evento narrado en una general y una especializada genera dos claves distintas, elevando la cantidad de evidencias directas y potencialmente la confianza. **P0/F05:** no activar mapas nuevos hasta tener identidad por evento/constructo o una política de exclusión con explicación, que preserve a la vez hechos independientes.
+- **Calibración y neutralidad sin cambios:** `CANDIDATE_CALIBRATION_ACTIVE_V4` conserva los pesos y el índice, las ocho generales siguen `evidenceMigration=pending`, y la propuesta de siete directas condicionadas + una supporting-only NO se importa al scorer. El cálculo 58 del caso T90-07 es un esperado matemático del scorer actual, no una puntuación observada de un negocio real.
+- **Límite del planner:** los tests solo verifican que las nuevas preguntas pendientes no se presenten como evidencia migrada y que el plan no supere el techo, no certifican por sí solos consentimiento para cinco turnos adicionales, C01–C10 ni el reporte público. Esos controles siguen pendientes de un flujo de sesión completo.
+
+### Gate de salida F02/F05 para el siguiente cambio
+
+1. Ejecutar SOLO T90-01 a T90-08 en un worktree limpio sobre el SHA final del PR, con Node compatible y dependencias del repositorio. Si cualquier test falla, corregir únicamente el archivo/código focal relevante y registrar nueva evidencia; no declarar éxito anticipado.
+2. Resolver P0 de identidad de observaciones entre preguntas, preservando el scorer legado y los contratos históricos. Diseñar `constructKey`/eventKey estable y su retrocompatibilidad; no deduplicar globalmente toda una dimensión porque hechos distintos sí pueden sumar.
+3. Validar conservación de los 77/82 bancos, neutralidad, replanificación y V4, y después crear pruebas para paridad de la pregunta inmobiliaria y sustituciones sectoriales ya calibradas. F02 y F05 permanecen ABIERTAS.
+
+### Changelog
+
+- **2.0.0 / 2026-10-31:** ocho pruebas focales escritas para el candidato90; ocho ayudas visibles corregidas sin cambiar contratos; se identifica deuda P0 de observaciones duplicadas y se fijan comandos de prueba y aceptación, sin resultados de ejecución.
