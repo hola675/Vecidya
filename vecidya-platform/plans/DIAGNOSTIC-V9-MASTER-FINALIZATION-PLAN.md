@@ -2952,3 +2952,51 @@ En el apartado 64 se afirmó que q2_ecommerce_cart_followup «no se contó entre
 ### Changelog adicional
 
 - **1.61.0 / 2026-10-31:** documentación bilingüe Lote 09, ocho fichas con 1 KEEP/7 REWRITE; dependencia P0 de agencia B2B y correcciones de neutralidad/atribución sin runtime.
+
+
+## 70. Cierre editorial de los diez lotes — 77 IDs con dictamen documental
+
+**DOCUMENTACIÓN COMPLETADA / NO EQUIVALE A F02 CERTIFICADA / PLAN_ONLY.** Se concluyó la revisión individual del banco candidato QA03B en el documento único [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), versión documental acumulada **1.3.0**. El último lote comprende cinco selectores reales generados por QA03B_SPECIALTY_SELECTORS_V1 y sus opciones desde NICHE_REGISTRY. Fuente inspeccionada: HEAD e6cdd6bfd74ffaf38d30061fb119b1fd5e7b17fa. No se ejecutó el ensamblaje TS ni se certificaron las opciones totales del banco.
+
+| Lote | Fichas | KEEP | REWRITE | Decisiones |
+| --- | ---: | ---: | ---: | --- |
+| 01 | 8 | 3 | 5 | Clasificación y etapa |
+| 02 | 8 | 2 | 6 | Sector, modalidad, objetivo y modelo |
+| 03 | 8 | 1 | 7 | Presencia, claridad, confianza y acceso |
+| 04 | 8 | 3 | 5 | Contacto, permiso y continuidad |
+| 05 | 8 | 3 | 5 | Medición y capacidad operativa |
+| 06 | 8 | 2 | 6 | Citas, ecommerce y especialidades |
+| 07 | 8 | 1 | 7 | Preparación, carrito, retail y donaciones |
+| 08 | 8 | 2 | 6 | Hostelería, recurrencia y membresías |
+| 09 | 8 | 1 | 7 | Medición, procesos y dos selectores |
+| 10 | 5 | 0 | 5 | Cinco selectores restantes |
+| **Total** | **77** | **18** | **59** | **Decisiones de diseño editorial** |
+
+**Lote 10 — IDs 73–77:** q2_niche_beauty_personal_care, q2_niche_financial_tax_insurance, q2_niche_home_services, q2_niche_automotive y q2_niche_technology_software. **5 REWRITE; 22 opciones actuales observadas y 31 opciones objetivo futuras** (+9 netas en diseño), **sin implantación de nuevas options/IDs del registro**. Las cinco listas existentes se cotejaron por sus valores con los grupos respectivos del NICHE_REGISTRY: beauty_personal_care incluye hair_salon, barbershop y mobile_pet_grooming; financial_tax_insurance incluye tax_preparation e insurance_agency; home_services incluye hvac, plumbing y mobile_repair; automotive incluye auto_repair y mobile_detailing; technology_software incluye software_startup y two_sided_marketplace. Todas las preguntas incluyen además other y unknown. No se modifica esta fuente en PLAN_ONLY.
+
+**Límites del logro:** 77/77 significa **inventario editorial con decisión ES/EN**, no 77 preguntas implementadas, 59 cambios de código, selección correcta por escenario ni certificación. Los textos EN y sus rúbricas son propuestas aún pendientes de validación con personas; las 387 opciones y 15 variantes eran inventario de referencia previo, NO un recuento revalidado después de estas decisiones. La revisión editorial por ID terminó, pero **F02 sigue ABIERTA** hasta terminar la conciliación transversal, aceptación y evidencia permitida.
+
+## 71. Preauditoría transversal documental — bloqueos antes de declarar F02 lista
+
+La lectura estática de QA03B specialty-candidate-bank.ts, specialty-branches-wave1.ts, recovery-wave2.ts y taxonomy.ts y las 77 fichas permite identificar los siguientes **bloqueos de diseño conocidos**, que no se deben «resolver» solo cambiando copy. Esta sección constituye diagnóstico y priorización documental; NO reporta pruebas ejecutadas ni determina el resultado de un motor V9 todavía no implantado.
+
+| Prioridad | Área | Evidencia fuente y conflicto | Decisión/gate pendiente |
+| --- | --- | --- | --- |
+| **P0** | Taxonomía sector/actividad/comprador | q2_sector candidato v4 incluye ecommerce, creator, b2b_services y nonprofit_community como grupos; el Lote 02 distingue canal, modelo, sector y naturaleza de entidad. Los selectores v1 se activan con eqV2(q2_sector, group). | Definir fuente de verdad sector+modelo+canal, tabla de correspondencia de IDs y regla de compatibilidad. No dejar huérfanos los ocho selectores ni nichos históricos al migrar. |
+| **P0** | Ramas sustitutas | q2_marketing_agency_scope_clarity exige sector=b2b_services + nicho marketing_agency; q2_food_menu_visibility y q2_dental_care_continuation sustituyen preguntas genéricas cuando cumplen condiciones. | Reconciliar gates por fuente, asegurar sustitución exclusiva/recuperación de fallback tras edición, evitar dos señales del mismo evento y validar con casos C06/C08/C09/C10. |
+| **P0** | Evidencia de digital_readiness | Los mapeos candidatos atribuyen evidenceV3 directa a q2_process_systemization, q2_operations_information_base, q2_b2b_qualification y q2_operations_process_ownership aunque las respuestas pueden describir organización manual. | Recalibrar como evidencia operativa supporting/contextual o exigir prueba digital adicional, sin reinterpretar versiones históricas. |
+| **P0** | Evidencia duplicada | rate_estimate/result_recording/review_cycle/measurement_practice comparten fenómenos; seguimiento genérico/sectorial y recompra local/ecommerce también pueden solaparse. | Regla una-observación-por-constructo, sustitución, abstención y presupuesto real 24+5 para C01–C10. |
+| **P0** | Estado neutral y aplicabilidad | not_published, not_applicable, unknown, sin consultas, sin reservas, sin compradores y sin actividad son hechos distintos; el candidato v1 de food_menu_visibility confunde no publicado con N/A. | Tabla de semántica por dimensión y tipo de opción, sin weak por defecto. Versionar nuevos values y replay; calibrar 8 dimensiones × 10 escenarios antes del scoring. |
+| **P0** | Permiso de contacto/privacidad | La wave2 sí recupera q2_ecommerce_cart_followup v2 con no_authorized_contact; detectar un carrito no prueba identidad, autorización ni finalidad. | Respuestas del diagnóstico no habilitan mensajes ni integraciones GHL. Validar privacidad y autorización por canal/finalidad en F07/F08. |
+| **P0** | Preparación vs madurez | Tres preguntas startup tienen evidence hacia clarity_positioning, y demand_signal carece de mapeo; validar problema/interés no demuestra presencia ni entrega digital. | Tratar como contexto/validación prelaunch, no certificación de madurez digital ni venta, y resolver transición a operating con confirmación del usuario. |
+| **P0** | Migraciones de nicho | En el grupo beauty_personal_care aparece mobile_pet_grooming aunque el cliente son mascotas. software_startup expresa etapa, y two_sided_marketplace expresa plataforma, no necesariamente B2B. | Definir categorías y versiones sin pérdida de datos; no borrar mobile_pet_grooming histórico ni clasificar startups/marketplaces automáticamente como B2B. |
+| **P1** | Cobertura sectorial | El candidato tiene ocho grupos con selector especializado; otros grupos de sector no tienen uno (p. ej. legal, real_estate y retail). Esto es un hecho de cobertura, NO evidencia de fallo funcional ni motivo automático para añadir preguntas. | Contrastar cobertura efectiva por C01–C10 y usar otras preguntas genéricas donde corresponda; ADD solo tras mostrar hueco de información material. |
+| **P1** | Equivalencia bilingüe y accesibilidad | Todos los lotes incluyen copy ES/EN y opciones propuestas; no existe en estas ediciones una ronda de comprensión de usuarios, ni validación E2E de accesibilidad móvil. | Hacer evaluación cognitiva de muestras, confirmar que KEEP/REWRITE son comprensibles y verificar futuro frontend accesible. |
+
+**Orden de cierre documental F02:** (1) extraer matriz completa ID×versión fuente×versión objetivo×tipo×opciones×guardias×fallback×evidenceV3×estado neutral×ES/EN; (2) resolver bloqueos P0 sin crear código ni fingir pruebas; (3) revisar cobertura escenario×dimensión y sesgos no comerciales; (4) versionado/replay diseñado y localización validada; (5) redactar checklist de aceptación F02 y handoff F03/F05/F07. Los riesgos P1 se ordenarán por materialidad, no por cantidad de preguntas añadidas.
+
+**Gate operativo:** No cambiar ni probar TS/TSX, Worker, SQL, CI, D1, componentes UI, rutas, migraciones, main, merge ni producción. No declarar F02 PASS ni V9 launch-ready sobre esta evidencia editorial. El estado de PR #162 sigue draft y no mergeable; cualquier implementación exige levantar PLAN_ONLY explícitamente y reconciliar F00 con main, con pruebas focales posteriores sobre el cambio autorizado.
+
+### Changelog adicional
+
+- **1.62.0 / 2026-10-31:** cierre del inventario editorial de 77 preguntas en diez lotes, cinco selectores finales ES/EN y preauditoría transversal documentada; P0/P1 y gate F02 preservados. Solo Markdown.
