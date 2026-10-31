@@ -2844,3 +2844,29 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.57.0:** Lote editorial 05 decidido como diseño ES/EN, medición no comercial y no duplicación de evidencia; 40 fichas con decisión acumulada; documentación solamente.
+
+
+## 66. Lote editorial 06 — citas, ecommerce y ramas especializadas
+
+**DESIGN_DECIDED_BY_DELEGATION / PLAN_ONLY / SIN CERTIFICACIÓN.** En continuidad del encargo del propietario se tomó decisión editorial sobre ocho preguntas reales del banco candidato y se registraron sus fichas bilingües en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección Lote editorial 06, edición acumulada 0.9.0. Lectura desde HEAD 0e18bde837d02e7f363b941d51c96574914e4560; contraste de reviewed-specialized-entry, reviewed-local-appointments-professional, reviewed-commerce, reviewed-evidence, QA03B specialty-branches, bank y editorial-copy. No se ejecutó el banco ni se corrieron tests.
+
+**IDs:** q2_appointments_noshow, q2_appointments_lead_to_booking, q2_appointments_booking_friction, q2_ecommerce_traffic_sources, q2_ecommerce_product_discovery, q2_professional_intake_flow, q2_dental_care_continuation, q2_marketing_agency_scope_clarity.
+
+**Dictamen:** 2 KEEP (booking friction y dental care continuation) + 6 REWRITE (no-show, lead-to-booking, fuentes de tráfico, búsqueda de productos, intake profesional y claridad de alcance de agencia); **41 opciones actuales → 48 opciones objetivo** en ocho fichas, con 7 nuevas y 6 versiones hipotéticas. Ninguna option/guard/evidence/version futura fue incorporada en runtime; values históricos preservados para replay.
+
+**Riesgos P0/P1 y decisiones:**
+- Separar intento de cita, reserva confirmada, asistencia y siguiente visita: las rutas deben abstenerse si no hubo solicitudes o citas recientes, sin fabricar tasa cero ni convertir ausencia de eventos en weak. La variante clínica solo afecta terminología; no solicitar datos de salud particulares.
+- Separar canales de llegada ecommerce de atribución fiable y conversión; un negocio por WhatsApp/marketplace puede funcionar sin catálogo navegable. De acuerdo con SEM-A, not_published (catálogo necesario sin publicar), not_applicable (catálogo no pertinente al modelo) y unknown (sin información) tienen significados independientes.
+- En dental, sustituir la pregunta genérica de nueva cita cuando la especializada es elegible, nunca doble scoring. En agencia, sustituir claridad de oferta genérica por alcance contractual específico solo si se cumplen los gates.
+- **Dependencia peligrosa de Lote 02:** la rama de agencia exige q2_sector=b2b_services y q2_niche_b2b_services=marketing_agency. Mover b2b_services fuera del selector de sector sin reconstruir la elegibilidad y el mapeo de nicho dejaría la rama inaccesible. Bloqueo explícito para F03/F04.
+- En el material original, no-show, lead-to-booking y traffic_sources son observaciones sin evidenceV3 directa migrada; booking friction mide conversion_access, discovery de producto digital_foundation, intake y agencia clarity_positioning, y dental relationship_recurrence. No inferir nota de madurez a partir de contexto ni duplicar evidencia.
+
+**Avance total:** seis lotes de ocho fichas = **48 decisiones de diseño documentadas (14 KEEP / 34 REWRITE)**; no son 48 implementaciones ni validaciones cognitivas. El banco candidato de 77 se mantiene sin cambios, F02 y TAX-G1/TAX-G3 abiertos, evidencia 8×10 no certificada. Privacidad, traducción real, pruebas focalizadas, selector 24+5 con consentimiento, sesión/replay y onboarding quedan para fases autorizadas posteriores.
+
+**Siguiente tarea F02 — Lote 07:** escoger ocho preguntas reales **no incluidas en Lotes 01–06** del candidato, priorizando confianza/comercio adicional, salud y especialidades, medición del recorrido o operaciones complejas según cobertura de C01–C10; leer IDs, source versions, options y guardias primero y evitar preguntas que solo estén en QBV2 legacy. Continuar las decisiones de diseño sin crear nuevos archivos Markdown ni permitir que el catálogo total exceda gratuitamente los 24 turnos mostrados por sesión. En especial, comprobar la matriz de 77/387/15 y los huecos declarados antes de ADD, REMOVE o versionado.
+
+**Restricción:** PLAN_ONLY. No cambiar TS/TSX, SQL, tests, CI, UI, D1, Worker, rutas, merge o deploy. Este avance documental no equivale a PASS de pruebas ni a readiness de producción.
+
+### Changelog adicional
+
+- **1.58.0:** cierre de diseño del Lote 06 bilingüe, P0 de elegibilidad de agencia, semántica de catálogo y calendario; 48 fichas con decisión editorial. Solo documentación.
