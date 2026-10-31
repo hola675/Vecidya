@@ -2912,3 +2912,19 @@ Este comando está previsto para ejecutarse únicamente sobre el HEAD que se ver
 ### Changelog
 
 - **2.0.0 / 2026-10-31:** ocho pruebas focales escritas para el candidato90; ocho ayudas visibles corregidas sin cambiar contratos; se identifica deuda P0 de observaciones duplicadas y se fijan comandos de prueba y aceptación, sin resultados de ejecución.
+
+## Certificación focal de los 90 IDs y correlación de observaciones
+
+**Documento acumulado v2.1.0 / 2026-10-31.** Se ejecutó por primera vez el test focal del banco equilibrado de 90 preguntas en GitHub Actions sin incluir suites generales. SHA de código `231fba05880392545365df10cf6501093b51e489`, run [41200765557](https://github.com/hola675/Vecidya/actions/runs/41200765557): **13/13 PASS, cero fallos**. Ese resultado sucede a un 8/8 y un 12/12 en SHAs anteriores; un intento 11/12 falló por un desempate lexical incorrectamente esperado en el propio test, corregido antes del cierre. La evidencia por SHA está desglosada en `docs/TESTING.md`.
+
+**Semántica preservada:** las ocho preguntas generales y cinco sectoriales siguen `evidenceMigration=pending` y no modifican porcentajes; los bancos 77/82/90 conservan longitud, unicidad, neutralidad y guards en los casos focales probados. Se corrigieron ocho `helpIntent` con nombres internos prohibidos, sin cambiar IDs ni opciones.
+
+**Prototipo V9 nuevo:** `qa03b/v9-observation-correlation.ts` detecta duplicidad únicamente si hay confirmación explícita del mismo evento, constructo y período en la misma dimensión. No deduce relación desde el sector ni el texto de la respuesta. Ante diferencia de estados o fuente no correlacionada, marca `scoreSafe=false`; ante hechos independientes o dimensiones diferentes, no fusiona lecturas. Es un **auditor puro**, no un scorer conectado: no cambia la fórmula, el reporte ni la confianza del usuario.
+
+**P0 no cerrado:** en el scorer real, la identidad de evidencia sigue basada en pregunta/version y puede contar dos formulaciones del mismo hecho; antes de migrar los ocho mapeos hay que producir y validar identificadores de evento reales, deduplicar por constructo y conservar replay/auditoría. Los 13 tests no validan ruta completa 24+5, F02/F05, equivalencia EN activa, acceso GHL, servicios públicos ni despliegue.
+
+**Siguiente hito controlado:** pruebas de integración con V9 aislado y fixtures de eventos explícitos; registrar exclusiones y conflictos para explicar porcentajes; preservar comparación con calibración v4 y con rutas históricas, sin fabricar evidencia donde solo hay contexto.
+
+### Changelog
+
+- **v2.1.0 (2026-10-31):** test focal real 13/13 con commit y run trazables, prototipo experimental de correlación confirmada y restricción de no doble conteo, manteniendo la deuda de integración F05 como P0.
