@@ -1326,3 +1326,207 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 ### Changelog
 
 - **0.9.0:** dictamen editorial delegado Lote 06, ocho fichas ES/EN, seis rediseños y separación de no publicación, no aplicabilidad e insuficiencia de actividad. Solo documentación.
+
+## Lote editorial 07 — preparación, carrito, retail y donaciones
+
+**Documento acumulado v1.0.0 — DISEÑO EDITORIAL DELEGADO / PLAN_ONLY.** Se revisan ocho preguntas existentes en el ensamblaje candidato V9 de 77 IDs únicos. Esta sección fija propuestas ES/EN y decisión de contenido, pero ninguna nueva opción, versión ni mapeo está implementado. Fuentes revisadas desde HEAD 0131599b71485d4f54a68dc74d535053abf484b5: qa03b/bank.ts, qbv2-reviewed-foundation.ts, qbv2-reviewed-commerce.ts, qa03b/specialty-candidate-bank.ts, qa03b/recovery-wave2.ts, qbv2-lote-f.ts, qbv2-lote-c.ts y qbv2-lote-d.ts; las fuentes de evidencia son contratos candidatos, no pruebas ejecutadas.
+
+### Rectificación verificable de la revisión anterior
+
+El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba en el banco candidato. **Aquella afirmación fue incorrecta**: el ID se recupera en QA03B_RECOVERY_WAVE2_QUESTIONS como v2 y se incorpora en QA03B_SPECIALTY_CANDIDATE_BANK_V1, antes del ensamblaje final QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2. Se registró aquí una nueva revisión con el código fuente revisado; **no** se trata de dar de alta una pregunta nueva en V9. El contrato candidato v2 conserva `no_authorized_contact` y `unknown`; el futuro v3 refina estos estados y exige replay independiente. La corrección de la documentación **no autoriza a contactar ni activa automatizaciones**.
+
+### Invariantes de diseño
+
+- **Preparación sin ventas:** un proyecto sin clientes, web ni ingresos puede describir necesidad, público y propuesta; no traducir preparación o ausencia de prueba en madurez digital weak. Las declaraciones sobre necesidad, validación y oferta no son tres pruebas independientes de la misma dimensión.
+
+- **Carrito no es contacto:** medir una compra abandonada, identificar a una persona y tener autorización pertinente para usar su contacto son hechos diferentes. Ausencia de carrito, ausencia de abandonos, falta de identidad y falta de permiso requieren salidas distintas. La respuesta al diagnóstico no concede autorización de marketing.
+
+- **Retail y donaciones:** ver una selección de productos no supone stock real. Una ONG con apoyo de voluntarios no acepta automáticamente donaciones monetarias; la futura ampliación de `mixed` exige señal expresa para entrar a donation_clarity.
+
+- **Evidencia neutral y versiones:** not_published, not_applicable, unknown, no_permission/no_authorized_contact e insufficient_history no se equiparan a weak. Mantener las respuestas históricas por identidad y versión; aprobar nuevos contracts solo en fase de implementación autorizada.
+
+- **Presupuesto y aislamiento:** no aumentar el máximo estándar de 24 interacciones ni superar las cinco opcionales consentidas. No deducir calidad de GHL ni conectar contactos de Vecidya con HighLevel. C01–C10 y 8×10 pendientes de pruebas focalizadas.
+
+### Matriz de decisiones
+
+| Ficha | ID | Fuente → versión objetivo futura | Dictamen |
+| --- | --- | --- | --- |
+| 49 | q2_other_staff | v3 → v3 | KEEP |
+| 50 | q2_retail_product_visibility | v2 → v3 | REWRITE |
+| 51 | q2_startup_problem_clarity | v1 → v2 | REWRITE |
+| 52 | q2_startup_validation_evidence | v1 → v2 | REWRITE |
+| 53 | q2_startup_offer_readiness | v1 → v2 | REWRITE |
+| 54 | q2_ecommerce_cart_visibility | v1 → v2 | REWRITE |
+| 55 | q2_ecommerce_cart_followup | v2 → v3 | REWRITE |
+| 56 | q2_nonprofit_donation_clarity | v1 → v2 | REWRITE |
+
+### Fichas completas — Lote 07
+
+#### Ficha 49 — q2_other_staff · single · v3 → v3 · KEEP
+
+**ES:** «¿Hay alguna otra persona remunerada que trabaje contigo de forma habitual?»  
+**EN:** “Does another paid person regularly work with you?”  
+**Ayuda ES:** Cuenta empleados o colaboradores pagados habituales; no cuentes ayuda puntual, proveedores ocasionales ni voluntariado como personal remunerado.  
+**Help EN:** Count regular paid employees or collaborators, not one-off help, occasional suppliers, or unpaid volunteers as paid staff.
+
+| Value | Español | English |
+| --- | --- | --- |
+| no | No, trabajo sin otro personal remunerado habitual. | No, I don't have other regular paid staff. |
+| yes | Sí, al menos otra persona remunerada trabaja conmigo de forma habitual. | Yes, at least one other paid person works with me regularly. |
+| unknown | No puedo determinarlo todavía. | I'm not sure yet. |
+
+**Aplicabilidad y condiciones:** El banco reviewed aplica si q2_entity=individual. El override QA03B fija v3, pregunta específicamente por personal pagado y 3 values. No extrapolar esta pregunta a una organización con voluntarios sin rediseñar su modelo de roles.  
+**Evidencia y neutralidad:** hasOtherPaidStaff=true/false declarada solo para yes/no; unknown neutral y sin produces. Clasificación del equipo, no capacidad digital, nivel organizativo, derecho laboral ni madurez. La pregunta de traspasos exige su propio gate y hechos de traspaso reales.  
+**Validaciones focales futuras, NO EJECUTADAS:** C04 independiente con profesional externo ocasional, C05 organización con voluntarios; no convertir unknown en no; no preguntar staff a todos los tipos de entidad.
+
+#### Ficha 50 — q2_retail_product_visibility · single · v2 → v3 · REWRITE
+
+**ES:** «Si alguien encuentra tu tienda en internet, ¿puede entender qué tipos de productos ofreces?»  
+**EN:** “If someone finds your store online, can they understand what kinds of products you offer?”  
+**Ayuda ES:** No tienes que publicar todo el inventario ni existencias al minuto. Diferencia productos publicados poco claros, una oferta sin publicar y los casos donde un catálogo público no corresponde.  
+**Help EN:** You don't need to publish every item or real-time stock. Distinguish unclear published products, an unpublished offer, and cases where a public product display isn't relevant.
+
+| Value | Español | English |
+| --- | --- | --- |
+| clear | La categoría y los tipos de productos están explicados claramente. | The product categories and types are clearly explained. |
+| partial | Se ven algunos productos, pero falta información importante. | Some products are visible, but important information is missing. |
+| unclear | Hay productos publicados, pero es difícil entender qué vendemos. | Products are published, but it's hard to understand what we sell. |
+| not_published NEW | Todavía no hemos publicado una selección que explique los productos. | We haven't yet published a selection that explains our products. |
+| not_applicable NEW | Por el modelo de venta, no corresponde mostrar productos en un catálogo público. | A public product display isn't appropriate for our selling model. |
+| unknown | No hemos revisado qué ve una persona nueva. | We haven't checked what a new visitor sees. |
+
+**Aplicabilidad y condiciones:** activeRetail + goal explain según materialAppliesWhen del reviewed; solo mantener si actividad operando, oferta online pertinente y evidencia no duplicada con q2_presence_offer_clarity o q2_ecommerce_product_discovery.  
+**Evidencia y neutralidad:** evidenceMigration=pending en reviewed de origen; no afirmar evidenceV3 directa ya migrada. not_published=contexto de publicación, not_applicable solo con justificación; unclear se limita a contenido realmente publicado. La disponibilidad de stock es un hecho distinto de claridad de categoría.  
+**Validaciones focales futuras, NO EJECUTADAS:** C07 comercio con pedidos por WhatsApp, C08 food/hospitality, tienda física con catálogo parcial; no puntuar dos veces claridad base y productos.
+
+#### Ficha 51 — q2_startup_problem_clarity · single · v1 → v2 · REWRITE
+
+**ES:** «¿Puedes explicar qué necesidad concreta intentas resolver y a qué personas ayudaría tu proyecto?»  
+**EN:** “Can you explain the specific need your project aims to address and who it would help?”  
+**Ayuda ES:** Describe la necesidad y el público al que servirías. No hace falta tener web, marca, clientes, empresa registrada ni haber demostrado una venta.  
+**Help EN:** Describe the need and the people you intend to serve. You don't need a website, brand, customers, registered company, or completed sale.
+
+| Value | Español | English |
+| --- | --- | --- |
+| clear_audience_problem | Tengo clara la necesidad y a quién afectaría. | I can clearly explain the need and whom it affects. |
+| problem_clear_audience_unclear | La necesidad está clara, pero todavía no el público específico. | The need is clear, but the specific audience isn't. |
+| audience_clear_problem_unclear | Conozco a quién ayudaría, pero no he definido bien la necesidad. | I know whom it would help, but the need isn't clearly defined. |
+| both_unclear | Todavía estoy explorando la necesidad y el público. | I'm still exploring both the need and the audience. |
+| unknown | No puedo valorarlo con información suficiente. | I don't have enough information to assess this. |
+
+**Aplicabilidad y condiciones:** Solo q2_operational_status=preparing en QA03B_RECOVERY_PILOT_V1. No desplegar a negocio activo o pausado por error de clasificación.  
+**Evidencia y neutralidad:** El piloto mapea claridad_posicionamiento directa (established/partial/weak/unknown). Decisión futura: contexto de claridad de proyecto, no certificar digital_foundation, presencia pública ni nivel digital general a partir de explicación de una idea. Recalibrar evidenceV3 en una nueva identidad si la taxonomía mide madurez digital real.  
+**Validaciones focales futuras, NO EJECUTADAS:** C02 prelaunch sin clientes, C05 misión no comercial. No penalizar falta de web o ventas; respuesta both_unclear puede orientar aprendizaje sin nota digital automática.
+
+#### Ficha 52 — q2_startup_validation_evidence · single · v1 → v2 · REWRITE
+
+**ES:** «¿Qué has comprobado con personas del público al que quieres ayudar sobre la necesidad que identificaste?»  
+**EN:** “What have you checked with people you aim to help about the need you've identified?”  
+**Ayuda ES:** Distingue conversaciones, pruebas y repetición de hallazgos. Una opinión aislada, un comentario amable o una intención de compra no demuestra una necesidad ni una venta.  
+**Help EN:** Distinguish conversations, tests, and repeated findings. A single compliment, a friendly reaction, or stated purchase intent doesn't prove a need or a sale.
+
+| Value | Español | English |
+| --- | --- | --- |
+| none | Aún no lo he contrastado con personas de ese público. | I haven't checked it with people in that audience yet. |
+| conversations | He mantenido conversaciones y recogido necesidades concretas. | I've held conversations and gathered specific needs. |
+| problem_test | He probado una hipótesis y aprendido de las respuestas. | I've tested a hypothesis and learned from the responses. |
+| repeated_problem | La necesidad surgió de forma consistente en varias conversaciones o pruebas. | The need appeared consistently in several conversations or tests. |
+| unknown | No tengo suficiente información para clasificar las comprobaciones. | I don't have enough information to classify the checks. |
+
+**Aplicabilidad y condiciones:** Solo preparing, usando el piloto de recuperación. No presenta resultados de validación como clientes reales.  
+**Evidencia y neutralidad:** Piloto source: clarity_positioning supporting, none=weak/conversations=partial/problem_test=partial/repeated_problem=established. A futuro, repetición de una necesidad es evidencia de validación, no prueba de que la oferta se comunique claramente o de digitalización; conservar como contextual/supporting con rúbrica y evitar doble conteo con ficha 51.  
+**Validaciones focales futuras, NO EJECUTADAS:** C02 idea sin audiencia, proyecto comunitario C05, pruebas de problema sin venta; no combinar con q2_startup_demand_signal como conversión probada.
+
+#### Ficha 53 — q2_startup_offer_readiness · single · v1 → v2 · REWRITE
+
+**ES:** «¿Qué tan definida está la propuesta concreta que podrías mostrar y poner a prueba ahora?»  
+**EN:** “How clearly defined is the specific offer you could show and test right now?”  
+**Ayuda ES:** Puede ser un servicio, producto, actividad comunitaria o piloto. Describe lo que una persona recibiría o haría; no presupongas un pago si el proyecto no vende.  
+**Help EN:** It may be a service, product, community activity, or pilot. Describe what someone would receive or do; don't assume payment when the project doesn't sell.
+
+| Value | Español | English |
+| --- | --- | --- |
+| ready_to_test | Puedo explicar qué se ofrecería, para quién y cómo probarlo. | I can explain what would be offered, to whom, and how to test it. |
+| mostly_ready | La propuesta está definida, pero faltan detalles por probar. | The offer is defined, but some details still need testing. |
+| shaping | Estoy dando forma a la propuesta y todavía no puedo probarla completa. | I'm still shaping the proposal and can't test it in full yet. |
+| not_defined | Aún no existe una propuesta concreta que mostrar. | There isn't a specific offer to show yet. |
+| unknown | Todavía no sé si está suficientemente definida. | I'm not sure whether it is sufficiently defined yet. |
+
+**Aplicabilidad y condiciones:** Solo preparing, recuperada desde LOTE_F_QUESTIONS_V2 en QA03B_RECOVERY_PILOT_V1.  
+**Evidencia y neutralidad:** Fuente: clarity_positioning directa (ready_to_test=established, mostly_ready=partial, shaping/not_defined=weak, unknown=uncertainty). La claridad de una propuesta prelaunch no equivale a madurez de presencia digital ni comercial; versionar evaluación como preparación/contexto hasta decidir rúbrica V9 calibrada.  
+**Validaciones focales futuras, NO EJECUTADAS:** C02 producto físico, consultor individual, C05 oferta gratuita. No exigir ecommerce, pagos ni empresa registrada.
+
+#### Ficha 54 — q2_ecommerce_cart_visibility · single · v1 → v2 · REWRITE
+
+**ES:** «Si tu tienda permite iniciar compras con carrito, ¿puedes saber cuándo una compra queda sin completar?»  
+**EN:** “If your store lets people start purchases in a cart, can you tell when a purchase isn't completed?”  
+**Ayuda ES:** Se pregunta solo si puedes detectar la interrupción, no si conoces a la persona o puedes escribirle. Si vendes sin carrito, indícalo.  
+**Help EN:** This asks only whether you can detect an interrupted purchase, not whether you know the shopper or can message them. If you sell without a cart, say so.
+
+| Value | Español | English |
+| --- | --- | --- |
+| yes | Sí, puedo identificar compras interrumpidas en el sistema. | Yes, I can identify interrupted purchases in the system. |
+| no | Tenemos carrito, pero no puedo ver cuándo una compra queda incompleta. | We have a cart, but I can't see when a purchase remains unfinished. |
+| no_cart NEW | Nuestro modelo de venta no utiliza carrito de compra. | Our selling model doesn't use a shopping cart. |
+| unknown | No sé si puedo ver esa información. | I'm not sure whether I can see that information. |
+
+**Aplicabilidad y condiciones:** Actual: operating AND has_customers=yes AND ecommerce por qa03b/recovery-wave2.ts. Futuro: si no hay carrito, la vía de seguimiento de carrito queda inhabilitada sin interpretar no_cart como falta de medición.  
+**Evidencia y neutralidad:** Actual: measurement_optimization supporting para yes=established/no=missing/unknown=uncertainty, no prueba identidad ni permiso. El futuro no_cart es N/A/contextual. No inferir que un no implica ausencia global de analítica.  
+**Validaciones focales futuras, NO EJECUTADAS:** C07 chat/marketplace sin carrito y tienda con carrito. El valor no_cart nunca abre q2_ecommerce_cart_followup; ausencia de carrito no es un fallo digital universal.
+
+#### Ficha 55 — q2_ecommerce_cart_followup · single · v2 → v3 · REWRITE
+
+**ES:** «Cuando alguien deja una compra sin terminar, ¿qué seguimiento realizas únicamente si puedes hacerlo legítimamente?»  
+**EN:** “When someone leaves a purchase unfinished, what follow-up do you make only when you are authorized to do so?”  
+**Ayuda ES:** Poder ver un carrito no permite identificar ni contactar a quien lo abandonó. Separa falta de identificación, falta de autorización y casos donde no hubo carritos abandonados.  
+**Help EN:** Seeing an abandoned cart doesn't let you identify or contact its owner. Distinguish lack of identification, lack of authorization, and cases with no abandoned carts.
+
+| Value | Español | English |
+| --- | --- | --- |
+| always | En casi todos los casos con una vía de contacto legítima disponible. | In nearly every case where an appropriate contact channel is available. |
+| sometimes | Solo en algunos casos con contacto autorizado. | Only in some cases where contact is authorized. |
+| rarely | Podríamos contactar legítimamente, pero casi nunca hacemos seguimiento. | We could contact appropriately, but rarely follow up. |
+| unidentifiable NEW | No podemos identificar a la persona que dejó la compra. | We can't identify the person who left the purchase unfinished. |
+| no_permission NEW | Hay un contacto identificable, pero no autorización para usarlo con ese fin. | We can identify a contact, but aren't authorized to use it for that purpose. |
+| no_abandoned_carts NEW | No hemos observado compras abandonadas suficientes para evaluarlo. | We haven't observed enough abandoned purchases to assess this. |
+| unknown | No tenemos información fiable sobre estos casos o sus permisos. | We don't have reliable information about these cases or permissions. |
+
+**Aplicabilidad y condiciones:** El candidato actual SÍ existe en qa03b/recovery-wave2.ts como v2: operating+historial+ecommerce AND q2_ecommerce_cart_visibility=yes. El nuevo v3 agrega guardias de autorización/identificabilidad antes de considerar seguimiento; no habilita campañas. No presentar si no_cart en ficha 54.  
+**Evidencia y neutralidad:** Actual v2: relationship_recurrence directa always/sometimes/rarely; no_authorized_contact=not_applicable y unknown=uncertainty. Separar en el diseño v3 carencia de identificación, falta de permiso y ausencia de casos; los tres no deben mapearse a rarely=weak ni mezclarse. Este rediseño **corrige expresamente la conclusión errónea del Lote 04**, donde se creyó que la pregunta no estaba recuperada. Prohibido reinterpretar historiales de v2 sin migración y consentimiento de tratamiento.  
+**Validaciones focales futuras, NO EJECUTADAS:** C07 sin permiso, C07 checkout visible pero no identificable, no hay carritos observados, edición de visibilidad. Nunca recomendar envío de email/WhatsApp sin base autorizada; no equivale a GHL.
+
+#### Ficha 56 — q2_nonprofit_donation_clarity · single · v1 → v2 · REWRITE
+
+**ES:** «Si una persona decide realizar una donación económica, ¿puede saber con claridad cómo hacerlo?»  
+**EN:** “If someone decides to make a financial donation, can they clearly understand how to do it?”  
+**Ayuda ES:** Evalúa los pasos ofrecidos a alguien externo, no cuánto dinero recibe la organización. Si se aceptan donaciones pero aún no hay instrucciones públicas, indícalo. No presupongas que apoyo en especie equivale a donaciones monetarias.  
+**Help EN:** Assess the instructions available to an outsider, not how much funding the organization receives. If donations are accepted but instructions aren't public, say so. In-kind support isn't automatically a monetary donation.
+
+| Value | Español | English |
+| --- | --- | --- |
+| yes_easy | Las instrucciones publicadas son claras y accesibles. | Published instructions are clear and accessible. |
+| somewhat_confusing | Hay instrucciones publicadas, pero algunos pasos son confusos. | Instructions are published, but some steps are confusing. |
+| no | Existe información, pero no permite saber realmente cómo donar. | Some information exists, but it doesn't explain how to donate. |
+| not_published NEW | Aceptamos donaciones, pero no hemos publicado instrucciones para realizarlas. | We accept donations but haven't published instructions for making them. |
+| not_applicable NEW | Nuestra actividad no acepta donaciones monetarias. | Our activity doesn't accept financial donations. |
+| unknown | No sé qué puede encontrar una persona externa. | I'm not sure what an outsider can find. |
+
+**Aplicabilidad y condiciones:** Actual: operating AND (entity=organization OR monetization=mission) AND support_type in [donations,mixed]. Bloqueo P0: tras Lote 02, mixed podría incluir voluntariado/insumos sin dinero; **no** tomar mixed como prueba de donaciones. Exigir declaración explícita de donación monetaria antes de esta pregunta; si no existe, excluirla o conservar N/A auténtico.  
+**Evidencia y neutralidad:** Piloto V1: conversion_access directa yes_easy=established/somewhat_confusing=partial/no=weak/unknown=uncertainty. Futuro not_published representa ausencia de instrucciones, sin convertir automáticamente en oferta confusa; not_applicable exige contexto verdadero. No calificar madurez global de organizaciones que no aceptan donaciones.  
+**Validaciones focales futuras, NO EJECUTADAS:** C05 voluntariado sin dinero, C05 fondos por cuotas y subvenciones, ONG con donación activa; no pedir donación a quien no la acepta. No sumar esta evidencia y la de claridad de web como dos pruebas independientes del mismo enlace.
+
+### Balance del lote, controles y estado
+
+- **Ocho fichas distintas y no repetidas en Lotes 01–06:** 49–56. Recuento estático por las definiciones elegidas: 34 opciones actuales (3+4+5+5+5+3+5+4), **41 opciones objetivo** (3+6+5+5+5+4+7+6), siete opciones netas adicionales y siete cambios de versión propuestos; **1 KEEP / 7 REWRITE**, 0 removals. Antes de implementarlas, reconciliar ensamblaje final, colisiones y señales por versión.
+
+- **Acumulado editorial correcto:** 48 fichas previas (14 KEEP, 34 REWRITE), +8 (1 KEEP, 7 REWRITE) = **56 fichas con decisiones de diseño (15 KEEP, 41 REWRITE)** sobre los 77 IDs de referencia; quedan 21 para la evaluación editorial, sin afirmar que las 56 estén implementadas, certificadas ni que F02 esté completa.
+
+- **Prioridades P0 futuras:** independencia entre claridad de proyecto y madurez digital; selección de medición de carrito sin permiso; neutralidad de no_cart/unidentifiable/no_permission; actualización explícita de guardia mixed de apoyos de ONG; no duplicar registros de contexto y métrica.
+
+- **Pruebas solo después de autorización de código:** C02 proyecto nuevo, C04 independiente solo/pagado, C05 ONG sin donaciones monetarias, C07 carrito visible sin autorización, C08 venta gastronómica sin catálogo, C09 compras multicanal, C10 cambios de sector/estado; replanificación con edición, compatibilidad V8/QBV2, retención/privacidad y conteo 24+5.
+
+- **Estado invariable:** PLAN_ONLY. No TS/TSX, tests, CI, D1, SQL, UI, endpoints, Workers, merge ni deploy. ES/EN no ha pasado prueba cognitiva ni accesibilidad real; la taxonomía, calibración y F00–F10 siguen bajo gates ya definidos.
+
+### Changelog
+
+- **1.0.0:** Lote 07 editorial delegado ES/EN; rectificación de la existencia de q2_ecommerce_cart_followup recuperada en wave2; cierre de 8 fichas con guardias, opciones y evidencia, sin cambios en producción ni motor.
