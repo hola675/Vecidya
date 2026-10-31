@@ -3121,3 +3121,62 @@ La lectura estática de QA03B specialty-candidate-bank.ts, specialty-branches-wa
 ### Changelog adicional
 
 - **1.65.0 / 2026-10-31:** matriz 82 IDs con versiones compuestas y evidencia rastreable, rectificación de q2_customer_reach y q2_ecommerce_cart_followup por capas, cuatro discrepancias reales de encabezados; trazabilidad documental sin certificación.
+
+
+## 75. Auditoría de las ocho dimensiones y matriz de aceptación 8×10
+
+**F02 / F05 — AUDITORÍA DOCUMENTAL ALCANZADA; VALIDACIÓN EJECUTABLE PENDIENTE / PLAN_ONLY.** En [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Auditoría de dimensiones y conflictos de evidencia — 82 candidatas», versión acumulada **1.7.0**, se completó un control por identidad sobre los mapas V3 detectados en la matriz de 82, los gates de tres ramas sustitutas y las cinco preguntas añadidas. Se consultaron los contratos de qbv2-dimensions.ts, qbv2-evidence-v3.ts, qbv2-rules.ts y specialty-branches-wave1.ts desde HEAD f8452862b2ba3a0f26e524d5eebdb4e6a29b8b30. Es **trazabilidad de código inspeccionado**, NO ejecución de validateEvidenceMigrationsV3 ni de evaluateRuleV2Trace.
+
+### Distribución de evidencia inspeccionada
+
+| Dimensión canónica V9 | Direct | Supporting | Total |
+| --- | ---: | ---: | ---: |
+| clarity_positioning | 7 | 1 | 8 |
+| digital_foundation | 3 | 0 | 3 |
+| discovery | 1 | 0 | 1 |
+| trust_reputation | 2 | 0 | 2 |
+| conversion_access | 5 | 0 | 5 |
+| relationship_recurrence | 9 | 0 | 9 |
+| measurement_optimization | 5 | 1 | 6 |
+| digital_readiness | 4 | 2 | 6 |
+| **TOTAL** | **36** | **4** | **40** |
+
+**Lectura correcta:** de 82 IDs candidatos, 40 tienen mapa V3 detectado y 42 carecen de mapa detectado por extracción estática. Las 42 incluyen clasificadores, nichos, preguntas de contexto y cinco incorporaciones pending. No se exige que las 82 puntúen ni se convierte la ausencia en fallo. Los 40 mapas reflejan la fuente **antes de la recalibración editorial** y ninguno de los 59 REWRITE ni cinco ADD se declara implementado como scorer activo.
+
+### Tres sustituciones que existen y una futura bloqueada
+
+- **DENTAL S01:** dentalSpecialistEligible requiere operating + historial + dentist + componente appointments + objetivo stop_losing o fricción follow_up. Cuando se satisface, el código restringe las reglas existentes de q2_appointments_rebooking con NOT(dentalSpecialistEligible). Sin respuesta válida del nicho o sin componente appointments, no inventar sustitución.
+- **FOOD S02:** foodSpecialistEligible exige operating + historial + sector food_hospitality + nicho restaurant/cafe/food_truck + goal explain + presencia digital base fiable/parcial. Restringe q2_presence_offer_clarity solo si existe una regla en ella. Distinguir menú no publicado de N/A; su tratamiento actual requiere cambio de contrato futuro.
+- **AGENCY S03:** agencySpecialistEligible exige operating + historial + sector b2b_services + nicho marketing_agency + goal explain + buyer b2b/mixed + presencia digital base fiable/parcial. Su gate depende del sector b2b_services, que TAX-G1 prevé separar del sector económico. Prohibido retirar el sector sin una correspondencia versionada que preserve la ruta.
+- **REAL ESTATE A80 (NO ACTIVA):** la pregunta nueva tiene evidenceMigration=pending y q2_professional_intake_flow dispone de V3 directa de clarity_positioning. Su sustitución queda **P0 BLOQUEADA** hasta homologación de dimensión/opciones y fallback; no suprimir la evidencia anterior.
+
+### P0 por dimensión: evitar falsas conclusiones
+
+1. **digital_readiness:** cuatro preguntas clasificadas direct observan asignación de responsables, formalización de tareas, recuperación de información y cualificación B2B, todas realizables sin herramientas digitales. Recalibrar como proceso operativo o exigir hecho digital adicional antes de puntuar madurez tecnológica.
+2. **relationship_recurrence:** nueve direct cubren continuidad, recordatorios, acceso a contacto, citas, seguimiento y cartera B2B. Diferenciar eventos, autorizaciones y necesidad de repetir; no sumar el mismo caso en genérica+especialista.
+3. **measurement_optimization:** tasa estimada, resultado registrado, ciclo de revisión, práctica de medición, procedencia del contacto y visibilidad del carrito pueden referirse a períodos o procesos solapados. Exigir clave de evento/periodo y no convertir ausencia de historial en weak.
+4. **clarity_positioning:** presencia de oferta, menú, alcance de agencia, catálogo retail y transición de intake no son automáticamente equivalentes. Los tres ítems startup sobre problema, validación y oferta son señales de preparación, no certificación de visibilidad o madurez digital.
+5. **Resto de dimensiones:** asegurar que discovery solo se aplique cuando se buscan nuevos contactos pertinentes; confianza no prueba licencia, conversión requiere vía aplicable, presencia no implica web universal. N/A y unknown no dan puntuación negativa por defecto.
+
+### Matriz de aceptación documental de 80 celdas
+
+Se registró una matriz **8 dimensiones × C01–C10** con siete clases de obligación, sin resultados de ejecución: G (verificar gate y señal pertinente), C (contexto prelaunch), A (abstención), H (historial vs actualidad), S (sustitución y fallback), M (combinación sin doble conteo), R (edición y replay). Se usan las definiciones históricas C01 local activo, C02 preparación, C03 pausa, C04 profesional, C05 ONG, C06 citas, C07 e-commerce, C08 gastronomía, C09 híbrido, C10 edición/sector desconocido. **No se afirma que las 80 celdas hayan pasado pruebas.** La matriz documenta la expectativa que deberá verificar un runner focal autorizado.
+
+### Gates de salida — próxima fase F02/F03/F05
+
+| Gate | Criterio de aceptación | Estado |
+| --- | --- | --- |
+| E82-01 | Contrato tipado e IDs únicos de 82, versiones/options válidas, 5 ADD sin scoring inventado | **Pendiente prueba focal** |
+| E82-02 | Validar con validateEvidenceMigrationsV3 los 40 mapeos, neutralidad y las 42 preguntas sin mapear según su propósito | **Pendiente ejecución; 40/42 solo inspección** |
+| E82-03 | Verificar con evaluateRuleV2Trace las expresiones completas de S01–S03, A78–A82, referencias y overrides | **Pendiente ejecución; expresiones descritas** |
+| E82-04 | Garantizar paridad de evidencia y replanificación para reemplazos, particularmente real estate | **P0 bloqueado** |
+| E82-05 | Resolver una contribución por evento/constructo y evitar score doble, incluso en negocio híbrido | **Política documental; no aplicada** |
+| E82-06 | Confirmar matriz 8×10, ruta ≤24+5 solo con consentimiento, ES/EN, privacidad y replay | **Planificada; cero tests de esta fase ejecutados** |
+
+**Orden próximo:** cerrar primero *semántica F05 y taxonomía TAX-G1* antes de trasladar gates o scores a código; después preparar una secuencia de pruebas focales por archivo/contrato del candidato V9 y confirmar F02 mediante pruebas ejecutadas. El usuario autorizó completar y ampliar la revisión, pero esta sección no autoriza mezclar V8 con V9 ni desplegar.
+
+**Alcance preservado:** solo Markdown en este lote; no se cambió TypeScript/TSX, CI, D1, Worker, endpoints, GHL, UI, migración, merge ni producción. El PR #162 continúa draft, F02 sigue ABIERTA y no hay certificación de scoring.
+
+### Changelog adicional
+
+- **1.66.0 / 2026-10-31:** distribución de 40 evidencias por las ocho dimensiones (36 direct / 4 supporting), riesgos de doble suma, gates S01–S03/A78–A82 y matriz futura 8×10; ningún test ejecutado.
