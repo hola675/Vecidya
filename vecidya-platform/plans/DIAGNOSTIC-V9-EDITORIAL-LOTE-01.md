@@ -1119,3 +1119,210 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 
 ### Changelog
 - **0.8.0:** lote 05 — ocho fichas bilingües con reglas de medición sin ventas, abstención, evidencia no duplicada y proceso manual; 3 KEEP/5 REWRITE, sin cambios TS/TSX, tests, CI ni producción.
+
+## Lote editorial 06 — citas, ecommerce y especialidades
+
+**Edición documental acumulada 0.9.0 — DISEÑO DELEGADO / PLAN_ONLY.** Esta sección completa ocho fichas reales del candidato V9. Los textos ES/EN, valores futuros, guardias y semánticas son **especificación editorial**, no modificación del banco o producción. Fuente estática: HEAD 0e18bde837d02e7f363b941d51c96574914e4560; qbv2-reviewed-specialized-entry.ts, qbv2-reviewed-local-appointments-professional.ts, qbv2-reviewed-commerce.ts, qbv2-reviewed-evidence.ts, qa03b/specialty-branches-wave1.ts, qa03b/bank.ts y qa03b/editorial-copy.ts. No se ejecutaron pruebas ni sesiones reales.
+
+### Decisiones transversales
+
+- **Citas:** consulta, intento de reservar, reserva confirmada, asistencia y siguiente cita son eventos diferentes. No derivar uno de otro sin observarlo; no convertir ausencia de citas en fracaso digital.
+
+- **Comercio:** canales declarados no prueban atribución ni conversión. Catálogo no publicado es distinto de catálogo legítimamente no aplicable y de desconocimiento. No exigir carrito cuando se vende por conversación o marketplace.
+
+- **Especialistas:** dental reemplaza rebooking genérico; agencia reemplaza claridad genérica solo si corresponde. Sin doble recuento de evidencia ni dos preguntas equivalentes.
+
+- **Bloqueo P0:** la rama actual de agencia exige sector=b2b_services; la separación sector/modelo del Lote 02 necesita migración explícita de la guardia antes de introducir un nuevo selector. No romper la rama de agencia.
+
+- **Versionado y neutralidad:** unknown, insufficient_history, not_published y not_applicable no se convierten automáticamente en weak; ningún value histórico se reinterpreta sin versión y replay. Las nuevas opciones solo son objetivo futuro.
+
+- **Presupuesto:** ocho fichas de catálogo no son ocho turnos obligatorios para cada usuario; conservar 24 + hasta 5 con consentimiento. ES/EN requiere todavía validación cognitiva real.
+
+### Matriz de dictámenes
+
+| Ficha | ID | Fuente → objetivo futuro | Decisión |
+| --- | --- | --- | --- |
+| 41 | q2_appointments_noshow | v2 → v3 objetivo | **REWRITE** |
+| 42 | q2_appointments_lead_to_booking | v2 → v3 objetivo | **REWRITE** |
+| 43 | q2_appointments_booking_friction | v2 → v2 | **KEEP** |
+| 44 | q2_ecommerce_traffic_sources | v3 → v4 objetivo | **REWRITE** |
+| 45 | q2_ecommerce_product_discovery | v2 → v3 objetivo | **REWRITE** |
+| 46 | q2_professional_intake_flow | v2 → v3 objetivo | **REWRITE** |
+| 47 | q2_dental_care_continuation | v1 → v1 | **KEEP** |
+| 48 | q2_marketing_agency_scope_clarity | v1 → v2 objetivo | **REWRITE** |
+
+### Fichas completas del Lote 06
+
+#### Ficha 41 — q2_appointments_noshow · v2 → v3 objetivo · REWRITE
+
+**ES:** «De las citas que ya estaban reservadas, ¿con qué frecuencia la persona no asistió sin cancelarlas a tiempo?»  
+**EN:** “Of appointments that were already booked, how often did the person fail to attend without canceling in time?”  
+**Ayuda ES:** Considera un periodo reciente representativo. Una consulta sin reserva no cuenta como ausencia. En contextos clínicos puedes decir pacientes sin solicitar datos clínicos.  
+**Help EN:** Use a representative recent period. An inquiry that never became a booking is not a no-show. In clinical contexts you may say patients without asking for health information.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| rarely | Casi nunca. | Rarely. |
+| sometimes | Algunas veces. | Sometimes. |
+| often | Con frecuencia. | Often. |
+| no_recent_bookings NEW | No hay suficientes citas reservadas recientes para evaluarlo. | There haven't been enough recent booked appointments to assess this. |
+| unknown | No tengo información fiable para responder. | I don't have reliable information to answer. |
+
+**Aplicabilidad/guardia:** Arquetipo appointments, historial de clientes=YES y operating por QA03B. No mostrar a proyectos preparando ni pausados como frecuencia actual.  
+**Evidencia y neutralidad:** appointmentAttendance declarada por rarely/sometimes/often, sin evidenceV3 directa en la definición inspeccionada. Nueva opción: insuficiencia de historial/context_only, nunca puntuación weak. Puede condicionar recordatorios cuando sometimes/often; no inferir ausencia como fracaso.  
+**Validación focal futura (no ejecutada):** C02, C03, C06; no activar recordatorios con no_recent_bookings ni unknown; conservar variante clinical.
+
+#### Ficha 42 — q2_appointments_lead_to_booking · v2 → v3 objetivo · REWRITE
+
+**ES:** «De las personas que realmente intentaron reservar una cita, ¿cuántas consiguieron confirmarla?»  
+**EN:** “Of the people who actually tried to book an appointment, how many managed to confirm one?”  
+**Ayuda ES:** Cuenta intentos de reserva reales, incluidos los que no se concretaron. Preguntar por un servicio no siempre es intentar reservarlo, y una cita no equivale a una venta.  
+**Help EN:** Consider actual booking attempts, including those that failed. Asking about a service is not always an attempt to book, and a booking isn't necessarily a sale.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| most | La mayoría consigue reservar. | Most manage to book. |
+| mixed | Algunas personas reservan y otras no. | Some book and others don't. |
+| few | Pocas consiguen reservar. | Few manage to book. |
+| no_recent_requests NEW | No hemos tenido suficientes solicitudes recientes para evaluarlo. | We haven't had enough recent booking requests to assess this. |
+| unknown | No dispongo de información fiable. | I don't have reliable information. |
+
+**Aplicabilidad/guardia:** activeAppointments y, tras QA03B, operating AND historial real. El estado no_recent_requests excluye el deepening de booking_friction.  
+**Evidencia y neutralidad:** Observación contextual de solicitud→reserva, sin evidencia V3 directa migrada en la definición inspeccionada. La opción nueva es insufficient_history/context_only: no equivaler a tasa cero.  
+**Validación focal futura (no ejecutada):** C06 clínica nueva, C02 y C03; edición a mixed/few puede abrir booking_friction; never auto-translate inquiry as booked appointment.
+
+#### Ficha 43 — q2_appointments_booking_friction · v2 → v2 · KEEP
+
+**ES:** «Cuando alguien intenta reservar, ¿con qué frecuencia coordinar el horario requiere intentos o demoras innecesarias?»  
+**EN:** “When someone tries to book, how often does arranging a time require unnecessary attempts or delays?”  
+**Ayuda ES:** Solo cuenta obstáculos repetidos. El intercambio normal para elegir una hora no es un problema.  
+**Help EN:** Only count recurring obstacles. A normal exchange to agree on a time isn't a problem.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| rarely | Casi nunca; coordinar suele ser sencillo. | Rarely; arranging a time is usually straightforward. |
+| sometimes | A veces requiere intentos o demoras innecesarias. | Sometimes it requires extra attempts or delays. |
+| often | Con frecuencia se complica o demora. | It often becomes complicated or delayed. |
+| unknown | No tengo datos suficientes. | I don't have enough information. |
+
+**Aplicabilidad/guardia:** Material: activeAppointments AND q2_appointments_lead_to_booking in [mixed,few], sumado a operating AND historial en QA03B.  
+**Evidencia y neutralidad:** conversion_access V3 directa: rarely=established, sometimes=partial, often=weak, unknown=uncertainty. La respuesta few no demuestra por sí misma que el obstáculo sea coordinar una hora.  
+**Validación focal futura (no ejecutada):** Ruta mixed/few y contraste con most/no_recent_requests; no atribuir causa inventada ni duplicar evidencia del mismo evento.
+
+#### Ficha 44 — q2_ecommerce_traffic_sources · v3 → v4 objetivo · REWRITE
+
+**ES:** «¿Por cuáles canales han llegado habitualmente personas a tu tienda online durante el periodo reciente?»  
+**EN:** “Which channels have regularly brought people to your online store during the recent period?”  
+**Ayuda ES:** Selecciona solo fuentes que puedas identificar razonablemente. Haber pagado anuncios no demuestra que hayan generado visitas. Puedes marcar varias fuentes.  
+**Help EN:** Select only sources you can reasonably identify. Running ads doesn't prove they generated visits. You may select several channels.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| social | Redes sociales. | Social media. |
+| search | Buscadores, como Google. | Search engines, such as Google. |
+| ads | Anuncios pagados. | Paid advertising. |
+| referral | Recomendaciones o referencias. | Referrals or recommendations. |
+| marketplace | Marketplaces o plataformas de venta. | Marketplaces or selling platforms. |
+| messaging | WhatsApp u otros mensajes. | WhatsApp or other messaging. |
+| email | Correo electrónico o boletines. | Email or newsletters. |
+| direct | Visitas directas de personas que ya conocen la tienda. | Direct visits from people who already know the store. |
+| other | Otro canal identificado. | Another identified channel. |
+| no_recent_visitors NEW | No hemos observado visitas recientes suficientes para identificar canales. | We haven't observed enough recent visits to identify channels. |
+| unknown | No sabemos por dónde llegan. | We don't know which channels they use. |
+
+**Aplicabilidad/guardia:** Ecommerce AND has_customers=yes; QA03B añade operating AND historial. Multi; fuentes identificadas combinables, unknown y no_recent_visitors exclusivos en contrato futuro.  
+**Evidencia y neutralidad:** evidenceMigration=pending; no evidenceV3 directa. Un canal declarado no demuestra atribución, alcance, venta, consentimiento ni rendimiento publicitario. No inferir marketing activo.  
+**Validación focal futura (no ejecutada):** C07 y C09, exclusividad de respuestas neutrales, desconocimiento del tráfico sin falsos valores, canal de mensajería no implica permiso de campañas.
+
+#### Ficha 45 — q2_ecommerce_product_discovery · v2 → v3 objetivo · REWRITE
+
+**ES:** «Si alguien entra por primera vez en tu tienda online, ¿puede encontrar fácilmente el producto que necesita?»  
+**EN:** “When someone visits your online store for the first time, can they easily find the product they need?”  
+**Ayuda ES:** Se evalúa la búsqueda en un catálogo visible, no todo el inventario. Si vendes por conversación y no necesitas catálogo navegable, distingue ese modelo de una tienda que aún no lo ha publicado.  
+**Help EN:** This assesses finding products in a visible catalog, not listing every item. If you sell through conversation without needing a browsable catalog, distinguish that from one you intend to publish but haven't.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| easy | Sí, puede encontrarlo fácilmente. | Yes, they can find it easily. |
+| confusing | A veces es confuso encontrarlo. | Finding it is sometimes confusing. |
+| difficult | Normalmente cuesta encontrarlo. | It is usually difficult to find. |
+| not_published NEW | Necesitamos un catálogo navegable, pero aún no lo hemos publicado. | A browsable catalog is relevant, but we haven't published it yet. |
+| not_applicable | No usamos catálogo navegable porque nuestro modelo de venta funciona de otra forma. | We don't use a browsable catalog because our selling model works differently. |
+| unknown | No lo hemos probado desde fuera. | We haven't tested it from a visitor's perspective. |
+
+**Aplicabilidad/guardia:** active + arquetipo ecommerce, sin exigir ventas anteriores. La ruta de venta por chat sin catálogo puede usar N/A legítimo, y aún permitir preguntas separadas sobre claridad de oferta o contacto.  
+**Evidencia y neutralidad:** digital_foundation V3 directa actual: easy=established, confusing=partial, difficult=weak, not_applicable=N/A, unknown=uncertainty. not_published NEW requiere versión y rúbrica de publicación pertinente; no reinterpretar N/A histórico.  
+**Validación focal futura (no ejecutada):** C07 marketplace/chat vs catálogo pendiente, C08 restaurante sin web, y no convertir not_published en debilidad de claridad general sin evidencia.
+
+#### Ficha 46 — q2_professional_intake_flow · v2 → v3 objetivo · REWRITE
+
+**ES:** «Cuando alguien quiere solicitar tu servicio profesional, ¿puede entender qué debe hacer a continuación?»  
+**EN:** “When someone wants to request your professional service, can they understand what to do next?”  
+**Ayuda ES:** Puede consistir en llamar, escribir, reservar o pedir una valoración. Se mide la claridad del paso siguiente, no la venta, la web propia ni datos confidenciales.  
+**Help EN:** The next step may be to call, message, book, or request an assessment. This measures clarity, not sales, owning a website, or confidential data.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| clear | El siguiente paso se explica claramente. | The next step is clearly explained. |
+| partial | En general se entiende, pero hay dudas. | It is generally understandable, but some details are unclear. |
+| unclear | La información existente no permite saber qué hacer después. | The existing information doesn't explain the next step. |
+| not_published NEW | Todavía no hemos comunicado públicamente cómo solicitar el servicio. | We haven't publicly communicated how to request the service yet. |
+| not_applicable NEW | Solo se accede mediante derivación o un circuito específico, no por solicitudes públicas directas. | Access is through referral or another defined process, not direct public inquiries. |
+| unknown | No he comprobado qué entiende una persona nueva. | I haven't checked what a new person would understand. |
+
+**Aplicabilidad/guardia:** activeProfessional: actividad active + sector legal/financial_tax_insurance/professional_services/real_estate.  
+**Evidencia y neutralidad:** clarity_positioning V3 directa actual con cuatro values. not_published es publicación ausente, no contenido publicado confuso; not_applicable requiere ruta de acceso alternativa real; unknown es incertidumbre.  
+**Validación focal futura (no ejecutada):** C04 profesional individual y C05 atención solo por derivación; no pedir datos de pacientes, expedientes o clientes.
+
+#### Ficha 47 — q2_dental_care_continuation · v1 → v1 · KEEP
+
+**ES:** «Cuando un paciente necesita continuar un tratamiento o acudir a un control, ¿cómo suele quedar organizada su siguiente cita?»  
+**EN:** “When a patient needs to continue treatment or attend a follow-up check, how is the next appointment usually arranged?”  
+**Ayuda ES:** Piensa solo en tratamientos o controles donde volver es necesario. No incluyas información clínica individual.  
+**Help EN:** Consider only treatments or checkups that genuinely require another visit. Don't include individual medical details.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| proactive | Normalmente acordamos la siguiente cita con anticipación. | We usually arrange the next appointment in advance. |
+| partial | A veces la acordamos de antemano y otras después. | Sometimes we arrange it in advance and other times later. |
+| reactive | El paciente suele tener que volver a contactar para continuar. | The patient usually has to contact us again to continue. |
+| not_applicable | La mayoría de las atenciones no requiere otra cita. | Most visits don't require another appointment. |
+| unknown | No tengo información suficiente. | I don't have enough information. |
+
+**Aplicabilidad/guardia:** operating + historial=yes + q2_niche_health_wellness=dentist + archetype appointments + (goal stop_losing OR friction follow_up). Es sustituto de q2_appointments_rebooking del Lote 04.  
+**Evidencia y neutralidad:** relationship_recurrence V3 directa de la rama especializada; no duplicar con rebooking genérico. No se recogen datos clínicos individuales.  
+**Validación focal futura (no ejecutada):** C06 dentista con controles y visitas de una sola vez; cambio de nicho/goal replanifica y recupera fallback genérico.
+
+#### Ficha 48 — q2_marketing_agency_scope_clarity · v1 → v2 objetivo · REWRITE
+
+**ES:** «Si una empresa considera contratar tu agencia, ¿puede entender qué incluye el servicio, cuáles son los entregables y qué queda fuera?»  
+**EN:** “If a company considers hiring your agency, can it understand what's included, the deliverables, and what's outside the scope?”  
+**Ayuda ES:** Evalúa alcance, no promesas de resultados. Un servicio a medida puede explicar cómo se define el alcance sin publicar información confidencial.  
+**Help EN:** Assess scope, not promises of results. Custom services can explain how scope is defined without publishing confidential details.
+
+| Value | Español propuesto | English draft |
+| --- | --- | --- |
+| clear | El alcance y los entregables están explicados claramente. | The scope and deliverables are clearly explained. |
+| partial | Se entiende lo esencial, pero hay límites o entregables ambiguos. | The essentials are clear, but some limits or deliverables are ambiguous. |
+| unclear | Hay información publicada, pero no explica el alcance del servicio. | Information is published, but it doesn't explain the service scope. |
+| not_published NEW | Todavía no publicamos una explicación del alcance. | We haven't published an explanation of scope yet. |
+| not_applicable | No hay un alcance estándar publicable; el servicio se define individualmente mediante un proceso explicado. | There is no standardized scope to publish; each engagement is defined individually through an explained process. |
+| unknown | No sabemos qué entiende una empresa nueva. | We don't know what a prospective client would understand. |
+
+**Aplicabilidad/guardia:** operating+historial=yes, q2_sector=b2b_services, q2_niche_b2b_services=marketing_agency, goal explain, buyer b2b/mixed y presencia base reliable/partial. P0: Lote 02 pretende mover b2b_services fuera de sector; hay que migrar guardia y nicho juntos.  
+**Evidencia y neutralidad:** clarity_positioning V3 directa actual; not_applicable v1 dice 'todavía no presento', semántica ambigua. Futuro not_published separado de N/A y contenido publicado poco claro; versión/replay y sustitución de q2_presence_offer_clarity.  
+**Validación focal futura (no ejecutada):** C04/C09 agencias a medida y multiactividad, sector reclasificado, not_published vs N/A, fallback genérica y ninguna duplicación.
+
+### Gate, inventario y cierre
+
+- Fuente inspeccionada: **8 preguntas/41 opciones** (4+4+4+10+5+4+5+5); diseño objetivo **8 preguntas/48 opciones** (5+5+4+11+6+6+5+6), siete options nuevas y seis futuras versiones. Validar contra el banco compuesto ejecutado antes de implementación: lectura estática no equivale a certificación de inventario global.
+
+- **Dictamen:** 2 KEEP / 6 REWRITE; con Lotes 01–05 acumulados **48 fichas con decisión (14 KEEP / 34 REWRITE)**. No significa 48 preguntas activadas ni 48/77 técnicamente certificadas.
+
+- **C01–C10:** probar luego (solo con autorización para código) C02/C03 inactividad, C04 profesional, C05 entidad sin venta, C06 citas y odontología, C07 catálogo/canales, C08 sin web, C09 multiactividad/agencia y C10 reclasificación. Guardias, ediciones/replay, exclusividad, sustitución, evidenceV3, N/A y 24+5 deben cumplir pruebas focalizadas sin efectos sobre V8.
+
+- **F02 abierto:** falta revisión del resto del banco, certificación lingüística y de comprensión, los 80 casos dimensión×escenario, calibración y handoff F00–F10. Se mantiene PLAN_ONLY: no TS/TSX, SQL, tests, CI, D1, UI, Worker, rutas, merge ni producción.
+
+### Changelog
+
+- **0.9.0:** dictamen editorial delegado Lote 06, ocho fichas ES/EN, seis rediseños y separación de no publicación, no aplicabilidad e insuficiencia de actividad. Solo documentación.
