@@ -3277,3 +3277,35 @@ El registro completo y la tabla de 40 respuestas se incorporaron en [DIAGNOSTIC-
 ### Changelog adicional
 
 - **1.68.0 / 2026-10-31:** tabla experimental de evidencia para las ocho generales de V9, siete directas condicionadas y una supporting-only; deduplicación por evento/constructo, identidad de calibración v2 vs v4 y pruebas focales futuras. Sin activar scoring ni producción.
+
+## 78. Pruebas focales del banco 90 y bloqueo de evidencia duplicada
+
+**Fecha: 2026-10-31 · Estado: OCHO TESTS ESCRITOS, NO EJECUTADOS · F02/F05 ABIERTAS.** Se incorporó a la rama `feat/diagnostic-v9-lex-graph-p1b` el archivo focal `tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts` con ocho pruebas; no se modificó la batería general ni el runtime público. Es el primer arnés concreto para el candidato V9 de 90 IDs, formado aditivamente por los bancos anteriores de 77, 82 y ocho preguntas generales pendientes.
+
+**Detalle y comando de prueba:** [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Control focal de las 90 preguntas — contratos y límites del porcentaje», versión 2.0.0. Los ocho escenarios prueban: conservación 77/82/90; unicidad, copy y migraciones; correspondencia de las ocho dimensiones/40 valores; elegibilidad por etapa e historial; invariancia de scoring cuando las nuevas preguntas están pending; techo de 24 preguntas en el plan; invalidación por edición de estado; fórmula porcentual V4 y neutralidad; deduplicación por `observationId` y la brecha entre preguntas diferentes.
+
+### Corrección segura ejecutada
+
+Se corrigieron únicamente **ocho cadenas de ayuda** (`helpIntent.understand`) del export `QA03B_GENERAL_DIMENSION_PROBES_V1`: se sustituyeron nombres internos de dimensión (prohibidos por `validateQuestionCopyV2`) por explicaciones en español comprensible. No se cambiaron `questionId`, `version`, valores, semántica, gates, evidencia, cálculo, base de datos ni rutas. El control estático posterior encuentra cero marcadores internos en los ocho textos y longitud de hints compatible con el límite de 140 caracteres; no equivale a un PASS de la suite.
+
+### Bloqueo P0 confirmado por lectura de fuente
+
+En `qbv2-contextual-scoring.ts`, el identificador de observación V3 se deriva de `evidenceMigrationIdentity(question.id,question.version)`; el legado utiliza `questionId`. El scorer elimina únicamente observaciones con `observationId` idéntico, por lo que **dos preguntas distintas sobre el mismo evento real no se deduplican por constructo ni período** y pueden crear doble evidencia/confianza. El test T90-08 conserva ese comportamiento como caracterización del riesgo, no como aceptación de una mejora. Se requiere un contrato de correlación por actividad×evento×constructo×período/fuente antes de migrar las ocho preguntas al scorer, preservando observaciones realmente independientes y retrocompatibilidad por versión.
+
+### Gate de ejecución y certificación
+
+| Gate | Salida requerida | Estado |
+| --- | --- | --- |
+| F02-90-T1 | Ejecutar el archivo focal con `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts` en un checkout limpio y SHA coincidente | PENDIENTE; no hay log/exit code de ejecución del HEAD actual |
+| F02-90-T2 | Confirmar validators V3, copy, pertenencia a ocho dimensiones y valores neutralizados | Verificación estática parcial; test no ejecutado |
+| F05-90-T3 | Confirmar que score de 82 y 90 no cambia con ocho pending y que supporting-only no crea nota | Assert focal escrito; test no ejecutado |
+| F05-90-T4 | Revisar observaciones duplicadas entre general y especialista, registrar exclusiones y mantener confianza honesta | P0: no implementado en scorer/planner |
+| F03-90-T5 | Validar por escenarios C01–C10 el límite 24+5 con consentimiento, edits y fallback | Parcialmente cubierto por tests individuales; recorrido completo pendiente |
+
+Los workflows de GitHub consultados con éxito corresponden a SHAs históricos del **30 de octubre** y NO verifican estos commits. Se conserva el principio de tests focalizados, sin ejecutar suites generales ni declarar PASS futuro. Cualquier resultado se asociará a su SHA real y a un árbol limpio.
+
+**Estado del repositorio:** PR #162 draft, no merge; el banco 90 y su metadata siguen aislados, 77/82 anteriores preservados; sin cambio de scoring, GHL, UI pública, D1, Worker, SQL, CI ni deploy. F02/F03/F05 sin certificación. **Próximo paso:** ejecutar y resolver únicamente fallos focales; después diseñar identidad de observación por evento y validación real de porcentajes con dos hechos independientes cuando existan.
+
+### Changelog adicional
+
+- **1.69.0 / 2026-10-31:** arnés de ocho tests focales para banco90, corrección de texto visible y bloqueo P0 de doble evidencia entre preguntas distintas, sin certificación ni cambios de motor.
