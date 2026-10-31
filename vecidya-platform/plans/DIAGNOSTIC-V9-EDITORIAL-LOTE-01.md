@@ -376,3 +376,193 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 
 ### Changelog
 - **0.4.0 (2026-10-31):** criterio editorial delegado: 3 KEEP y 5 REWRITE, ocho fichas ES/EN, neutralidad desambiguada y contratos de versiones objetivo, sin cambios de aplicación.
+
+
+## Lote editorial 02 — sector, canales, públicos y objetivos (31-10-2026)
+
+**Versión documental consolidada 0.5.0; estado: DESIGN_APPROVED_BY_DELEGATION / PLAN_ONLY.** Se reutiliza este documento editorial existente para no abrir otro Markdown; su nombre histórico conserva Lote 01, pero ahora contiene los lotes 01 y 02. El propietario delegó las decisiones editoriales críticas. **Ocho fichas nuevas de diseño, no ocho preguntas adicionales al banco.** No se cambió ningún contrato de ejecución ni se ejecutaron pruebas. La revisión distingue opción observada del banco y propuesta futura: en las tablas, **NEW** indica value inexistente en la versión citada.
+
+**Snapshot de lectura de origen:** rama del PR maestro #162, HEAD d6514058a8f4251c50be905b2a98a7e24df176d0. Fuentes: qa03b/bank.ts, qa03b/specialty-candidate-bank.ts, qa03b/specialty-branches-wave1.ts, qa03b/editorial-copy.ts, qbv2-reviewed-foundation.ts, qbv2-reviewed-classification.ts, qbv2-golden.ts, qbv2-lote-d.ts, taxonomy.ts. Fuente de verdad: pregunta compuesta, no la antigua definición pública. La revisión es lectura estática, sin ejecución del ensamblaje.
+
+### Resultado crítico: evidencias y falsas alarmas descartadas
+
+1. **Confirmado:** q2_delivery es una pregunta **multi**, heredada de qbv2-reviewed-foundation.ts y ampliada en qa03b/bank.ts. La sospecha inicial basada en qbv2-golden.ts era incorrecta. No queda defecto de tipo single/multi probado. Sí existe tensión editorial con la opción other marcada como exclusive en el candidato.
+2. **Confirmado:** el sector v4 compone un conjunto de veinte opciones desde la base R2C + unknown + cuatro nuevas; **no hay duplicado literal de nonprofit_community en esa base**, que utiliza community_social. La sospecha anterior de duplicado de value queda descartada. Existe **solapamiento conceptual** entre community_social y nonprofit_community y mezcla de canal/modelo con sector.
+3. **Confirmado:** q2_friction presenta seis opciones sin unknown ni ninguna dificultad; la ruta fuerza una fricción subjetiva si la pregunta es obligatoria. No convertir esa selección en resultado probado.
+4. **Confirmado:** q2_nonprofit_support_type carece de vía para organizaciones activas sin donaciones, cuotas o subvenciones; las cinco opciones existentes son donations/membership_dues/grants/mixed/unknown. Hay que distinguir ausencia real de financiación de desconocimiento.
+5. **Confirmado:** el selector q2_niche_food_hospitality solo ofrece restaurant, cafe, food_truck, other y unknown pese a que el sector incluye alojamiento y otros tipos de hostelería. No deducir un nicho por el sector.
+6. **Confirmado:** la regla de comprador-beneficiario es condicional y está ligada a comprador declarado y a ciertos contextos: no es una pregunta universal. El contexto de buyer/recipient jamás prueba conversión o confianza.
+
+### Matriz de decisiones
+
+| Ficha | Identificador | Versión de origen → versión objetivo* | Decisión de diseño | Prioridad |
+| --- | --- | --- | --- | --- |
+| 09 | q2_sector | v4 → v5* | **REWRITE / separar actividad, canal, modelo y forma jurídica** | P0, TAX-G1 |
+| 10 | q2_delivery | v4 → v5* | **KEEP estructura multi / REWRITE opción other y ayuda** | P1 |
+| 11 | q2_customer_reach | v3 → v3 | **KEEP / pulir contexto temporal y mezcla geográfica** | P1 |
+| 12 | q2_buyer_recipient_relation | v1 → v2* | **REWRITE / incorporar relaciones mixtas** | P1 |
+| 13 | q2_goal | v1 → v1 | **KEEP / objetivo voluntario, sin score** | P1 |
+| 14 | q2_friction | v1 → v2* | **REWRITE / permitir ninguna principal e incertidumbre** | P0 |
+| 15 | q2_nonprofit_support_type | v1 → v2* | **REWRITE / reconocer aportes en especie y ausencia real de fondos** | P0 |
+| 16 | q2_niche_food_hospitality | v1 → v2* | **REWRITE / distinguir alojamiento y catering** | P1 |
+
+*Los números objetivo indican posible versión nueva, **no versión aplicada**. Los changes de taxonomía pueden exigir renumerar identidad de pregunta, optionId, niche registry, sesión y replay. Ninguna cifra futura de opciones del banco se proclama certificada sin ejecutar el ensamblaje final.
+
+### Ficha 09 — q2_sector (v4 actual, v5 objetivo) · single
+
+**Objetivo:** clasificar la **actividad principal**, sin confundir dónde vende (online), a quién vende (B2B) o la estructura de su organización (sin lucro). **ES aprobada para diseño:** «¿A qué actividad o sector pertenece principalmente lo que ofreces?» **EN:** “Which field or industry best describes what you mainly offer?” **Ayuda ES:** «Elige lo que haces, no dónde lo vendes. Si tienes varias actividades, elige la principal; después indicaremos los canales y formas de atención.» **Help EN:** “Choose what you do, not where you sell it. If you have several activities, select the main one; we'll ask about channels and service methods separately.”
+
+**Opciones y values de origen v4, con traducción propuesta:**
+
+| value | ES | EN | Dictamen |
+| --- | --- | --- | --- |
+| health_wellness | Salud y bienestar | Health and wellness | KEEP |
+| beauty_personal_care | Belleza y cuidado personal | Beauty and personal care | KEEP |
+| legal | Servicios legales | Legal services | KEEP |
+| financial_tax_insurance | Finanzas, impuestos y seguros | Finance, tax, and insurance | KEEP |
+| professional_services | Servicios profesionales y consultoría | Professional services and consulting | KEEP |
+| home_services | Servicios para el hogar y mantenimiento | Home services and maintenance | KEEP |
+| automotive | Actividades automotrices | Automotive services and activities | KEEP |
+| real_estate | Bienes raíces | Real estate | KEEP |
+| food_hospitality | Alimentos, restauración y alojamiento | Food, dining, and hospitality | KEEP, refinar subnicho |
+| retail | Comercio y tiendas | Retail and stores | KEEP |
+| education_coaching | Educación y formación | Education and training | KEEP |
+| creative_media | Actividades creativas y medios | Creative and media activities | KEEP |
+| technology_software | Tecnología y software | Technology and software | KEEP |
+| community_social | Servicios sociales, comunitarios o culturales | Social, community, or cultural services | KEEP, distinguir entidad |
+| ecommerce | Comercio electrónico y tiendas online | E-commerce and online stores | MOVE TO CHANNEL/MODEL; no sector por sí solo |
+| creator | Creación de contenido basada en audiencia | Audience-based content creation | MOVE TO ACTIVITY/MONETIZATION where relevant; no sector por defecto |
+| b2b_services | Servicios especializados para empresas | Specialized services for businesses | MOVE TO CUSTOMER/MODEL; no confundir comprador con industria |
+| nonprofit_community | Organizaciones sin fines de lucro y proyectos comunitarios | Nonprofit and community organizations | MOVE TO ENTITY/MISSION, resolver solapamiento |
+| other | Otra actividad | Another activity | KEEP, contexto no inferido |
+| unknown | Todavía no lo tengo claro | I'm not sure yet | KEEP, kind=unknown |
+
+**Decisión:** aprobar la separación semántica de ejes, **no aprobar todavía** un listado definitivo de sectores ni eliminar cuatro values en código. La futura V9 deberá reubicar esas elecciones sin dejar sin ruta al nicho marketing_agency, creator y nonprofit; documentar mapeo explícito sector→especialidad y conservar C10 other/unknown. Proponer para la auditoría de cobertura **agropecuario**, **producción/manufactura** y **transporte/logística** como posibles sectores hoy ausentes: NEW-DESIGN-GAP, no nuevos IDs aprobados para runtime. **Elegibilidad actual:** clasificación core. **Evidencia:** nicheGroup explícita, no dimensión digital. **Neutralidad:** other y unknown no se convierten en sector supuesto. **Control:** C05, C07, C09, C10; comparar clasificaciones sin imponerles canal.
+
+### Ficha 10 — q2_delivery (v4 actual, v5 objetivo) · multi
+
+**Objetivo:** registrar formas reales de atención/entrega **simultáneas**; una clínica puede tener local, citas y atención remota a la vez. **ES:** «¿De qué formas atiendes a las personas o entregas lo que ofreces?» **EN:** “How do you serve people or deliver what you offer?” **Ayuda ES:** «Puedes elegir varias. En pausa indica las formas anteriores; en preparación, las que planeas. Tener web o redes no significa que exista pago en línea.» **Help EN:** “You can select more than one. If paused, choose previous methods; if preparing, choose planned ones. Having a website or social media doesn't necessarily mean online checkout.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| physical_location | En local, oficina o espacio propio | At my own premises, office, or facility |
+| appointments | Mediante citas o sesiones reservadas | Through booked appointments or sessions |
+| travels | Me desplazo al lugar de las personas | I travel to where people are |
+| remote_service | Presto servicios a distancia por llamadas, video o internet | I provide services remotely by phone, video, or online |
+| retail | Vendo productos en una tienda física | I sell products in a physical store |
+| onsite | Las personas consumen o usan el servicio en el establecimiento | People consume or use the service on site |
+| online_checkout | Las personas pueden elegir y pagar una compra por internet | People can select and pay for purchases online |
+| other | Otra forma de atención o entrega | Another service or delivery method |
+| unsure | Todavía no lo sé | I'm not sure yet |
+
+**Contrato:** multi es correcto en el origen; NO corregirlo a partir de qbv2-golden.ts. En el diseño futuro, **other puede coexistir** con modos identificados, mientras unsure permanece **exclusiva y neutral**. Este ajuste cambia exclusividad y requiere versión nueva y validación de array/edición/replay. Solo los modos explícitamente declarados producen contexto; remote_service actualmente no contiene produces, por lo que su significado de modalidad deberá documentarse antes de usarlo para resolver arquetipo. **Elegibilidad:** clasificación core; variante prelaunch existente. **Evidencia:** deliveryMode/contexto, nunca capacidad digital probada. **Controles:** C02, C06, C07, C09 y q2_sector distinto de online_checkout.
+
+### Ficha 11 — q2_customer_reach (v3) · single
+
+**Objetivo:** alcance geográfico real o previsto, separado de canal digital. **ES:** «¿Dónde están principalmente las personas u organizaciones a las que atiendes o quieres llegar?» **EN:** “Where are the people or organizations you serve, or want to reach, mainly located?” **Ayuda ES:** «No confundas vender por internet con vender fuera de tu zona. Si estás preparando la actividad, responde según tu público previsto; si está en pausa, según el último período operativo.» **Help EN:** “Selling online doesn't necessarily mean serving a wider region. If you're preparing, choose your intended audience; if paused, use the last operating period.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| local | Principalmente en mi ciudad o zona cercana | Mainly in my city or nearby area |
+| regional | Principalmente en varias ciudades de mi región | Mainly across several cities in my region |
+| national | Principalmente en diferentes regiones del país | Mainly across regions of my country |
+| global | En varios países | Across several countries |
+| mixed | Tanto en mi zona como en lugares más lejanos de manera habitual | Both locally and farther away on a regular basis |
+| unknown | Todavía no lo sé | I'm not sure yet |
+
+**Decisión:** KEEP valores y versión; copiar solo por etapa sin atribuir alcance observado a un negocio que está preparando su lanzamiento. **Elegibilidad real en QA03B:** appliesWhen=undefined, distinta de la guardia contextIn del origen histórico. **Evidencia:** customerReach declarada; no demuestra visibilidad ni adquisición digital. **Neutralidad:** unknown. **Control:** negocio exclusivamente online pero local, ONG con beneficiarios, C02/C03/C09.
+
+### Ficha 12 — q2_buyer_recipient_relation (v1 → v2 objetivo) · single
+
+**Objetivo:** diferenciar quién contrata/paga y quién recibe/usa, sin inferir que toda compra es B2B o que ONG tiene comprador. **ES:** «Cuando alguien paga o contrata, ¿esa misma persona u organización recibe lo que ofreces?» **EN:** “When someone pays for or contracts a service, is that same person or organization the one receiving it?” **Ayuda ES:** «Una empresa puede contratar para sus empleados y una persona para un familiar. Si ocurre de ambas formas, elige “Depende”.» **Help EN:** “A company may contract for employees, or an individual for a relative. If both happen, choose ‘It varies’.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| same_party | Generalmente quien paga o contrata también recibe el servicio | Usually the buyer or contracting party also receives the service |
+| third_party | Generalmente contrata para alguien diferente | Usually the buyer or contracting party arranges it for someone else |
+| varies **NEW** | Depende: ocurren ambas situaciones de manera habitual | It varies: both situations occur regularly |
+| unknown | No lo tengo claro | I'm not sure |
+
+**Elegibilidad observada:** regla BUYER_RECIPIENT_RULE exige comprador b2c/b2b/mixed y además uno de ciertos contextos (B2B/mixed, organización, misión, salud o educación). La futura regla debe auditar también B2C que contrata para terceros sin convertir esta pregunta en universal. **Evidencia:** relación contextual, nunca confianza/conversión. **Neutralidad:** unknown; ausencia de compra directa es caso **no aplicable por ruta** (no forzar una opción), en línea con el Lote 01.
+
+### Ficha 13 — q2_goal (v1) · single, objetivo voluntario
+
+**Objetivo:** orientar la utilidad de las preguntas y las recomendaciones según la prioridad declarada, sin atribuir nivel de madurez. **ES:** «Si pudieras mejorar una cosa primero, ¿cuál te ayudaría más?» **EN:** “If you could improve one thing first, what would help you the most?” **Ayuda ES:** «Es opcional tener una prioridad definida. Puedes cambiarla y el diagnóstico seguirá revisando otras áreas importantes.» **Help EN:** “You don't need to have a clear priority. You can change it, and the assessment will still check other relevant areas.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| be_found | Que más personas adecuadas me encuentren | Help more of the right people find us |
+| opportunities | Recibir más consultas, participantes u oportunidades | Get more inquiries, participants, or opportunities |
+| explain | Explicar mejor qué hacemos y para quién | Better explain what we do and for whom |
+| trust | Generar más confianza | Build more trust |
+| stop_losing | Perder menos consultas o seguimientos pendientes | Lose fewer inquiries or follow-ups |
+| organize | Organizar mejor contactos, tareas y procesos | Better organize contacts, tasks, and processes |
+| automate | Reducir trabajo manual repetitivo | Reduce repetitive manual work |
+| measure | Entender qué funciona y qué mejorar | Understand what works and what to improve |
+| unsure | Todavía no tengo una prioridad clara | I don't have a clear priority yet |
+
+**Decisión:** KEEP estructura y nueve values; **D-V9-009 sigue vigente**: los objetivos pueden sugerirse y confirmarse, jamás asignarse por deducción ni forzar un score. Si se hace opcional en UI, el evento de «omitir» no se convierte en unsure inventado. Mantener variantes de nonprofits (participación/apoyo) y prelaunch (primeras oportunidades). **Evidencia:** declaración de goal, no madurez. **Control:** C02/C05/C10, cambios de prioridad tras edición y presupuesto.
+
+### Ficha 14 — q2_friction (v1 → v2 objetivo) · single
+
+**Objetivo:** priorizar una dificultad **percibida**, no dictar una debilidad diagnóstica. **ES:** «¿Qué es lo que más dificulta avanzar ahora en tu actividad?» **EN:** “What is making it hardest to move forward with your activity right now?” **Ayuda ES:** «Si no identificas una dificultad principal o no tienes información suficiente, puedes indicarlo. Tu percepción no equivale a una evaluación técnica.» **Help EN:** “If you don't see a main obstacle or aren't sure, you can say so. Your perception isn't treated as technical proof.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| visibility | Pocas personas adecuadas nos encuentran | Too few of the right people find us |
+| trust | Nos conocen, pero aún dudan en confiar | People know us but hesitate to trust us |
+| conversion | Existe interés, pero pocas acciones se concretan | There is interest, but few actions are completed |
+| follow_up | Se pierden contactos o asuntos por falta de seguimiento | Contacts or pending matters get lost through lack of follow-up |
+| operations | Falta orden en tareas, información o procesos | Tasks, information, or processes aren't well organized |
+| scale | Tenemos más solicitudes de las que podemos atender | We have more requests than we can handle |
+| no_primary_issue **NEW** | No identifico una dificultad principal ahora | I don't see a main obstacle right now |
+| unknown **NEW** | No lo tengo claro | I'm not sure |
+
+**Decisión:** REWRITE con dos estados nuevos neutros. No convertir «no identifico problema» en score excelente, ni unknown en debilidad. **Elegibilidad actual:** core; futuro routing sensible a etapa y objetivo; en preparación se refiere a obstáculos actuales de validación, no a ventas hipotéticas. Conservar variantes nonprofit donde «apoyar/participar» sustituye lenguaje de compra. **Evidencia:** friction autodeclarada para selección/prioridad, nunca evidencia directa de nivel digital. **Control:** C02, C05 y C10.
+
+### Ficha 15 — q2_nonprofit_support_type (v1 → v2 objetivo) · single
+
+**Objetivo:** canal principal de apoyo **real**, sin asumir que toda organización cobra cuotas, tiene donaciones o recibe subvenciones. **ES:** «¿De qué manera se sostiene o recibe apoyo actualmente tu organización?» **EN:** “How is your organization currently funded or supported?” **Ayuda ES:** «Cuenta solo apoyo recibido de verdad. El voluntariado y las aportaciones en especie pueden sostener actividades sin ingresos monetarios. Si no hay apoyo, dilo.» **Help EN:** “Count support actually received. Volunteers and in-kind contributions may sustain activities without cash income. If there is no support, say so.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| donations | Donaciones económicas | Financial donations |
+| membership_dues | Cuotas de membresía | Membership dues |
+| grants | Subvenciones o fondos institucionales | Grants or institutional funding |
+| mixed | Una combinación real de fuentes de apoyo | A real combination of support sources |
+| volunteer_in_kind **NEW** | Principalmente voluntariado o aportes en especie | Mainly volunteers or in-kind contributions |
+| no_support **NEW** | Todavía no recibe financiación ni apoyo externo | It doesn't currently receive funding or outside support |
+| other **NEW** | Otro tipo de apoyo no incluido | Another type of support not listed |
+| unknown | No dispongo de información suficiente | I don't have enough information |
+
+**Decisión:** REWRITE versionado. El valor mixed de v1 solo cubría donaciones/cuotas/fondos; ampliar su definición requiere identidad v2, no reinterpretación histórica. Aportes internos/autogestión deben poder declararse sin forzarlos a donaciones (revisar other/no_support según ejemplos). **Elegibilidad del piloto:** operating AND (q2_entity=organization OR q2_monetization=mission). En pausa o antes de operar, no presentar como apoyo que existe hoy sin variante explícita. **Evidencia:** financiación/apoyo contextual, no madurez digital. **Neutralidad:** no_support es hecho conocido, unknown incertidumbre; en C05, donation_clarity y membership_lifecycle deben quedar fuera cuando no hay esas fuentes. **Control:** C05 con participación sin financiación, C03 y C02.
+
+### Ficha 16 — q2_niche_food_hospitality (v1 → v2 objetivo) · single
+
+**Objetivo:** distinguir modalidades concretas de hostelería y restauración, sin inventar especialidades a partir del sector. **ES:** «¿Qué tipo de actividad de alimentos u hospitalidad describe mejor lo que haces?» **EN:** “Which type of food or hospitality activity best describes what you do?” **Ayuda ES:** «Elige la especialidad principal. Si atiendes varias, escoge la predominante; las formas de entrega se preguntan por separado.» **Help EN:** “Choose the main specialty. If you do several, pick the main one; delivery methods are asked separately.”
+
+| value | ES | EN |
+| --- | --- | --- |
+| restaurant | Restaurante | Restaurant |
+| cafe | Cafetería | Café or coffee shop |
+| food_truck | Comida móvil / food truck | Food truck or mobile food service |
+| lodging **NEW** | Hospedaje y alojamiento | Lodging and accommodation |
+| catering **NEW** | Catering y servicios de comida para eventos | Catering and food service for events |
+| other | Otra especialidad de este sector | Another specialty in this field |
+| unknown | Todavía no lo sé | I'm not sure yet |
+
+**Decisión:** REWRITE con dos especialidades nuevas, que requieren actualizar registro NICHE_REGISTRY, versiones y arquetipos **solo tras aprobación técnica futura**, sin cambiar el resto de sectores automáticamente. **Elegibilidad actual:** q2_sector=food_hospitality; el evento de clasificación q2_sector + q2_niche_food_hospitality se registra unido en el prototipo, pero debe preservar el criterio real de turno de D020 (no empaquetar decisiones independientes artificialmente para eludir 24). **Evidencia:** nicho declarado, no score. **Neutralidad:** other no se convierte en restaurant; unknown no activa pruebas de menú. **Control:** C08 sin presencia online, hotel sin restaurante, actividad con catering y restaurante; menú especializado solo para restaurante/café/food truck cuando aplica.
+
+### Gates de cierre y resumen
+
+- **Estado editorial delegado:** 8 fichas de este lote con decisión de diseño; **16/16 fichas de Lotes 01+02 tienen dictamen documental**, no certificación de los 77 componentes del banco completo. En Lote 02: **3 KEEP**, **5 REWRITE**; ninguna pregunta se elimina o activa.
+- **Cuestiones verificadas:** q2_delivery es multi (no error de tipo); no hay duplicación literal demostrada de valor nonprofit_community en sector compuesto. Queda **mezcla conceptual de ejes**, no duplicado de ID probado.
+- **Bloqueos P0 del próximo agente, no autorizados aún:** cerrar taxonomía sectorial con migración de selector B2B/creadores/ONG; corregir ausencia de neutralidad en fricción; preservar C05 sin financiación; no inventar evidencia de madurez. La separación de no publicado/no aplica/no sé de la decisión SEM-A será aplicada al lote de preguntas de presencia digital, donde corresponde.
+- **Pruebas futuras (NO EJECUTADAS):** opciones únicas en sector; elegibilidad de todos los nichos, cambio sector/nicho y replay; validación multi/exclusividad delivery; C02/C03/C05/C06/C08/C09/C10; ausencia de score por objetivo, fricción, sector, modalidad o financiación; equivalencia es/en; presupuesto 24+5 y consentimiento; V8 sin cambios.
+- **Límites invariables:** diseño/editorial solamente. No TS, tests, CI, D1, rutas, despliegue, merge ni producción. Ningún value propuesto o cambio de versión se considera implementado.
+
+**Estado resultante:** EDITORIAL_DESIGN_16_OF_16_LOTES_01_02; LANGUAGE_AND_COGNITIVE_VALIDATION_PENDING; F02_OPEN; PLAN_ONLY.
+
+### Changelog
+
+- **0.5.0 / 2026-10-31:** Lote 02 completo ES/EN, ocho decisiones editoriales delegadas, neutralidad y guardias; corregidas dos hipótesis iniciales de auditoría tras consultar el banco compuesto. No se alteró código ni se ejecutaron tests.
