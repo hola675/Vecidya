@@ -2798,3 +2798,24 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.55.0 / 2026-10-31:** tercer lote editorial ES/EN terminado como diseño; reglas de neutralidad y evidencia, acumulado 24 fichas con decisión delegada. Exclusivamente documentación.
+
+
+## 64. Lote editorial 04 — seguimiento y consentimiento (2026-10-31)
+
+**PLAN_ONLY / DECISIONES DE CONTENIDO DELEGADAS / SIN CERTIFICACIÓN.** Se continuó la revisión del núcleo editorial, sin modificar la aplicación, y se registraron ocho fichas bilingües (ES/EN, opciones actuales, propuestas futuras, guardias, evidencia, casos negativos y criterios de aceptación) en el documento existente [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección **Lote editorial 04**, edición 0.7.0. Fuente de lectura: archivos del candidato V9 y reviewed del HEAD dd0e9ea558909a1a38c13de7a4cfd8eeee905e33. No se ejecutaron tests ni se construyó el banco durante esta edición.
+
+**Ocho IDs incluidos:** q2_retail_customer_capture, q2_creator_audience_ownership, q2_followup_general_process, q2_service_quote_followup, q2_appointments_rebooking, q2_b2b_pipeline, q2_b2b_status_visibility y q2_appointments_confirmation_reminders. **Resultado:** 3 KEEP (seguimiento genérico, siguiente cita y estado B2B) + 5 REWRITE (contactabilidad retail, audiencia creator, cotización, proceso B2B y recordatorio), con **39 opciones observadas → 44 propuestas** para futuras versiones V9; cinco opciones nuevas no existen en el motor ni están disponibles para sesiones. La revisión identifica diferencia entre dato de contacto, autorización pertinente y seguimiento efectivo: ninguno de esos hechos permite inferir los otros.
+
+**Regla C07:** los datos o carritos no permiten enviar mensajes sin confirmar que el canal y finalidad puedan utilizarse legítimamente. Sin autorización, **no sugerir acciones de contacto**, ni asignar automáticamente weak a relationship_recurrence. La pregunta q2_ecommerce_cart_followup aparece en el legado qbv2-lote-c.ts y en anotaciones editoriales, pero no se contó entre las ocho preguntas existentes del candidato; no restaurarla ni activar automatizaciones sin diseño y evidencia específicos. El estado de permiso no convierte el autodiagnóstico en consentimiento comercial ni conecta contactos Vecidya con GHL.
+
+**Separación de evidencia:** contactabilidad directa retail es distinta de continuidad real de presupuesto; la vía de creator todavía no tiene mapping R3 directo; B2B status apoya digital_readiness pero no reemplaza la evidencia directa de proceso B2B; cita siguiente y recordatorio previo son hechos diferentes; ningún CRM, software, mensaje saliente o retorno comercial se presume. Conservar reglas de exclusividad del grafo para no duplicar la misma observación al presentar preguntas genéricas y especializadas.
+
+**Acumulado documental:** Lotes 01/02/03/04 = 32 fichas con decisión (9 KEEP/23 REWRITE), **no** 32 preguntas implementadas ni 32/77 certificadas. F02 y TAX-Gx siguen abiertas. Las nuevas versiones/values, neutralidad y mapeos requieren gates de tipado, sesión, replay, scoring, privacidad, comprensión cognitiva y pruebas focalizadas antes de cualquier implementación futura.
+
+**Próxima fase editorial:** Lote 05, priorizar las ocho preguntas existentes de **medición, optimización y capacidad operativa**, contrastar presencia de datos frente a decisión basada en datos, y no forzar indicadores de venta a organizaciones sin fines de lucro o actividades aún sin consultas. Extraer primero definiciones y eligibility del candidato, conservar la ruta 24+5, sin nuevos documentos.
+
+**Restricción sostenida:** PLAN_ONLY: no TypeScript/TSX, SQL, tests, CI, Worker, endpoints, UI, migraciones, merge ni deploy; las ediciones documentales no sirven como evidencia de PASS.
+
+### Changelog adicional
+
+- **1.56.0 / 2026-10-31:** diseño delegado del Lote 04, ES/EN, 3 KEEP/5 REWRITE; protecciones de permiso y neutralidad, 32 decisiones acumuladas; sin código ni pruebas.
