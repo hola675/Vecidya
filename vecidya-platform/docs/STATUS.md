@@ -47,6 +47,12 @@ El usuario aprobó extender el trabajo a toda la plataforma: web pública, Mi Ve
 
 Capturas full-page antes/después en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080: HTTP 200, siete tarjetas y cero overflow en los cinco tamaños. E2E `addons-experience-check.mjs` PASS (1366/768/390/360), incluida imagen/alt correcto, carga de Vico, destino/foco de CTA y movimiento permitido/reducido. Aún no es certificación WCAG; quedan lector de pantalla, axe y zoom real al 200 %. Sin cambios de función/datos, D1 remota, deploy ni HTTP pública fechada.
 
+## UX-PREMIUM-02I — Aprende (2026-10-30)
+
+**CODE local / RAN local; extensión de PR #222, no publicado.** `/aprende` gana una portada editorial azul nocturna, búsqueda y filtros con superficies claras, tarjetas de guía e itinerarios con relieve ligero y mejor separación. Se incorpora `vico_03_aprende.webp` optimizado como Vico en primer plano encima del panel de rutas; alt descriptivo y movimiento suave con `prefers-reduced-motion` respetado. No cambian las 48 guías, los nueve itinerarios, filtros, estados, metadata, destinos ni CTA.
+
+Capturas full-page antes/después a 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; E2E `aprende-public-qa-check.mjs` PASS: comprueba catálogo, enlaces, imágenes, cinco viewports, overflow, foco, consentimiento y movimiento reducido. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. El build mantiene avisos de secretos locales opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS; no se leyeron secretos. Lector de pantalla, axe y zoom real 200 % pendientes; no se declara conformidad WCAG. Sin D1 remota, deploy ni HTTP pública fechada.
+
 ## UX-COHERENCE-ROUNDED-001 — refinamiento global publicado en 0.9.2 (2026-10-29)
 
 La plataforma aplica esquinas redondeadas coherentes a secciones, tarjetas, paneles, formularios y controles, con separación adicional entre bloques consecutivos. «Soluciones» mejora foco/estado activo, indicador, superficie translúcida y movimiento reducido. Aprende compacta títulos y lectura, y agrupa arriba favoritos, avance y acciones desplegables por sección con nombres accesibles. Integrado por PR #210 y publicado en `0.9.2` mediante PR #213. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/` y `/aprende` en 200 con versión/copyright y 48 guías. E2E, typecheck y build PASS (ver `docs/TESTING.md`). No implica certificación WCAG integral.

@@ -72,6 +72,7 @@ export const publicAssets = {
     crm: "/assets/learn/diagram-crm.svg",
     ai: "/assets/learn/diagram-ai.svg",
     automation: "/assets/learn/diagram-automation.svg",
+    vico: `${selectedAssetBase}/illustrations/vico-aprende.webp`,
   },
   catalog: {
     diagnostic: {

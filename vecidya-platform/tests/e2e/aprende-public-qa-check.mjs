@@ -120,12 +120,20 @@ try {
   }
   check("HTTP: 48 artículos aprobados responden 200; no quedan borradores");
 
-  for (const width of [320, 390, 768, 1366]) {
-    activePage = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+  for (const { width, height } of [
+    { width: 320, height: 720 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1366, height: 768 },
+    { width: 1920, height: 1080 },
+  ]) {
+    activePage = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
     const pageErrors = [];
     activePage.on("pageerror", (error) => pageErrors.push(error.message));
     await activePage.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     await activePage.locator(".learn-guide-list > li").first().waitFor();
+    const rejectOptionalCookies = activePage.getByRole("button", { name: "Rechazar opcionales" });
+    if (await rejectOptionalCookies.isVisible().catch(() => false)) await rejectOptionalCookies.click();
     assert.equal(await activePage.locator("main h1").count(), 1, width + "px: H1 duplicado.");
     assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, width + "px: deben verse 48 guías.");
     assert.equal(await activePage.locator(".learn-topic-list > li").count(), 6, width + "px: temas incorrectos.");
@@ -142,17 +150,31 @@ try {
       await image.decode().catch(() => {});
       return image.naturalWidth > 0;
     }), width + "px: no carga la ilustración.");
+    const vico = activePage.locator(".learn-atlas__vico");
+    assert.equal(await vico.getAttribute("src"), "/assets/selected/illustrations/vico-aprende.webp", width + "px: variante de Vico incorrecta.");
+    assert.equal(await vico.getAttribute("alt"), "Vico acompaña tu recorrido para aprender y decidir con criterio.", width + "px: Vico necesita texto alternativo.");
+    assert(await vico.evaluate(async (image) => { await image.decode().catch(() => {}); return image.naturalWidth > 0; }), width + "px: no carga Vico Aprende.");
     await noHorizontalOverflow(activePage, width + "px listado");
     assert.deepEqual(pageErrors, [], width + "px: errores JavaScript.");
-    if (width === 320 || width === 390 || width === 1366) {
+    if ([320, 390, 768, 1366, 1920].includes(width)) {
       await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled" });
     }
     results.viewports.push({ width, listing: "pass", guides: listingHrefs.length, pathways: publicPaths.length });
 
     if (width === 390) {
       const search = activePage.getByRole("searchbox", { name: "Buscar en las guías" });
+      const searchButton = activePage.getByRole("button", { name: "Buscar", exact: true });
+      await search.focus();
+      await search.press("Tab");
+      assert(await searchButton.evaluate((element) => document.activeElement === element && getComputedStyle(element).outlineStyle !== "none"), "La acción de búsqueda no muestra foco de teclado.");
+      await activePage.emulateMedia({ reducedMotion: "reduce" });
+      assert.equal(await activePage.locator(".learn-atlas__map img").evaluate((element) => getComputedStyle(element).animationName), "none", "La ilustración debe respetar movimiento reducido.");
+      assert.equal(await vico.evaluate((element) => getComputedStyle(element).animationName), "none", "Vico debe respetar movimiento reducido.");
+      assert.equal(await activePage.locator(".learn-guide-list > li").first().evaluate((element) => getComputedStyle(element).transitionDuration), "0s", "Las tarjetas deben respetar movimiento reducido.");
+      await activePage.emulateMedia({ reducedMotion: "no-preference" });
+      assert.equal(await vico.evaluate((element) => getComputedStyle(element).animationName), "learn-vico-float", "Vico debe tener movimiento ambiental suave.");
       await search.fill("analitica");
-      await activePage.getByRole("button", { name: "Buscar", exact: true }).click();
+      await searchButton.click();
       await activePage.waitForURL(/q=analitica/);
       assert(await activePage.locator('meta[name="robots"][content="noindex, follow"]').count() === 1, "Los resultados filtrados deben ser noindex.");
       const hrefs = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));

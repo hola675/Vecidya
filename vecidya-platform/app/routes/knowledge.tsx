@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 
+import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { learnArticles, learnCategories, learnPathways } from "../content/learn";
 import { getPublicLearnGuideSummaries, getPublicLearnPathways, matchesPublicLearnGuideSummary } from "../content/learn-publication";
@@ -94,20 +95,30 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
               <button className="button button--primary" type="submit">Buscar</button>
             </div>
           </form>
-          <div className="learn-atlas__map">
-            <p className="learn-atlas__caption">Decisiones claras</p>
+          <div className="learn-atlas__visual">
             <img
-              src="/assets/learn/learn-atlas-routes.svg"
-              alt="Ilustración esquemática de rutas que conectan preguntas, temas y guías."
-              width={720}
-              height={430}
+              className="learn-atlas__vico"
+              src={publicAssets.learn.vico}
+              alt="Vico acompaña tu recorrido para aprender y decidir con criterio."
+              width={1024}
+              height={1536}
               decoding="async"
             />
-            <dl className="learn-atlas__facts" aria-label="Contenido disponible en Aprende">
-              <div><dt>Guías</dt><dd>{total}</dd></div>
-              <div><dt>Itinerarios</dt><dd>{pathways.length}</dd></div>
-              <div><dt>Temas</dt><dd>{topics.length}</dd></div>
-            </dl>
+            <div className="learn-atlas__map">
+              <p className="learn-atlas__caption">Decisiones claras</p>
+              <img
+                src="/assets/learn/learn-atlas-routes.svg"
+                alt="Ilustración esquemática de rutas que conectan preguntas, temas y guías."
+                width={720}
+                height={430}
+                decoding="async"
+              />
+              <dl className="learn-atlas__facts" aria-label="Contenido disponible en Aprende">
+                <div><dt>Guías</dt><dd>{total}</dd></div>
+                <div><dt>Itinerarios</dt><dd>{pathways.length}</dd></div>
+                <div><dt>Temas</dt><dd>{topics.length}</dd></div>
+              </dl>
+            </div>
           </div>
           <nav className="learn-atlas__jump" aria-label="Explorar Aprende">
             <a href="#itinerarios">Seguir un itinerario</a>

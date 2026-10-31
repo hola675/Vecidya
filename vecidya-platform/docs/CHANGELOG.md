@@ -28,6 +28,11 @@
 
 # Changelog
 
+## 2026-10-30 — UX-PREMIUM-02I — Aprende
+
+- Se refina el catálogo público con hero editorial, superficies, tarjetas de guías e itinerarios y se incorpora la variante optimizada Vico Aprende en primer plano sobre el panel de rutas.
+- Búsqueda, filtros, guías, estados, metadatos y CTA se conservan. E2E y comparación visual en cinco viewports, foco y movimiento reducido; sin deploy ni publicación.
+
 ## 2026-10-30 — UX-PREMIUM-02H — Complementos
 
 - Se alineó `/addons` con la guía visual premium y se agregó la variante optimizada de Vico Complementos, en primer plano sobre el panel conceptual.

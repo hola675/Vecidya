@@ -1,3 +1,7 @@
+## UX-PREMIUM-02I — refinamiento visual de Aprende (2026-10-30)
+
+Extensión de PR #222 en `/aprende`: se incorpora `vico-aprende.webp` optimizado, flotación suave con movimiento reducido, superficie editorial para el hero, catálogo, itinerarios y filtros. Se conservan las rutas, búsqueda, contenido y CTA. E2E, typecheck, build y diff-check locales PASS. Capturas comparativas de cinco viewports en `.playwright-mcp/`. Sin cambios funcionales, migraciones, D1 remota ni deploy; accesibilidad no certificada.
+
 ## UX-PREMIUM-02H — refinamiento visual de Complementos (2026-10-30)
 
 Extensión del PR #222 en `/addons`: se incorporó la variante transparente WebP de Vico Complementos sobre el panel conceptual y una capa CSS propia para hero, fórmula, catálogo y acciones. Se conservan contenido comercial, catálogo de siete complementos, precios/costes, rutas y destinos. E2E focal verifica imagen/alt, CTA, foco, contenido y preferencias de movimiento; typecheck/build/diff-check finales en `TESTING.md`. Sin función nueva, schema, migración, D1 remota ni deploy.

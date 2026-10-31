@@ -24,6 +24,12 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 Playwright capturó la página completa antes/después en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 contra Workers locales independientes; los cinco viewports dieron HTTP 200, cero overflow y siete tarjetas. Se rechazó el consentimiento opcional para despejar la vista. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build mantiene avisos ya conocidos de secretos opcionales locales ausentes, imports dinámicos ineficaces y sourcemap CSS. Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %.
 
+## UX-PREMIUM-02I — Aprende (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm run test:e2e:aprende-public` — PASS. Confirma las 48 guías, nueve itinerarios, seis temas, contenido aprobado, rutas, metadata y búsqueda/filtros; captura full-page en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080. Comprueba carga y alt de Vico Aprende, cero overflow, foco visible de teclado y `prefers-reduced-motion` para Vico, el mapa y las tarjetas. Una captura manual de consola Chromium a 1366 px en `/` y `/aprende` respondió 200 sin errores de consola ni `pageerror`; esto no resuelve ni certifica React #418 en App/Admin.
+
+Capturas comparables antes/después en `.playwright-mcp/aprende-{before,after}-{width}x{height}.png`; el baseline usa el commit de integración anterior al cambio visual. Typecheck, build y diff-check: PASS (ver `STATUS.md`). Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %; no equivale a certificación WCAG.
+
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.
