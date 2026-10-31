@@ -17,6 +17,7 @@ import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diag
 import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diagnostic/qa03b/v9-candidate-planner";
 import { scoreDimensionWithApplicability, type ContextualEvidence } from "../../../app/features/diagnostic/qbv2-contextual-scoring";
 import { CANDIDATE_CALIBRATION_ACTIVE_V4, candidateDimensionCalibrationV3 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
+import { correlateCandidateObservationsV1, type ConfirmedObservationCorrelationV1 } from "../../../app/features/diagnostic/qa03b/v9-observation-correlation";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const base: AnswersV2 = {
@@ -190,4 +191,101 @@ test("dimension score still counts distinct question IDs unless given the same o
     "known P0: question-specific observation IDs cannot deduplicate the same real event across questions");
   assert.equal(differentIds.score, sameEvent.score);
   assert.notEqual(differentIds.confidence.level, sameEvent.confidence.level);
+});
+
+
+const correlatedReading = (
+  questionId: string,
+  state: "established" | "partial" = "established",
+  directness: "direct" | "supporting" = "direct",
+): ContextualEvidence => ({
+  questionId, observationId: questionId, dimension: "relationship_recurrence",
+  directness, state, kind: state, contribution: state === "established" ? 0.75 : 0.5,
+  answer: [state],
+});
+const confirmed = (
+  questionId: string, eventKey: string, constructKey = "next_step", periodKey = "2026-10",
+): ConfirmedObservationCorrelationV1 => ({
+  observationId: questionId, questionId, dimension: "relationship_recurrence",
+  eventKey, constructKey, periodKey, provenance: "explicit_confirmation",
+});
+
+test("candidate event correlation preserves independent events and removes double readings", () => {
+  const general = correlatedReading("q2_general_pending_step_continuity");
+  const specialist = correlatedReading("q2_followup_general_process");
+  const same = correlateCandidateObservationsV1([general, specialist], [
+    confirmed(general.questionId, "inquiry-1"),
+    confirmed(specialist.questionId, "inquiry-1"),
+  ]);
+  assert.equal(same.scoreSafe, true);
+  assert.equal(same.accepted.length, 1);
+  assert.equal(same.deduplicated.length, 1);
+  assert.deepEqual(same.conflicts, []);
+  assert.deepEqual(same.unmapped, []);
+  assert.equal(same.accepted[0]?.questionId, general.questionId,
+    "deterministic tie-break, not answer order");
+
+  const independent = correlateCandidateObservationsV1([general, specialist], [
+    confirmed(general.questionId, "inquiry-1"),
+    confirmed(specialist.questionId, "inquiry-2"),
+  ]);
+  assert.equal(independent.scoreSafe, true);
+  assert.equal(independent.accepted.length, 2);
+  assert.equal(independent.deduplicated.length, 0);
+
+  const differentPeriod = correlateCandidateObservationsV1([general, specialist], [
+    confirmed(general.questionId, "inquiry-1", "next_step", "2026-10"),
+    confirmed(specialist.questionId, "inquiry-1", "next_step", "2026-11"),
+  ]);
+  assert.equal(differentPeriod.accepted.length, 2);
+});
+
+test("candidate correlation fails closed on incompatible states for the same event", () => {
+  const first = correlatedReading("q2_general_pending_step_continuity", "established");
+  const second = correlatedReading("q2_followup_general_process", "partial");
+  const result = correlateCandidateObservationsV1([first, second], [
+    confirmed(first.questionId, "inquiry-1"),
+    confirmed(second.questionId, "inquiry-1"),
+  ]);
+  assert.equal(result.scoreSafe, false);
+  assert.deepEqual(result.accepted, []);
+  assert.equal(result.conflicts.length, 1);
+  assert.deepEqual(result.conflicts[0]?.states, ["established", "partial"]);
+});
+
+test("candidate correlation fails closed when event provenance is missing or ambiguous", () => {
+  const first = correlatedReading("q2_general_pending_step_continuity");
+  const second = correlatedReading("q2_followup_general_process");
+  const result = correlateCandidateObservationsV1([first, second], [
+    confirmed(first.questionId, "inquiry-1"),
+  ]);
+  assert.equal(result.scoreSafe, false);
+  assert.deepEqual(result.unmapped.map((e) => e.questionId), [second.questionId]);
+  assert.equal(result.accepted.length, 1);
+
+  const malformed = correlateCandidateObservationsV1([first], [
+    confirmed(first.questionId, "  "),
+  ]);
+  assert.equal(malformed.scoreSafe, false);
+  assert.equal(malformed.unmapped.length, 1);
+
+  const duplicated = correlateCandidateObservationsV1([first], [
+    confirmed(first.questionId, "inquiry-1"),
+    confirmed(first.questionId, "inquiry-2"),
+  ]);
+  assert.equal(duplicated.scoreSafe, false);
+  assert.equal(duplicated.unmapped.length, 1);
+});
+
+test("candidate correlation prefers direct over supporting without inventing a score", () => {
+  const general = correlatedReading("q2_general_pending_step_continuity", "established", "supporting");
+  const specialist = correlatedReading("q2_followup_general_process", "established", "direct");
+  const result = correlateCandidateObservationsV1([general, specialist], [
+    confirmed(general.questionId, "inquiry-1"),
+    confirmed(specialist.questionId, "inquiry-1"),
+  ]);
+  assert.equal(result.scoreSafe, true);
+  assert.equal(result.accepted.length, 1);
+  assert.equal(result.accepted[0]?.questionId, specialist.questionId);
+  assert.equal(result.deduplicated[0]?.questionId, general.questionId);
 });
