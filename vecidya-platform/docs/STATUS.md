@@ -1,5 +1,13 @@
 # Estado de implementación
 
+## DIAG-V9-BANK90 — correlación de evidencias focal (2026-10-31; PR #162 draft)
+
+**CODE/GIT/RAN en candidato aislado:** el export experimental de 90 preguntas (77+5+8) mantiene ocho probes `pending` sin scoring. Un workflow dedicado comprueba solamente su test focal. Último resultado: **13/13 PASS, 0 FAIL** en GitHub Actions [run 41200765557](https://github.com/hola675/Vecidya/actions/runs/41200765557), SHA de código `231fba05880392545365df10cf6501093b51e489`. Se corrigió previamente una expectativa lexical del test (run intermedio 41200612182: 11/12). Las ocho primeras pruebas también pasaron en run 41200437162 (SHA histórico).
+
+**CODE, no integrado al scorer:** `qa03b/v9-observation-correlation.ts` permite identificar eventos equivalentes solo mediante correlaciones expresas de dimensión, evento, constructo, período y origen confirmado. Descarta del conjunto puntuable observaciones sin correlación o en conflicto, preserva hechos independientes y distingue observaciones de distintas dimensiones aunque compartan source ID. Es un **prototipo aislado**, no un cambio de porcentajes públicos. **P0 `DIAG-V9-EVENT-DEDUP` abierto:** falta capturar/validar identidad por evento en la sesión, integrarla de manera versionada al scorer V9 y verificar regresiones sin alterar V8.
+
+**Certificación:** test focal único PASS; **typecheck/build, ejecución de sesión 24+5, C01–C10, F02/F05, accesibilidad y despliegue no certificados**. Sin merge, D1, Worker, GHL ni cambios al flujo público. Evidencia completa y límites en `docs/TESTING.md` y el Plan Maestro del PR.
+
 ## APP-MINI-02D / PROD-RELEASE-0.8.4 — publicado (2026-10-27)
 
 PR #175 integrado en `main@7eff191a`; versión `0.8.4`; Worker `vecidya-platform` Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. El editor de Mi MiniWeb compacta formularios y tarjetas, presenta cada etapa en diálogo, guía el inicio y solo muestra pestañas de módulos activos; Mi negocio limita ancho y densidad de lectura conservando sus contratos de guardado. Se incluyeron la paginación Admin de PR #173 y A Team solicitado. D1 remota: migraciones pendientes `0`; sin migraciones ni escrituras. GET anónimo 2026-10-27T23:44:23Z → 200, versión 0.8.4 y © 2026 Vecidya. Sin automatizadas por instrucción del usuario.
@@ -789,7 +797,13 @@ Vecidya es una plataforma SSR sobre Cloudflare Workers con auth, multi-organizac
 
 ## Open Debt
 
-Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipótesis` = deducida de lectura de código o de la librería, no ejecutada.
+Prioridad: **A** alta, **M** media, **B** baja. Las filas marcadas CODE/TEST/RAN se verifican por SHA; el resto es diseño pendiente.
+
+### Diagnóstico V9 — identidad de evidencia y porcentajes
+
+| ID | Descripción | Evidencia | Prio | Estado |
+| --- | --- | --- | --- | --- |
+| `DIAG-V9-EVENT-DEDUP` | Dos preguntas V3 distintas sobre un mismo hecho comparten evento pero no `observationId` (se deriva de ID y versión), de modo que el scorer puede contar ambas como independientes. Un helper **aislado** ya permite correlación expresa, bloqueo de conflictos y preservación de eventos distintos; falta integración segura con captura de fuente/periodo, estado histórico y tests de rutas/porcentajes antes de habilitar nuevas evidencias. | `qbv2-contextual-scoring.ts`; `qa03b/v9-observation-correlation.ts`; focal **13/13 PASS**, run 41200765557 en SHA `231fba058803` | A | **ABIERTA P0 — prototipo focal validado, motor público intacto** |
 
 ### Riesgo de continuidad y publicación
 
