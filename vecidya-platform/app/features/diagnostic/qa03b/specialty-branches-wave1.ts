@@ -348,3 +348,167 @@ if (QA03B_COMPLEMENTARY_QUESTIONS_V1.length !== 5 || QA03B_EXTENDED_CANDIDATE_BA
 if (new Set(QA03B_EXTENDED_CANDIDATE_BANK_V3.map((question) => question.id)).size !== 82) {
   throw new Error("QA-03B complementary candidate contains duplicate IDs");
 }
+
+
+/** QA03B V9: 8 observaciones generales aisladas. No tienen evidencia V3
+ * calibrada, no están registradas en el flujo público y no deben preguntarse
+ * junto con la misma observación sectorial sin ganancia de información. */
+export const QA03B_GENERAL_DIMENSION_PROBES_V1: readonly QuestionDefinitionV2[] = [
+  {
+    id: "q2_general_offer_comprehension", version: 1, module: "presence", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Cuando explicas tu actividad a alguien que no la conoce, ¿puede entender a quién ayudas y qué obtiene?", hint: "Valora la comprensión real, incluso si no tienes web; no presupone ventas ni una oferta ya publicada.",
+    appliesWhen: orV2(eqV2("q2_operational_status", "operating"), eqV2("q2_operational_status", "preparing")),
+    options: [
+      { value: "clear", label: "Suele entender a quién va dirigida y qué se ofrece." },
+      { value: "partial", label: "Comprende la idea, pero pregunta varios detalles." },
+      { value: "unclear", label: "Cuesta entender a quién va dirigida o qué recibe." },
+      { value: "not_presented", label: "Todavía no presento una oferta a personas externas.", kind: "not_applicable" },
+      { value: "unknown", label: "No lo he contrastado con personas nuevas.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general clarity_positioning.",
+      distinction: "Comprensión de la oferta explicada, no visibilidad online ni volumen de ventas.",
+    },
+  },
+  {
+    id: "q2_general_contact_information_consistency", version: 1, module: "presence", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Si alguien encuentra tus canales digitales actuales, ¿obtiene datos de contacto vigentes y coherentes?", hint: "Incluye los perfiles, fichas o webs que sí usas. No hace falta disponer de todos ellos.",
+    appliesWhen: eqV2("q2_operational_status", "operating"),
+    options: [
+      { value: "consistent", label: "Los canales activos muestran datos correctos y coherentes." },
+      { value: "partial", label: "Algún canal contiene datos incompletos o diferentes." },
+      { value: "incorrect", label: "Hay datos incorrectos en canales activos." },
+      { value: "no_public_channel", label: "No utilizamos canales digitales públicos para esta actividad.", kind: "not_applicable" },
+      { value: "unknown", label: "No hemos comprobado esos datos.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general digital_foundation.",
+      distinction: "Coherencia entre canales digitales, no existencia de web ni rapidez de respuesta.",
+    },
+  },
+  {
+    id: "q2_general_discoverability_path", version: 1, module: "discovery", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Cuando alguien que no conoce tu actividad necesita algo como lo que ofreces, ¿tiene alguna vía para descubrirte?", hint: "Puede llegar por recomendaciones, señalización, directorios, búsquedas u otras vías. No requiere anuncios.",
+    appliesWhen: andV2(eqV2("q2_operational_status","operating"),eqV2("q2_has_customers","yes")),
+    options: [
+      { value: "clear_path", label: "Hay una vía comprobable por la que pueden encontrarnos." },
+      { value: "partial_path", label: "Existe alguna vía, pero su alcance es limitado." },
+      { value: "no_path", label: "No identificamos una vía real de descubrimiento." },
+      { value: "not_seeking", label: "Actualmente no buscamos recibir personas nuevas.", kind: "not_applicable" },
+      { value: "unknown", label: "No sabemos cómo nos descubrirían.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general discovery.",
+      distinction: "Vía real de descubrimiento, no constancia de adquisición ni atribución estadística.",
+    },
+  },
+  {
+    id: "q2_general_verifiable_trust_signals", version: 1, module: "reputation", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Antes de avanzar contigo, ¿una persona nueva puede comprobar señales apropiadas de confianza?", hint: "Pueden ser trabajos, referencias publicables o datos profesionales; no compartas información privada.",
+    appliesWhen: andV2(eqV2("q2_operational_status","operating"),eqV2("q2_has_customers","yes")),
+    options: [
+      { value: "accessible", label: "Puede consultar señales pertinentes y verificables." },
+      { value: "limited", label: "Puede consultar algunas, pero faltan detalles." },
+      { value: "not_accessible", label: "No ofrecemos señales que pueda comprobar." },
+      { value: "private_only", label: "No es apropiado mostrarlas públicamente por privacidad.", kind: "not_applicable" },
+      { value: "unknown", label: "No hemos comprobado qué se puede verificar.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general trust_reputation.",
+      distinction: "Pruebas legítimas accesibles, sin inferir licencias ni exigir reseñas.",
+    },
+  },
+  {
+    id: "q2_general_first_action_path", version: 1, module: "conversion", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Si alguien decide avanzar con tu actividad, ¿sabe cuál es el primer paso y cómo realizarlo?", hint: "Puede ser contactar, inscribirse, pedir información, comprar o participar; no requiere pago ni cita.",
+    appliesWhen: eqV2("q2_operational_status","operating"),
+    options: [
+      { value: "clear", label: "El primer paso y la forma de hacerlo están claros." },
+      { value: "partial", label: "Existe el paso, pero quedan dudas." },
+      { value: "unclear", label: "Resulta difícil entender cómo empezar." },
+      { value: "no_open_action", label: "Actualmente no existe una vía de entrada abierta.", kind: "not_applicable" },
+      { value: "unknown", label: "No lo hemos comprobado.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general conversion_access.",
+      distinction: "Fallback genérico del acceso sectorial, no otra puntuación por el mismo evento.",
+    },
+  },
+  {
+    id: "q2_general_pending_step_continuity", version: 1, module: "follow_up", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Cuando una consulta requiere un paso posterior, ¿puedes retomarla sabiendo qué quedó pendiente?", hint: "No exige CRM ni automatización. No implica autorización para contactar o enviar recordatorios.",
+    appliesWhen: andV2(eqV2("q2_operational_status","operating"),eqV2("q2_has_customers","yes")),
+    options: [
+      { value: "reliable", label: "Normalmente identificamos y retomamos el siguiente paso." },
+      { value: "partial", label: "A veces hay que reconstruir lo acordado." },
+      { value: "lost", label: "Hay pasos posteriores que se pierden o no quedan claros." },
+      { value: "no_followup_needed", label: "Las interacciones habituales no requieren seguimiento.", kind: "not_applicable" },
+      { value: "unknown", label: "No tenemos información fiable.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general relationship_recurrence.",
+      distinction: "Estado de un paso pendiente; no frecuencia de retorno ni consentimiento comercial.",
+    },
+  },
+  {
+    id: "q2_general_outcome_measure_definition", version: 1, module: "measurement", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Para saber si tu actividad mejora, ¿tienes definido algún resultado observable que puedas comparar?", hint: "Puede ser solicitudes atendidas, entregas o participantes. No exige porcentajes ni herramientas.",
+    appliesWhen: andV2(eqV2("q2_operational_status","operating"),eqV2("q2_has_customers","yes")),
+    options: [
+      { value: "defined", label: "Tenemos un resultado concreto y comparable." },
+      { value: "partial", label: "Tenemos una referencia, pero no es consistente." },
+      { value: "none", label: "No hemos definido un resultado comparable." },
+      { value: "insufficient_activity", label: "No hubo actividad comparable suficiente.", kind: "not_applicable" },
+      { value: "unknown", label: "No sabemos si existe una medida fiable.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general measurement_optimization.",
+      distinction: "Definir qué se mide, distinto de registrar o revisar resultados.",
+    },
+  },
+  {
+    id: "q2_general_digital_execution_reliability", version: 1, module: "operations", type: "single",
+    routingRole: "deepening", priority: "refinement", purpose: ["diagnostic"],
+    prompt: "Cuando una tarea depende de una herramienta digital, ¿puedes completarla de forma fiable?", hint: "Considera tareas reales, no cuántas aplicaciones tienes. Indica si no necesitas herramientas.",
+    appliesWhen: eqV2("q2_operational_status","operating"),
+    options: [
+      { value: "reliable", label: "Las tareas digitales necesarias se completan de forma fiable." },
+      { value: "partial", label: "Se completan, pero con fallos o improvisaciones." },
+      { value: "unreliable", label: "Las herramientas impiden completar tareas necesarias." },
+      { value: "not_needed", label: "Esta actividad no requiere tareas con herramientas digitales.", kind: "not_applicable" },
+      { value: "unknown", label: "No sabemos qué tan fiables son.", kind: "unknown" },
+    ],
+    evidenceMigration: "pending",
+    helpIntent: {
+      understand: "Observar de forma general digital_readiness.",
+      distinction: "Ejecución digital observada, no procesos manuales ni posesión de software.",
+    },
+  },
+];
+
+/** Mantiene intactos el banco de 77 y la ampliación previa de 82. */
+export const QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4: readonly QuestionDefinitionV2[] = [
+  ...QA03B_EXTENDED_CANDIDATE_BANK_V3,
+  ...QA03B_GENERAL_DIMENSION_PROBES_V1,
+];
+
+if (QA03B_GENERAL_DIMENSION_PROBES_V1.length !== 8 || QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4.length !== 90) {
+  throw new Error("QA-03B balanced candidate must contain 8 general probes / 90 questions");
+}
+if (new Set(QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4.map((question) => question.id)).size !== 90) {
+  throw new Error("QA-03B balanced candidate contains duplicate IDs");
+}
