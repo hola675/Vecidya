@@ -1,3 +1,15 @@
+## UX-PREMIUM-02I — refinamiento visual de Aprende (2026-10-30)
+
+Extensión de PR #222 en `/aprende`: se incorpora `vico-aprende.webp` optimizado, flotación suave con movimiento reducido, superficie editorial para el hero, catálogo, itinerarios y filtros. Se conservan las rutas, búsqueda, contenido y CTA. E2E, typecheck, build y diff-check locales PASS. Capturas comparativas de cinco viewports en `.playwright-mcp/`. Sin cambios funcionales, migraciones, D1 remota ni deploy; accesibilidad no certificada.
+
+## UX-PREMIUM-02H — refinamiento visual de Complementos (2026-10-30)
+
+Extensión del PR #222 en `/addons`: se incorporó la variante transparente WebP de Vico Complementos sobre el panel conceptual y una capa CSS propia para hero, fórmula, catálogo y acciones. Se conservan contenido comercial, catálogo de siete complementos, precios/costes, rutas y destinos. E2E focal verifica imagen/alt, CTA, foco, contenido y preferencias de movimiento; typecheck/build/diff-check finales en `TESTING.md`. Sin función nueva, schema, migración, D1 remota ni deploy.
+
+## UX-PREMIUM-02G — refinamiento visual de Licencias (2026-10-30)
+
+Checkpoint local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-licenses-03`; PR #221 abierta en borrador. `/licencias` refina el hero y el comparador, distribuye las notas de alcance en 2×2 y ajusta las tarjetas a una columna desde 900 px; el hover tiene elevación breve con soporte de movimiento reducido. Se preservan catálogo, precios, activaciones, contenido, rutas y CTA. `licenses-experience-check.mjs`, typecheck, build y diff-check PASS. Capturas completas a 1366/1024/768/390/360 px sin overflow; reduced motion verificado en navegador. Sin D1 remota, deploy ni HTTP pública fechada; no es certificación WCAG.
+
 **Publicación APRENDE/UX 0.9.2 (2026-10-29; PR #213, `main@8ed60e51`):** PR #201 integró revisión de seguridad y Better Auth 1.7.14; PR #210 refinó la UI global. CI requerido PASS. Las migraciones `0031–0033` se aplicaron a `vecidya-prod`; Worker Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/`, `/aprende` y `/__health/db` con 200, versión/copyright y 48 guías. La prueba humana NVDA/zoom 200 % fue aprobada por el usuario, pero faltan metadatos y no se declara conformidad WCAG. Los flags de purga Aprende siguen apagados mientras legal/privacidad/costo continúan pendientes.
 
 **Reconciliación APRENDE-PLAN-V1 (2026-10-29):** Fases 1–6 integradas por PR #193 y la revisión de seguridad por PR #201. En `0.9.2` quedaron publicados el código, las guardas y el schema `0031–0033`; la expiración a 30 días y purga a 90 están implementadas, pero los switches de producción siguen apagados. Worker/D1 local certificó purga, conservación de cursores y recepción de secuencias posteriores a huecos. El modelo comercial 6/42 no se declara habilitado; sigue pendiente revisión legal/privacidad/costo. La publicación y HTTP se documentan en `ENVIRONMENTS.md`.
@@ -50,6 +62,10 @@ PR #103 integra el checkpoint en `origin/main@ae7a768`. El editor MiniWeb distin
 ## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
 
 En la rama local `feat/app-mini-ux-06-public-a11y` se corrigieron problemas encontrados por AccessLint en 13 rutas públicas representativas: landmarks complementarios anidados, contraste inferior al umbral automatizado, nombres accesibles que ocultaban texto visible y tabla de comparación sin teclado. Escaneos finales con AccessLint 0.21.0 / Chromium 156, 94 reglas por ruta y ninguna omitida: cero violaciones en las 13 rutas. Se verificaron por teclado menús desktop/móvil y desplazamiento del comparador; a 320 px se presenta el formato compacto sin overflow. Typecheck/build/diff-check PASS. Es una muestra, no certificación WCAG: falta lector de pantalla, zoom 200 % y revisión de rutas no cubiertas. No hay deploy ni HTTP pública fechada.
+
+## UX-PREMIUM-02C — Servicios públicos (checkpoint local, 2026-10-30)
+
+En `feat/app-mini-ux-premium-services-02`, `/servicios` presenta el título como pieza tipográfica, organiza el recorrido en tres pasos escalonados, conserva siete accesos por ancla y reformatea el catálogo como filas editoriales con el detalle visible y los CTA existentes. Se eliminaron imágenes decorativas duplicadas; ningún contenido de oferta ni contrato comercial cambió. Dos pruebas E2E pasaron, incluida la navegación a Contacto y Únete; foco de teclado y `prefers-reduced-motion` se revisaron en el navegador. Typecheck, build y `git diff --check` PASS. Sin deploy ni D1 remota; zoom real al 200 %, lector de pantalla y axe siguen pendientes.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
@@ -793,3 +809,6 @@ PR #153 integrado en `main@ede3f187` y desplegado a producción como `0.8.3` (Wo
 ## Mi Vecidya / MiniWeb V2 — implementación por checkpoints (2026-10-29)
 
 IMP-01–08 tienen código local en ramas/checkpoints apilados; varios son implementaciones parciales y no están integradas ni publicadas. IMP-08 añade conversión V1 voluntaria a un sitio V2 independiente con allowlist y provenance (`0037`, solo D1 local); pruebas unitarias y Worker local PASS. Deuda transversal aún abierta: controles de sección más guiados, pruebas Worker/CAS/cupo/rollback, revisión visual de 45 combinaciones y aceptación VIS-01, SEC-QA, decisión comercial COM-01 para P6A, IMP-10 e IMP-11. IMP-12 pagos P6B permanece aplazado; no se han autorizado merge o despliegue.
+## UX-PREMIUM-01 — base visual en checkpoint
+
+La guía premium se aplica progresivamente a web pública, Mi Vecidya, Admin y MiniWeb V2 bajo el alcance aprobado el 2026-10-30. `app/styles/premium-foundation.css`, importado por `app/root.tsx`, contiene tokens `--v-*` y refinamientos de tipografía/controles en `.public-site`, `.app-shell` y `.admin-shell`. Los botones primarios/secundarios son la primera migración explícita de color. No reemplaza otros tokens heredados ni aplica la identidad Vecidya a la MiniWeb pública del negocio. Evidencia local: typecheck/build, E2E público, cinco capturas comparables de Home, foco por teclado y movimiento reducido PASS. La implementación visual por ruta, la matriz para App/Admin/MiniWeb y revisión de estados protegidos quedan pendientes; esto no certifica accesibilidad ni el conjunto de la plataforma.

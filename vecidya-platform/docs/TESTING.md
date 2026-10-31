@@ -1,9 +1,34 @@
+## UX-PREMIUM-FOUNDATION-01 — base de diseño transversal (2026-10-30; local)
+
+`pnpm run typecheck` y `pnpm run build`: PASS. `pnpm wrangler d1 migrations apply DB --local` preparó la base local limpia (sin acceso remoto). Con Worker local y `BASE_URL=http://127.0.0.1:5173`, `node tests/e2e/public-navigation-a11y-check.mjs`: PASS en 1366/1024/960/768/390/360/320 px, incluyendo navegación, enlaces, CTA, radios y overflow. Se generaron capturas full-page de Home antes (HEAD `f6cad631`) y después en `.playwright-mcp/` para 320×720, 390×844, 768×1024, 1366×768 y 1920×1080. En las cinco: HTTP 200, sin overflow y fuente UI del contenedor `.public-site` resuelta al stack Inter/system-ui. Tab hasta botón primario confirma `:focus-visible` y contorno naranja `rgb(251, 131, 0)`; media `prefers-reduced-motion: reduce` deja transición en `0.01 ms`. La inspección comparativa confirma cambios en tipografía/ajuste de líneas y primarios/degradado, sin cambio de contenido ni enlaces. No se autenticaron vistas de App/Admin ni se probó MiniWeb pública en este checkpoint. No es certificación WCAG.
+
 # MiniWeb V2 IMP-01: contrato de secciones
 
 
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
 
 # Pruebas
+
+## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
+
+**RAN en Worker local:** `BASE_URL=http://localhost:5173 node tests/e2e/services-catalog-layout-check.mjs` — **PASS**. En 1366/1024/768/390/320 px verifica siete ofertas, ancho de fila consistente, los siete atajos con destino existente, los 14 CTA de detalle/consulta y cero overflow horizontal. `BASE_URL=http://localhost:5173 node tests/e2e/web-commercial-contact-check.mjs` — **PASS** en 1366/390 px; confirma las siete familias y el contexto de consulta, además de las rutas Contacto y Únete.
+
+**RAN:** `pnpm run typecheck`, `pnpm run build` y `git diff --check` — **PASS**. Build conserva los avisos conocidos de secretos locales opcionales ausentes (no se leyeron), imports dinámicos ineficaces y sourcemap CSS. La inspección del navegador comprobó el H1 en dos líneas a 1366/1024 px y tres a 390/320 px, árbol de headings/navegación, foco visible al tabular y movimiento reducido sin transformaciones ni transición perceptible. Capturas visuales completas revisadas a 1366/1024/768/390/320 px. No se ejecutó lector de pantalla, zoom real al 200 %, axe ni auditoría independiente de rendimiento; esto no es certificación WCAG. Sin D1 remota, deploy ni HTTP pública.
+## UX-PREMIUM-02G — Licencias (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/licenses-experience-check.mjs` — PASS. Verifica hero, catálogo y precios, tabla/alternativa móvil, CTAs, destinos, metadata, foco y overflow en 1366/768/390/360 px. Playwright capturó la página completa antes/después en 1366/1024/768/390/360 px; el baseline reproduce CSS de `origin/main` y la revisión confirma que no hay overflow y que las tarjetas pasan a una columna a 768 px. `prefers-reduced-motion: reduce` reduce a casi cero la transición de hover de las tarjetas. No se ejecutaron axe, lector de pantalla ni zoom real a 200 %; no equivale a certificación WCAG. Typecheck, build y diff-check PASS (ver STATUS).
+
+## UX-PREMIUM-02H — Complementos (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm exec node tests/e2e/addons-experience-check.mjs` — PASS a 1366/768/390/360 px. Confirma los siete complementos y sus precios/costes, CTAs/destinos, ficha de WhatsApp, metadata, sitemap, foco de teclado, variante y texto alternativo de Vico, carga real del WebP y movimiento animado con preferencia normal/desactivado con `prefers-reduced-motion: reduce`.
+
+Playwright capturó la página completa antes/después en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 contra Workers locales independientes; los cinco viewports dieron HTTP 200, cero overflow y siete tarjetas. Se rechazó el consentimiento opcional para despejar la vista. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build mantiene avisos ya conocidos de secretos opcionales locales ausentes, imports dinámicos ineficaces y sourcemap CSS. Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %.
+
+## UX-PREMIUM-02I — Aprende (2026-10-30)
+
+**RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm run test:e2e:aprende-public` — PASS. Confirma las 48 guías, nueve itinerarios, seis temas, contenido aprobado, rutas, metadata y búsqueda/filtros; captura full-page en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080. Comprueba carga y alt de Vico Aprende, cero overflow, foco visible de teclado y `prefers-reduced-motion` para Vico, el mapa y las tarjetas. Una captura manual de consola Chromium a 1366 px en `/` y `/aprende` respondió 200 sin errores de consola ni `pageerror`; esto no resuelve ni certifica React #418 en App/Admin.
+
+Capturas comparables antes/después en `.playwright-mcp/aprende-{before,after}-{width}x{height}.png`; el baseline usa el commit de integración anterior al cambio visual. Typecheck, build y diff-check: PASS (ver `STATUS.md`). Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %; no equivale a certificación WCAG.
 
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
@@ -2334,3 +2359,30 @@ Typecheck, build, diff-check y migración `0036` local PASS. Unitarias focales 1
 ## MiniWeb V2 IMP-08
 
 `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-conversion.test.ts tests/unit/miniweb-v2-sections.test.ts` — 6/6 PASS: allowlist, URL segura, omisión de inactivos/medios no publicados y truncamiento reportado al máximo V2. `pnpm run test:e2e:miniweb-v2-conversion` **PASS** en Worker/D1 local: consentimiento, guards anónimos/cross-tenant, procedencia, horario ausente, snapshots/drafts previos intactos y borrador no público. Typecheck/build/diff-check y migraciones `0000–0037` PASS. Sin D1 remota ni deploy.
+# UX-PREMIUM-01 — baseline visual (2026-10-30)
+
+**RAN local, rama `docs/ux-premium-01-baseline` sobre `origin/main@f6cad631`:** `pnpm install --frozen-lockfile` y `pnpm run build` PASS; build con advertencias existentes de secretos opcionales locales, import dinámico y sourcemap. Migraciones `0000–0037` aplicadas solo a D1 local. Playwright capturó la guía `https://desig.vecidya.com/` en full page y rutas públicas en Worker local. Inicio: 320/390/768/1366/1920 px; rutas públicas restantes: 1366 px. No se enviaron formularios ni se mutaron datos remotos.
+
+`pnpm run test:e2e:app-dashboard-redesign` **FAIL** antes de completar: el fixture `platform_admin` entró al detalle de organización desde `/app` y el viewport 768 reportó 189 px de overflow en `.admin-detail-list`; esto no caracteriza el dashboard de cliente. En una exploración temporal separada, con identidad de cliente para App y acceso explícito de platform member a Admin, se obtuvieron capturas App/Admin; la secuencia acabó con error de hidratación React #418 en servicios internos, por lo que no es PASS ni certificación funcional. D1 sintética local eliminada y ausencia comprobada. No se ejecutó el test MiniWeb V1, que está fuera de alcance, ni se certificó editor/renderer V2 o sus 15 combinaciones.
+
+Las capturas full-page de referencia y local están fuera del repositorio, en `C:\Users\Admin\.codex\worktrees\ux-premium-01-baseline\evidence\`; incluyen 8 vistas de referencia, 10 rutas públicas, 5 anchos de Inicio y evidencia exploratoria de App/Admin. No hay capturas V2 autenticadas utilizables. Hallazgos abiertos: 8 px de overflow de `/diagnostico` a 1366 px; composición texto/imagen de Vecindario; franja lateral sobre contenido en la captura móvil de `/app/internal/services`; confirmar densidad de Aprende y notas bajo el hero de Licencias. Los límites están registrados en `ROADMAP.md` y `STATUS.md`.
+
+`pnpm run typecheck` **PASS** tras reconciliar la documentación. Sin D1 remota, deploy o HTTP de publicación.
+
+## UX-PREMIUM-01-HOME — Inicio (2026-10-30; checkpoint local)
+
+PR #219 quedó abierta como borrador; sin merge ni deploy.
+
+La variante final sustituye las preliminares con una visualización fotorrealista de fondo transparente, sin burbujas ni brújula. Representa Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende. El pin azul se sustituyó por el símbolo oficial completo de Vecidya, sin placa decorativa. El WebP optimizado pesa 170 KB; el muestreo de alpha de las cuatro esquinas devuelve 0 (transparente).
+
+- Capturas completas antes/después en `C:\Users\Admin\.codex\worktrees\ux-premium-home-01\evidence\{before,after}` para 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; baseline anterior corresponde a `origin/main@f6cad631`.
+- Runner visual Playwright temporal (no versionado), contra Worker local: los cinco tamaños sin overflow horizontal, con H1/copy y rutas CTA vigentes, imágenes cargadas y sin errores de consola/página. Teclado y foco visible, destino de CTA, menú móvil/desktop, rechazo de cookies, y `prefers-reduced-motion` revisados. Las capturas 390 px menú abierto y 1366 px consentimiento también se guardaron en `evidence/after`.
+- Movimiento y composición del hero: la visualización (`home-art-float`, 8 s), Vico (`home-vico-float`, 6 s) y el símbolo (`home-brand-pulse`, 7 s) cambian su transform entre muestras con 700 ms de diferencia en los cinco tamaños. Vico es un sibling del recuadro, aparece en primer plano y sobresale por su borde superior. `prefers-reduced-motion: reduce` deja solo un fundido de opacidad único de 180 ms para las tres imágenes, sin movimiento. Las capturas `home-{320,390,768,1366,1920}.png` reflejan la composición actual.
+- `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build emitió solo avisos existentes de secretos locales opcionales, imports dinámicos inefectivos y sourcemap CSS. No se leyeron secretos.
+- Seguimiento manual 2026-10-30: a 683×384 CSS px (aproximación de ancho al 200 % de 1366 px), el hero pasa a una columna, las tres imágenes cargan y `scrollWidth` es 668 px (sin overflow). Esto no mide zoom real del navegador; la verificación de 200 % permanece pendiente. El árbol de accesibilidad expone banner, navegación etiquetada, main, regiones con nombres y texto alternativo para las tres imágenes. NVDA no está instalado y no se verificó salida de lector de pantalla.
+- `node tests/e2e/product-experience-a-public-review-check.mjs`: FAIL en `/vecindario/vecidya` (404), fuera de Inicio. El fixture crea organización/perfil pero omite membresía owner, cuenta de facturación y licencia activa que exige el loader de perfiles públicos. Se registra como limitación del fixture; no se cambió producto ni se inventó un negocio elegible. El estado Vecindario vacío es el único disponible en esta D1 local.
+- React #418: el runner temporal con captura de consola para `platform-service-administration-check.mjs` se detuvo antes de iniciar el navegador, en la aserción de su fixture de 55 organizaciones/paginación. Inspección de `/app/internal/services`: la detección responsive empieza en `false` en ambos lados y consulta `matchMedia` dentro de `useEffect`; no basta para identificar la divergencia. React define #418 como desajuste de hidratación servidor/cliente ([referencia oficial](https://react.dev/errors/418)); la condición/dato que dispara el error sigue sin reproducirse, no se corrigió ni se certifica App/Admin.
+
+## UX-PREMIUM-PLATFORM-01 — consolidación de checkpoint (2026-10-30)
+
+Integración local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-platform-01`: fundación visual y cambios relacionados de baseline (#218), Inicio (#219), Servicios (#220) y Licencias (#221). Revisión visual final de Inicio: capturas full-page antes/después a 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 en `.playwright-mcp/`; los cinco tamaños cargan sin overflow horizontal. Estados de teclado/foco y `prefers-reduced-motion` comprobados. E2E focalizados: navegación/accesibilidad pública PASS (1366/1024/960/768/390/360/320), Servicios PASS (1366/1024/768/390/320), contacto comercial PASS y Licencias PASS (1366/768/390/360). `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build mantiene avisos locales conocidos de secretos opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS. PR originales siguen abiertos; no hubo merge, deploy ni cambios remotos. Esto no certifica App/Admin ni resuelve React #418.

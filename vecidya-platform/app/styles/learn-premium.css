@@ -1,0 +1,271 @@
+/* Acabado premium del catálogo público Aprende; no afecta Mi aprendizaje. */
+.learn-experience-page .learn-atlas {
+  position: relative;
+  isolation: isolate;
+  gap: clamp(1.5rem, 3.5vw, 2.75rem) clamp(1.5rem, 4vw, 3.5rem);
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: clamp(1.5rem, 3vw, 2.25rem);
+  padding: clamp(1.5rem, 5vw, 4rem);
+  background:
+    radial-gradient(ellipse at 88% 12%, rgb(57 126 205 / 30%), transparent 34%),
+    linear-gradient(135deg, #0b2342 0%, #113a68 58%, #0e3158 100%);
+  box-shadow: 0 1.5rem 4rem rgb(17 44 78 / 15%);
+}
+.learn-experience-page .learn-atlas__label {
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  border: 1px solid rgb(255 178 122 / 45%);
+  border-radius: 999px;
+  padding: .4rem .75rem;
+  background: rgb(255 255 255 / 7%);
+  letter-spacing: .12em;
+}
+.learn-experience-page .learn-atlas__lead h1 {
+  max-width: 15ch;
+  font-size: clamp(2.5rem, 5.2vw, 4.6rem);
+  line-height: .99;
+}
+.learn-experience-page .learn-atlas__lead > p:not(.learn-atlas__label) {
+  max-width: 56ch;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+}
+.learn-experience-page .learn-atlas__map,
+.learn-experience-page .learn-atlas__form {
+  border: 1px solid rgb(255 255 255 / 19%);
+  border-radius: 1.35rem;
+  background: rgb(255 255 255 / 8%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 8%);
+  backdrop-filter: blur(12px);
+}
+.learn-experience-page .learn-atlas__visual {
+  display: grid;
+  position: relative;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  justify-items: center;
+  min-width: 0;
+  padding-top: 1.5rem;
+}
+.learn-experience-page .learn-atlas__vico {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(38%, 10rem);
+  max-height: 11rem;
+  margin-bottom: -1.2rem;
+  object-fit: contain;
+  animation: learn-vico-float 6.5s ease-in-out 300ms infinite alternate;
+}
+.learn-experience-page .learn-atlas__map {
+  grid-column: auto;
+  grid-row: auto;
+  width: 100%;
+  gap: 1.1rem;
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+}
+.learn-experience-page .learn-atlas__map img {
+  max-height: 12rem;
+  animation: learn-atlas-arrive 650ms cubic-bezier(.2,.7,.2,1) both;
+}
+.learn-experience-page .learn-atlas__facts {
+  gap: .5rem;
+  padding-top: 1rem;
+}
+.learn-experience-page .learn-atlas__facts div {
+  gap: .35rem;
+  min-width: 0;
+}
+.learn-experience-page .learn-atlas__facts dd {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+}
+.learn-experience-page .learn-atlas__form {
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+.learn-experience-page .learn-atlas__form .learn-discovery__search input {
+  border-color: rgb(255 255 255 / 35%);
+  border-radius: .9rem;
+}
+.learn-experience-page .learn-atlas__form .button--primary {
+  border-radius: 999px;
+  box-shadow: 0 .5rem 1.25rem rgb(5 21 40 / 18%);
+}
+.learn-experience-page .learn-start {
+  border: 1px solid #e5ebf4;
+  border-left: 4px solid var(--orange);
+  border-radius: 1.25rem;
+  padding: clamp(1rem, 2.5vw, 1.6rem);
+  box-shadow: 0 .75rem 2rem rgb(25 48 79 / 6%);
+}
+.learn-experience-page .learn-discovery {
+  border: 1px solid #e5ebf4;
+  border-radius: 1.5rem;
+  background: linear-gradient(145deg, #f7f9fc, #eef3fa);
+  box-shadow: 0 .75rem 2rem rgb(25 48 79 / 5%);
+}
+.learn-experience-page .learn-discovery__summary {
+  border-left-color: #d5dfed;
+}
+.learn-experience-page .learn-guide-list {
+  gap: .9rem;
+}
+.learn-experience-page .learn-guide-list > li {
+  border: 1px solid #e5ebf4;
+  border-radius: 1.25rem;
+  padding: .2rem .9rem;
+  background: #fff;
+  box-shadow: 0 .5rem 1.5rem rgb(25 48 79 / 4%);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+.learn-experience-page .learn-guide-list > li:hover {
+  transform: translateY(-2px);
+  border-color: #c6d6eb;
+  box-shadow: 0 .9rem 2rem rgb(25 48 79 / 9%);
+}
+.learn-experience-page .learn-guide {
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding-block: .7rem;
+}
+.learn-experience-page .learn-guide img {
+  width: 6.5rem;
+  border: 1px solid #e5ebf4;
+  border-radius: .9rem;
+}
+.learn-experience-page .learn-guide h3 {
+  font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+  line-height: 1.28;
+}
+.learn-experience-page .learn-guide__action {
+  width: max-content;
+  border-radius: 999px;
+  padding: .35rem .7rem;
+  background: #eef4fc;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+.learn-experience-page .learn-guide__action:hover {
+  background: var(--blue);
+  color: #fff;
+}
+.learn-experience-page .learn-path {
+  overflow: hidden;
+  border: 1px solid #e5ebf4;
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 .5rem 1.5rem rgb(25 48 79 / 4%);
+}
+.learn-experience-page .learn-path[open] {
+  border-color: #c6d6eb;
+}
+.learn-experience-page .learn-path summary {
+  padding: 1.2rem 1.35rem;
+  transition: background-color 160ms ease;
+}
+.learn-experience-page .learn-path summary:hover {
+  background: #f7f9fc;
+}
+.learn-experience-page .learn-topic-list > li + li {
+  border-color: #e5ebf4;
+}
+.learn-experience-page .learn-topic-list a {
+  border-radius: .9rem;
+  padding: 1.2rem .85rem;
+  transition: background-color 160ms ease;
+}
+.learn-experience-page .learn-topic-list a:hover {
+  background: #f4f7fb;
+}
+.learn-experience-page .learn-why,
+.learn-experience-page .learn-final-cta {
+  border-radius: clamp(1.35rem, 3vw, 2rem);
+}
+.learn-experience-page .learn-why {
+  border: 1px solid rgb(255 255 255 / 16%);
+  background: linear-gradient(130deg, #164a7e, #0d315a);
+  box-shadow: 0 1rem 2.5rem rgb(17 44 78 / 12%);
+}
+.learn-experience-page .learn-final-cta {
+  border: 1px solid #e5ebf4;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(255 178 122 / 18%), transparent 38%),
+    linear-gradient(140deg, #f7f9fc, #edf3fa);
+}
+@media (max-width: 760px) {
+  .learn-experience-page .learn-atlas {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .learn-experience-page .learn-atlas__masthead,
+  .learn-experience-page .learn-atlas__form,
+  .learn-experience-page .learn-atlas__visual,
+  .learn-experience-page .learn-atlas__map,
+  .learn-experience-page .learn-atlas__jump {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .learn-experience-page .learn-atlas__lead h1 {
+    max-width: 18ch;
+    font-size: clamp(2.2rem, 9vw, 3.35rem);
+  }
+  .learn-experience-page .learn-atlas__map {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .learn-experience-page .learn-atlas__vico {
+    width: min(32%, 7rem);
+    max-height: 8rem;
+    margin-bottom: -1rem;
+  }
+  .learn-experience-page .learn-atlas__map img {
+    max-width: 26rem;
+    max-height: 8rem;
+    margin-inline: auto;
+  }
+  .learn-experience-page .learn-guide-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .learn-experience-page .learn-start {
+    align-items: flex-start;
+  }
+}
+@media (max-width: 480px) {
+  .learn-experience-page .learn-guide-list > li {
+    padding-inline: .7rem;
+  }
+  .learn-experience-page .learn-guide {
+    grid-template-columns: 4.75rem minmax(0, 1fr);
+    gap: .75rem;
+    align-items: start;
+  }
+  .learn-experience-page .learn-guide img {
+    width: 4.75rem;
+    border-radius: .7rem;
+  }
+  .learn-experience-page .learn-guide__copy > p:not(.learn-guide__topic) {
+    font-size: .92rem;
+  }
+  .learn-experience-page .learn-start {
+    flex-direction: column;
+  }
+  .learn-experience-page .learn-start .button {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learn-experience-page .learn-atlas__map img,
+  .learn-experience-page .learn-atlas__vico,
+  .learn-experience-page .learn-guide-list > li,
+  .learn-experience-page .learn-guide__action,
+  .learn-experience-page .learn-path summary,
+  .learn-experience-page .learn-topic-list a {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@keyframes learn-vico-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}

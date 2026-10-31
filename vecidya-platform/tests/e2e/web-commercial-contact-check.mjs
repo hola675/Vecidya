@@ -13,12 +13,12 @@ try {
     const page = await browser.newPage({ viewport: { width, height: 850 } });
     const label = `${width}px`;
     await page.goto(new URL("/servicios", baseUrl).toString(), { waitUntil: "networkidle" });
-    assert(await page.locator(".services-core-card").count() === 7, `${label}: siete familias de servicios`);
-    assert(await page.locator(".services-core-card__problem").count() === 7, `${label}: siete problemas explicados`);
-    assert(await page.locator(".services-core-card__result").count() === 7, `${label}: siete resultados explicados`);
-    const ai = page.locator("#visibilidad");
-    assert((await ai.innerText()).includes("procesos concretos"), `${label}: IA Aplicada debe referirse a procesos`);
-    assert(await ai.getByRole("link", { name: "Consultar este servicio" }).getAttribute("href") === "/contacto?interes=servicio-visibilidad", `${label}: enlace IA con contexto`);
+    assert(await page.locator(".services-offer").count() === 7, `${label}: siete familias de servicios`);
+    assert(await page.locator('.services-offer__details h4:text-is("Para quién")').count() === 7, `${label}: siete públicos descritos`);
+    assert(await page.locator('.services-offer__details h4:text-is("Qué abordamos")').count() === 7, `${label}: siete alcances descritos`);
+    const commercial = page.locator("#visibilidad");
+    assert((await commercial.innerText()).includes("procesos de ventas"), `${label}: Sistema Comercial describe su público`);
+    assert(await commercial.getByRole("link", { name: "Consultar servicio" }).getAttribute("href") === "/contacto?interes=servicio-visibilidad", `${label}: consulta conserva el servicio contextual`);
     await page.goto(new URL("/contacto?interes=cuadra", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.getByText(/Interés seleccionado:.*licencia Cuadra/).isVisible(), `${label}: contexto de Cuadra visible`);
     const correo = await page.getByRole("link", { name: "Escribir a hola@vecidya.com" }).getAttribute("href");

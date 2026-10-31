@@ -1,3 +1,8 @@
+## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
+
+- Se ajustó `/licencias`: notas comerciales 2×2, hero más claro, tabla comparativa con mayor contraste y tarjetas en una columna desde 900 px; hover breve que respeta movimiento reducido.
+- Se conservaron precios, activaciones, condiciones, rutas y CTAs. E2E focal, typecheck, build, diff-check y revisión visual de cinco anchos PASS. PR #221 abierta en borrador. Sin deploy ni cambios de datos.
+
 ## 0.9.2 — publicado (2026-10-29)
 
 - Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.
@@ -22,6 +27,29 @@
 - Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; `pnpm audit --prod --json` quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché. La CI final del PR #201 pasó la certificación del Worker. La propuesta 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purga implementada. El usuario confirma que la pauta NVDA/zoom 200 % fue ejecutada y aprobada. Sin deploy ni D1 remota.
 
 # Changelog
+
+## 2026-10-30 — UX-PREMIUM-02I — Aprende
+
+- Se refina el catálogo público con hero editorial, superficies, tarjetas de guías e itinerarios y se incorpora la variante optimizada Vico Aprende en primer plano sobre el panel de rutas.
+- Búsqueda, filtros, guías, estados, metadatos y CTA se conservan. E2E y comparación visual en cinco viewports, foco y movimiento reducido; sin deploy ni publicación.
+
+## 2026-10-30 — UX-PREMIUM-02H — Complementos
+
+- Se alineó `/addons` con la guía visual premium y se agregó la variante optimizada de Vico Complementos, en primer plano sobre el panel conceptual.
+- Se ajustaron hero, catálogo, tarjetas y responsive; se preservaron copy, catálogo, precios/costes, condiciones, rutas y CTAs. El E2E focal cubre Vico, movimiento normal/reducido y el contenido comercial. Extensión local del PR #222; sin deploy ni publicación.
+
+## 2026-10-30 — UX-PREMIUM-FOUNDATION-01 — base visual compartida
+
+- Se agregan tokens `--v-*` para paleta de referencia, tipografía, radios, sombras y movimiento, junto a una capa común de tipografía/controles/foco en superficies propias de Vecidya. Los botones primarios/secundarios reciben la primera migración explícita de color; otros tokens heredados y la identidad pública de MiniWeb permanecen intactos.
+- Typecheck/build y E2E de navegación pública pasan. Capturas antes/después de Home cubren 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; sin overflow, el foco de teclado es visible y el movimiento reducido acorta las transiciones a 0,01 ms. La aplicación por rutas y la accesibilidad completa siguen pendientes. Sin deploy ni merge.
+## 2026-10-30 — UX-PREMIUM-01-HOME — portada local
+
+- Se renueva la composición de `/` con el texto y los CTA existentes, Vico Inicio en primer plano sobre el borde del recuadro, el símbolo completo de marca sin placa decorativa y una visualización WebP fotorrealista de fondo transparente. Se elimina el pin azul. Vico, la visualización y el logotipo incorporan movimiento ambiental sutil con una variante de fundido para movimiento reducido. La imagen presenta Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende sin cifras inventadas, burbujas ni brújulas. Se mantienen rutas y contenido funcional.
+- Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR #219 abierta como borrador; sin deploy, D1 remota ni declaración de publicación.
+## 2026-10-30 — UX-PREMIUM-02C — Servicios
+
+- `/servicios` adopta una portada tipográfica, recorrido escalonado, accesos rápidos en filas y siete ofertas editoriales con alcance y CTA visibles. Se conservan contenido, destinos y contratos; no se añaden datos ni funciones.
+- Dos E2E focales, typecheck, build y diff-check PASS; QA visual en cinco anchos, teclado y movimiento reducido. PR local pendiente; sin publicación ni despliegue.
 
 ## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
 
