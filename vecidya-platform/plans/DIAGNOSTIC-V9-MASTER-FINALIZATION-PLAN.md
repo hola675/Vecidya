@@ -2899,3 +2899,31 @@ En el apartado 64 se afirmó que q2_ecommerce_cart_followup «no se contó entre
 ### Changelog adicional
 
 - **1.59.0:** Lote 07 cerrado como diseño editorial; rectificación explícita de q2_ecommerce_cart_followup candidato v2 y protección de donaciones monetarias en support_type mixto; 56 fichas con decisión, solo documentos.
+
+
+## 68. Lote editorial 08 — hostelería y recurrencia
+
+**DISEÑO_EDITORIAL_DELEGADO / PLAN_ONLY / NO CERTIFICADO.** Completado un octavo lote de ocho fichas ES/EN para preguntas **existentes** del candidato QA03B V9. Las decisiones, values de origen, propuestas futuras, guardias y tratamiento de evidencia están en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Lote editorial 08», documento v1.1.0. Referencia del inicio de lectura: HEAD 44fdfcda8056c9103d2034fa0f4655c7a00c0f2d, archivos qa03b/recovery-wave2.ts y qbv2-lote-b.ts, lote-c.ts, lote-d.ts. Se inspeccionaron definiciones pero no se ejecutó el ensamblaje del banco ni se hicieron pruebas nuevas.
+
+**Ocho IDs no repetidos:** q2_hospitality_flow_type, q2_hospitality_reservation_noshow, q2_hospitality_peak_capacity, q2_nonprofit_membership_lifecycle, q2_local_repeat_customers, q2_ecommerce_repeat_purchase, q2_creator_channel_concentration y q2_service_area_clarity. **Dictamen:** 2 KEEP (flujo de llegada en hostelería y claridad del ciclo de membresía) + 6 REWRITE (ausencias de reservas, capacidad en pico, regreso de clientes locales, recompra e-commerce, concentración de audiencia y área de servicio). Las definiciones examinadas suman **35 opciones actuales**, frente a **41 opciones futuras propuestas** (+6); no se han incorporado a runtime ni cambiado versiones activas.
+
+### Decisiones y bloqueos de integridad
+
+- **Hostelería:** reserva de mesa o habitación ≠ cita de servicios. Patrón de llegada y ausencias son observaciones operativas; una ausencia no demuestra problema digital ni justifica enviar recordatorios. No confundir falta de reservas recientes con tasa de ausencias igual a cero. Tener una temporada sin alta demanda no demuestra capacidad suficiente; distinguir no_observed_peak de rarely.
+- **Recompra y recurrencia:** local_repeat_customers y ecommerce_repeat_purchase miden patrones de retorno potencialmente coincidentes para un negocio mixto. No preguntar ambas por las mismas personas ni duplicar el score; ninguna demuestra CRM, fidelización ejecutada ni permiso de contacto. Compra/visita única y historial insuficiente son salidas distintas de desempeño bajo.
+- **ONG:** nonprofit_membership_lifecycle continúa condicionado a apoyo relacionado con cuotas/membresías reales. El futuro support_type=mixed del Lote 02 NO basta para activar este módulo si solo hay donaciones en especie, voluntariado u otras fuentes sin cuota. Revisar explicitud de modalidad y renovación; no penalizar comunidad sin membresía.
+- **Creadores:** concentración de audiencia activa describe dependencia de canal, no capacidad digital ni lista de contactos autorizada; el selector deberá sobrevivir al cambio semántico de sector=creator previsto en el Lote 02.
+- **Servicio a domicilio:** service_area_clarity incluye N/A para servicios que no requieren desplazamiento. Alcance geográfico del público no es radio real de desplazamiento; para prelaunch responder por el plan, sin puntuar hechos operativos como observados.
+- **Evidencia:** salvo membership_lifecycle, que cuenta con evidenceV3 directa de conversion_access en el candidato, los demás IDs de este lote conservan evidenceMigration=pending en la wave2. No promocionar observaciones contextuales a dimensiones digitales antes de TAX-G1/F05.
+
+**Avance editorial acumulado:** Lotes 01–07, 56 fichas (15 KEEP/41 REWRITE); Lote 08, 8 fichas (2 KEEP/6 REWRITE). **Total: 64 fichas con dictamen editorial de 77 identidades de referencia (17 KEEP/47 REWRITE); quedan 13 por revisar.** Estas cifras NO miden funcionalidad implementada, certificación lingüística/cognitiva, evidencia calibrada ni readiness del motor. F02 sigue ABIERTA y la matriz 8×10/C01–C10 aún no está certificada.
+
+**Próximos lotes:** Lote 09 de ocho IDs inéditos y Lote 10 final de cinco IDs restantes. Priorizar recovery-wave2 y los selectores de nicho para completar primero la matriz real de 77 sin generar preguntas fantasmas. Después realizar **reconciliación editorial transversal**: duplicados de significado, mapa dimensión×evidencia, neutralidad, versiones futuras, compatibilidad y presupuesto 24+5. Este cierre documental por sí solo no autoriza pasar de PLAN_ONLY a implementación.
+
+**Gates futuros (NO EJECUTADOS):** C02/C03/C05/C06/C07/C08/C09/C10, rutas de membresía, mixed, sin reservas recientes, servicio sin desplazamiento, multi-arquetipo, edición/replay, exclusividad de opciones, equivalencia ES/EN, privacidad. Solo pruebas focalizadas cuando se autoricen cambios de código; no modificar V8/QBV2 ni integrar GHL.
+
+**Estado operativo:** PR #162 continúa en borrador; sin modificaciones TS/TSX, SQL, Worker, D1, pruebas, CI, UI, despliegue ni merge.
+
+### Changelog adicional
+
+- **1.60.0 / 2026-10-31:** Lote 08 de hostelería/recurrencia/membresías cerrado como diseño delegado bilingüe, 64 fichas decididas de 77, sin implementación.
