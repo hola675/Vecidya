@@ -2398,3 +2398,143 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 ### Changelog
 
 - **1.6.0 / 2026-10-31:** matriz documental de 82 filas que separa versión de código, diseño editorial, guardias y evidencia; señala discrepancias sin ejecutar pruebas.
+
+## Auditoría de dimensiones y conflictos de evidencia — 82 candidatas
+
+**Revisión documental acumulada v1.7.0 / PLAN_ONLY / NO CERTIFICADA.** Fuente del corte: HEAD f8452862b2ba3a0f26e524d5eebdb4e6a29b8b30 y matriz 82 de la versión 1.6.0, más qbv2-dimensions.ts, qbv2-evidence-v3.ts, qbv2-rules.ts, qa03b/specialty-branches-wave1.ts y reglas de especialidad/recuperación. Esta auditoría mapea la evidencia detectada por dimensión, no certifica los resultados del motor ni los diez recorridos. **40 preguntas tienen un mapa V3 encontrado por lectura estática, 42 no tienen mapa detectado; de las 40, 36 aparecen direct y cuatro supporting.** No convertir 42 pendientes en puntuación ni asumir que todos son fallos: existen anclas, categorías, nichos y contextos legítimos.
+
+### 1. Censo de mapeos V3 por dimensión (identidades del candidato)
+
+| Dimensión canónica | Direct | Supporting | Total encontrado |
+| --- | ---: | ---: | ---: |
+| clarity_positioning | 7 | 1 | 8 |
+| digital_foundation | 3 | 0 | 3 |
+| discovery | 1 | 0 | 1 |
+| trust_reputation | 2 | 0 | 2 |
+| conversion_access | 5 | 0 | 5 |
+| relationship_recurrence | 9 | 0 | 9 |
+| measurement_optimization | 5 | 1 | 6 |
+| digital_readiness | 4 | 2 | 6 |
+| **TOTAL** | **36** | **4** | **40** |
+
+**Significado preciso:** direct y supporting son los valores del contrato fuente; **no** son una decisión editorial de aceptarlos en F05. Los 40 mapas se agrupan en ocho dimensiones, no en ocho preguntas; una dimensión puede tener múltiples observaciones independientes. La ausencia de evidencia por escenario debe conducir a incertidumbre/abstención, no a una calificación débil inventada.
+
+### 2. Relación de las 40 identidades y controles de deduplicación
+
+#### clarity_positioning — 7 direct / 1 supporting
+
+**Mapeos directos del candidato detectados:** q2_presence_offer_clarity, q2_food_menu_visibility, q2_professional_intake_flow, q2_marketing_agency_scope_clarity, q2_retail_product_visibility, q2_startup_problem_clarity, q2_startup_offer_readiness.
+
+**Mapeos supporting:** q2_startup_validation_evidence.
+
+**Control semántico pendiente:** La claridad pública, la transición a consulta y la propuesta prelaunch NO son intercambiables. Food y agency sustituyen claridad general cuando sus reglas son satisfechas; no sumarlas. Validación de necesidad o prototipo no demuestra claridad pública.
+
+#### digital_foundation — 3 direct / 0 supporting
+
+**Mapeos directos del candidato detectados:** q2_presence_digital_base, q2_local_presence_consistency, q2_ecommerce_product_discovery.
+
+**Mapeos supporting:** ninguno en las fuentes consultadas.
+
+**Control semántico pendiente:** Presencia disponible, datos locales coherentes y facilidad para encontrar productos son observaciones distintas; pueden compartir evento y deben identificarse por constructo. En preparación, ausencia de web no es automáticamente debilidad.
+
+#### discovery — 1 direct / 0 supporting
+
+**Mapeos directos del candidato detectados:** q2_discovery_reliable_reach.
+
+**Mapeos supporting:** ninguno en las fuentes consultadas.
+
+**Control semántico pendiente:** Única señal directa detectada en la fuente para la dimensión. No confundir falta de búsqueda de clientes con fracaso de captación; mantener not_seeking como contexto.
+
+#### trust_reputation — 2 direct / 0 supporting
+
+**Mapeos directos del candidato detectados:** q2_reputation_flow, q2_professional_authority_signals.
+
+**Mapeos supporting:** ninguno en las fuentes consultadas.
+
+**Control semántico pendiente:** Reseñas visibles y señales profesionales verificables son constructos distintos. No inferir licencias, avales, habilitación ni situación clínica a partir de ellos.
+
+#### conversion_access — 5 direct / 0 supporting
+
+**Mapeos directos del candidato detectados:** q2_service_response_speed, q2_appointments_booking_friction, q2_nonprofit_donation_clarity, q2_nonprofit_membership_lifecycle, q2_ecommerce_checkout_friction.
+
+**Mapeos supporting:** ninguno en las fuentes consultadas.
+
+**Control semántico pendiente:** Responder consultas, coordinar citas, realizar donaciones, incorporarse con membresía y completar checkout son vías distintas; ninguna debe exigirse universalmente. No publicar puntuación por ausencia de actividad pertinente.
+
+#### relationship_recurrence — 9 direct / 0 supporting
+
+**Mapeos directos del candidato detectados:** q2_retail_customer_capture, q2_followup_general_process, q2_service_quote_followup, q2_appointments_rebooking, q2_b2b_pipeline, q2_appointments_confirmation_reminders, q2_dental_care_continuation, q2_ecommerce_cart_followup, q2_followup_status_visibility.
+
+**Mapeos supporting:** ninguno en las fuentes consultadas.
+
+**Control semántico pendiente:** Repetición, autorización de contacto, seguimiento, recordatorio y visibilidad de pendientes no son sinónimos. Dental sustituye rebooking genérico si elegible; seguimiento de carrito no autoriza mensajes. Un mismo episodio no cuenta dos veces.
+
+#### measurement_optimization — 5 direct / 1 supporting
+
+**Mapeos directos del candidato detectados:** q2_measurement_rate_estimate, q2_measurement_result_recording, q2_measurement_review_cycle, q2_measurement_practice, q2_measurement_source_confidence.
+
+**Mapeos supporting:** q2_ecommerce_cart_visibility.
+
+**Control semántico pendiente:** Estimar tasas, registrar resultados, revisar períodos, decidir ajustes y conocer la fuente pueden reflejar la misma rutina. Definir una clave evento/periodo/actividad antes de sumar; no deducir analítica si no hay historial o checkout.
+
+#### digital_readiness — 4 direct / 2 supporting
+
+**Mapeos directos del candidato detectados:** q2_process_systemization, q2_operations_information_base, q2_b2b_qualification, q2_operations_process_ownership.
+
+**Mapeos supporting:** q2_b2b_status_visibility, q2_operations_handoffs.
+
+**Control semántico pendiente:** BLOQUEO P0: procedimientos, archivos accesibles, criterios B2B y responsabilidades pueden funcionar íntegramente en papel o conversación. No certificar madurez DIGITAL sin indicador digital independiente. Los supporting no deben elevar por sí solos el nivel.
+
+### 3. Gates de sustitución y cinco ADD: expresiones lógicas relevantes
+
+En la tabla, **operating = q2_operational_status=operating** e **historial = q2_has_customers=yes**. archetypeIncludes comprueba pertenencia real del componente, no igualdad de arquetipo; las condiciones que dependen de context resolver, appliesWhen y materialAppliesWhen no se reducen a una comparación de strings. Las tres sustituciones S01–S03 se basan en las constantes de specialty-branches-wave1.ts; A78–A82 son los cinco nuevos gates declarados. Ninguna de estas expresiones ha sido evaluada con datos de sesión.
+
+| Gate | Relación | Expansión lógica a verificar (estática) | Riesgo / fallback | Casos |
+| --- | --- | --- | --- | --- |
+| S01 | q2_appointments_rebooking ↔ q2_dental_care_continuation | dentalSpecialistEligible = operating ∧ historial ∧ niche_health_wellness=dentist ∧ archetypeIncludes(appointments) ∧ (goal=stop_losing ∨ friction=follow_up) | Cuando es elegible el dental, se aplica NOT(dentalSpecialistEligible) al appliesWhen y materialAppliesWhen del rebooking genérico que existan. Si no se conoce el nicho o no hay appointments, la genérica conserva sus propias reglas. | C06, C10; no preguntar ambas por la misma próxima cita; N/A si no requiere continuación |
+| S02 | q2_presence_offer_clarity ↔ q2_food_menu_visibility | foodSpecialistEligible = operating ∧ historial ∧ sector=food_hospitality ∧ niche_food_hospitality∈{restaurant,cafe,food_truck} ∧ goal=explain ∧ presence_digital_base∈{reliable_presence,partial_presence} | Se agrega NOT(foodSpecialistEligible) a las guardias presentes del genérico; el especialista observa menú/selección publicada, NO precio ni disponibilidad. El N/A actual de menú no publicado queda P0 semántico, futura versión requerida. | C08, C09, C10; menú no publicado ≠ venta imposible ≠ N/A universal |
+| S03 | q2_presence_offer_clarity ↔ q2_marketing_agency_scope_clarity | agencySpecialistEligible = operating ∧ historial ∧ sector=b2b_services ∧ niche_b2b_services=marketing_agency ∧ goal=explain ∧ buyer∈{b2b,mixed} ∧ presence_digital_base∈{reliable_presence,partial_presence} | Se agrega NOT(agencySpecialistEligible) al genérico; movimiento de sector=b2b_services en TAX-G1 puede romper esta sustitución si no existe puente. No confundir claridad de alcance de servicio con resultado garantizado. | C04, C09, C10; mantener fallback si cambia sector/goal |
+| A78 | q2_nonprofit_participation_entry | operating ∧ historial ∧ (entity=organization ∨ monetization=mission) ∧ (goal∈{explain,opportunities} ∨ friction=conversion) | El gate real no verifica que una actividad de participación esté abierta; no_open_entry=N/A. No inferir cuota, donación, compra ni permiso de contacto. | C05 actividad abierta/cerrada; elegir el módulo de acceso real |
+| A79 | q2_education_enrollment_entry | operating ∧ historial ∧ sector=education_coaching ∧ (goal∈{explain,opportunities} ∨ friction=conversion) | El gate real no demuestra inscripción abierta; no_open_enrollment=N/A. No sustituye professional_intake_flow porque su gate revisado no incluye education_coaching. | C02 sin alumnos / C04 tutoría gratuita / C10 edición sector |
+| A80 | q2_real_estate_inquiry_entry | operating ∧ historial ∧ sector=real_estate ∧ (goal∈{explain,opportunities} ∨ friction=conversion) | Solapa professional_intake_flow@v2 con V3 directa de clarity_positioning. La nueva sigue pending: PARIDAD P0 antes de sustituir y fallback para referral_only. | C04/C10; nunca perder evidencia previa ni duplicar |
+| A81 | q2_creative_brief_intake | operating ∧ historial ∧ sector=creative_media ∧ (goal=organize ∨ friction=operations) | No_comparable_projects=N/A. Observa alcance de un encargo concreto; no prueba tecnología ni reemplaza automáticamente documentación/responsabilidades. | C09 servicios creativos; no sumar a digital_readiness por proceso manual |
+| A82 | q2_retail_purchase_next_step | operating ∧ historial ∧ sector=retail ∧ (goal∈{explain,opportunities} ∨ friction=conversion) | Not_direct_sales=N/A; compra presencial distinta de producto publicado y checkout e-commerce. El gate por sector no prueba tienda física activa ni pago en línea. | C01/C07/C09; evitar doble conteo en negocio híbrido |
+
+**Limitación deliberada:** S01–S03 aquí describen la condición de sustitución, no todos los gates heredados del genérico; estos últimos se combinan con NOT(specialistEligible) únicamente cuando existía appliesWhen/materialAppliesWhen. Las cinco ADD tampoco incorporan una condición computable de «valor informativo adicional». El paso siguiente es verificar el AST de reglas ejecutables y trazas con evaluateRuleV2Trace, sin crear un evaluador alternativo.
+
+### 4. Matriz planificada de 8 dimensiones × C01–C10 (NO PASS)
+
+Los escenarios mantienen las definiciones del Plan Maestro: C01 negocio local activo; C02 preparación sin clientes; C03 pausa con historial; C04 independiente; C05 ONG sin venta; C06 citas; C07 e-commerce; C08 gastronomía con menú no publicado; C09 híbrido; C10 cambio/indefinición de sector. **Las celdas son el tipo de prueba futura esperado, no resultados ni garantía de elegibilidad.**
+
+**Leyenda:** G = verificar gate y evidencia material si existe; C = conservar información prelaunch como contexto, sin inferir madurez; A = exigir abstención si no hay hecho pertinente; H = separar historial de capacidad actual; S = probar sustitución especializada y fallback; M = probar canales/arquetipos híbridos y no doble conteo; R = editar/replanificar con replay y sin evidencia obsoleta.
+
+| Dimensión / Caso | C01 | C02 | C03 | C04 | C05 | C06 | C07 | C08 | C09 | C10 |
+| --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| clarity_positioning | G | C | H | G | G | G | G | S | M | R |
+| digital_foundation | G | G | H | G | G | G | G | G | M | R |
+| discovery | G | A | H | G | G | G | G | G | M | R |
+| trust_reputation | G | A | H | G | G | G | G | G | M | R |
+| conversion_access | G | A | H | G | G | S | G | G | M | R |
+| relationship_recurrence | G | A | H | G | G | S | G | G | M | R |
+| measurement_optimization | G | A | H | G | G | G | G | G | M | R |
+| digital_readiness | G | A | H | G | G | G | G | G | M | R |
+
+**Criterio verificable común a las 80 celdas:** no clasificar como weak por unknown, N/A, ausencia de casos, ausencia de consentimiento, etapa sin actividad o falta de modalidad; comprobar que la respuesta correcta para un sector sigue siendo pertinente y no bloquea la ruta genérica si el nicho es unknown/other. Las pruebas deberán registrar ID, versión, escenario, respuesta, gate, dimensión, contribución y motivo de abstención.
+
+### 5. Orden P0/P1, entrega y límites
+
+**P0-01 — Evidencia digital_readiness:** revisar cuatro direct derivados de operaciones manuales antes de F05. Confirmar que «tener proceso» no equivale a «tener herramienta digital». Documentar si cambiarán a contextual/supporting o si una señal digital independiente justifica directness. No alterar las versiones históricas silenciosamente.
+
+**P0-02 — Evidencia repetida por evento:** en relationship_recurrence, measurement_optimization y clarity_positioning, acordar claves sector×evento×constructo×periodo y prohibir que la misma respuesta/episodio contribuya dos veces al mismo indicador. No imponer una regla falsa de máximo una pregunta por dimensión.
+
+**P0-03 — Sustitución y consentimiento:** dental, food, agency y futura real_estate requieren reglas de exclusividad/fallback y equivalencia de evidenceV3 por versión; seguimiento de carrito no prueba identidad ni autorización. No habilitar contacto/CRM/GHL por responder V9.
+
+**P0-04 — Neutralidad, ciclo de vida y sector:** resolver TAX-G1/TAX-G3, mixed para donaciones/membresías, prelaunch/pausa, actividad sin casos recientes y q2_sector frente a modelo/canal. Los ocho selectores son routing/context, no señales directas.
+
+**P1-01 — Tests focales futuros, sin ejecutar:** usar validateEvidenceMigrationsV3 y evaluateRuleV2Trace existentes; comprobar 82 identidades/versión, 25 opciones ADD y 8×10, selección adaptativa ≤24+5 solo con consentimiento, ES/EN, replay, privacidad y accesibilidad. No sustituir suites generales por evidencia de pruebas que aún no se han ejecutado.
+
+**Estado:** matriz 82 y distribución 8 dimensiones documentadas; F02 sigue ABIERTA, F03/F05 sin certificación. Solo se modifica Markdown en el PR #162 draft; no cambio de runtime, UI, Worker, D1, SQL, CI ni producción.
+
+### Changelog
+
+- **1.7.0 / 2026-10-31:** 40 evidencias detectadas distribuidas por las ocho dimensiones (36 direct/4 supporting), pares anti-duplicación, gates S01–S03 y A78–A82, matriz de pruebas planificadas 8×10 sin ejecución ni score nuevo.
