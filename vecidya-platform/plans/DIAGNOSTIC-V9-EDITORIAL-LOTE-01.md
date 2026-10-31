@@ -2538,3 +2538,206 @@ Los escenarios mantienen las definiciones del Plan Maestro: C01 negocio local ac
 ### Changelog
 
 - **1.7.0 / 2026-10-31:** 40 evidencias detectadas distribuidas por las ocho dimensiones (36 direct/4 supporting), pares anti-duplicación, gates S01–S03 y A78–A82, matriz de pruebas planificadas 8×10 sin ejecución ni score nuevo.
+
+## Reforma transversal de preguntas generales para porcentajes por dimensión
+
+**Versión editorial v1.8.0 — candidato general aislado de 90 / NO CERTIFICADO.** Se ha añadido QA03B_GENERAL_DIMENSION_PROBES_V1 (ocho preguntas single de profundización general) al fichero candidato de V9, sin alterar la composición de 77 ni la ampliación de 82. QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4 es un nuevo export experimental de **90 IDs**, no importado por el diagnóstico público. Cada ancla tiene cinco opciones (40 en total), conserva un valor unknown y otro not_applicable, está en español en código y contiene esta propuesta inglesa en documentación. **No se ha modificado el score**, la calibración, la selección del planner, el informe o GHL.
+
+### Matriz de fortalecimiento de las ocho dimensiones
+
+| Dimensión | Constructo nuevo | Regla de pertinencia | Pregunta candidata | Señal existente a reconciliar |
+| --- | --- | --- | --- | --- |
+| clarity_positioning | Comprensión de oferta, fuera o dentro de internet | Comparar claridad observada sin imponer web ni clientes reales | q2_general_offer_comprehension | Offer clarity de presencia si aplica |
+| digital_foundation | Exactitud de la información de contacto en canales digitales activos | Detectar dato incorrecto verificable, no exigir varios canales | q2_general_contact_information_consistency | Presencia básica, consistencia local |
+| discovery | Existencia de una vía real para que gente nueva descubra la actividad | A diferencia de constancia de captación, medir posibilidad de encuentro | q2_general_discoverability_path | Discovery reliable reach |
+| trust_reputation | Pruebas apropiadas y verificables de confianza | Respetar privacidad, sin reseñas ni credenciales obligatorias | q2_general_verifiable_trust_signals | Reputation flow, professional authority |
+| conversion_access | Claridad de primer paso no necesariamente comercial | Fallback para canales que no tienen intake especializado | q2_general_first_action_path | Service response, appointments, intake, ADD 78–82 |
+| relationship_recurrence | Capacidad de recuperar contexto de una interacción pendiente | Requiere interacciones multi-paso; no mide recurrencia automática | q2_general_pending_step_continuity | Followup general, B2B status/pipeline |
+| measurement_optimization | Definición de una medida observable pertinente | Previo al registro y al ciclo de revisión; no duplicar resultados | q2_general_outcome_measure_definition | Measurement practice, result recording, review cycle |
+| digital_readiness | Fiabilidad de una tarea que realmente requiere tecnología | Separar el trabajo manual de la herramienta digital y su capacidad | q2_general_digital_execution_reliability | Digital tools, process systemization e information base |
+
+**Límite de interpretación:** una ancla por dimensión **no** equivale a dos evidencias independientes; hasta calibrar, cada nueva pregunta es solo una opción de observación. En C02 (preparación), C03 (pausa) y C05 (no comercio), las salidas neutrales y el contexto prevalecen sobre la necesidad de llenar ocho porcentajes. No preguntar todas las anclas en cada entrevista: son profundizaciones competidoras dentro del presupuesto 24+5.
+
+### Ocho fichas completas ES/EN y convivencia
+
+#### Ancla general 1 — q2_general_offer_comprehension · clarity_positioning · ADD v1 candidate-only
+
+**ES:** «Cuando explicas tu actividad a alguien que no la conoce, ¿puede entender a quién ayudas y qué obtiene?»  
+**EN:** “If you describe your activity to someone unfamiliar with it, can they understand whom you help and what they receive?”  
+**Ayuda ES:** Valora la comprensión real, incluso si no tienes web; no presupone ventas ni una oferta ya publicada.  
+**Help EN:** Consider real understanding, even without a website. Sales or a published offer aren't required.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| clear | Suele entender a quién va dirigida y qué se ofrece. | They generally understand who it's for and what's offered. | respuesta observable, sin evidenceV3 |
+| partial | Comprende la idea, pero pregunta varios detalles. | They understand the idea but ask several questions. | respuesta observable, sin evidenceV3 |
+| unclear | Cuesta entender a quién va dirigida o qué recibe. | It's hard to understand who it's for or what they'd receive. | respuesta observable, sin evidenceV3 |
+| not_presented | Todavía no presento una oferta a personas externas. | I haven't yet presented an offer to people outside the activity. | not_applicable |
+| unknown | No lo he contrastado con personas nuevas. | I haven't checked this with new people. | unknown |
+
+**Relación con preguntas existentes:** q2_presence_offer_clarity / q2_startup_offer_readiness.  
+**Regla para evitar dobles observaciones:** General: comprensión de la propuesta expresada; la existente evalúa oferta publicada o prelaunch. Usar la más pertinente por estado/canal.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 2 — q2_general_contact_information_consistency · digital_foundation · ADD v1 candidate-only
+
+**ES:** «Si alguien encuentra tus canales digitales actuales, ¿obtiene datos de contacto vigentes y coherentes?»  
+**EN:** “If someone finds your current online channels, will they find accurate and consistent contact information?”  
+**Ayuda ES:** Incluye los perfiles, fichas o webs que sí usas. No hace falta disponer de todos ellos.  
+**Help EN:** Consider the profiles, listings, or websites you actually use; you don't need all of them.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| consistent | Los canales activos muestran datos correctos y coherentes. | Our active channels show accurate, consistent details. | respuesta observable, sin evidenceV3 |
+| partial | Algún canal contiene datos incompletos o diferentes. | Some channels have missing or inconsistent details. | respuesta observable, sin evidenceV3 |
+| incorrect | Hay datos incorrectos en canales activos. | There is incorrect contact information on active channels. | respuesta observable, sin evidenceV3 |
+| no_public_channel | No utilizamos canales digitales públicos para esta actividad. | We don't use public online channels for this activity. | not_applicable |
+| unknown | No hemos comprobado esos datos. | We haven't checked those contact details. | unknown |
+
+**Relación con preguntas existentes:** q2_presence_digital_base / q2_local_presence_consistency.  
+**Regla para evitar dobles observaciones:** General: coherencia entre puntos de contacto digitales activos; no duplicar una sola información de ficha local o presencia básica.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 3 — q2_general_discoverability_path · discovery · ADD v1 candidate-only
+
+**ES:** «Cuando alguien que no conoce tu actividad necesita algo como lo que ofreces, ¿tiene alguna vía para descubrirte?»  
+**EN:** “When someone unfamiliar with your activity needs something you offer, is there a way for them to discover you?”  
+**Ayuda ES:** Puede llegar por recomendaciones, señalización, directorios, búsquedas u otras vías. No requiere anuncios.  
+**Help EN:** They may find you through referrals, signs, directories, searches, or other routes. No ads are required.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| clear_path | Hay una vía comprobable por la que pueden encontrarnos. | There is a verifiable way for people to find us. | respuesta observable, sin evidenceV3 |
+| partial_path | Existe alguna vía, pero su alcance es limitado. | Some ways exist, but their reach is limited. | respuesta observable, sin evidenceV3 |
+| no_path | No identificamos una vía real de descubrimiento. | We can't identify a real discovery route. | respuesta observable, sin evidenceV3 |
+| not_seeking | Actualmente no buscamos recibir personas nuevas. | We're not currently seeking new people. | not_applicable |
+| unknown | No sabemos cómo nos descubrirían. | We don't know how new people would discover us. | unknown |
+
+**Relación con preguntas existentes:** q2_discovery_reliable_reach.  
+**Regla para evitar dobles observaciones:** General: existencia de una vía real de descubrimiento; q2_discovery_reliable_reach observa su constancia. No sumar la misma llegada como dos pruebas de captación.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 4 — q2_general_verifiable_trust_signals · trust_reputation · ADD v1 candidate-only
+
+**ES:** «Antes de avanzar contigo, ¿una persona nueva puede comprobar señales apropiadas de confianza?»  
+**EN:** “Before moving forward with you, can someone new check appropriate signs of trust?”  
+**Ayuda ES:** Pueden ser trabajos, referencias publicables o datos profesionales; no compartas información privada.  
+**Help EN:** Examples include prior work, publishable references, or professional details; don't share private information.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| accessible | Puede consultar señales pertinentes y verificables. | They can review relevant, verifiable information. | respuesta observable, sin evidenceV3 |
+| limited | Puede consultar algunas, pero faltan detalles. | Some information is available, but important details are missing. | respuesta observable, sin evidenceV3 |
+| not_accessible | No ofrecemos señales que pueda comprobar. | We don't offer information they can verify. | respuesta observable, sin evidenceV3 |
+| private_only | No es apropiado mostrarlas públicamente por privacidad. | It wouldn't be appropriate to make those details public due to privacy. | not_applicable |
+| unknown | No hemos comprobado qué se puede verificar. | We haven't checked what people could verify. | unknown |
+
+**Relación con preguntas existentes:** q2_reputation_flow / q2_professional_authority_signals.  
+**Regla para evitar dobles observaciones:** General: pruebas apropiadas de confianza sin reseñas obligatorias ni licencias inferidas. Especialidad y privacidad prevalecen.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 5 — q2_general_first_action_path · conversion_access · ADD v1 candidate-only
+
+**ES:** «Si alguien decide avanzar con tu actividad, ¿sabe cuál es el primer paso y cómo realizarlo?»  
+**EN:** “If someone decides to take the next step with your activity, do they know what to do and how?”  
+**Ayuda ES:** Puede ser contactar, inscribirse, pedir información, comprar o participar; no requiere pago ni cita.  
+**Help EN:** It may mean contacting you, enrolling, requesting information, buying, or participating; no payment is assumed.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| clear | El primer paso y la forma de hacerlo están claros. | The next step and how to take it are clear. | respuesta observable, sin evidenceV3 |
+| partial | Existe el paso, pero quedan dudas. | The step exists, but some details are confusing. | respuesta observable, sin evidenceV3 |
+| unclear | Resulta difícil entender cómo empezar. | It's difficult to know how to get started. | respuesta observable, sin evidenceV3 |
+| no_open_action | Actualmente no existe una vía de entrada abierta. | There is currently no open entry route for new people. | not_applicable |
+| unknown | No lo hemos comprobado. | We haven't checked this. | unknown |
+
+**Relación con preguntas existentes:** q2_service_response_speed / q2_professional_intake_flow / ADD 78–82.  
+**Regla para evitar dobles observaciones:** Fallback del primer paso para sectores sin pregunta especializada; no sustituir una fuente V3 directa sin paridad y sin asegurar que existe acción abierta.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 6 — q2_general_pending_step_continuity · relationship_recurrence · ADD v1 candidate-only
+
+**ES:** «Cuando una consulta requiere un paso posterior, ¿puedes retomarla sabiendo qué quedó pendiente?»  
+**EN:** “When an inquiry needs a follow-up step, can you pick it up knowing what remains outstanding?”  
+**Ayuda ES:** No exige CRM ni automatización. No implica autorización para contactar o enviar recordatorios.  
+**Help EN:** No CRM or automation is required. This doesn't grant permission to contact people or send reminders.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| reliable | Normalmente identificamos y retomamos el siguiente paso. | We can usually identify and continue the next step. | respuesta observable, sin evidenceV3 |
+| partial | A veces hay que reconstruir lo acordado. | Sometimes we must reconstruct what was agreed. | respuesta observable, sin evidenceV3 |
+| lost | Hay pasos posteriores que se pierden o no quedan claros. | Some follow-up steps get lost or remain unclear. | respuesta observable, sin evidenceV3 |
+| no_followup_needed | Las interacciones habituales no requieren seguimiento. | These interactions don't normally require a follow-up step. | not_applicable |
+| unknown | No tenemos información fiable. | We don't have reliable information about it. | unknown |
+
+**Relación con preguntas existentes:** q2_followup_general_process / q2_followup_status_visibility / q2_b2b_pipeline.  
+**Regla para evitar dobles observaciones:** General: recuperar contexto y siguiente paso, no medir cumplimiento temporal ni frecuencia de retorno. No envíos sin consentimiento.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 7 — q2_general_outcome_measure_definition · measurement_optimization · ADD v1 candidate-only
+
+**ES:** «Para saber si tu actividad mejora, ¿tienes definido algún resultado observable que puedas comparar?»  
+**EN:** “To tell whether your activity is improving, have you defined an observable result you can compare?”  
+**Ayuda ES:** Puede ser solicitudes atendidas, entregas o participantes. No exige porcentajes ni herramientas.  
+**Help EN:** It may be requests served, completed work, or participants. Percentages and advanced tools aren't required.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| defined | Tenemos un resultado concreto y comparable. | We have at least one specific, comparable outcome. | respuesta observable, sin evidenceV3 |
+| partial | Tenemos una referencia, pero no es consistente. | We have a reference, but it isn't consistent. | respuesta observable, sin evidenceV3 |
+| none | No hemos definido un resultado comparable. | We haven't defined a comparable outcome. | respuesta observable, sin evidenceV3 |
+| insufficient_activity | No hubo actividad comparable suficiente. | There hasn't been enough comparable activity. | not_applicable |
+| unknown | No sabemos si existe una medida fiable. | We don't know whether a reliable measure exists. | unknown |
+
+**Relación con preguntas existentes:** q2_measurement_practice / q2_measurement_review_cycle / q2_measurement_result_recording.  
+**Regla para evitar dobles observaciones:** General: definir un resultado comparable. No reemplazar práctica de medición real ni contar una misma revisión varias veces.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+#### Ancla general 8 — q2_general_digital_execution_reliability · digital_readiness · ADD v1 candidate-only
+
+**ES:** «Cuando una tarea depende de una herramienta digital, ¿puedes completarla de forma fiable?»  
+**EN:** “When a task depends on a digital tool, can you complete it reliably?”  
+**Ayuda ES:** Considera tareas reales, no cuántas aplicaciones tienes. Indica si no necesitas herramientas.  
+**Help EN:** Think of actual tasks, not the number of apps you use. Say so if you don't need digital tools.
+
+| Valor | Español implementado en el candidato | English (propuesta editorial) | Estado |
+| --- | --- | --- | --- |
+| reliable | Las tareas digitales necesarias se completan de forma fiable. | Necessary digital tasks are completed reliably. | respuesta observable, sin evidenceV3 |
+| partial | Se completan, pero con fallos o improvisaciones. | They get done, but with failures or workarounds. | respuesta observable, sin evidenceV3 |
+| unreliable | Las herramientas impiden completar tareas necesarias. | Our tools prevent necessary tasks from being completed. | respuesta observable, sin evidenceV3 |
+| not_needed | Esta actividad no requiere tareas con herramientas digitales. | This activity doesn't currently need digitally supported tasks. | not_applicable |
+| unknown | No sabemos qué tan fiables son. | We don't know how reliable those tools are. | unknown |
+
+**Relación con preguntas existentes:** q2_digital_tools_in_use / q2_process_systemization / q2_operations_information_base.  
+**Regla para evitar dobles observaciones:** General: fiabilidad de una tarea que realmente usa herramientas digitales; la documentación y los procesos manuales no son por sí solos capacidad digital.  
+**Evidencia:** evidenceMigration=pending; ninguna respuesta suma puntos en la propuesta aislada hasta validar su rúbrica, población aplicable, versión y deduplicación.
+
+### Política provisional de porcentajes: reutilizar el contrato existente, no inventar escalas
+
+1. **Estados existentes en código:** strong=1; established=0,75; partial=0,50; weak=0,25; dependency=0,25; missing=0. constraint, uncertainty y not_applicable tienen contribución null, por lo que no entran en numerador ni denominador. **Esto describe el código heredado**, no una rúbrica nueva aprobada para estas ocho preguntas.
+
+2. **Porcentaje de una dimensión, cuando existe evidencia V3 válida:** la función actual weightedScore calcula y redondea 100 × (suma de contribuciones directas ponderadas + suma de apoyos ponderados) / (peso directo total + peso de apoyos admitido). Los pesos actuales son 1 por directa y 0,5 por supporting, con apoyo total limitado al 50 % del peso directo; solo supporting no genera score. Las ocho preguntas nuevas NO poseen mapa V3 y hoy no influyen en el cálculo.
+
+3. **Índice global candidato existente:** media con peso igual de los porcentajes de dimensiones aplicables que tengan lectura; no pondera por número bruto de preguntas, sector ni objetivos. La calibración candidata v4 declara minScoredDimensions=3 y minCoverage=0,6 sobre las dimensiones aplicables, y clasifica enteros 0–25/26–50/51–75/76–100. La confianza y cobertura son campos distintos del porcentaje; no presentarlos como exactitud estadística.
+
+4. **Puerta de suficiencia editorial propuesta, NO implementada:** una sola observación directa puede producir una lectura provisional según el scorer actual; para presentarla como corroborada exigir **al menos dos hechos directos independientes** en esa dimensión, sin contradicciones no resueltas. Si no se alcanza, mostrar porcentaje solo como preliminar si el contrato público lo permite, o abstenerse y explicar qué falta. Este criterio debe validarse con C01–C10 y presupuesto 24+5; no se convierte unilateralmente en un bloqueo de código.
+
+5. **Deduplicación obligatoria antes de score:** conservar como clave dimensión × sector/actividad × evento × constructo × período/fuente. La versión general y la especializada pueden producir hechos distintos; si representan la misma observación, elegir una contribución, no una por cada enunciado. La selección por información nueva es previa al cálculo, no una reducción arbitraria de porcentaje.
+
+6. **Una dimensión no aplicable no pesa 0:** excluirla y publicar su motivo. Si hay incertidumbre, anotar cobertura y confianza inferiores; no convertir unknown, privacidad, ausencia de casos o actividad prelaunch en debilidad. Si el banco no puede evaluar suficientes dimensiones, no mostrar un índice global.
+
+7. **Compatibilidad y límites:** el modelo de porcentajes V9 deberá usar versión de pregunta, mapa V3, calibración y aplicabilidad para reproducir resultados históricos. Las 59 revisiones editoriales previas y las 13 ADD (cinco sectoriales y ocho generales) NO son todavía mapas puntuables certificados. En ningún caso, el porcentaje decide contratar a Vecidya ni activa GHL.
+
+### Pruebas focales y aceptación futura, no ejecutadas
+
+- **Contratos:** 77/82/90 siguen siendo tres exports independientes; unicidad de IDs, 40 opciones nuevas y 16 opciones neutras (ocho `not_applicable` y ocho `unknown`); cotejo de versiones y clausulas de appliesWhen. No se ha ejecutado el módulo TS ni su validador.
+
+- **Semántica:** C01 local con datos contradictorios, C02 proyecto sin oferta publicada, C03 pausa con historial, C04 profesional sin web, C05 ONG que admite participantes pero no pagos, C06 reserva sin necesidad de recordatorios, C07 checkout sin contactos, C08 oferta gastronómica no publicada, C09 híbrido con la misma persona en dos canales y C10 cambio de sector/objetivo. Exigir neutralidad, reemplazo/fallback y no doble observación.
+
+- **Calibración:** comparar la v4 vigente con variante de corroboración de dos hechos directos, sin cambiar pesos a priori; registrar qué dimensiones quedan sin cobertura y qué sesgo introduce el presupuesto; verificar percentiles, bandas y continuidad histórica mediante pruebas focales bajo autorización.
+
+- **Aislamiento:** solo se añadió el export experimental de 90 al archivo candidato más esta documentación. Ningún cambio en QA03B_GENERAL_BALANCED_CANDIDATE_BANK_V4 equivale a activación del scorer ni a una nueva puntuación pública. F02, F03, F05, F07 abiertos.
+
+### Changelog
+
+- **1.8.0 / 2026-10-31:** ocho observaciones generales candidato V9, una por dimensión, 90 preguntas en export aislado y política conservadora de porcentajes con pesos actuales, cobertura, confianza y deduplicación, sin score nuevo.
