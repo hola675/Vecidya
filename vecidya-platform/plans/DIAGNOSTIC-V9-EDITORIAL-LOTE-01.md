@@ -2741,3 +2741,133 @@ Los escenarios mantienen las definiciones del Plan Maestro: C01 negocio local ac
 ### Changelog
 
 - **1.8.0 / 2026-10-31:** ocho observaciones generales candidato V9, una por dimensión, 90 preguntas en export aislado y política conservadora de porcentajes con pesos actuales, cobertura, confianza y deduplicación, sin score nuevo.
+
+## Contrato semántico de evidencia para ocho generales (candidato de 90)
+
+**v1.9.0 / SOLO DISEÑO Y METADATOS EXPERIMENTALES.** Se contrastaron los ocho IDs con los cinco values de cada pregunta, y se añadió QA03B_GENERAL_PROBE_EVIDENCE_DRAFT_V1 en el mismo archivo experimental. Este export no es evidenceV3: no se importa en scoring y no aporta puntos. Se mantiene la composición anterior 77/82/90 sin alterar sus preguntas ni la ruta pública.
+
+### Mapeo por dimensión
+
+| Dimensión | ID general | Papel propuesto | Constructo y conflictos |
+
+| --- | --- | --- | --- |
+
+| clarity_positioning | q2_general_offer_comprehension | directa condicionada | offer_understanding; q2_presence_offer_clarity, q2_startup_offer_readiness, q2_retail_product_visibility |
+
+| digital_foundation | q2_general_contact_information_consistency | directa condicionada | contact_information_accuracy; q2_presence_digital_base, q2_local_presence_consistency |
+
+| discovery | q2_general_discoverability_path | directa condicionada | discoverability_entry_route; q2_discovery_reliable_reach |
+
+| trust_reputation | q2_general_verifiable_trust_signals | directa condicionada | appropriate_trust_proof; q2_reputation_flow, q2_professional_authority_signals |
+
+| conversion_access | q2_general_first_action_path | directa condicionada | entry_next_step; q2_service_response_speed, q2_professional_intake_flow, q2_education_enrollment_entry, q2_real_estate_inquiry_entry, q2_retail_purchase_next_step, q2_nonprofit_participation_entry |
+
+| relationship_recurrence | q2_general_pending_step_continuity | directa condicionada | pending_step_recoverability; q2_followup_general_process, q2_followup_status_visibility, q2_b2b_pipeline, q2_appointments_confirmation_reminders |
+
+| measurement_optimization | q2_general_outcome_measure_definition | solo apoyo | outcome_metric_definition; q2_measurement_practice, q2_measurement_result_recording, q2_measurement_review_cycle, q2_measurement_rate_estimate |
+
+| digital_readiness | q2_general_digital_execution_reliability | directa condicionada | digital_task_reliability; q2_digital_tools_in_use, q2_process_systemization, q2_operations_information_base, q2_operations_process_ownership, q2_b2b_qualification |
+
+**Resultado:** 7 directas CONDICIONADAS y 1 supporting-only. La palabra propuesta no aprueba contribuciones ni implica que un usuario deba responder las ocho preguntas. Las relaciones citadas son conflictos potenciales de un mismo evento, no exclusiones automáticas.
+
+### Tabla de los 40 estados de respuesta
+
+| Pregunta | Valores → estado SEMÁNTICO propuesto (SIN PUNTUAR) |
+
+| --- | --- |
+
+| q2_general_offer_comprehension | clear → established; partial → partial; unclear → weak; not_presented → neutral/null; unknown → neutral/null |
+
+| q2_general_contact_information_consistency | consistent → established; partial → partial; incorrect → weak; no_public_channel → neutral/null; unknown → neutral/null |
+
+| q2_general_discoverability_path | clear_path → established; partial_path → partial; no_path → weak; not_seeking → neutral/null; unknown → neutral/null |
+
+| q2_general_verifiable_trust_signals | accessible → established; limited → partial; not_accessible → weak; private_only → neutral/null; unknown → neutral/null |
+
+| q2_general_first_action_path | clear → established; partial → partial; unclear → weak; no_open_action → neutral/null; unknown → neutral/null |
+
+| q2_general_pending_step_continuity | reliable → established; partial → partial; lost → weak; no_followup_needed → neutral/null; unknown → neutral/null |
+
+| q2_general_outcome_measure_definition | defined → partial; partial → weak; none → missing; insufficient_activity → neutral/null; unknown → neutral/null |
+
+| q2_general_digital_execution_reliability | reliable → established; partial → partial; unreliable → weak; not_needed → neutral/null; unknown → neutral/null |
+
+### Política para resolver duplicaciones sin afectar los porcentajes
+
+1. Antes de observar, determinar contexto, etapa, sector, evento real y aplicabilidad. El gate de una pregunta no obliga a mostrarla.
+
+2. La clave futura de una observación será: dimensión + actividad + evento + constructo + período + fuente. No basta con comparar el texto ni con comparar solamente la dimensión.
+
+3. Si general y especializada describen el mismo evento, conservar UNA contribución. Preferir la especializada ya calibrada; no retirar una V3 directa existente por una nueva pregunta pending. Si son eventos distintos, pueden coexistir tras verificar independencia.
+
+4. Exigir dos hechos directos independientes para llamar corroborada una lectura solo cuando esos hechos sean pertinentes y observables. Una lectura con una sola directa puede ser preliminar; si no existen hechos suficientes, mostrar incertidumbre, no forzar turnos.
+
+5. Los ocho unknown y los ocho not_applicable tienen contribución nula. Una abstención de pregunta NO implica automáticamente que toda su dimensión sea no aplicable.
+
+6. Las respuestas de self-report no verificadas deben reflejarse en confianza. No deducir credenciales, consentimiento, compras, identidad del cliente ni presencia digital desde el sector o un proceso manual.
+
+7. El seguimiento de carrito y de clientes requiere permiso propio; el diagnóstico no autoriza WhatsApp, correo ni acciones GHL. Una medida de participantes comunitarios no requiere transacción comercial.
+
+8. Registrar en futuras trazas questionId/version, answer/value, dimensión, constructo, event key, periodo, directness, contribución incluida/excluida, motivo, calibrationId, cobertura y confianza.
+
+### Reglas particulares de las ocho dimensiones
+
+- clarity_positioning: comprender una oferta verbal ≠ comprender una página publicada. En preparación, not_presented es neutral contextual.
+
+- digital_foundation: un solo canal puede tener datos correctos pero no demostrar coherencia entre varios. no_public_channel solo excluye esta comparación, no necesariamente toda la dimensión.
+
+- discovery: tener una vía de descubrimiento ≠ recibir contactos regularmente; no contar dos veces el mismo referido. not_seeking es neutral.
+
+- trust_reputation: pruebas apropiadas no equivalen a reseñas ni licencias; private_only es neutral y protege datos privados.
+
+- conversion_access: primer paso público genérico ≠ resultado de la conversión; optar por intake específico cuando esté calibrado y mantenga evidencia.
+
+- relationship_recurrence: saber qué quedó pendiente ≠ respuesta oportuna ni recurrencia real; no confundir con permiso de contactar.
+
+- measurement_optimization: definir una métrica es SOLO supporting; incluso defined→partial no produce porcentaje sin evidencia directa de registro/revisión real.
+
+- digital_readiness: la fiabilidad de una tarea digital pertinente puede ser directa; organización de tareas, notas y documentos manuales NO demuestran ejecución digital.
+
+### Fórmula conservada del candidato, sin aplicar este borrador
+
+- Estados heredados: strong=1, established=0.75, partial=0.5, weak=0.25, dependency=0.25, missing=0; constraint/uncertainty/not_applicable=null.
+
+- Puntuación de dimensión = redondeo de 100 veces la media ponderada de evidencias directas y supporting válidas. Directa peso 1; supporting peso 0.5, con suma supporting ≤ 50 % del peso total directo. Solo apoyos no producen nota.
+
+- La calibración ACTIVA QA03B v4 usa al menos tres dimensiones evaluadas y cobertura mínima 60 % de dimensiones aplicables para índice global. El alias default CANDIDATE_CALIBRATION_V3 apunta a v2; las identidades deben guardarse para reproducir resultados.
+
+- Porcentaje de capacidad, cobertura y confianza NO son la misma magnitud. Ninguna pregunta pendiente se incluye en la media actual. Prelaunch no genera índice operativo por definición del contrato.
+
+### Aceptación focal futura (NO EJECUTADA)
+
+| Escenario | Comprobación requerida |
+
+| --- | --- |
+
+| C01 local con 1 canal / 2 canales discordantes | No confundir exactitud simple con coherencia multicanal |
+
+| C02 idea/preparación sin oferta contrastada | not_presented neutral, sin porcentaje de operación |
+
+| C03 pausa y not_seeking | No puntuar debilidad de captación, preservar historia |
+
+| C04 profesional con referencias privadas | private_only neutral, sin exigir reseñas públicas |
+
+| C05 ONG y métricas de participación | outcome_measure_definition supporting, no compra obligatoria |
+
+| C06 citas con pendientes y recordatorios | Distinguir recuperación de contexto y cumplimiento de recordatorio |
+
+| C07 checkout sin contacto autorizado | No activar comunicación ni puntuar dos veces el primer paso |
+
+| C08 menú no publicado pero oferta verbal clara | No convertir comprensión verbal en publicación digital |
+
+| C09 negocios híbridos presenciales/digitales | Una contribución por evento-constructo, no por canal o pregunta |
+
+| C10 edición de sector/estado/respuesta | Invalidar puntuación obsoleta y replay versionado |
+
+| F05 una directa / dos independientes / supporting solo / incertidumbre | Verificar score null, preliminar, confianza, cobertura y bandas con calibración versionada |
+
+**Gate:** las ocho preguntas nuevas conservan evidenceMigration=pending. Este borrador de evidencia no fue integrado en el scorer ni en el planner; no hay pruebas TS ejecutadas ni equivalencia ES/EN certificada. Máximo 24 preguntas ordinarias + cinco adicionales con consentimiento si son materialmente necesarias. F02/F03/F05 siguen abiertas.
+
+### Changelog
+
+- 1.9.0 / 2026-10-31: tabla candidate-only de 8 constructos, 40 respuestas y semántica propuesta (7 directas condicionadas / 1 supporting), reglas anti doble conteo y fórmula preexistente con gates de prueba; sin scoring.
