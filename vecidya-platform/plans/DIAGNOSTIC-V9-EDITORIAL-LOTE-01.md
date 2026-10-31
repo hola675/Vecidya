@@ -1949,3 +1949,165 @@ El Lote 04 y el Plan Maestro indicaron que q2_ecommerce_cart_followup no estaba 
 ### Changelog
 
 - **v1.2.0 / 2026-10-31:** Lote 09, ocho decisiones ES/EN con seis preguntas de recorrido y dos selectores; corrección semántica de demanda, checkout, digital_readiness y gate de agencia. PLAN_ONLY.
+
+## Lote editorial 10 — selectores de nicho pendientes
+
+**Documento acumulado v1.3.0 | CIERRE DEL INVENTARIO EDITORIAL DELEGADO | PLAN_ONLY.** Se resuelven las últimas cinco fichas de las 77 identidades del banco candidato QA03B V9. Todas son preguntas de clasificación single generadas dinámicamente desde NICHE_REGISTRY mediante QA03B_SPECIALTY_SELECTORS_V1, con pregunta base de «especialidad», appliesWhen por q2_sector y opciones de origen provenientes del registro. Se contrastaron las cinco listas con taxonomy.ts y specialty-candidate-bank.ts en HEAD e6cdd6bfd74ffaf38d30061fb119b1fd5e7b17fa; la cobertura es estática/documental y **no demuestra que el ensamblaje o la UI hayan pasado pruebas**.
+
+### Principios editoriales comunes
+
+- **Taxonomía por actividad:** un selector de nicho clasifica lo que se hace; no demuestra digitalización, credenciales, habilitaciones, precio, disponibilidad, ventas, públicos ni que una especialidad funcione como un arquetipo concreto. Las pistas del registro son orientativas y no gobiernan automáticamente la ruta.
+
+- **Gates y ausencia de coerción:** los cinco selectores v1 se activan por q2_sector=grupo correspondiente, incluso si la actividad está en preparación. other describe una especialidad legítima no incluida, mientras unknown expresa incertidumbre; ambos son resultados válidos, no señales weak. Si se edita el sector, recalcular las rutas dependientes y versionar respuesta para replay.
+
+- **Cambios no destructivos:** las propuestas de nuevos IDs y de recategorización NO están activas. El banco actual, los valores históricos y las 77 identidades permanecen intactos. En especial, mobile_pet_grooming no se remapea ni borra, y software_startup no se transforma automáticamente en producto SaaS.
+
+- **Compatibilidad F01/F03:** el rediseño de q2_sector del Lote 02 mezcla conceptos de sector, comprador y canal. No implantar selectores futuros antes de resolver la distinción sector/modelo/entrega y preservar los specialty gates ya documentados, especialmente agencia y odontología.
+
+- **Evidencia:** todos los nichos son clasificación y routing sin evidenceV3 directa; no se permite incrementar puntuaciones por elegir una especialidad. El presupuesto 24+5 sigue siendo un techo por sesión, no se pregunta todo el catálogo.
+
+### Matriz de decisión
+
+| Ficha | ID | Versión de origen → objetivo futuro | Dictamen |
+| --- | --- | --- | --- |
+| 73 | q2_niche_beauty_personal_care | v1 → v2 | **REWRITE** |
+| 74 | q2_niche_financial_tax_insurance | v1 → v2 | **REWRITE** |
+| 75 | q2_niche_home_services | v1 → v2 | **REWRITE** |
+| 76 | q2_niche_automotive | v1 → v2 | **REWRITE** |
+| 77 | q2_niche_technology_software | v1 → v2 | **REWRITE** |
+
+### Cinco fichas completas ES/EN
+
+#### Ficha 73 — q2_niche_beauty_personal_care · single · REWRITE
+
+**ES:** «¿Qué tipo de servicio de belleza o cuidado personal prestas principalmente a las personas?»  
+**EN:** “Which beauty or personal care service do you primarily provide to people?”  
+**Ayuda ES:** Elige la especialidad que mejor describa el servicio habitual. La estética de mascotas es una actividad diferente; no la reclasifiques automáticamente como cuidado personal humano. Si no encuentras tu actividad, marca otra especialidad.  
+**Help EN:** Choose the specialty that best fits your regular service. Pet grooming is a different activity; don't automatically classify it as human personal care. Choose another specialty if yours isn't listed.
+
+**Opciones de origen v1:** hair_salon, barbershop, mobile_pet_grooming, other, unknown.
+
+| value futuro propuesto | ES (diseño) | EN (diseño) |
+| --- | --- | --- |
+| hair_salon | Peluquería o salón de belleza. | Hair salon or beauty salon. |
+| barbershop | Barbería. | Barbershop. |
+| nail_studio NEW | Manicura, pedicura o estudio de uñas. | Nail studio, manicures, or pedicures. |
+| nonmedical_skincare NEW | Estética y cuidado de la piel no médico. | Non-medical skincare and aesthetic services. |
+| other | Otra especialidad de belleza o cuidado personal humano. | Another human beauty or personal care specialty. |
+| unknown | Todavía no sé cuál corresponde. | I'm not yet sure which specialty applies. |
+
+**Guardia de origen y evolución futura:** Hoy: selector single v1, aplica solo con q2_sector=beauty_personal_care; NICHE_REGISTRY filtra hair_salon, barbershop, mobile_pet_grooming y añade other/unknown. No requiere que la operación ya haya comenzado. Objetivo v2 elimina mobile_pet_grooming SOLO del selector humano futuro, sin borrar valores históricos; se debe definir antes una ubicación pertinente para servicios de mascotas por TAX-G1 y un camino de usuario para registros v1. Hasta que exista, bloquear la migración que perdería ese nicho.  
+**Rol/evidencia:** classification/routing, evidenceMigration=pending, ningún evidenceV3 de madurez; las pistas de arquetipo de salon/barbershop no prueban agenda, equipo o clientes. Mobile_pet_grooming hoy reside en beauty_personal_care aunque atiende animales; esto es una incoherencia de taxonomía, no un error del usuario.  
+**Versiones y compatibilidad:** 2 nuevos valores, 1 heredado desplazado de la propuesta de UI; original 5 opciones, objetivo 6. Preservar versión v1 por replay; nunca convertir automáticamente mobile_pet_grooming v1 en other, ni afirmar que el grupo futuro pet_services ya existe.  
+**Validaciones focales FUTURAS, no ejecutadas:** C06 peluquería móvil, C09 salón con servicio mixto y C10 elección mobile_pet_grooming/edición de sector; alternativas other y unknown diferenciadas y sin puntuar.
+
+#### Ficha 74 — q2_niche_financial_tax_insurance · single · REWRITE
+
+**ES:** «¿Qué tipo de servicio de finanzas, contabilidad, impuestos o seguros describes mejor como actividad principal?»  
+**EN:** “Which financial, accounting, tax, or insurance service best describes your main activity?”  
+**Ayuda ES:** Selecciona la actividad que realmente ofreces; no presupone que tengas una licencia o certificación. Si combinas varias, elige la predominante y conserva esa información adicional como contexto, no inventes otra especialidad.  
+**Help EN:** Choose the service you actually provide; selecting it doesn't establish licensing or certification. If you offer several, choose the main one and keep the others as context without inventing a specialty.
+
+**Opciones de origen v1:** tax_preparation, insurance_agency, other, unknown.
+
+| value futuro propuesto | ES (diseño) | EN (diseño) |
+| --- | --- | --- |
+| tax_preparation | Preparación y presentación de impuestos. | Tax preparation and filing. |
+| insurance_agency | Agencia o intermediación de seguros. | Insurance agency or brokerage. |
+| accounting_bookkeeping NEW | Contabilidad o teneduría de libros. | Accounting or bookkeeping. |
+| financial_advice NEW | Asesoramiento o planificación financiera. | Financial advice or planning. |
+| other | Otra especialidad financiera, contable, fiscal o de seguros. | Another financial, accounting, tax, or insurance specialty. |
+| unknown | Todavía no puedo identificar la especialidad. | I'm not yet sure of the specialty. |
+
+**Guardia de origen y evolución futura:** Actual: single v1 solo si q2_sector=financial_tax_insurance, source registry tax_preparation e insurance_agency + other/unknown (4). Objetivo v2 añade dos nichos propuestos únicamente tras versión de NICHE_REGISTRY; el selector de sector y la ruta profesional deberán seguir reflejando la actividad y etapa, sin inventar permisos legales.  
+**Rol/evidencia:** Classification/routing only; no evidenceV3 de resultados digitales, experiencia profesional, regulación o licencia. La falta de una categoría no debe obligar a la persona contable a elegirse como preparador fiscal o corredor de seguros; other es legítimo mientras faltan opciones.  
+**Versiones y compatibilidad:** 2 opciones nuevas para cobertura; 4 origen → 6 objetivo. Financial_advice no acredita autorización profesional: cualquier salida sobre servicios regulados deberá abstenerse de afirmaciones de cumplimiento sin información real.  
+**Validaciones focales FUTURAS, no ejecutadas:** C04 contable por cuenta propia, preparador tributario, correduría de seguros, actividad de asesoramiento y cambios de sector; other no produce nicho ficticio.
+
+#### Ficha 75 — q2_niche_home_services · single · REWRITE
+
+**ES:** «¿Qué tipo de servicio realizas principalmente en domicilios, inmuebles o instalaciones de tus clientes?»  
+**EN:** “Which service do you mainly provide at customers' homes, properties, or facilities?”  
+**Ayuda ES:** Elige la actividad habitual. La especialidad describe el trabajo; la zona de desplazamiento, la necesidad de cita y la atención remota se identifican por separado.  
+**Help EN:** Choose your regular service. The specialty describes the work; travel range, appointment needs, and remote service are recorded separately.
+
+**Opciones de origen v1:** hvac, plumbing, mobile_repair, other, unknown.
+
+| value futuro propuesto | ES (diseño) | EN (diseño) |
+| --- | --- | --- |
+| hvac | Climatización, calefacción y aire acondicionado. | Heating, ventilation, and air conditioning. |
+| plumbing | Plomería y fontanería. | Plumbing. |
+| mobile_repair | Reparaciones móviles de otros equipos o instalaciones. | Mobile repair of other equipment or installations. |
+| residential_electrical NEW | Servicios e instalaciones eléctricas. | Electrical services and installations. |
+| home_cleaning NEW | Limpieza de viviendas e instalaciones. | Home or facilities cleaning. |
+| other | Otro servicio para el hogar o instalaciones. | Another home or facilities service. |
+| unknown | Todavía no tengo clara la especialidad. | I'm not sure which specialty applies. |
+
+**Guardia de origen y evolución futura:** Actual: single v1 para q2_sector=home_services; registry tiene hvac, plumbing, mobile_repair, +other/unknown. Objetivo v2 preserva los tres IDs y amplía dos especialidades solo como diseño. Las pistas de nicho local_service NO prueban desplazamiento declarado; validar q2_delivery.travels y prelaunch por separado.  
+**Rol/evidencia:** Clasificación neutral; sin evidenceV3 directa. mobile_repair es ambiguo en el catálogo actual y no debe convertirse por defecto en reparación automotriz, electrónica o instalación fija; otra actividad requiere declaración del usuario.  
+**Versiones y compatibilidad:** 5 origen → 7 objetivo; 2 valores nuevos. Ningún nicho garantiza tiempo de respuesta, zona cubierta, permisos técnicos, seguridad del trabajo ni digitalización.  
+**Validaciones focales FUTURAS, no ejecutadas:** C02 servicio doméstico en preparación, C06 plomería y limpieza, actividad totalmente remota, C10 cambio de sector hogar/automotriz, other/unknown y replanificación.
+
+#### Ficha 76 — q2_niche_automotive · single · REWRITE
+
+**ES:** «¿Qué tipo de actividad automotriz describe mejor lo que ofreces?»  
+**EN:** “Which automotive activity best describes what you offer?”  
+**Ayuda ES:** Distingue reparación, detallado, venta de vehículos y servicios especializados. Comprar o vender automóviles no implica hacer reparaciones y prestar un servicio móvil no implica disponer de un taller.  
+**Help EN:** Distinguish repairs, detailing, vehicle sales, and specialist services. Selling vehicles doesn't imply repair work, and mobile service doesn't imply operating a workshop.
+
+**Opciones de origen v1:** auto_repair, mobile_detailing, other, unknown.
+
+| value futuro propuesto | ES (diseño) | EN (diseño) |
+| --- | --- | --- |
+| auto_repair | Taller de mecánica y reparación de vehículos. | Vehicle maintenance and repair workshop. |
+| mobile_detailing | Lavado y detallado automotriz móvil. | Mobile car cleaning and detailing. |
+| vehicle_sales NEW | Venta de vehículos nuevos o usados. | New or used vehicle sales. |
+| tire_services NEW | Neumáticos, llantas y servicios asociados. | Tire and wheel services. |
+| other | Otra especialidad automotriz. | Another automotive specialty. |
+| unknown | Todavía no sé qué especialidad corresponde. | I'm not yet sure which automotive specialty applies. |
+
+**Guardia de origen y evolución futura:** Actual: single v1 cuando q2_sector=automotive, NICHE_REGISTRY incluye auto_repair y mobile_detailing +other/unknown. Objetivo v2 añade venta de vehículos y neumáticos; q2_delivery, q2_customer_buyer y tipo de transacción deben permanecer independientes. No inferir taller por 'automotive' ni inventar disponibilidad de vehículos.  
+**Rol/evidencia:** Clasificación neutral sin mapeo evidenceV3 directo; auto_repair tiene pista de local, mobile_detailing de local_service, pero son sugerencias de mecanismo, NO hechos comprobados. La venta de vehículos no se debe puntuar con métricas de cotizaciones técnicas de talleres sin gates apropiados.  
+**Versiones y compatibilidad:** 4 origen → 6 objetivo. Los valores nuevos son diseño; registrar IDs en taxonomy y verificar arquetipo solo después de autorización. No publicarlos como si estuvieran activos.  
+**Validaciones focales FUTURAS, no ejecutadas:** C06 taller, detailing móvil, negocio de compraventa de autos, C09 concesionario con taller, C10 sector/entrega, stock y disponibilidad no inferidos.
+
+#### Ficha 77 — q2_niche_technology_software · single · REWRITE
+
+**ES:** «¿Qué tipo de producto, plataforma o servicio de tecnología ofreces o estás desarrollando principalmente?»  
+**EN:** “What kind of technology product, platform, or service do you mainly offer or develop?”  
+**Ayuda ES:** Describe qué haces, no solamente si la empresa es nueva. Un software propio, una solución a medida y una plataforma que conecta a distintos grupos pueden funcionar con compradores y modelos diferentes.  
+**Help EN:** Describe what you do, not just whether the business is new. Your own software product, custom development, and a platform connecting different groups can have different customers and business models.
+
+**Opciones de origen v1:** software_startup, two_sided_marketplace, other, unknown.
+
+| value futuro propuesto | ES (diseño) | EN (diseño) |
+| --- | --- | --- |
+| software_startup | Proyecto de software que está comenzando (categoría histórica). | Early-stage software project (legacy category). |
+| two_sided_marketplace | Plataforma que conecta dos grupos de participantes. | Platform connecting two participant groups. |
+| software_product NEW | Producto de software propio, incluido SaaS. | Own software product, including SaaS. |
+| custom_software_services NEW | Desarrollo de software a medida para clientes. | Custom software development services. |
+| other | Otra actividad de tecnología o software. | Another technology or software activity. |
+| unknown | Todavía no puedo identificar la especialidad. | I'm not yet sure of the specialty. |
+
+**Guardia de origen y evolución futura:** Actual: q2_sector=technology_software activa single v1 con 2 nichos del registry, software_startup y two_sided_marketplace, +other/unknown. Problema: software_startup expresa etapa y two_sided_marketplace expresa mecanismo de plataforma, no una taxonomía uniforme de actividad. Objetivo v2 mantiene IDs históricos por compatibilidad temporal y añade distinciones de producto propio/servicio; crecimiento/prelaunch debe permanecer fuera del nicho. Antes de producción, establecer migración explícita de los dos values heredados.  
+**Rol/evidencia:** Solo clasificación; evidenceMigration=pending. Pistas de arquetipo en NICHE_REGISTRY (software_startup=b2b y two_sided_marketplace=b2b+ecommerce) NO prueban que toda startup venda a empresas ni que un mercado tenga checkout o trate datos comerciales. No inferir B2B, etapa, pago online ni madurez.  
+**Versiones y compatibilidad:** 4 origen → 6 objetivo (+2); mantener software_startup en futuro selector únicamente como opción transitoria compatible, con deuda declarada de normalizar stage y business model. No reasignar el valor histórico a software_product sin confirmación.  
+**Validaciones focales FUTURAS, no ejecutadas:** C02 software en preparación sin clientes, C04 agencia de desarrollo para terceros, C07 plataforma sin checkout, C09 SaaS B2B/B2C y marketplace híbrido, C10 edición de sector y replay de software_startup.
+
+### Balance de los 10 lotes y criterio de cierre
+
+- **Recuento por lectura de fuente:** cinco selectores con **22 opciones actuales** (5+4+5+4+4) y **31 opciones objetivo** (6+6+7+6+6); +9 opciones netas de diseño. No son nuevas opciones activas. 0 KEEP y 5 REWRITE por conflictos de cobertura/semántica que exigen versiones futuras, manteniendo los IDs de preguntas.
+
+- **Inventario editorial único:** Lotes 01–09 = 72 fichas (18 KEEP/54 REWRITE), más Lote 10 = 5 REWRITE; **77/77 fichas con decisión editorial (18 KEEP/59 REWRITE)**. Verificación previa a la escritura: 72 IDs no repetidos, cinco IDs inéditos, cada lista original del selector coincide por orden y contenido con el grupo real en NICHE_REGISTRY + other/unknown. **No** se ha ejecutado el banco ni certificado el total de opciones globales históricas (387 era cifra de referencia, no inventario recontado aquí).
+
+- **Deuda de taxonomía P0:** especificar ubicación futura para mobile_pet_grooming (servicio a animales, no cuidado personal humano) antes de retirar la opción de la UI; evitar clasificación automática por aproximación. Para tecnología, software_startup mezcla fase con actividad; exigir separación stage×niche sin migración silenciosa. Para automoción, venta vs reparación; para hogar, trabajo y canal; para finanzas, actividad y credencial son cosas distintas.
+
+- **Estado F02:** la revisión editorial por identificador queda COMPLETA en fase de **decisión delegada de diseño**, pero F02 NO puede certificarse ni declararse cerrada hasta la auditoría transversal de 77 fichas, equivalencia bilingüe humana, contraste cognitivo, calibración evidenceV3, accesibilidad, neutralidad y pruebas autorizadas. No se han implantado los 59 rediseños.
+
+- **Siguiente fase documental:** auditoría transversal y matriz de trazabilidad F02, fuente de verdad ID×versión×dimensión×gate×relevancia, resolver dobles señales, ausencia de consentimiento, errores de recategorización y rutas de fallback. Priorizar los bloqueos críticos de F00/F01/F03/F05/F07; sin pasar a código ni producción sin levantamiento explícito de PLAN_ONLY.
+
+- **PLAN_ONLY vigente:** ninguna modificación TypeScript/TSX, tests, CI, SQL, Worker, D1, UI, endpoints, merges ni deploy. Solo planes Markdown del PR #162. Cada claim anterior de PASS se restringe a su ejecución histórica y no certifica el nuevo V9.
+
+### Changelog
+
+- **v1.3.0 (2026-10-31):** cierre editorial delegado de cinco selectores ES/EN, cobertura documental 77/77, 18 KEEP/59 REWRITE; taxonomía de mascotas/automotriz/software y compatibilidad histórica explícitas. Sin cambios de motor.
