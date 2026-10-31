@@ -2777,3 +2777,24 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.54.0 / 2026-10-31:** Lote editorial 02 cerrado como diseño delegado, ocho fichas ES/EN y 2 KEEP / 6 REWRITE, acumulado 16/16 decisiones documentales; seguimiento por gates sin implementación.
+
+
+## 63. Lote editorial 03 — presencia, claridad y evidencia (2026-10-31)
+
+**Estado: DECISIONES EDITORIALES DELEGADAS / PLAN_ONLY, NO CERTIFICADO.** Se cerró el diseño editorial de un tercer lote de **ocho preguntas**, con opciones, traducciones ES/EN, elegibilidad observada, evidencia directa y estados neutrales en el documento editorial existente [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), actualización **0.6.0**. La lectura de la rama arrancó del SHA ed4375b7b0046ec39b34b8b2a6fca01e5e8a5dd1 y consultó módulos originales y overrides del candidato. No se ejecutó el banco ni se hicieron pruebas nuevas.
+
+**IDs del Lote 03:** q2_presence_digital_base, q2_presence_offer_clarity, q2_local_presence_consistency, q2_discovery_reliable_reach, q2_reputation_flow, q2_service_response_speed, q2_professional_authority_signals, q2_food_menu_visibility.
+
+**Decisiones:** 1 KEEP (descubrimiento) y 7 REWRITE con versiones objetivo futuras; **36 opciones actuales** en las ocho definiciones leídas y **46 opciones propuestas**, sin activar ni cambiar los values heredados. El valor **not_published** propuesto para visibilidad de menú corrige la ambigüedad de la etiqueta actual sin reinterpretar silenciosamente not_applicable v1. El contrato mantiene que ausencia de presencia no demuestra por sí sola debilidad de claridad o confianza. q2_presence_offer_clarity conserva el reemplazo especializado solo cuando este es efectivamente elegible. Se reconoce not_applicable únicamente con contexto justificable, e unknown cuando faltan observaciones.
+
+**Criterios de evidencia pendientes:** no duplicar digital_foundation entre presencia base y datos locales; no combinar trust_reputation por reseñas y credenciales como observaciones independientes sin reglas; no calificar conversión por falta de consultas iniciales; no exigir portafolios públicos confidenciales. No inventar importancia comercial de una web propia. Revisar C02/C03/C04/C05/C06/C07/C08/C09/C10 con neutralidad y escenarios de no publicación, incluido C08 restaurante sin presencia fiable.
+
+**Acumulado editorial:** Lote 01 (8: 3 KEEP/5 REWRITE), Lote 02 (8: 2 KEEP/6 REWRITE), Lote 03 (8: 1 KEEP/7 REWRITE). **24 decisiones sobre fichas existentes: 6 KEEP / 18 REWRITE.** No se deduce de ello que el banco V9 se haya reducido/ampliado a 24 preguntas, que exista aprobación cognitiva de ES/EN, o que F02 esté certificada. Los tres lotes son *diseño*; las nuevas opciones propuestas exigen versionado, validación, replay y pruebas únicamente después de autorización futura de implementación.
+
+**Siguiente paso editorial (Lote 04):** ocho preguntas del banco compuesto referentes a acceso/seguimiento y relación con personas, con foco en permiso para contactar, ausencia de oportunidades, procesos reales y rutas C05/C07. Extraer primero identidades/opciones/guardias y evitar exigir CRM, web o venta a todas las actividades. Mantener separación Vecidya/GHL.
+
+**Límites:** PLAN_ONLY; no modificar TS/TSX, SQL, pruebas, CI, Workers, UI, migraciones, endpoints ni producción. F00, F02 y TAX-G1/TAX-G3 siguen abiertos; taxonomía definitiva y calibración no están aprobadas. No merge ni deploy.
+
+### Changelog adicional
+
+- **1.55.0 / 2026-10-31:** tercer lote editorial ES/EN terminado como diseño; reglas de neutralidad y evidencia, acumulado 24 fichas con decisión delegada. Exclusivamente documentación.
