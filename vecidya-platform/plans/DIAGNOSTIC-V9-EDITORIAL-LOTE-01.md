@@ -750,3 +750,189 @@ Extraer fichas completas de las tres preguntas pendientes desde el banco efectiv
 
 ### Changelog
 - **0.6.0 (2026-10-31):** Lote 03 completo con ocho fichas bilingües, semántica publicada/N/A/unknown, gates de evidencia y replanificación; 1 KEEP / 7 REWRITE, sin cambios en código o producción.
+
+
+## Lote editorial 04 — seguimiento, consentimiento y continuidad (2026-10-31)
+
+**Edición documental consolidada 0.7.0 — DESIGN_APPROVED_BY_DELEGATION / PLAN_ONLY.** Continuación de la autorización editorial delegada del propietario. Este lote desarrolla ocho preguntas existentes en el **candidato V9**, con ES/EN, opciones, guardias, señales, neutralidad y criterios de aceptación. Las decisiones de **diseño** están tomadas, pero ninguna versión/optionId/evidencia/guardia de destino se ha incorporado al runtime. No altera V8, GHL ni producción.
+
+### Origen y distinciones verificadas
+
+- HEAD de lectura previo a este lote: dd0e9ea558909a1a38c13de7a4cfd8eeee905e33. Contratos consultados: qa03b/bank.ts y editorial-copy.ts; qbv2-reviewed-commerce.ts, business-audience.ts, transversal.ts, local-appointments-professional.ts, specialized-entry.ts, evidence.ts; qbv2-lote-c.ts y qa03b/v9-editorial-review-matrix.ts como antecedentes. El candidato compuesto preserva identidad de las preguntas del banco reviewed salvo overrides expresos.
+- **Tres hechos distintos:** disponer de un medio directo de contacto, contar con una base de autorización aplicable para ese uso y realizar efectivamente el seguimiento. Tener número/correo, seguir a alguien en una red o usar un CRM no prueba consentimiento ni efectividad.
+- **Ecommerce C07:** q2_ecommerce_cart_followup existe en el legado qbv2-lote-c.ts y figura en un ledger editorial, pero no se ha localizado como pregunta de las 77 del banco candidato por las fuentes de ensamblaje revisadas. **No contarla como una de las ocho** ni suponer que ejecuta recordatorios. Es una deuda de arquitectura de permisos para recomendaciones, no una invitación a recuperar la pregunta antigua sin rediseño.
+- **No imponer herramienta:** papel, memoria fiable, agenda o software pueden describir un proceso observable. Un CRM no es requisito obligatorio para que una respuesta sea favorable; una herramienta sin proceso no constituye evidencia suficiente.
+- **Consentimiento por finalidad y canal:** clasificar como conocido/permitido solo cuando esté acreditado para el tipo de contacto. Si es incierto, no asumir permiso. La decisión editorial no es asesoría jurídica ni habilita el envío de mensajes; las bases legales y jurisdicción se verificarán en F07/F08 antes de implementar automatizaciones.
+- **No doble contar:** seguimiento genérico y variante sectorial, proceso B2B y visibilidad de estado, recordatorio y nueva cita no son pruebas independientes de un mismo hecho. Si compiten, elegir una observación más específica con gate, sin duplicar puntuación.
+
+### Matriz de decisiones — Lote 04
+
+| # | ID | Fuente → objetivo V9* | Dictamen de diseño | Evidencia / guardia |
+| --- | --- | --- | --- | --- |
+| 25 | q2_retail_customer_capture | v2 → v3* | **REWRITE** | Vía contactable **con autorización**, no mera captura; retail activo con historial y meta/fricción de seguimiento |
+| 26 | q2_creator_audience_ownership | v2 → v3* | **REWRITE** | Canal directo utilizable con permiso; creator activo, sin doble contar con retail |
+| 27 | q2_followup_general_process | v2 → v2 | **KEEP / COPY_REFINED** | Continuidad real genérica; no repetir si hay especialista aplicable |
+| 28 | q2_service_quote_followup | v2 → v3* | **REWRITE** | Seguimiento tras cotización y permiso; servicio local activo |
+| 29 | q2_appointments_rebooking | v2 → v2 | **KEEP / COPY_REFINED** | Siguiente cita cuando realmente se necesita; atención por citas |
+| 30 | q2_b2b_pipeline | v2 → v3* | **REWRITE** | Proceso B2B real hasta desenlace; distinguir sin oportunidades |
+| 31 | q2_b2b_status_visibility | v2 → v2 | **KEEP / COPY_REFINED** | Recuperación del estado, evidencia de apoyo a digital_readiness |
+| 32 | q2_appointments_confirmation_reminders | v2 → v3* | **REWRITE** | Recordatorio pre-cita sin suponer permiso ni asistencia |
+
+*Versiones objetivo sugeridas solo para un futuro contrato V9. Primero verificar posibles colisiones en el HEAD, asegurar replay versionado y no remapear respuestas históricas v2.
+
+### Ficha 25 — q2_retail_customer_capture · v2 → v3 objetivo
+
+**ES:** «Después de una compra, ¿tienes una forma autorizada de volver a contactar al cliente cuando realmente corresponde?»  
+**EN:** “After a purchase, do you have an authorized way to contact the customer again when it's appropriate?”  
+**Ayuda ES:** «No basta con tener el teléfono o que siga tus redes: considera únicamente los medios que puedes utilizar legítimamente para ese propósito.»  
+**Help EN:** “Having a phone number or a social media follower isn't enough. Count only channels you are allowed to use for that purpose.”
+
+| value | ES propuesto | EN proposed | Interpretación de diseño |
+| --- | --- | --- | --- |
+| consistent | Sí, con la mayoría de clientes tengo un medio directo utilizable con autorización. | Yes, I have an authorized direct channel for most customers. | relación/contactabilidad directa, no prueba que escriba |
+| partial | Solo con algunos clientes tengo ese medio autorizado. | I only have such an authorized channel for some customers. | parcial |
+| no | Normalmente no conservo un medio directo para volver a contactar. | I usually don't retain a direct way to reach customers. | ausencia conocida de medio; no implica falta de permiso |
+| no_permission **NEW** | Tengo algún dato de contacto, pero no autorización para usarlo con esa finalidad. | I have some contact details, but I'm not authorized to use them for that purpose. | Contextual / abstención de contacto; **no inferir consentimiento** |
+| not_applicable | Mi actividad no requiere contacto posterior a la compra. | My activity doesn't require post-purchase contact. | N/A legítimo con contexto |
+| unknown | No sé si disponemos de medios autorizados. | I'm not sure whether we have authorized contact channels. | incertidumbre |
+
+**Actualidad:** single; materialAppliesWhen: retail activo + meta stop_losing o fricción follow_up; bank.ts añade operating AND q2_has_customers=yes. Evidencia R3J actual: relationship_recurrence directness=direct, consistent/partial/no/not_applicable/unknown. **Cambio crítico:** el nuevo no_permission no se mapeará a no=missing ni a established; exige criterio contextual y versión. **Escenario:** tienda con ventas, datos telefónicos recogidos para facturación pero sin permiso de contacto posterior; jamás recomendar envío directo por suposiciones. No almacenar teléfonos ni consentimientos a partir de esta respuesta de autodiagnóstico.
+
+### Ficha 26 — q2_creator_audience_ownership · v2 → v3 objetivo
+
+**ES:** «Además de publicar contenido, ¿puedes contactar directamente con parte de tu audiencia por un medio que estés autorizado a utilizar?»  
+**EN:** “Beyond posting content, can you directly contact part of your audience through a channel you're allowed to use?”  
+**Ayuda ES:** «Una persona seguidora no equivale a un contacto autorizado. No importa si usas correo, mensajería u otra vía: importa el permiso y la posibilidad real.»  
+**Help EN:** “A follower isn't automatically an authorized contact. Email, messaging, or another channel can count only when it can actually and appropriately be used.”
+
+| value | ES | EN | Semántica |
+| --- | --- | --- | --- |
+| direct_consistent | Sí, tengo una vía autorizada para comunicarme directamente con una parte significativa. | Yes, I have an authorized direct channel for a meaningful part of my audience. | vía directa declarada, no seguimiento probado |
+| direct_limited | Solo puedo contactar directamente y con autorización a una parte pequeña. | I can directly and appropriately contact only a small part. | contacto limitado |
+| platform_only | Dependo principalmente de las publicaciones de la plataforma para que vuelvan. | I mainly rely on the platform showing my posts again. | dependencia de plataforma, no conclusión de calidad |
+| no_permission **NEW** | Tengo datos o medios, pero no autorización para contactar con esa finalidad. | I have contact details or channels, but no permission for this type of outreach. | contextual neutral; bloquear sugerencia de mensajes |
+| not_applicable | No necesito comunicación directa posterior con la audiencia. | My activity doesn't require direct follow-up with my audience. | N/A por modelo |
+| unknown | No sé qué canales puedo usar de manera autorizada. | I'm not sure which channels I'm allowed to use. | incertidumbre |
+
+**Elegibilidad actual:** activity=active, businessModel=creator_audience y meta stop_losing o fricción follow_up; bank.ts agrega operating. **Evidencia:** origen reviewed marcado pending, sin mapeo R3 directo para creator; **no elevar por redacción** a relationship_recurrence established ni duplicar con retail. **Gate:** C09 creador con tienda; seleccionar la vía sectorial dominante sin dos scores de la misma lista. Los seguidores, audiencia y datos para otras finalidades no son permiso automático.
+
+### Ficha 27 — q2_followup_general_process · KEEP v2
+
+**ES:** «Cuando alguien espera una respuesta o un siguiente paso, ¿sueles retomar ese asunto a tiempo?»  
+**EN:** “When someone is waiting for a reply or next step, do you usually follow up in time?”  
+**Ayuda ES:** «Piensa en pendientes reales, no en la herramienta. Puedes organizarte de memoria, en una agenda, con notas o software.»  
+**Help EN:** “Think of real pending matters, not the tool. You may use memory, a calendar, notes, or software.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| consistent | Normalmente retomo los pendientes a tiempo. | I usually follow up on time. | relationship_recurrence established si hecho observado |
+| partial | Generalmente los retomo, aunque algunos se retrasan. | I generally follow up, although some cases are delayed. | partial |
+| sometimes_lost | Con frecuencia algunos asuntos quedan sin retomar. | Some matters are frequently not followed up. | weak solo de continuidad real |
+| not_applicable | No tengo actualmente asuntos que necesiten seguimiento posterior. | I currently have no matters that require follow-up. | N/A, sin evaluar capacidad |
+| unknown | No sé qué suele suceder. | I'm not sure what normally happens. | incertidumbre |
+
+**Elegibilidad observada:** activity=active, q2_friction=follow_up; excluye arquetipos local_service/appointments/retail, comprador B2B/mixed y creator, más guardia de operating. Es pregunta **fallback**, no universal. Evidencia R3E relationship_recurrence directness=direct. **KEEP:** conservar los cinco values y la separación proceso/herramienta; no añadir una obligación de CRM. **Control:** C02, C05 y C09; si una ruta especializada mide el mismo hecho, no preguntar también esta genérica.
+
+### Ficha 28 — q2_service_quote_followup · v2 → v3 objetivo
+
+**ES:** «Después de enviar una cotización que queda sin respuesta, ¿qué suele pasar con el seguimiento que puedes realizar legítimamente?»  
+**EN:** “After sending a quote that receives no reply, what usually happens with any follow-up you're permitted to make?”  
+**Ayuda ES:** «Piensa en cotizaciones reales. No contactar no equivale a desorganización si la persona no autorizó ese contacto o no existe la práctica de enviar presupuestos.»  
+**Help EN:** “Think of actual quotes. Not contacting someone isn't disorganization when outreach isn't authorized or your service doesn't use quotes.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| consistent | Normalmente hago seguimiento cuando tengo autorización para ello. | I usually follow up when I'm authorized to do so. | relationship_recurrence established, condicionado |
+| sometimes | A veces hago seguimiento autorizado, pero no siempre. | I sometimes make authorized follow-ups, but not consistently. | partial |
+| rarely | Puedo hacerlo legítimamente, pero normalmente no retomo la cotización. | I am allowed to follow up, but usually don't. | weak de continuidad observada |
+| no_permission **NEW** | En esos casos no dispongo de autorización para volver a contactar. | In those cases, I don't have authorization to contact the person again. | abstención/estado contextual, no weak |
+| not_applicable | Mi actividad no utiliza cotizaciones previas para contratar. | My activity doesn't use advance quotes for contracting. | N/A |
+| unknown | No tengo información suficiente sobre lo que sucede. | I don't have enough information about what happens. | incertidumbre |
+
+**Elegibilidad observada:** servicio local activo; meta opportunities o fricción conversion/follow_up o respuesta inicial weak; bank.ts agrega operating. Evidence R3E relationship_recurrence directness=direct v2. **REWRITE:** añade no_permission solo en V9, con contrato de evidencia contextual nuevo. Si no hubo cotizaciones, el motor debe abstenerse, no forzar respuesta rarely. **Control:** C06 servicio a domicilio, C07 sin permiso si alguna ruta futura aplica.
+
+### Ficha 29 — q2_appointments_rebooking · KEEP v2
+
+**ES:** «Cuando una persona necesita otra cita para continuar su atención, ¿cómo suele organizarse la siguiente?»  
+**EN:** “When someone needs another appointment to continue their care or service, how is the next one usually arranged?”  
+**Ayuda ES:** «Cuenta servicios que realmente requieren volver. Una atención aislada sin siguiente cita necesaria no es un fallo de continuidad.»  
+**Help EN:** “Consider services that actually require another visit. A one-off service with no need to return isn't a follow-up failure.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| proactive | Normalmente queda acordada la próxima cita con anticipación. | The next appointment is usually arranged in advance. | established |
+| partial | Algunas se acuerdan de antemano y otras después. | Some are arranged in advance and others later. | partial |
+| reactive | Normalmente la persona tiene que volver a contactarnos. | The person usually has to contact us again. | weak solo donde continuidad es pertinente |
+| not_applicable | Mi servicio normalmente no necesita una siguiente cita. | My service usually doesn't require a follow-up appointment. | N/A legítimo |
+| unknown | No sé cómo se resuelve normalmente. | I'm not sure how this usually works. | incertidumbre |
+
+**Elegibilidad observada:** appointments activo + meta stop_losing o fricción follow_up; bank.ts añade operating AND has_customers=yes. Evidencia R3M relationship_recurrence directness=direct. **KEEP:** distinción entre cita de continuidad necesaria y «fidelización» arbitraria; en el nicho dental existe sustituto especializado condicionado. **Control:** C06, clínica, C10 sector cambiado; gate de exclusividad entre pregunta genérica y dental.
+
+### Ficha 30 — q2_b2b_pipeline · v2 → v3 objetivo
+
+**ES:** «Cuando una organización muestra interés en contratarte, ¿sigues un proceso que permita saber qué hacer después y cómo terminó esa oportunidad?»  
+**EN:** “When an organization considers hiring you, do you follow a process that makes the next step and the final outcome clear?”  
+**Ayuda ES:** «No es necesario usar un CRM. Importa que el proceso sea consistente y permita conocer el desenlace real, incluso si se lleva en agenda o notas.»  
+**Help EN:** “A CRM isn't required. What matters is a consistent process that tracks the real outcome, even with notes or a calendar.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| defined | Sí, el proceso es claro y permite saber qué paso sigue hasta su desenlace. | Yes, the process is clear and tracks next steps through the outcome. | relationship_recurrence established |
+| partial | Existe un proceso, pero no se sigue siempre de la misma forma. | There is a process, but it isn't followed consistently. | partial |
+| informal | Se maneja cada oportunidad de forma distinta y a veces se pierde la continuidad. | Opportunities are handled inconsistently and continuity is sometimes lost. | weak si se observó |
+| no_opportunities **NEW** | Todavía no tenemos oportunidades reales de ese tipo que permitan observar el proceso. | We haven't had real opportunities of that type to assess the process. | insufficient_history/context_only, no weak |
+| unknown | No sé si contamos con un proceso consistente. | I'm not sure whether we have a consistent process. | incertidumbre |
+
+**Elegibilidad de origen:** futureB2BApplicability() AND q2_has_customers=yes; bank.ts impone operating y comprador b2b/mixed para módulo b2b. **Tensión:** haber atendido personas antes no prueba tener oportunidades B2B comparables; no_opportunities cubre ese vacío. Evidencia R3L relationship_recurrence directness=direct para defined/partial/informal, sin score para el valor nuevo. **REWRITE:** nueva versión sin exigir software, sin convertir intención de vender en pipeline observado. **Control:** C04 profesional, C05 entidad con subvenciones que no vende, C09 multiactividad.
+
+### Ficha 31 — q2_b2b_status_visibility · KEEP v2
+
+**ES:** «Cuando tienes oportunidades abiertas con empresas u organizaciones, ¿puedes recuperar fácilmente en qué quedó cada una?»  
+**EN:** “When you have open opportunities with businesses or organizations, can you easily find out the status of each one?”  
+**Ayuda ES:** «No importa si consultas notas, agenda, memoria fiable u otro sistema. Se evalúa poder recuperar el estado, no qué herramienta posees.»  
+**Help EN:** “Notes, a calendar, reliable memory, or another system may work. This checks whether you can retrieve the status, not which tool you own.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| clear | Normalmente puedo recuperar el estado de cada oportunidad. | I can usually find the status of each opportunity. | digital_readiness, apoyo |
+| partial | Algunas veces necesito reconstruir información para saberlo. | Sometimes I need to piece information back together. | parcial |
+| lose_track | A veces no logro recuperar el estado de una oportunidad. | Sometimes I can't recover the status of an opportunity. | débil en recuperar datos, no venta |
+| not_applicable | No mantengo oportunidades abiertas entre conversaciones. | I don't keep opportunities open between conversations. | N/A |
+| unknown | No tengo información suficiente para evaluarlo. | I don't have enough information to assess it. | incertidumbre |
+
+**Elegibilidad observada:** actividad activa + comprador b2b/mixed + meta organize o fricción operations; bank.ts añade operating y buyerGuard. Evidencia R3F **digital_readiness supporting**, no direct. **KEEP:** cinco values; la existencia de pipeline no prueba recuperar estado ni viceversa; evitar sumarlo como otra observación directa de relationship_recurrence. **Control:** B2B de una sola transacción, organización sin contrataciones, notas sin software.
+
+### Ficha 32 — q2_appointments_confirmation_reminders · v2 → v3 objetivo
+
+**ES:** «Cuando una cita ya está confirmada, ¿con qué frecuencia enviáis un recordatorio por un medio que podéis utilizar adecuadamente?»  
+**EN:** “Once an appointment is confirmed, how often do you send a reminder through a channel you're allowed to use?”  
+**Ayuda ES:** «Cuenta solo citas reales y recordatorios válidos. No supongas que tener un número permite enviar mensajes, ni que un recordatorio demuestra que la persona asistió.»  
+**Help EN:** “Consider actual bookings and appropriate reminders. Having a number doesn't automatically authorize messaging, and a reminder doesn't prove attendance.”
+
+| value | ES | EN | Lectura |
+| --- | --- | --- | --- |
+| consistent | Casi siempre enviamos un recordatorio cuando corresponde. | We send an appropriate reminder almost every time. | relationship_recurrence established en recordatorio, no en asistencia |
+| sometimes | Lo enviamos en algunas citas, pero no siempre. | We send reminders for some appointments, but not all. | partial |
+| rarely | Rara vez enviamos recordatorios aunque corresponda hacerlo. | We rarely send reminders even when they are appropriate. | weak solo del proceso pertinente |
+| no_authorized_channel **NEW** | No contamos con un canal que podamos utilizar adecuadamente para enviar ese recordatorio. | We don't have a channel we can appropriately use to send that reminder. | contextual/abstención; no autoriza enviar |
+| not_applicable | Para este tipo de citas, el recordatorio normalmente no corresponde. | Reminders usually aren't applicable to this type of appointment. | N/A justificado |
+| unknown | No sé con qué frecuencia ocurre. | I'm not sure how often it happens. | incertidumbre |
+
+**Elegibilidad observada:** appointments activo, appointmentAttendance=sometimes/often (medida en pregunta previa), más guardia operating AND has_customers=yes; no activar por intuición de ausencia. Evidencia R3K relationship_recurrence directness=direct v2: recordatorio no demuestra asistencia, causas del absentismo ni tasa. **REWRITE:** nueva opción sin canal adecuado y contexto de finalidad; nunca recomendar SMS/WhatsApp/email automáticamente sin verificación. **Control:** citas sin ausencias, C06, prácticas clínicas y C07 si otra ruta reutiliza seguimiento.
+
+### Contrato transversal para F02/F03/F04/F05/F07/F08
+
+1. **Opciones observadas:** 39 en ocho preguntas (5+5+5+5+5+4+5+5). **Diseño objetivo delegado:** 44 opciones (6+6+5+6+5+5+5+6), con cinco values nuevos en cinco preguntas; nada fue añadido a TS ni se modificaron scoringReadiness/evidenceV3. Tres KEEP, cinco REWRITE; no preguntas nuevas ni retiradas.
+2. **Permisos y finalidades:** no_permission y no_authorized_channel **NO** equivalen a no guardar contacto, a no hacer seguimiento cuando es posible, ni a not_applicable general de todo el diagnóstico. Son impedimentos/contexto para acciones directas; no generar consejos para enviar campañas, mensajes o recordatorios por ese canal. unknown exige no inferir autorización.
+3. **Evidencia:** relationship_recurrence directa en retail, seguimiento genérico, cotización, rebooking, proceso B2B y recordatorios **solo con hechos observados y pertinentes**. Creator pendiente de evidencia; B2B status es solo supporting para digital_readiness. Diferenciar contactabilidad, desempeño y resultados; no puntuar doble.
+4. **C07 ecommerce sin permiso:** el cliente puede tener carrito y datos, pero sin canal legítimamente utilizable no se habilita recuperación de carrito. La opción de legado q2_ecommerce_cart_followup no certifica V9; cualquier propuesta futura exige banco nuevo, aplicabilidad, legalidad y tratamiento neutral, sin importarla automáticamente ni usar follow-up como sinónimo de permiso.
+5. **Privacidad y separación comercial:** respuestas de autodiagnóstico no confieren permiso de marketing ni habilitan uso de contactos reales; Vecidya/CRM propios son conceptos distintos de GHL y no se conectan contactos o campañas de HighLevel por esta decisión. No capturar en este lote datos personales de clientes.
+6. **Versionado y replay:** los cinco IDs con semántica/values nuevos requieren versiones independientes, trazas, replanificación si el usuario edita sector/comprador/estado/meta, prueba de selección de pregunta sustituida y retrocompatibilidad de sesiones históricas. No reinterpretar unknown/no/not_applicable antiguos en base a copy futuro.
+7. **Aceptación focal futura (SIN EJECUCIÓN):** C03 paused con historial (no follow-up corriente); C04 profesional individual B2B; C05 nonprofit sin comprador ni donantes; C06 citas con y sin seguimiento necesario; C07 ecommerce no contactable; C09 creador+retail sin duplicación; C10 cambio de sector; guardias de permiso real, 24+5 e insuficiencia de evidencia. Los tests serán **focales**, no globales, después de autorización.
+8. **No equivale a certificación:** diseño ES/EN especificado, falta revisión cognitiva bilingüe, conformidad legal contextual, integración de evidencias, pruebas, backend y lanzamiento. PLAN_ONLY sin modificación de código/CI/producción.
+
+**Estado editorial acumulado:** cuatro lotes × ocho fichas = **32 decisiones de diseño** (Lote 01 3 KEEP/5 REWRITE; Lote 02 2/6; Lote 03 1/7; Lote 04 3/5) = **9 KEEP / 23 REWRITE**. No significa que 32/77 estén implementadas o certificadas; F02 permanece abierta y el banco candidato V9 de 77 permanece sin cambios de runtime.
+
+### Changelog documental
+
+- **0.7.0 / 2026-10-31:** lote 04 de ocho fichas ES/EN sobre contacto, consentimiento, seguimiento, citas y B2B; 3 KEEP / 5 REWRITE; cinco values futuros y gates de no contacto, sin código ni tests nuevos.
