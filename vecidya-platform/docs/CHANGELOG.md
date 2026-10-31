@@ -1,3 +1,8 @@
+## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
+
+- Se ajustó `/licencias`: notas comerciales 2×2, hero más claro, tabla comparativa con mayor contraste y tarjetas en una columna desde 900 px; hover breve que respeta movimiento reducido.
+- Se conservaron precios, activaciones, condiciones, rutas y CTAs. E2E focal, typecheck, build, diff-check y revisión visual de cinco anchos PASS. PR #221 abierta en borrador. Sin deploy ni cambios de datos.
+
 ## 0.9.2 — publicado (2026-10-29)
 
 - Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.

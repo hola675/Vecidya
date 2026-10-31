@@ -453,15 +453,15 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.9fr);
   align-items: stretch;
-  gap: clamp(2rem, 7vw, 5rem);
-  min-height: 30rem;
+  gap: clamp(2rem, 5vw, 4rem);
+  min-height: 27rem;
   overflow: hidden;
-  border: 1px solid rgb(21 95 197 / 18%);
+  border: 1px solid rgb(21 95 197 / 15%);
   border-radius: var(--radius-lg);
   padding: clamp(2rem, 6vw, 5rem);
   background:
-    radial-gradient(circle at 85% 15%, rgb(255 107 11 / 18%), transparent 12rem),
-    linear-gradient(135deg, #f4f8ff 0%, #fff 65%);
+    radial-gradient(circle at 91% 8%, rgb(255 107 11 / 12%), transparent 13rem),
+    linear-gradient(135deg, #f7faff 0%, #fff 60%);
 }
 
 .licenses-hero__copy {
@@ -492,12 +492,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .licenses-hero__path {
   display: grid;
   align-content: center;
-  gap: .85rem;
+  gap: .8rem;
   border-radius: var(--radius-md);
   padding: clamp(1.5rem, 4vw, 2.5rem);
   color: #eff5ff;
-  background: linear-gradient(155deg, var(--blue), var(--blue-dark));
-  box-shadow: 0 1.2rem 2.5rem rgb(16 76 157 / 18%);
+  background: var(--blue-dark);
+  box-shadow: 0 1rem 2rem rgb(16 43 81 / 14%);
 }
 
 .licenses-hero__path-item {
@@ -603,7 +603,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 
 .licenses-decision-notes {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: .75rem;
 }
 
@@ -621,7 +621,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .licenses-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  align-items: stretch;
+  gap: clamp(.85rem, 1.5vw, 1.25rem);
 }
 
 .license-card {
@@ -633,12 +634,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   border-radius: var(--radius-md);
   padding: clamp(1.25rem, 3vw, 1.75rem);
   background: #fff;
-  box-shadow: 0 .8rem 2rem rgb(20 43 74 / 5%);
+  box-shadow: 0 .65rem 1.6rem rgb(20 43 74 / 5%);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.license-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(21 95 197 / 35%);
+  box-shadow: 0 1rem 2rem rgb(20 43 74 / 9%);
 }
 
 .license-card--barrio {
   border-color: rgb(21 95 197 / 35%);
-  box-shadow: 0 1rem 2.4rem rgb(21 95 197 / 11%);
+  box-shadow: 0 .9rem 2rem rgb(21 95 197 / 9%);
 }
 
 .license-card__top {
@@ -686,7 +694,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .license-card__price {
   margin: -.35rem 0 0;
   color: var(--ink);
-  font-size: 1.5rem;
+  font-size: clamp(1.4rem, 2vw, 1.7rem);
   font-weight: 900;
   letter-spacing: -.02em;
 }
@@ -779,6 +787,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   margin-top: 0;
 }
 
+.licenses-comparison .licenses-section-heading {
+  margin-bottom: 1.25rem;
+}
+
 .licenses-compare-table-wrap {
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -802,6 +814,21 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .licenses-compare-table td {
   border-bottom: 1px solid var(--line);
   padding: 1rem 1.25rem;
+}
+
+.licenses-compare-table thead th {
+  color: #fff;
+  background: var(--blue-dark);
+  font-size: .92rem;
+}
+
+.licenses-compare-table tbody tr:nth-child(even) {
+  background: #f6f9fd;
+}
+
+.licenses-compare-table tbody th {
+  color: var(--ink);
+  font-weight: 800;
 }
 
 .licenses-compare-table tr:last-child th,
@@ -966,9 +993,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     grid-template-columns: 1fr;
   }
 
-  .licenses-decision-notes {
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  }
+  .licenses-decision-notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
   .licenses-hero {
     min-height: auto;
@@ -1072,6 +1097,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
     font-weight: 700;
     text-align: right;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .license-card { transition: none; }
+  .license-card:hover { transform: none; }
 }
 
 /* UX-002.3 — addons experience */

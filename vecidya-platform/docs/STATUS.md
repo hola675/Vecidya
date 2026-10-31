@@ -35,6 +35,11 @@ Se registran cinco familias editoriales y las tres variantes Base/Pro/Premium, t
 ## UX-PREMIUM-01 — aplicación integral de la guía (en curso)
 
 El usuario aprobó extender el trabajo a toda la plataforma: web pública, Mi Vecidya, Admin y MiniWeb V2. `UX-PREMIUM-FOUNDATION-01` introduce tokens propios y refinamientos transversales de tipografía, foco y controles; migra primarios/secundarios a la paleta premium. `typecheck`/`build` y la navegación pública local pasan. Hay capturas antes/después de Home en los cinco viewports acordados, foco por teclado y movimiento reducido verificados. No es un rediseño integral ni certifica todas las rutas: faltan ajustes por pantalla/superficie, estados interactivos de App/Admin/MiniWeb con fixtures sintéticas autorizadas y revisión accesible. El resto de colores heredados y la identidad visual de sitios MiniWeb se preservan. Sin cambios funcionales ni publicación.
+## UX-PREMIUM-02G — refinamiento visual de Licencias (2026-10-30)
+
+**CODE local / RAN local; PR #221 abierta en borrador, no publicado.** En `/licencias`, el hero y el comparador reciben mayor contraste y aire; las cuatro notas comerciales se ordenan en una cuadrícula 2×2; las tarjetas mantienen tres columnas en escritorio y pasan a una columna desde 900 px. Se añadió elevación sutil al hover, anulada con `prefers-reduced-motion: reduce`. Precios, activaciones, catálogo, contenido, rutas y CTA se conservan.
+
+`licenses-experience-check.mjs` PASS (1366/768/390/360). Typecheck, build y `git diff --check` PASS. Comparación visual antes/después con capturas completas en 1366/1024/768/390/360 px; el baseline usa CSS exacto de `origin/main`, inyectado sobre la misma página local. No hay overflow horizontal. El foco del CTA y el comparador móvil quedan cubiertos por el E2E; Chromium confirma que `reduce` lleva la transición de las tarjetas a duración casi cero. No implica certificación WCAG ni revisión con lector de pantalla/zoom 200 %. Sin cambios de datos, D1, deploy ni HTTP pública fechada.
 
 ## UX-COHERENCE-ROUNDED-001 — refinamiento global publicado en 0.9.2 (2026-10-29)
 
