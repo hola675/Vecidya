@@ -2870,3 +2870,32 @@ Continuar **Lote 02 (8 preguntas)** sin crear otro documento Markdown de fase: p
 ### Changelog adicional
 
 - **1.58.0:** cierre de diseño del Lote 06 bilingüe, P0 de elegibilidad de agencia, semántica de catálogo y calendario; 48 fichas con decisión editorial. Solo documentación.
+
+
+## 67. Lote editorial 07 — preparación y permisos de carrito
+
+**DESIGN_DECIDED_BY_DELEGATION / PLAN_ONLY / NO CERTIFICADO.** Se consolidaron ocho fichas bilingües adicionales en [DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md](DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md), sección «Lote editorial 07», versión documental acumulada **1.0.0**. Se inspeccionaron fuentes del HEAD 0131599b71485d4f54a68dc74d535053abf484b5: reviewed-foundation, reviewed-commerce, qa03b/bank.ts, specialty-candidate-bank.ts, recovery-wave2.ts, qbv2-lote-c.ts, lote-d.ts y lote-f.ts. La rama experimental specialty-branches-wave1.ts contiene una aserción de 77 identidades únicas; **se examinó la definición, no se ejecutó** el ensamblaje ni se certificó su estado en runtime.
+
+**IDs de las fichas 49–56:** q2_other_staff, q2_retail_product_visibility, q2_startup_problem_clarity, q2_startup_validation_evidence, q2_startup_offer_readiness, q2_ecommerce_cart_visibility, q2_ecommerce_cart_followup y q2_nonprofit_donation_clarity. No coinciden con los 48 IDs editoriales de los Lotes 01–06. **Resolución:** 1 KEEP (other_staff), 7 REWRITE con versiones objetivo futuras, **34 opciones actuales → 41 opciones de diseño**, siete valores netos propuestos que no están activos.
+
+### Rectificación del Lote 04 y alcance real del banco
+
+En el apartado 64 se afirmó que q2_ecommerce_cart_followup «no se contó entre las ocho preguntas existentes del candidato» y podía entenderse que solo existía en legado. **RECTIFICACIÓN DE AUDITORÍA:** el código de qa03b/recovery-wave2.ts ya **recupera el ID en el banco candidato experimental v2**, con always/sometimes/rarely/no_authorized_contact/unknown, elegibilidad de ecommerce activo con historial y visibilidad de carrito, y evidencia V3 de relationship_recurrence. specialty-candidate-bank.ts incorpora esa wave2 y specialty-branches-wave1.ts incorpora el banco; por tanto **no hace falta agregar el ID desde legado**. La frase de Lote 04 queda superada por esta corrección sin reescritura de su historial editorial. Se requiere revisión del contrato v2 y de la separación de identidad, permiso y actividad; ningún mensaje ni campaña queda autorizado por el diagnóstico.
+
+### Resoluciones y bloqueos prioritarios
+
+1. **C02 preparación:** el problema que intenta resolver un proyecto, conversaciones de validación y definición de una oferta son hechos diferentes. Los tres pilotos prelaunch tienen mapeos hacia clarity_positioning; la madurez digital **no** debe calificarse como establecida o débil por existir o faltar esos hechos antes de tener una presencia digital real. Recalibrar la dirección/evidencia y evitar doble conteo por las preguntas 51–53.
+2. **C04 personal remunerado:** q2_other_staff v3 pregunta por **personal pagado habitual**, no voluntariado ni proveedores ocasionales; no se debe hacer inferencia de tamaño de plantilla, automatización, madurez o necesidad obligatoria de CRM. unknown sigue neutral y su semántica no se transforma en «no».
+3. **C07 checkout:** poder observar un carrito ≠ identificar a su propietario ≠ estar autorizado a enviar mensajes ≠ enviar seguimiento. La opción no_authorized_contact del candidato v2 mezcla identidad con permiso; la propuesta v3 separa ambas, junto a ausencia de carritos observados. La respuesta no autoriza contacto ni supone herramientas GHL. q2_ecommerce_cart_visibility no puede puntuar falta de analítica cuando el comercio funciona sin carrito.
+4. **C05 financiación mixta:** en la decisión del Lote 02 se amplió semánticamente mixed para incluir combinaciones de aportes diversos; por tanto **no basta** q2_nonprofit_support_type=mixed para mostrar q2_nonprofit_donation_clarity. Se requiere una señal explícita de que **acepta donaciones monetarias**; si no, aplicar ruta diferente y abstenerse. Separar donación no publicada, proceso publicado confuso y no aplicabilidad.
+5. **Retail:** ver categorías de producto no demuestra stock disponible, canal de pago ni claridad de toda la oferta. De acuerdo con SEM-A, distinguir not_published de not_applicable y unknown; no duplicar claridad con preguntas de presencia digital y búsqueda de catálogo.
+
+**Balance documental actualizado:** Lote 01–06 = 48 fichas (14 KEEP/34 REWRITE); Lote 07 = 8 (1 KEEP/7 REWRITE); total **56 fichas con decisiones de diseño (15 KEEP/41 REWRITE)**. En la base candidata de **77 IDs de referencia** quedan **21 por revisar editorialmente**; el 56/77 **NO** es porcentaje de funcionalidad terminada, certificación de traducciones o puntuaciones calibradas. La F02 sigue ABIERTA; no se ejecutaron pruebas, ni cambios de TS/TSX, ni activación runtime.
+
+**Siguiente fase (Lote 08):** priorizar ocho IDs inéditos de qa03b/recovery-wave2.ts y selectores de especialidad, centrados en hospitalidad, participación de organizaciones, recurrencia, fuente de oportunidades y rutas C05/C08/C09. Verificar sus versiones actuales, opciones y guardias antes de escribir; no confundir reserva de mesa/alojamiento con cita clínica o profesional. Asegurar que toda selección de un nicho genere la pregunta adecuada sin sobrepasar 24+5 turnos.
+
+**Gates inalterados:** PLAN_ONLY; no crear nuevas rutas, componentes UI, Worker, D1, SQL, tests, CI, merges ni deploy. Previa implementación futura: requisitos privacidad/consentimiento, F00 main, taxonomía TAX-G1/TAX-G3, matriz 8×10, 10 escenarios, sesión/replay por versión, validación ES/EN humana y pruebas focalizadas.
+
+### Changelog adicional
+
+- **1.59.0:** Lote 07 cerrado como diseño editorial; rectificación explícita de q2_ecommerce_cart_followup candidato v2 y protección de donaciones monetarias en support_type mixto; 56 fichas con decisión, solo documentos.
