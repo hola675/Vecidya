@@ -13,7 +13,7 @@ export const learnTechnical04BArticles: LearnArticle[] = [
       "Prepara y prueba el nuevo servicio antes de cambiar registros o cancelar el anterior.",
       "Comprueba web y correo por separado y conserva una forma de volver atrás si algo falla.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Esquema de un dominio conectado a DNS, sitio web y correo durante un cambio de proveedor.",
     editorialDraft: false,
     relatedSlugs: [

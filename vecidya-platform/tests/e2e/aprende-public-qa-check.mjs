@@ -151,9 +151,12 @@ try {
       return image.naturalWidth > 0;
     }), width + "px: no carga la ilustración.");
     const vico = activePage.locator(".learn-atlas__vico");
+    const scene = activePage.locator(".learn-atlas__map img");
     assert.equal(await vico.getAttribute("src"), "/assets/selected/illustrations/vico-aprende.webp", width + "px: variante de Vico incorrecta.");
-    assert.equal(await vico.getAttribute("alt"), "Vico acompaña tu recorrido para aprender y decidir con criterio.", width + "px: Vico necesita texto alternativo.");
+    assert.equal(await vico.getAttribute("alt"), "Vico acompaña el recorrido de Aprende.", width + "px: Vico necesita texto alternativo.");
     assert(await vico.evaluate(async (image) => { await image.decode().catch(() => {}); return image.naturalWidth > 0; }), width + "px: no carga Vico Aprende.");
+    assert.equal(await scene.getAttribute("src"), "/assets/selected/illustrations/learn-journey-scene.webp", width + "px: escena de Aprende incorrecta.");
+    assert(await scene.evaluate(async (image) => { await image.decode().catch(() => {}); return image.naturalWidth > 0; }), width + "px: no carga la escena de Aprende.");
     await noHorizontalOverflow(activePage, width + "px listado");
     assert.deepEqual(pageErrors, [], width + "px: errores JavaScript.");
     if ([320, 390, 768, 1366, 1920].includes(width)) {

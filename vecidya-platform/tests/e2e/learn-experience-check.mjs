@@ -55,10 +55,10 @@ async function runViewport(width, height) {
   assert(await page.locator('meta[property="og:image"]').count() === 1, `${label} Aprende no tiene Open Graph image.`);
   assert(await page.getByRole("heading", { name: "Empieza por la pregunta que tienes hoy." }).isVisible(), `${label} no mostró temas.`);
   assert(await page.getByRole("heading", { name: "Empieza por una pregunta concreta." }).isVisible(), `${label} no mostró las guías.`);
-  assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} el catálogo no conserva las 38 guías.`);
-  assert(await page.locator(".learn-path-list > li").count() === 7, `${label} no muestra los siete itinerarios.`);
+  assert(await page.locator(".learn-guide-list > li").count() === 48, `${label} el catálogo no conserva las 48 guías.`);
+  assert(await page.locator(".learn-path-list > li").count() === 9, `${label} no muestra los nueve itinerarios.`);
   assert(await page.locator(".learn-topic-list > li").count() === 6, `${label} no muestra los seis temas.`);
-  assert(await page.locator(".learn-guide__topic span").count() === 27, `${label} no conserva los 27 estados editoriales de borrador.`);
+  assert(await page.locator(".learn-guide__topic span").count() === 48, `${label} no conserva las etiquetas de acceso de las 48 guías.`);
   assert(await page.locator(".learn-guide-list").getByRole("heading", { name: /¿Qué es un CRM y por qué un negocio pequeño puede necesitarlo\?/i }).isVisible(), `${label} no mostró el artículo CRM.`);
   const domainGuideLink = page.locator(".learn-guide-list").getByRole("link", { name: "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos", exact: true });
   assert(await domainGuideLink.isVisible(), `${label} no muestra la guía de dominio en el catálogo.`);
@@ -110,15 +110,15 @@ async function runViewport(width, height) {
     assert(await page.locator(".learn-guide-list").count() === 0, `${label} el estado sin resultados muestra guías.`);
     assert(await page.getByRole("heading", { name: "No encontramos guías con esos criterios." }).isVisible(), `${label} falta el mensaje sin resultados.`);
     await page.getByRole("link", { name: "Ver todas las guías" }).click();
-    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 38);
-    assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} la recuperación no restableció todas las guías.`);
+    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 48);
+    assert(await page.locator(".learn-guide-list > li").count() === 48, `${label} la recuperación no restableció todas las guías.`);
     await page.locator(".learn-discovery__chip").filter({ hasText: "Tecnología explicada" }).click();
     await page.waitForFunction(() => document.querySelector(".learn-discovery__chip[aria-current=page]")?.textContent === "Tecnología explicada");
     assert(await page.locator(".learn-discovery__chip[aria-current='page']").textContent() === "Tecnología explicada", `${label} el filtro no indica el tema seleccionado.`);
-    assert(await page.locator(".learn-guide-list > li").count() > 0 && await page.locator(".learn-guide-list > li").count() < 38, `${label} el filtro de tema no reduce el catálogo.`);
+    assert(await page.locator(".learn-guide-list > li").count() > 0 && await page.locator(".learn-guide-list > li").count() < 48, `${label} el filtro de tema no reduce el catálogo.`);
     await page.locator(".learn-discovery__chip").filter({ hasText: "Todas" }).click();
-    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 38);
-    assert(await page.locator(".learn-guide-list > li").count() === 38, `${label} quitar el filtro no recuperó todas las guías.`);
+    await page.waitForFunction(() => document.querySelectorAll(".learn-guide-list > li").length === 48);
+    assert(await page.locator(".learn-guide-list > li").count() === 48, `${label} quitar el filtro no recuperó todas las guías.`);
 
     await page.goto(new URL("/aprende?q=analitica&tema=Tecnología+explicada", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     const activeSearch = new URL(page.url()).search;
@@ -206,7 +206,7 @@ async function runViewport(width, height) {
     assert(await page.getByText("En esta guía", { exact: true }).isVisible(), `${label} el artículo existente ${slug} perdió su índice.`);
     const tocLinks = page.locator(".learn-article-toc a");
     for (const href of await tocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
-      assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en ${slug}: ${href}`);
+    assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice apunta a una sección inexistente en ${slug}: ${href}`);
     }
   }
 
@@ -237,8 +237,8 @@ async function runViewport(width, height) {
   assert(await page.getByRole("link", { name: "NIST Privacy Framework" }).isVisible(), `${label} no renderizó las fuentes como enlaces.`);
   assert(await page.getByRole("link", { name: "Consultar servicios" }).getAttribute("href") === "/servicios", `${label} el CTA de Automatización no dirige a Servicios.`);
   const automationImage = page.locator(".learn-article-image");
-  assert((await automationImage.getAttribute("alt"))?.includes("condición"), `${label} el diagrama no tiene una descripción alternativa suficiente.`);
-  assert(await automationImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó diagram-automation.svg.`);
+  assert((await automationImage.getAttribute("alt"))?.toLowerCase().includes("automatiz"), `${label} la ilustración no describe el tema de la guía.`);
+  assert(await automationImage.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó la escena de Servicios.`);
   const automationTocLinks = page.locator(".learn-article-toc a");
   for (const href of await automationTocLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")))) {
     assert(href?.startsWith("#section-") && await page.locator(href).count() === 1, `${label} índice de Automatización apunta a una sección inexistente: ${href}`);
@@ -266,14 +266,10 @@ async function runViewport(width, height) {
   assert(await page.locator(".learn-block--steps ol").count() > 0, `${label} falta el recorrido práctico del ejemplo.`);
   assert(await page.locator(".learn-block--faq details").count() >= 6, `${label} faltan preguntas frecuentes sobre dominio y alojamiento.`);
   const domainImage = page.locator(".learn-article-image");
-  assert((await domainImage.getAttribute("alt"))?.match(/persona.*navegador.*DNS.*servidor.*página/i), `${label} el diagrama no describe el recorrido accesiblemente.`);
-  assert(await domainImage.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), `${label} no cargó el SVG de dominio y DNS.`);
-  const diagramResponse = await page.request.get(new URL("/assets/learn/diagram-domain-dns-hosting.svg", baseUrl).toString());
-  assert(diagramResponse.ok(), `${label} el recurso SVG no responde.`);
-  const diagramSvg = await diagramResponse.text();
-  assert(diagramSvg.includes('viewBox="0 0 960 384"'), `${label} el diagrama perdió su lienzo panorámico legible.`);
-  const svgFontSizes = Array.from(diagramSvg.matchAll(/font-size="(\d+)"/g), (match) => Number(match[1]));
-  assert(svgFontSizes.length > 0 && Math.min(...svgFontSizes) >= 36, `${label} el diagrama volvió a usar etiquetas demasiado pequeñas.`);
+  assert((await domainImage.getAttribute("alt"))?.includes(domainTitle), `${label} la ilustración no identifica el tema accesiblemente.`);
+  assert(await domainImage.evaluate((image) => image.complete && image.naturalWidth > 0 && image.naturalHeight > 0), `${label} no cargó la escena de Servicios.`);
+  const diagramResponse = await page.request.get(new URL("/assets/selected/illustrations/services-scene.webp", baseUrl).toString());
+  assert(diagramResponse.ok() && diagramResponse.headers()["content-type"]?.includes("image/webp"), `${label} la escena generada no responde como WebP.`);
   for (const sourceName of ["ICANN", "RFC 1034", "RFC 1035", "Transport Layer Security"]) {
     assert(await page.getByRole("link", { name: new RegExp(sourceName, "i") }).count() > 0, `${label} falta el enlace de fuente ${sourceName}.`);
   }
@@ -318,8 +314,8 @@ async function runViewport(width, height) {
     "Qué hacer ahora",
   ]) assert(await page.locator("h2").filter({ hasText: heading }).isVisible(), `${label} falta la sección «${heading}».`);
   const presenceImage = page.locator(".learn-article-image");
-  assert((await presenceImage.getAttribute("alt"))?.includes("sitio web"), `${label} la ilustración de Presencia no describe sus canales.`);
-  assert(await imageLoaded(presenceImage), `${label} no cargó diagram-presence-digital.svg.`);
+  assert((await presenceImage.getAttribute("alt"))?.includes("publicidad"), `${label} la ilustración no identifica el tema de Presencia.`);
+  assert(await imageLoaded(presenceImage), `${label} no cargó la escena generada de Presencia.`);
   assert(await page.locator(".learn-block--example").count() === 1, `${label} el ejemplo de Presencia no se renderizó como un caso hipotético.`);
   assert(await page.locator(".learn-block--steps ol").count() >= 3, `${label} faltan pasos prácticos para organizar y evaluar.`);
   assert(await page.locator(".learn-block--faq details").count() >= 10, `${label} faltan respuestas frecuentes de Presencia y Vecidya.`);
@@ -356,7 +352,7 @@ async function runViewport(width, height) {
       title: "HTTPS y certificados TLS: qué protegen y qué no",
       heading: "Qué demuestra —y qué no— el certificado",
       source: "Transport Layer Security (TLS) — MDN Web Docs",
-      image: "/assets/learn/diagram-domain-dns-hosting.svg",
+      image: "/assets/selected/illustrations/services-scene.webp",
       category: "Tecnología explicada",
     },
     {
@@ -364,7 +360,7 @@ async function runViewport(width, height) {
       title: "Analítica web básica: qué debes medir en tu negocio",
       heading: "Visitas, interacciones y conversiones no son lo mismo",
       source: "About events — Google Analytics Help",
-      image: "/assets/learn/diagram-analytics.svg",
+      image: "/assets/selected/illustrations/diagnostic-scene.webp",
       category: "Tecnología explicada",
     },
     {
@@ -372,7 +368,7 @@ async function runViewport(width, height) {
       title: "Cómo conectar herramientas digitales sin complicar tu negocio",
       heading: "API, webhook y CSV: tres formas diferentes de intercambiar datos",
       source: "RFC 4180: Common Format and MIME Type for CSV Files",
-      image: "/assets/learn/diagram-integrations.svg",
+      image: "/assets/selected/illustrations/services-scene.webp",
       category: "Tecnología explicada",
       category: "Tecnología explicada",
     },
@@ -381,7 +377,7 @@ async function runViewport(width, height) {
       title: "Tu Perfil de Empresa en Google: qué completar y mantener actualizado",
       heading: "Qué es y quién puede utilizar un perfil",
       source: "Guidelines for representing your business on Google — Google Business Profile Help",
-      image: "/assets/learn/diagram-presence-digital.svg",
+      image: "/assets/selected/illustrations/home-scene.webp",
       category: "Negocios digitales",
     },
     {
@@ -389,7 +385,7 @@ async function runViewport(width, height) {
       title: "Cómo organizar mensajes, llamadas y formularios sin perder consultas",
       heading: "Usa un registro común sin importar el canal",
       source: "NIST Privacy Framework",
-      image: "/assets/learn/diagram-crm.svg",
+      image: "/assets/selected/illustrations/addons-scene.webp",
       category: "CRM y clientes",
     },
     {
@@ -397,7 +393,7 @@ async function runViewport(width, height) {
       title: "Cómo utilizar IA para preparar respuestas y publicaciones sin perder el control",
       heading: "Dos instrucciones que puedes adaptar",
       source: "Prompt engineering — OpenAI API Guide",
-      image: "/assets/learn/diagram-ai.svg",
+      image: "/assets/selected/illustrations/addons-scene.webp",
       category: "Inteligencia Artificial",
     },
   ];

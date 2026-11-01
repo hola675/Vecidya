@@ -1,3 +1,9 @@
+## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
+
+- Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.
+- Se actualizaron las ilustraciones de apoyo de Aprende: 30 diagramas SVG y el atlas SVG se sustituyeron por escenas WebP temáticas con texto alternativo ligado al tema de cada guía.
+- La navegación, CTA, textos y lógica se conservan. PR #222 permanece en borrador; sin merge ni deploy.
+
 ## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
 
 - Se ajustó `/licencias`: notas comerciales 2×2, hero más claro, tabla comparativa con mayor contraste y tarjetas en una columna desde 900 px; hover breve que respeta movimiento reducido.

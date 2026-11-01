@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useFetcher } from "react-router";
 
 import { FlowErrorScreen, PreparingScreen, ResetConfirm, ResumeScreen, StartScreen } from "./flow-screens";
+import { PublicHeroArt } from "../public-hero-art";
 import { QuestionStep } from "./question-step";
 import { CandidateDiagnosticResult } from "./qa03b-result";
 import { IdentifiedDiagnosticRequestForm, DiagnosticVerificationPending } from "./identified-diagnostic-request-form";
@@ -179,7 +180,7 @@ export function CandidateDiagnosticFlow({ publicMode = false, reportRequestEnabl
 
   let content;
   if (view === "saving") content = <section aria-busy="true" aria-live="polite" className="df-screen"><h1 className="df-screen__title">Guardando tu progreso…</h1><p className="df-screen__lead">Espera a que confirmemos el guardado antes de continuar.</p></section>;
-  else if (view === "start") content = <StartScreen onStart={start} />;
+  else if (view === "start") content = <><StartScreen onStart={start} />{publicMode ? <PublicHeroArt page="diagnostic" /> : null}</>;
   else if (view === "resume" && storedSession) content = <ResumeScreen answered={storedSession.answeredQuestionIds.length} completed={storedSession.status !== "in_progress"} onContinue={() => resume(storedSession)} onRestart={requestReset} />;
   else if (view === "preparing") content = <PreparingScreen />;
   else if (view === "replaying") content = <section aria-busy="true" aria-live="polite" className="df-screen"><h1 className="df-screen__title">{publicMode ? "Preparando tu resumen…" : "Validando tu resumen…"}</h1><p className="df-screen__lead">{publicMode ? "Estamos comprobando tus respuestas para preparar una lectura fiable." : "El Worker está reconstruyendo la ruta QA-03B desde tus respuestas."}</p></section>;

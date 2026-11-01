@@ -61,7 +61,7 @@ export const learnArticles: LearnArticle[] = [
       "Registra qué necesita la persona, quién responde y cuál es el siguiente paso.",
       "Considera un CRM cuando coordinar conversaciones y pendientes deja de ser fácil.",
     ],
-    image: "/assets/learn/diagram-crm.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente", "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
@@ -200,7 +200,7 @@ export const learnArticles: LearnArticle[] = [
       "Comprueba respuestas inventadas, datos sensibles y preguntas fuera de alcance.",
       "Mantén revisión humana y detén la prueba si los errores superan lo aceptable.",
     ],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Un asistente de IA responde desde una fuente revisada y deriva los casos dudosos a una persona.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     editorialDraft: false,
@@ -345,7 +345,7 @@ export const learnArticles: LearnArticle[] = [
       "Trabaja con información confirmada y revisa nombres, cifras, fechas y condiciones.",
       "Empieza en pequeño y no compartas datos sensibles si la tarea no los necesita.",
     ],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se convierte en un borrador de IA que una persona revisa antes de responder o transferir",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
     relatedSlugs: ["como-probar-un-asistente-de-ia-con-supervision-humana"],
@@ -471,7 +471,7 @@ export const learnArticles: LearnArticle[] = [
       "Comprueba oferta, destino, presupuesto y capacidad de respuesta antes de lanzar.",
       "Mide una prueba limitada y decide después si continuar, ajustar o parar.",
     ],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Canales digitales conectados para informar y recibir consultas",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "analitica-web-que-medir-en-tu-negocio"],
     editorialDraft: false,
@@ -616,7 +616,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
     excerpt: "Crea una rutina para mantener horarios, contacto, reseñas, accesibilidad y seguridad coherentes en los canales que sí atiendes.",
     enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Sitio web, perfil de empresa y red social muestran de forma coherente la oferta, la zona de atención y el contacto.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     editorialDraft: false,
@@ -724,7 +724,7 @@ export const learnArticles: LearnArticle[] = [
       "Mantén coherentes horarios, contacto y servicios en los canales que realmente atiendes.",
       "La publicidad puede dar visibilidad, pero no arregla información contradictoria ni un contacto que no funciona.",
     ],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
     cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
     relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital", "perfil-empresa-google-completar-y-mantener-actualizado", "redes-sociales-o-pagina-web-que-necesita-tu-negocio", "analitica-web-que-medir-en-tu-negocio"],
@@ -880,7 +880,7 @@ export const learnArticles: LearnArticle[] = [
       "Define qué situaciones requieren intervención humana y quién es responsable.",
       "Conserva una forma de pausar, revisar y volver al proceso manual.",
     ],
-    image: "/assets/learn/diagram-automation.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una automatización pasa por pruebas, revisión humana y una salida manual antes de usarse en el trabajo real.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     editorialDraft: false,
@@ -1026,7 +1026,7 @@ export const learnArticles: LearnArticle[] = [
       "Define qué la dispara, qué condición debe cumplirse y quién revisa las excepciones.",
       "Prueba duplicados y fallos, y conserva una forma de detener o revertir el flujo.",
     ],
-    image: "/assets/learn/diagram-automation.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Flujo de automatización: un evento se evalúa mediante una condición y puede ejecutar una acción o pasar a revisión humana si no se cumple",
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
     relatedSlugs: ["como-probar-y-supervisar-automatizaciones-sin-perder-datos"],
@@ -1170,7 +1170,7 @@ export const learnArticles: LearnArticle[] = [
       "Compara renovación, soporte, copias, exportación y salida; no solo el precio de entrada.",
       "El negocio debe poder recuperar las cuentas importantes y saber quién tiene permiso para cambiarlas.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una persona compara dominio, DNS, alojamiento y correo antes de elegir quién administrará cada servicio.",
     relatedSlugs: [
       "dominio-hosting-sitio-web-como-funcionan",
@@ -1341,7 +1341,7 @@ export const learnArticles: LearnArticle[] = [
       "HTTPS protege la conexión con la web; no demuestra por sí solo que el negocio sea confiable.",
       "Web y correo pueden usar proveedores y registros diferentes, así que conviene comprobarlos por separado.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Esquema de un dominio que conecta por separado una página web segura y un servicio de correo.",
     relatedSlugs: [
       "dominio-hosting-sitio-web-como-funcionan",
@@ -1487,7 +1487,7 @@ export const learnArticles: LearnArticle[] = [
       "El alojamiento mantiene la web y el DNS ayuda al navegador a encontrar el servidor correcto.",
       "Conserva quién administra cada servicio y cuándo debe renovarse.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
     relatedSlugs: [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -1619,7 +1619,7 @@ export const learnArticles: LearnArticle[] = [
       "Un candado no garantiza que el vendedor, la oferta o el contenido sean confiables.",
       "Si aparece una advertencia de seguridad, no la ignores: revisa la dirección y corrige la causa.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una conexión segura protege el trayecto entre un navegador y un sitio web, pero no demuestra la honestidad del negocio.",
     relatedSlugs: [
       "dns-https-y-correo-como-se-conecta-tu-dominio",
@@ -1760,7 +1760,7 @@ export const learnArticles: LearnArticle[] = [
       "Elige primero la pregunta que quieres responder y después la métrica.",
       "Compara pocos datos, con el mismo criterio, y evita conclusiones basadas en una cifra aislada.",
     ],
-    image: "/assets/learn/diagram-analytics.svg",
+    image: "/assets/selected/illustrations/diagnostic-scene.webp",
     imageAlt: "Un recorrido sencillo separa visitas, acciones y resultados confirmados por el negocio.",
     relatedSlugs: [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -1906,7 +1906,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Una persona llena un formulario, pero su mensaje se pierde antes de llegar a quien debe responder. Conectar herramientas puede ayudar, si sabes qué información pasa de un lugar a otro.",
     excerpt: "Entiende cómo comparten datos las aplicaciones y qué comprobar antes de conectarlas.",
     enPocasPalabras: ["Conecta herramientas solo cuando resuelvas un problema concreto.","Decide dónde está la información correcta y qué pasa si falla la conexión.","Prueba con ejemplos antes de usar datos reales."],
-    image: "/assets/learn/diagram-integrations.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Dos herramientas intercambian solo los datos acordados mediante una conexión revisada, con una persona que verifica duplicados y errores.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio", "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y capacidades; no conecta cuentas ni sincroniza registros entre plataformas." },
@@ -2016,7 +2016,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Alguien busca un negocio como el tuyo y quiere comprobar horario, lugar y contacto. Una ficha correcta puede ayudarle, pero antes debes saber si tu actividad puede tenerla.",
     excerpt: "Revisa quién puede crear la ficha y cómo mantener datos, fotos y horarios verdaderos.",
     enPocasPalabras: ["Comprueba primero si tu negocio puede tener un Perfil de Empresa en Google.","Si puedes crearlo, revisa horario, contacto y fotos reales.","Mantenerlo actualizado orienta a las personas, pero no garantiza visitas."],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "El Perfil de Empresa forma parte de una presencia coherente junto con el sitio web y otros canales digitales.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no gestiona ni verifica Perfiles de Empresa de Google." },
@@ -2114,7 +2114,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Recibes mensajes por una red, llamadas y formularios. ¿Cómo recuerdas a quién debes responder? Empieza con una lista de pendientes clara.",
     excerpt: "Organiza mensajes, llamadas y formularios sin perder el siguiente paso.",
     enPocasPalabras: ["Reúne las consultas pendientes en un solo lugar.","Deja claro quién responde y qué hará después.","Atender una solicitud no da permiso automático para enviar publicidad."],
-    image: "/assets/learn/diagram-crm.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se registra, recibe un responsable y un próximo paso hasta resolverse o cerrarse.",
     relatedSlugs: ["que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no es un CRM ni recibe o conserva consultas de clientes." },
@@ -2206,7 +2206,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "¿Quieres ayuda para responder un mensaje o escribir una publicación? La IA puede preparar el primer borrador. La información real y la decisión de publicarlo siguen siendo tuyas.",
     excerpt: "Aprende a pedir un borrador útil, proteger datos y revisar cada frase antes de enviarla.",
     enPocasPalabras: ["La IA prepara borradores; tú confirmas los datos.","Dile qué información puede utilizar y qué no debe inventar.","Revisa y aprueba todo mensaje antes de enviarlo o publicarlo."],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "La IA prepara un borrador que una persona revisa antes de responder o publicar.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no genera ni aprueba respuestas o publicaciones con IA." },
@@ -2304,7 +2304,7 @@ export const learnArticles: LearnArticle[] = [
       "Elige un problema real antes de decidir qué herramienta necesitas.",
       "Empieza con una mejora pequeña que puedas mantener."
     ],
-    "image": "/assets/learn/diagram-como-empezar.svg",
+    "image": "/assets/selected/illustrations/join-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: ordenar el trabajo, elegir una tarea y comprobar si la mejora funciona.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -2489,7 +2489,7 @@ export const learnArticles: LearnArticle[] = [
       "Una conexión confiable importa más que tener muchos programas.",
       "Protege el equipo y prepara una alternativa cuando se vaya internet."
     ],
-    "image": "/assets/learn/diagram-que-necesita.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: definir la tarea, usar equipo suficiente y preparar una alternativa si falla la conexión.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -2674,7 +2674,7 @@ export const learnArticles: LearnArticle[] = [
       "Escribe asuntos claros y guarda los documentos donde puedas encontrarlos.",
       "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
     ],
-    "image": "/assets/learn/diagram-correo-para.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: recibir el mensaje, conservar su contexto y responder con claridad.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -2859,7 +2859,7 @@ export const learnArticles: LearnArticle[] = [
       "Activa la verificación en dos pasos en las cuentas importantes.",
       "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
     ],
-    "image": "/assets/learn/diagram-como-proteger.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: usar una clave diferente, añadir un segundo control y verificar avisos sospechosos.",
     "relatedSlugs": [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
@@ -3044,7 +3044,7 @@ export const learnArticles: LearnArticle[] = [
       "Mantén una copia protegida que no dependa del mismo teléfono.",
       "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
     ],
-    "image": "/assets/learn/diagram-como-hacer.svg",
+    "image": "/assets/selected/illustrations/learn-journey-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: organizar archivos, guardar otra copia y probar que la recuperación funciona.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -3229,7 +3229,7 @@ export const learnArticles: LearnArticle[] = [
       "Empieza con pocas columnas que realmente usarás.",
       "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
     ],
-    "image": "/assets/learn/diagram-hojas-de.svg",
+    "image": "/assets/selected/illustrations/services-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: registrar datos, revisar pendientes y mantener la tabla actualizada.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -3415,7 +3415,7 @@ export const learnArticles: LearnArticle[] = [
       "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
       "Escoge canales que puedas mantener, no los que estén de moda."
     ],
-    "image": "/assets/learn/diagram-redes-sociales.svg",
+    "image": "/assets/selected/illustrations/home-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: mostrar novedades, reunir información estable y facilitar una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -3600,7 +3600,7 @@ export const learnArticles: LearnArticle[] = [
       "Cambia palabras vagas por ejemplos reales de tu trabajo.",
       "Pide a alguien que no te conozca que te diga qué entendió."
     ],
-    "image": "/assets/learn/diagram-como-explicar.svg",
+    "image": "/assets/selected/illustrations/learn-journey-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: decir qué haces, explicar para quién y ofrecer un siguiente paso.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -3785,7 +3785,7 @@ export const learnArticles: LearnArticle[] = [
       "Si faltan datos, pregunta solo lo necesario para orientar.",
       "Termina con un paso claro y respeta si la persona no continúa."
     ],
-    "image": "/assets/learn/diagram-como-responder.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: escuchar la consulta, responder con claridad y acordar qué ocurrirá después.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -3970,7 +3970,7 @@ export const learnArticles: LearnArticle[] = [
       "Usa fotos reales con buena luz y permiso cuando corresponda.",
       "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
     ],
-    "image": "/assets/learn/diagram-fotos-y.svg",
+    "image": "/assets/selected/illustrations/home-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: enseñar algo real, explicar el servicio y ofrecer una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -4155,7 +4155,7 @@ export const learnArticles: LearnArticle[] = [
       "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
       "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
     ],
-    "image": "/assets/learn/diagram-como-vender.svg",
+    "image": "/assets/selected/illustrations/addons-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: confirmar el pedido, cobrar con cuidado y cumplir la entrega acordada.",
     "relatedSlugs": [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
@@ -4340,7 +4340,7 @@ export const learnArticles: LearnArticle[] = [
       "Aclara para qué usarás los datos y quién podrá verlos.",
       "Responder una consulta no equivale a aceptar publicidad ni campañas."
     ],
-    "image": "/assets/learn/diagram-datos-de.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: pedir lo mínimo, explicar para qué se usa y proteger los datos.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -4525,7 +4525,7 @@ export const learnArticles: LearnArticle[] = [
       "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
       "Responde las críticas con calma, sin revelar información privada."
     ],
-    "image": "/assets/learn/diagram-como-pedir.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: invitar a opinar, aceptar críticas y usar lo aprendido para mejorar.",
     "relatedSlugs": [
       "perfil-empresa-google-completar-y-mantener-actualizado",

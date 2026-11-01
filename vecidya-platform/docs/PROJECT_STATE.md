@@ -1,3 +1,7 @@
+## UX-PREMIUM-02J — Vico y escenas transparentes para 10 páginas (2026-10-31)
+
+El checkpoint local de PR #222 asocia las 10 variantes WebP de Vico a Inicio, Vecindario, Aprende, Diagnóstico, Licencias, Servicios, Complementos, Sobre nosotros, Contacto y Únete; Vico se amplió en las escenas de apoyo. Se generaron 10 WebP transparentes y se preservó el hero aprobado de Inicio. Los 30 diagramas SVG educativos y el atlas de Aprende se sustituyeron por WebP temáticos con alt por guía. No cambia la lógica, el contenido, las rutas ni los CTAs. E2E en 10 rutas × cinco viewports, capturas full-page antes/después 50 + 50, typecheck/build/diff-check: PASS. Axe, lector de pantalla y zoom 200 % pendientes; sin merge, D1 remota, deploy ni HTTP pública.
+
 ## UX-PREMIUM-02I — refinamiento visual de Aprende (2026-10-30)
 
 Extensión de PR #222 en `/aprende`: se incorpora `vico-aprende.webp` optimizado, flotación suave con movimiento reducido, superficie editorial para el hero, catálogo, itinerarios y filtros. Se conservan las rutas, búsqueda, contenido y CTA. E2E, typecheck, build y diff-check locales PASS. Capturas comparativas de cinco viewports en `.playwright-mcp/`. Sin cambios funcionales, migraciones, D1 remota ni deploy; accesibilidad no certificada.

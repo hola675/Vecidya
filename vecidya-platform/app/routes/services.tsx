@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { SERVICE_OFFERS } from "../content/commercial-detail";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { PublicHeroArt } from "../components/public-hero-art";
 
 import type { Route } from "./+types/services";
 
@@ -40,6 +41,7 @@ export default function Services() {
           <div className="services-experience-hero__note">
             <strong>Primero entendemos lo que ya existe. Después decidimos qué construir.</strong>
           </div>
+          <PublicHeroArt page="services" />
         </section>
 
         <section className="services-process" aria-labelledby="services-process-title">

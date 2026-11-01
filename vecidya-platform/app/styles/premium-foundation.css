@@ -105,3 +105,51 @@
   }
 }
 
+/* Parejas de ilustraciones transparentes: una escena propia y Vico por ruta pública. */
+.public-hero-art {
+  display: grid; position: relative; isolation: isolate; place-items: center;
+  width: min(100%, 24rem); min-width: 0; min-height: clamp(11rem, 22vw, 17rem);
+  margin-inline: auto; overflow: visible;
+}
+.public-hero-art__scene {
+  display: block; width: 100%; max-height: 17rem; object-fit: contain;
+  filter: drop-shadow(0 .7rem 1rem rgb(7 35 77 / 12%));
+  animation: public-scene-arrive 650ms cubic-bezier(.2,.7,.2,1) both;
+}
+.public-hero-art__vico {
+  display: block; position: absolute; z-index: 1; left: 2%; bottom: -4%;
+  width: clamp(7.5rem, 54%, 13rem); max-height: 16rem; object-fit: contain;
+  filter: drop-shadow(0 .6rem .8rem rgb(7 35 77 / 15%));
+  animation: public-vico-float 6.5s cubic-bezier(.77,0,.175,1) 250ms infinite alternate;
+}
+.public-hero-art--neighborhood { width: min(100%, 27rem); }
+.public-hero-art--neighborhood .public-hero-art__vico { left: 3%; width: clamp(8rem, 54%, 13rem); }
+.public-hero-art--about .public-hero-art__vico { width: clamp(6.5rem, 55%, 9rem); }
+.public-hero-art--contact .public-hero-art__vico,
+.public-hero-art--join .public-hero-art__vico { width: clamp(8rem, 62%, 11.5rem); }
+@keyframes public-vico-float { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+@keyframes public-scene-arrive { from { opacity: .72; transform: translateY(5px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.directory-page-v2 > .directory-hero {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(15rem, .8fr); align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  background: radial-gradient(ellipse at 85% 15%, rgb(8 204 243 / 15%), transparent 18rem), linear-gradient(135deg, #fff, #f1f6fc 72%, #fff5e9);
+}
+.directory-hero__copy { position: relative; z-index: 1; }
+.directory-hero .public-hero-art { width: min(100%, 27rem); }
+.licenses-hero > .public-hero-art { grid-column: 1 / -1; width: min(100%, 22rem); min-height: 10rem; }
+.services-experience-hero > .public-hero-art { grid-column: 1 / -1; width: min(100%, 22rem); }
+.about-experience-hero__photo { position: relative; }
+.about-experience-hero__photo > .public-hero-art { position: absolute; z-index: 2; right: -1rem; bottom: 2.6rem; width: min(46%, 13rem); min-height: 8rem; }
+.contact-experience-hero { position: relative; padding-right: clamp(10rem, 23vw, 18rem); }
+.contact-experience-hero > .public-hero-art { position: absolute; top: 1rem; right: clamp(1rem, 4vw, 3rem); width: min(28%, 15rem); min-height: 9rem; pointer-events: none; }
+.join-experience-hero__visual .public-hero-art { width: 100%; min-height: 15rem; }
+.df-start + .public-hero-art { width: min(100%, 28rem); margin-block: 1rem 2rem; }
+@media (max-width: 760px) {
+  .directory-page-v2 > .directory-hero { grid-template-columns: minmax(0, 1fr); }
+  .directory-hero .public-hero-art { width: min(100%, 22rem); }
+  .contact-experience-hero > .public-hero-art { position: relative; inset: auto; width: min(100%, 19rem); margin-top: 1rem; }
+  .contact-experience-hero { padding-right: clamp(1.35rem, 7vw, 2.25rem); }
+  .licenses-hero > .public-hero-art, .services-experience-hero > .public-hero-art { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) { .public-hero-art__scene, .public-hero-art__vico { animation: none !important; } }
+

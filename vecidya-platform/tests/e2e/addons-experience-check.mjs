@@ -37,10 +37,12 @@ async function runViewport(width, height) {
   const sitemap = await fetch(new URL("/sitemap.xml", baseUrl));
   assert((await sitemap.text()).includes("/addons"), `${label} sitemap no incluye Addons.`);
   assert(await page.getByRole("heading", { name: "Añade capacidades cuando las necesites." }).isVisible(), `${label} no mostró el hero.`);
-  const vico = page.locator(".addons-hero__vico");
+  const vico = page.locator(".addons-hero .public-hero-art__vico");
+  const scene = page.locator(".addons-hero .public-hero-art__scene");
   assert(await vico.getAttribute("src") === "/assets/selected/illustrations/vico-addons.webp", `${label} no mostró la variante de Vico para Complementos.`);
-  assert(await vico.getAttribute("alt") === "Vico presenta capacidades digitales conectadas para tu negocio.", `${label} no describió la ilustración de Vico.`);
+  assert(await vico.getAttribute("alt") === "Vico presenta los complementos.", `${label} no describió la ilustración de Vico.`);
   assert(await vico.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó la ilustración de Vico para Complementos.`);
+  assert(await scene.getAttribute("src") === "/assets/selected/illustrations/addons-scene.webp" && await scene.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó la escena generada de Complementos.`);
   for (const name of ["WhatsApp Business", "Telefonía y SMS", "Reputación y Reseñas", "Campañas y Difusión", "IA Conversacional", "IA de Voz", "Conexiones e Integraciones"]) {
     assert(await page.locator(".addon-card").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró el addon ${name}.`);
   }
@@ -66,8 +68,8 @@ async function runViewport(width, height) {
   await browser.close();
 }
 
-for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) {
+for (const [width, height] of [[320, 720], [390, 844], [768, 1024], [1366, 768], [1920, 1080]]) {
   await runViewport(width, height);
 }
 
-console.log("PASS: Addons verificó hero/Vico, siete complementos V1, precios/costes, separación licencia/addon/servicio, CTAs, metadata, sitemap, foco, movimiento normal/reducido y responsive 1366/768/390/360.");
+console.log("PASS: Addons verificó pareja de assets, siete complementos V1, precios/costes, separación licencia/addon/servicio, CTAs, metadata, sitemap, foco, movimiento normal/reducido y los cinco viewports acordados.");

@@ -17,6 +17,7 @@ import "./styles/home-premium.css";
 import "./styles/addons-premium.css";
 import "./styles/premium-foundation.css";
 import "./styles/learn-premium.css";
+import "./styles/neighborhood-premium.css";
 
 export function meta() {
   return [{ title: "Vecidya" }, { name: "description", content: "Comunidad digital para ordenar presencia, aprendizaje y próximos pasos." }];

@@ -141,7 +141,7 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(article.slug, domainSlug);
   assert.equal(article.category, "Tecnología explicada");
   assert.equal(article.title, "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos");
-  assert.equal(article.image, "/assets/learn/diagram-domain-dns-hosting.svg");
+  assert.equal(article.image, "/assets/selected/illustrations/services-scene.webp");
   assert.ok(article.relatedSlugs?.includes("dns-https-y-correo-como-se-conecta-tu-dominio"));
   assert.match(article.imageAlt, /persona.*navegador.*DNS.*servidor.*página/i);
 
@@ -268,7 +268,7 @@ test("pre-ad guide is a focused readiness gate and links to specialized guides",
   assert.ok(article);
   assert.equal(article.category, "Negocios digitales");
   assert.equal(article.title, "Antes de hacer publicidad, organiza tu presencia digital");
-  assert.equal(article.image, "/assets/learn/diagram-presence-digital.svg");
+  assert.equal(article.image, "/assets/selected/illustrations/home-scene.webp");
   assert.equal(article.cta.to, "/diagnostico");
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);

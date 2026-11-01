@@ -16,6 +16,10 @@ import { LearnProgressControls } from "../components/learn-progress-controls";
 import type { LearnBlock } from "../content/learn";
 import type { Route } from "./+types/learn-article";
 
+function learnIllustrationAlt(title: string) {
+  return `Ilustración temática para la guía: ${title}.`;
+}
+
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const article = getPublicLearnArticle(learnArticles, params.slug);
   if (!article || article.editorialDraft) throw new Response("Artículo no encontrado", { status: 404 });
@@ -114,7 +118,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
       ...publicMeta(preview.title, preview.excerpt, `/aprende/${preview.slug}`).filter((tag) => !("property" in tag && tag.property === "og:type")),
       { property: "og:type", content: "article" },
       { property: "article:section", content: preview.category },
-      { property: "og:image:alt", content: preview.imageAlt },
+      { property: "og:image:alt", content: learnIllustrationAlt(preview.title) },
     ];
   }
   const { article } = loaderData;
@@ -123,7 +127,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     { property: "og:type", content: "article" },
     ...(!article.editorialDraft ? [{ property: "article:author", content: "Yoan Ortiz" }] : []),
     { property: "article:section", content: article.category },
-    { property: "og:image:alt", content: article.imageAlt },
+    { property: "og:image:alt", content: learnIllustrationAlt(article.title) },
   ];
 }
 
@@ -184,7 +188,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
           <article className="learn-article-preview">
             <p className="eyebrow">GUÍA PRÁCTICA · {preview.category}</p>
             <h1>{preview.title}</h1>
-            <img className="learn-article-image" src={preview.image} alt={preview.imageAlt} width={900} height={360} />
+            <img className="learn-article-image" src={preview.image} alt={learnIllustrationAlt(preview.title)} width={900} height={360} />
             <p className="learn-article-intro">{preview.excerpt}</p>
             <h2>Guía completa con acceso de Aprende</h2>
             <p>Esta vista previa no incluye las secciones. {accessState === "sign-in"
@@ -232,7 +236,7 @@ export default function LearnArticle({ loaderData }: Route.ComponentProps) {
                 <ul>{article.enPocasPalabras.map((point) => <li key={point}>{point}</li>)}</ul>
               </div>
             </header>
-            <img className="learn-article-image" src={article.image} alt={article.imageAlt} width={900} height={360} />
+            <img className="learn-article-image" src={article.image} alt={learnIllustrationAlt(article.title)} width={900} height={360} />
           </div>
           <div className="learn-article-layout">
             <div className="learn-article-toc-mobile">

@@ -99,7 +99,7 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             <img
               className="learn-atlas__vico"
               src={publicAssets.learn.vico}
-              alt="Vico acompaña tu recorrido para aprender y decidir con criterio."
+              alt="Vico acompaña el recorrido de Aprende."
               width={1024}
               height={1536}
               decoding="async"
@@ -107,8 +107,8 @@ export default function Knowledge({ loaderData }: Route.ComponentProps) {
             <div className="learn-atlas__map">
               <p className="learn-atlas__caption">Decisiones claras</p>
               <img
-                src="/assets/learn/learn-atlas-routes.svg"
-                alt="Ilustración esquemática de rutas que conectan preguntas, temas y guías."
+                src={publicAssets.illustrations.learnJourneyScene}
+                alt="Escena transparente con preguntas, conceptos y decisiones conectados en un recorrido de aprendizaje."
                 width={720}
                 height={430}
                 decoding="async"
