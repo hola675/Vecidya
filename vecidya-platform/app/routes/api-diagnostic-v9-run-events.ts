@@ -49,6 +49,10 @@ function normalizeEvent(kind: unknown, payload: unknown): { kind: string; payloa
     } else return null;
     return { kind: "answer", payload: { questionId: payload.questionId, value, mode: payload.mode } };
   }
+  if (kind === "extension_consent") {
+    if (!hasExactKeys(payload, ["decision"]) || !["accepted", "rejected", "withdrawn"].includes(String(payload.decision))) return null;
+    return { kind: "extension_consent", payload: { decision: payload.decision } };
+  }
   if (kind === "classification") {
     if (!hasExactKeys(payload, ["classification", "mode"]) ||
         (payload.mode !== "answer" && payload.mode !== "edit") || !isRecord(payload.classification)) return null;
