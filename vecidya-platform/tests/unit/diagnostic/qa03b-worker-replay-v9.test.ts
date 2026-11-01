@@ -15,6 +15,8 @@ import {
   currentCandidateQuestionIdV9,
   submitCandidateAnswerV9Prototype,
   submitClassificationV9Prototype,
+  submitExtensionConsentV9Prototype,
+  type CandidateReplayEventV9,
   type CandidateSessionV9Prototype,
 } from "../../../app/features/diagnostic/qa03b/v9-session-prototype";
 import {
@@ -33,6 +35,16 @@ import { createCandidateSessionV3 } from "../../../app/features/diagnostic/qa03b
 
 const NOW = 1_900_000_000_000;
 const byId = new Map(bank77.map((q) => [q.id, q]));
+
+function auditKind(event: CandidateReplayEventV9): string {
+  return event.kind === "classification" ? event.classification.kind : event.kind;
+}
+
+function auditPayload(event: CandidateReplayEventV9): unknown {
+  if (event.kind === "classification") return { ...event.classification, mode: event.mode };
+  if (event.kind === "extension_consent") return { decision: event.decision };
+  return { questionId: event.questionId, value: event.value, mode: event.mode };
+}
 
 function completingV9(now = NOW): CandidateSessionV9Prototype {
   const explicit: Record<string, string | readonly string[]> = {
@@ -55,7 +67,13 @@ function completingV9(now = NOW): CandidateSessionV9Prototype {
     writerId: "test",
     now,
   });
-  for (let turn = 0; turn < 24 && session.status === "in_progress"; turn++) {
+  for (let turn = 0; turn < 29 && session.status === "in_progress"; turn++) {
+    if (session.extensionConsent === "pending") {
+      const consent = submitExtensionConsentV9Prototype(session, "accepted", "test", now + turn + 1);
+      assert.equal(consent.ok, true);
+      if (!consent.ok) throw new Error(consent.reason);
+      session = consent.session;
+    }
     const id = currentCandidateQuestionIdV9(session);
     assert.ok(id, "V9 must expose a next question while in progress");
 
@@ -89,7 +107,7 @@ function completingV9(now = NOW): CandidateSessionV9Prototype {
   assert.equal(session.status, "completing");
   assert.ok(session.terminalReason);
   assert.equal(session.queue.length, 0);
-  assert.ok(session.interactionCount <= 24);
+  assert.ok(session.interactionCount <= 29);
   return session;
 }
 
@@ -197,8 +215,8 @@ test("V9 D1 audit replay reconstructs the same authoritative result as the sessi
   const events: V9StoredAuditEvent[] = session.replayTranscript.map((event, index) => ({
     seq: index + 1,
     event_id: `event-${index + 1}`,
-    kind: event.kind === "classification" ? event.classification.kind : "answer",
-    payload_json: JSON.stringify(event.kind === "classification" ? { ...event.classification, mode: event.mode } : { questionId: event.questionId, value: event.value, mode: event.mode }),
+    kind: auditKind(event),
+    payload_json: JSON.stringify(auditPayload(event)),
     occurred_at: new Date(NOW + index + 1).toISOString(),
     schema_version: 1,
     actor_type: "client",
@@ -223,8 +241,8 @@ test("V9 D1 audit replay fails closed on sequence gaps, actor changes and malfor
   const events: V9StoredAuditEvent[] = session.replayTranscript.map((event, index) => ({
     seq: index + 1,
     event_id: `event-${index + 1}`,
-    kind: event.kind === "classification" ? event.classification.kind : "answer",
-    payload_json: JSON.stringify(event.kind === "classification" ? { ...event.classification, mode: event.mode } : { questionId: event.questionId, value: event.value, mode: event.mode }),
+    kind: auditKind(event),
+    payload_json: JSON.stringify(auditPayload(event)),
     occurred_at: new Date(NOW + index + 1).toISOString(),
     schema_version: 1,
     actor_type: "client",
@@ -290,8 +308,8 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
         runId: session.sessionId,
         eventId: `audit-event-${index + 1}`,
         expectedSeq: index,
-        kind: event.kind === "classification" ? event.classification.kind : "answer",
-        payload: event.kind === "classification" ? { ...event.classification, mode: event.mode } : { questionId: event.questionId, value: event.value, mode: event.mode },
+        kind: auditKind(event),
+        payload: auditPayload(event),
         occurredAt: new Date(NOW + index + 1).toISOString(),
         actorType: "client",
       });
@@ -392,10 +410,8 @@ test("V9 finalization verifies ownership, replays D1, persists one trusted resul
         userId: "user-1",
         eventId: `owned-event-${index + 1}`,
         expectedSeq: index,
-        kind: event.kind === "classification" ? event.classification.kind : "answer",
-        payload: event.kind === "classification"
-          ? { ...event.classification, mode: event.mode }
-          : { questionId: event.questionId, value: event.value, mode: event.mode },
+        kind: auditKind(event),
+        payload: auditPayload(event),
         occurredAt: new Date(NOW + index + 1).toISOString(),
       });
     }
