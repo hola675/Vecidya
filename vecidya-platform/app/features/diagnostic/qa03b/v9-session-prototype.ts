@@ -1,6 +1,12 @@
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import type { AnswersV2 } from "../qbv2-rules";
 import { CANDIDATE_ROUTE_HARD_CAP_V3 } from "./qbv2-candidate-planner";
+import {
+  V9_ABSOLUTE_INTERACTION_LIMIT,
+  V9_BASE_INTERACTION_LIMIT,
+  type V9ExtensionConsentDecision,
+  type V9ExtensionConsentState,
+} from "../v9/route-budget";
 import { validateCandidateAnswerV3 } from "./qbv2-candidate-session";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import {
@@ -10,15 +16,15 @@ import {
   type ClassificationSelectionV9,
 } from "./v9-classification-bundle";
 
-export const QA03B_V9_SESSION_SCHEMA = 9 as const;
+export const QA03B_V9_SESSION_SCHEMA = 10 as const;
 export const QA03B_V9_ANSWER_SCHEMA_ID = "qbv2-answers-v7-specialty-interactions" as const;
-export const QA03B_V9_SESSION_KEY = "vecidya.diagnostic.v3.candidate.session.9" as const;
+export const QA03B_V9_SESSION_KEY = "vecidya.diagnostic.v3.candidate.session.10" as const;
 export const QA03B_V9_QUESTION_BANK_ID = "qa03b-specialty-branches-v9-candidate-77-rev2" as const;
-export const QA03B_V9_ENGINE_ID = "qa03b-v9-utility-first-interactions-v2" as const;
-export const QA03B_V9_REPLAY_VERSION = "qa03b-worker-replay-v7-candidate" as const;
-export const QA03B_V9_REPLAY_LIMIT = CANDIDATE_ROUTE_HARD_CAP_V3 * 16;
+export const QA03B_V9_ENGINE_ID = "qa03b-v9-utility-first-interactions-v3-extension" as const;
+export const QA03B_V9_REPLAY_VERSION = "qa03b-worker-replay-v8-candidate-extension" as const;
+export const QA03B_V9_REPLAY_LIMIT = V9_ABSOLUTE_INTERACTION_LIMIT * 16;
 
-export type CandidateTerminalReasonV9 = "no_useful_questions" | "budget_blocked" | "hard_cap";
+export type CandidateTerminalReasonV9 = "no_useful_questions" | "budget_blocked" | "hard_cap" | "extension_declined";
 
 export type CandidateReplayEventV9 =
   | {
@@ -31,6 +37,11 @@ export type CandidateReplayEventV9 =
       readonly kind: "classification";
       readonly classification: ClassificationInteractionEventV9;
       readonly mode: "answer" | "edit";
+    }
+  | {
+      readonly kind: "extension_consent";
+      readonly decision: V9ExtensionConsentDecision;
+      readonly atInteractionCount: number;
     };
 
 export type CandidateSessionV9Prototype = {
@@ -45,6 +56,8 @@ export type CandidateSessionV9Prototype = {
   readonly completedAt: number | null;
   readonly revision: number;
   readonly interactionCount: number;
+  readonly extensionConsent: V9ExtensionConsentState;
+  readonly extensionOfferedAtInteraction: number | null;
   readonly answers: AnswersV2;
   readonly answeredQuestionIds: readonly string[];
   readonly queue: readonly string[];
@@ -55,7 +68,7 @@ export type CandidateSessionV9Prototype = {
 
 export type CandidateSubmitResultV9 =
   | { readonly ok: true; readonly session: CandidateSessionV9Prototype }
-  | { readonly ok: false; readonly reason: "required" | "invalid" | "not_current" | "classification_required" | "history_limit" };
+  | { readonly ok: false; readonly reason: "required" | "invalid" | "not_current" | "classification_required" | "history_limit" | "consent_not_pending" };
 
 const bank = QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2;
 const byId = new Map(bank.map((question) => [question.id, question] as const));
@@ -72,6 +85,7 @@ function replanV9(session: CandidateSessionV9Prototype): CandidateSessionV9Proto
     session.answers,
     classificationEvents(session),
     session.interactionCount,
+    session.extensionConsent,
   );
   const answers = planned.activeAnswers;
   const eligible = new Set(planned.plan.eligibleQuestionIds);
@@ -82,19 +96,33 @@ function replanV9(session: CandidateSessionV9Prototype): CandidateSessionV9Proto
   const queue = planned.plan.selectedQuestionIds.filter(
     (id) => eligible.has(id) && answers[id] === undefined,
   );
+  const extensionConsent: V9ExtensionConsentState =
+    planned.extension.consentRequired && session.extensionConsent === "not_offered"
+      ? "pending"
+      : session.extensionConsent;
+  const extensionOfferedAtInteraction =
+    extensionConsent === "pending" && session.extensionOfferedAtInteraction === null
+      ? session.interactionCount
+      : session.extensionOfferedAtInteraction;
   const terminalReason: CandidateTerminalReasonV9 | null =
-    planned.plan.completion.hardCapReached && queue.length === 0
-      ? "hard_cap"
-      : planned.plan.evidenceSufficiency.terminalReason === "budget_blocked" && queue.length === 0
-        ? "budget_blocked"
-        : queue.length === 0
-          ? "no_useful_questions"
-          : null;
+    extensionConsent === "rejected" || extensionConsent === "withdrawn"
+      ? "extension_declined"
+      : planned.extension.consentRequired
+        ? null
+        : planned.plan.completion.hardCapReached && queue.length === 0
+          ? "hard_cap"
+          : planned.plan.evidenceSufficiency.terminalReason === "budget_blocked" && queue.length === 0
+            ? "budget_blocked"
+            : queue.length === 0
+              ? "no_useful_questions"
+              : null;
   return {
     ...session,
     answers,
     answeredQuestionIds,
     queue,
+    extensionConsent,
+    extensionOfferedAtInteraction,
     status: terminalReason ? "completing" : "in_progress",
     terminalReason,
   };
@@ -126,6 +154,8 @@ export function createCandidateSessionV9Prototype(input: {
     completedAt: null,
     revision: 0,
     interactionCount: 0,
+    extensionConsent: "not_offered",
+    extensionOfferedAtInteraction: null,
     answers: {},
     answeredQuestionIds: [],
     queue: [],
@@ -136,8 +166,26 @@ export function createCandidateSessionV9Prototype(input: {
 }
 
 export function currentCandidateQuestionIdV9(session: CandidateSessionV9Prototype): string | null {
-  if (session.status !== "in_progress") return null;
+  if (session.status !== "in_progress" || session.extensionConsent === "pending") return null;
   return session.queue[0] ?? null;
+}
+
+export function submitExtensionConsentV9Prototype(
+  session: CandidateSessionV9Prototype,
+  decision: V9ExtensionConsentDecision,
+  writerId: string,
+  now: number,
+): CandidateSubmitResultV9 {
+  const validPending = session.extensionConsent === "pending" && (decision === "accepted" || decision === "rejected");
+  const validWithdrawal = session.extensionConsent === "accepted" && decision === "withdrawn";
+  if (!validPending && !validWithdrawal) return { ok: false, reason: "consent_not_pending" };
+  if (session.interactionCount < V9_BASE_INTERACTION_LIMIT || session.interactionCount > V9_ABSOLUTE_INTERACTION_LIMIT) return { ok: false, reason: "invalid" };
+  if (session.replayTranscript.length >= QA03B_V9_REPLAY_LIMIT) return { ok: false, reason: "history_limit" };
+  const next = touch(session, writerId, now, {
+    extensionConsent: decision,
+    replayTranscript: [...session.replayTranscript, { kind: "extension_consent", decision, atInteractionCount: session.interactionCount }],
+  });
+  return { ok: true, session: replanV9(next) };
 }
 
 export function submitCandidateAnswerV9Prototype(
@@ -240,35 +288,29 @@ export function editClassificationV9Prototype(
 
 export function replayCandidateTranscriptV9(
   transcript: readonly CandidateReplayEventV9[],
-): { readonly answers: AnswersV2; readonly interactionCount: number } | null {
+): { readonly answers: AnswersV2; readonly interactionCount: number; readonly extensionConsent: V9ExtensionConsentState } | null {
   if (transcript.length > QA03B_V9_REPLAY_LIMIT) return null;
-  let answers: AnswersV2 = {};
-  let interactionCount = 0;
-
+  let session = createCandidateSessionV9Prototype({ sessionId: "v9-transcript-replay", writerId: "v9-transcript-replay", now: 1 });
+  let clock = 1;
   for (const event of transcript) {
+    let result: CandidateSubmitResultV9;
     if (event.kind === "classification") {
-      const applied = applyClassificationInteractionV9(answers, {
-        sector: event.classification.sector,
-        ...(event.classification.niche === undefined ? {} : { niche: event.classification.niche }),
-      });
-      if (!applied.ok || applied.event.nicheQuestionId !== event.classification.nicheQuestionId) return null;
-      if (event.mode === "edit" && answers.q2_sector === undefined) return null;
-      answers = applied.answers;
-      if (event.mode === "answer") interactionCount += 1;
-      continue;
+      const selection = { sector: event.classification.sector, ...(event.classification.niche === undefined ? {} : { niche: event.classification.niche }) };
+      result = event.mode === "answer"
+        ? submitClassificationV9Prototype(session, selection, "v9-transcript-replay", ++clock)
+        : editClassificationV9Prototype(session, selection, "v9-transcript-replay", ++clock);
+    } else if (event.kind === "extension_consent") {
+      if (event.atInteractionCount !== session.interactionCount) return null;
+      result = submitExtensionConsentV9Prototype(session, event.decision, "v9-transcript-replay", ++clock);
+    } else {
+      result = event.mode === "answer"
+        ? submitCandidateAnswerV9Prototype(session, event.questionId, event.value, "v9-transcript-replay", ++clock)
+        : editCandidateAnswerV9Prototype(session, event.questionId, event.value, "v9-transcript-replay", ++clock);
     }
-
-    const question = byId.get(event.questionId);
-    if (!question || event.questionId === "q2_sector" || event.questionId.startsWith("q2_niche_")) return null;
-    if (!validateCandidateAnswerV3(question, event.value)) return null;
-    if (event.mode === "edit" && answers[event.questionId] === undefined) return null;
-    const eligible = new Set(buildCandidateQuestionPlanV9Prototype(answers, [], interactionCount).plan.eligibleQuestionIds);
-    if (event.mode === "answer" && !eligible.has(event.questionId)) return null;
-    answers = { ...answers, [event.questionId]: event.value };
-    answers = buildCandidateQuestionPlanV9Prototype(answers, [], interactionCount).activeAnswers;
-    if (event.mode === "answer") interactionCount += 1;
+    if (!result.ok) return null;
+    session = result.session;
   }
-  return { answers, interactionCount };
+  return { answers: session.answers, interactionCount: session.interactionCount, extensionConsent: session.extensionConsent };
 }
 
 export function parseCandidateSessionV9Prototype(raw: string): CandidateSessionV9Prototype | null {
@@ -287,12 +329,14 @@ export function parseCandidateSessionV9Prototype(raw: string): CandidateSessionV
       typeof parsed.startedAt !== "number" || typeof parsed.updatedAt !== "number" ||
       typeof parsed.revision !== "number" || typeof parsed.interactionCount !== "number" ||
       !Number.isInteger(parsed.interactionCount) || parsed.interactionCount < 0 ||
-      parsed.interactionCount > CANDIDATE_ROUTE_HARD_CAP_V3 ||
+      parsed.interactionCount > V9_ABSOLUTE_INTERACTION_LIMIT ||
       !isRecord(parsed.answers) || !Array.isArray(parsed.answeredQuestionIds) ||
       !Array.isArray(parsed.queue) || !Array.isArray(parsed.replayTranscript)
     ) return null;
     if (!["in_progress", "completing", "completed"].includes(String(parsed.status))) return null;
-    if (!(parsed.terminalReason === null || ["no_useful_questions", "budget_blocked", "hard_cap"].includes(String(parsed.terminalReason)))) return null;
+    if (!(parsed.terminalReason === null || ["no_useful_questions", "budget_blocked", "hard_cap", "extension_declined"].includes(String(parsed.terminalReason)))) return null;
+    if (!["not_offered", "pending", "accepted", "rejected", "withdrawn"].includes(String(parsed.extensionConsent))) return null;
+    if (!(parsed.extensionOfferedAtInteraction === null || (Number.isSafeInteger(parsed.extensionOfferedAtInteraction) && (parsed.extensionOfferedAtInteraction as number) >= V9_BASE_INTERACTION_LIMIT && (parsed.extensionOfferedAtInteraction as number) <= V9_ABSOLUTE_INTERACTION_LIMIT))) return null;
     if (!(parsed.completedAt === null || typeof parsed.completedAt === "number")) return null;
 
     const parsedAnswers = parsed.answers as Record<string, unknown>;
@@ -308,6 +352,7 @@ export function parseCandidateSessionV9Prototype(raw: string): CandidateSessionV
 
     const replayed = replayCandidateTranscriptV9(parsedTranscript as CandidateReplayEventV9[]);
     if (!replayed || replayed.interactionCount !== parsed.interactionCount) return null;
+    if (replayed.extensionConsent !== parsed.extensionConsent) return null;
     if (JSON.stringify(replayed.answers) !== JSON.stringify(parsed.answers)) return null;
 
     const session = parsed as unknown as CandidateSessionV9Prototype;
