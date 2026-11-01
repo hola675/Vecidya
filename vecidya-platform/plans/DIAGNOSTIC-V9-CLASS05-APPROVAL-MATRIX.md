@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.6  
+**Versión:** 0.1.7  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -126,9 +126,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F06, F08, F10.
 
-**Evidencia:** decisiones D-V9-007/008 y fronteras del plan.
+**Evidencia:** decisiones D-V9-007/008 y fronteras del plan; `DIAGNOSTIC-V9-DECG-LEARN-SERVICES-GHL-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 9. DEC-H — main, V8, corte y rollback
 
@@ -190,11 +190,12 @@ Hasta entonces, el estado permanece documental.
 | D | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-D | DEC-D pack + provenance/replay |
 | E | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; reconciliar ledger anónimo con D029/D033 y decidir alcance D1 | DEC-E pack + ownership/result |
 | F | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; hard cap técnico 24 no implementa aún 24+5 | DEC-F pack + planner/recommendations |
-| G | OPEN | — | — | — | D-V9-007/008 |
+| G | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; mantener enriquecimiento posterior al ranking y frontera GHL | DEC-G pack + D-V9-007/008 |
 | H | OPEN | — | — | — | F00/F09/F10 |
 
 ## Changelog
 
+- **0.1.7 / 2026-11-01:** DEC-G pasa a READY_FOR_HUMAN_REVIEW con separación Diagnóstico→Aprende→servicios→GHL y neutralidad comercial.
 - **0.1.6 / 2026-11-01:** DEC-E pasa a READY_FOR_HUMAN_REVIEW; se documenta la tensión entre ledger D1 individual y borrador anónimo local/analítica agregada.
 - **0.1.5 / 2026-11-01:** DEC-F pasa a READY_FOR_HUMAN_REVIEW; se documenta la brecha hard cap 24 vs política 24+5 y el ranking multicriterio pendiente.
 - **0.1.4 / 2026-11-01:** DEC-B pasa a READY_FOR_HUMAN_REVIEW; se registra como bloqueo la falta de binding explícito entre scoring_version y calibración v2/v4.
