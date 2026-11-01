@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.4  
+**Versión:** 0.1.5  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -110,9 +110,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F03, F05, F06, F08.
 
-**Evidencia:** CLASS-03 fallbacks; CLASS-04 budgets/journeys; matcher conservador.
+**Evidencia:** CLASS-03 fallbacks; CLASS-04 budgets/journeys; matcher conservador; `DIAGNOSTIC-V9-DECF-PRIORITY-BUDGET-FALLBACK-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 8. DEC-G — Aprende, servicios y GHL
 
@@ -189,12 +189,13 @@ Hasta entonces, el estado permanece documental.
 | C | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-C | DEC-C pack + 77/82/90 |
 | D | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-D | DEC-D pack + provenance/replay |
 | E | OPEN | — | — | — | ownership/result |
-| F | OPEN | — | — | — | planner/recommendations |
+| F | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; hard cap técnico 24 no implementa aún 24+5 | DEC-F pack + planner/recommendations |
 | G | OPEN | — | — | — | D-V9-007/008 |
 | H | OPEN | — | — | — | F00/F09/F10 |
 
 ## Changelog
 
+- **0.1.5 / 2026-11-01:** DEC-F pasa a READY_FOR_HUMAN_REVIEW; se documenta la brecha hard cap 24 vs política 24+5 y el ranking multicriterio pendiente.
 - **0.1.4 / 2026-11-01:** DEC-B pasa a READY_FOR_HUMAN_REVIEW; se registra como bloqueo la falta de binding explícito entre scoring_version y calibración v2/v4.
 - **0.1.3 / 2026-11-01:** DEC-D pasa a READY_FOR_HUMAN_REVIEW con paquete de correlación y deduplicación; sin integración runtime.
 - **0.1.2 / 2026-11-01:** DEC-C pasa a READY_FOR_HUMAN_REVIEW con paquete editorial 77/82/90; no activa banco ni scoring.
