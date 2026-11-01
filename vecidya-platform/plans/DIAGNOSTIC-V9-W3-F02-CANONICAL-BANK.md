@@ -1,8 +1,8 @@
 # Diagnostic V9 — W3/F02 Canonical Editorial Bank
 
-**Versión:** 0.1.0  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** W3/F02 AUTHORIZED · PENDING_FOCAL · F03–F10 PLAN_ONLY  
+**Estado:** W3/F02 DONE_WITH_FALLBACK · F03–F10 PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Decisión aplicada
@@ -114,16 +114,38 @@ La comparación con el banco QA03B ocurre únicamente en tests de migración/par
 
 ## 9. Gates F02
 
-F02 puede cerrar si:
+F02 queda cerrado con fallback porque:
 1. manifest = 77 IDs únicos;
 2. 18 KEEP + 59 rewrite_pending;
-3. el conjunto ID→version coincide con bank77 actual; el orden runtime queda delegado al adapter hasta F03;
-4. bank82/bank90 no contaminan canonical 77;
-5. 13 ADD siguen pending y sin evidenceV3;
-6. real-estate fallback se preserva;
-7. manifest no añade imports legacy;
-8. runtime autoritativo no activa 82/90;
-9. tests focales de bank77/90 y manifest pasan.
+3. conjunto ID→version = bank77 actual;
+4. orden runtime no se redefine en F02;
+5. bank82/bank90 no contaminan canonical 77;
+6. 13 ADD siguen pending y sin evidenceV3;
+7. real-estate fallback preservado;
+8. manifest V9-owned sin imports legacy;
+9. runtime autoritativo sigue fijado a bank77;
+10. gate focal = **29/29 PASS**.
+
+### Estado de tareas
+- **F02-01 = DONE_WITH_EVIDENCE** — inventario 77/82/90 y paridad fijados.
+- **F02-02 = DEFERRED_WITH_FALLBACK** — la aprobación humana cubre KEEP/REWRITE a nivel de decisión; las 59 reescrituras y cualquier cambio de opción/copy permanecen pendientes. Fallback: conservar bytes/semántica/versiones fuente del 77.
+- **F02-03 = DONE_WITH_FALLBACK** — manifest canónico V9-owned versionado; las definiciones ejecutables siguen detrás del adapter QA03B hasta F03/F04.
+
+### Evidencia focal
+Primer intento:
+- SHA `565217525c6c3c3bb6f6b0dc30b72829d880d58c`;
+- run `41327802881`, job `124911330421`;
+- fallo útil: el test asumía que el orden editorial era el orden del array runtime.
+
+Corrección:
+- F02 define identidad por `ID→version`, no por orden de ensamblaje;
+- el orden runtime permanece en el adapter hasta F03.
+
+PASS:
+- SHA `92271d398400647dfa9c62097964f5a20f5d0a77`;
+- run `41327887999`, job `124911583189`;
+- **29 tests / 29 pass / 0 fail**;
+- regresión general = **SKIPPED**.
 
 ## 10. Fuera de alcance
 
@@ -138,4 +160,5 @@ No hacer:
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** F02 cerrado con fallback; manifest 77 V9-owned, 18 KEEP/59 rewrite_pending, 13 ADD fuera, 29/29 PASS.
 - **0.1.0 / 2026-11-01:** manifest canónico 77, decisiones 18/59 y exclusión explícita de las 13 extensiones; pendiente gate focal.

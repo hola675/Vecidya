@@ -1,8 +1,8 @@
 # Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
 
-**Versión:** 0.3.0  
+**Versión:** 0.4.0  
 **Fecha:** 2026-11-01  
-**Estado:** W1/F00 + W2/F01 DONE_WITH_EVIDENCE · F02+ PLAN_ONLY  
+**Estado:** W1/F00 + W2/F01 DONE · W3/F02 DONE_WITH_FALLBACK · F03+ PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Resumen ejecutivo
@@ -13,7 +13,7 @@
 | CLASS-02 | puente oldValue→atributos, persistencia, replay, ownership y consumers | PARCIAL / NO CERTIFICADA |
 | CLASS-03 | reglas/fallbacks dental, food, agency, real estate | PARCIAL / NO CERTIFICADA |
 | CLASS-04 | C01–C10, híbridos, unknown, cambio de sector, replay | PARCIAL / NO CERTIFICADA |
-| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / W1-F00 DONE / W2-F01 DONE / F02+ PLAN_ONLY |
+| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03+ PLAN_ONLY |
 
 Ninguna clase está certificada bajo el SHA actual porque la fase vigente continúa siendo PLAN_ONLY.
 
@@ -114,7 +114,8 @@ Estado:
 - B/C/E/H = APPROVED_WITH_FALLBACK;
 - W1/F00 = DONE_WITH_EVIDENCE;
 - W2/F01 = DONE_WITH_EVIDENCE;
-- PLAN_ONLY sigue vigente para F02+;
+- W3/F02 = DONE_WITH_FALLBACK;
+- PLAN_ONLY sigue vigente para F03+;
 - no hay autorización de merge a main, deploy ni producción.
 
 Bloqueos transversales priorizados:
@@ -166,7 +167,7 @@ Hasta esa instrucción, el trabajo permitido sigue siendo lectura y documentaci�
 
 ## 10. Estado global
 
-**TAX-CLASS CLASS-01…05: W1/F00 + W2/F01 EJECUTADOS / CLASES 01–04 NO CERTIFICADAS / F02+ NO AUTORIZADO.**
+**TAX-CLASS CLASS-01…05: F00–F01 DONE / F02 BASELINE DONE_WITH_FALLBACK / CLASES 01–04 NO CERTIFICADAS / F03+ NO AUTORIZADO.**
 
 La deuda principal ya no es descubrir cómo funciona el código, sino cerrar decisiones humanas, ejecutar aceptación focal autorizada y asociar resultados al SHA final.
 
@@ -178,8 +179,13 @@ main quedó ancestro de la rama V9 mediante `5a798b5ab36858d12b95752130cc67bf154
 
 Frontera de autonomía documentada en `DIAGNOSTIC-V9-W2-F01-AUTONOMY-BOUNDARY.md`. La allowlist estática detectó dos omisiones del inventario durante sus primeras corridas y finalmente pasó **3/3** en `7f598dcc83756e7a764200ed86cb7aa74f71525d`. No se modificó runtime, banco ni scoring.
 
+## W3/F02 2026-11-01
+
+Manifest V9-owned de 77 preguntas creado sin imports QA03B/QBV2. Se preservan 18 KEEP y 59 rewrite_pending; las 13 extensiones 82/90 permanecen fuera y pending. Gate focal: 29/29 PASS en SHA `92271d398400647dfa9c62097964f5a20f5d0a77`.
+
 ## Changelog
 
+- **0.4.0 / 2026-11-01:** W3/F02 cerrado con fallback; canonical 77 v1 y 29/29 PASS; F03+ PLAN_ONLY.
 - **0.3.0 / 2026-11-01:** W2/F01 cerrado con evidencia; storage final deferred, registry objetivo fijado y dependencias legacy congeladas; F02+ PLAN_ONLY.
 - **0.2.0 / 2026-11-01:** A–H aprobadas; W1/F00 ejecutado; migraciones V9 0038–0043; W2+ PLAN_ONLY.
 - **0.1.2 / 2026-11-01:** se incorporan la hoja ejecutiva A–H, el scope condicional W0–W10 y el READY_FOR_AGENT actualizado; no cambia el estado de ejecución.

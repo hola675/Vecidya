@@ -1,11 +1,11 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.3.0 | 2026-11-01 | Estado: W1_F00_DONE / W2_F01_DONE / NOT_READY_FOR_W3 / PLAN_ONLY_F02_PLUS
+Versión: 0.4.0 | 2026-11-01 | Estado: W1_F00_DONE / W2_F01_DONE / W3_F02_DONE_WITH_FALLBACK / NOT_READY_FOR_W4 / PLAN_ONLY_F03_PLUS
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**W1/F00 y W2/F01 DONE_WITH_EVIDENCE; NO READY FOR W3/F02.** A–H están aprobadas con fallbacks. W1 reconcilió main/migraciones; W2 congeló la frontera autónoma. V9 todavía NO es autónomo porque scoring/planner/session/finalization conservan dependencias QBV2/QA03B permitidas por la allowlist F01. F02–F10 siguen sin autorización.
+**W1/F00 y W2/F01 DONE_WITH_EVIDENCE; W3/F02 DONE_WITH_FALLBACK; NO READY FOR W4/F03.** El baseline editorial canónico queda fijado en 77 mediante un manifest V9-owned. Las 59 decisiones REWRITE no están implementadas: conservan la semántica/versiones fuente hasta su gate individual. Los 13 ADD 82/90 siguen pending.
 
-Evidencia W2/F01: `7f598dcc83756e7a764200ed86cb7aa74f71525d`, run `41325376095`, job `124904090779`, **3/3 PASS**; suite general skipped.
+Evidencia F02: `92271d398400647dfa9c62097964f5a20f5d0a77`, run `41327887999`, job `124911583189`, **29/29 PASS**; suite general skipped.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -69,9 +69,10 @@ PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes d
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-El siguiente gate requiere nueva autorización: **W3/F02**. No iniciar banco editorial canónico, rewrites, ADD 82/90 ni ningún cambio F02+ hasta mensaje explícito del responsable. Revalidar HEAD/main antes de ese scope.
+El siguiente gate requiere nueva autorización: **W4/F03**. No modificar grafo/planner, 24+5 ni routing F03+ hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
 
 ## Changelog
+- 0.4.0 / 2026-11-01: W3/F02 cerrado con fallback; canonical manifest 77, 29/29 PASS; W4/F03 no autorizado.
 - 0.3.0 / 2026-11-01: W2/F01 cerrado; frontera legacy allowlisted 3/3 PASS; storage final deferred y registry objetivo fijado; F02+ PLAN_ONLY.
 - 0.2.0 / 2026-11-01: A–H aprobadas; W1/F00 ejecutado con main ancestro, migraciones V9 0038–0043 y 43/43 pruebas focales PASS; W2+ sigue PLAN_ONLY.
 - 0.1.1 / 2026-11-01: A–H ya están READY_FOR_HUMAN_REVIEW; se añaden hoja ejecutiva, scope post-aprobación y estados actualizados de gates sin levantar PLAN_ONLY.

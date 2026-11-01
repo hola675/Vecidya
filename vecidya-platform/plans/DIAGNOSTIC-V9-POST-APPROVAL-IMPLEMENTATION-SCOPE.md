@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.2.0  
+**Versión:** 0.3.0  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -112,7 +112,7 @@ Estado posterior:
 
 ---
 
-### W3 — F02: banco editorial canónico
+### W3 — F02: banco editorial canónico — DONE_WITH_FALLBACK
 
 Aplicar DEC-A/C:
 
@@ -129,9 +129,13 @@ Pruebas focales:
 - routing specialist/fallback;
 - copy ES/EN por ítems modificados.
 
-Gate:
-- banco canónico versionado;
-- ninguna evidence pending activa accidentalmente.
+Gate alcanzado con fallback:
+- manifest V9-owned `diagnostic-v9-canonical-77-baseline-v1`;
+- 18 KEEP + 59 rewrite_pending;
+- 13 extensiones excluidas;
+- ningún pending ADD activado;
+- 29/29 PASS;
+- las definiciones ejecutables siguen usando adapter hasta F03/F04.
 
 ---
 
@@ -407,5 +411,6 @@ READY_FOR_AGENT solo puede declararse cuando:
 
 ## Changelog
 
+- **0.3.0 / 2026-11-01:** W3/F02 cerrado con fallback; W4/F03 pasa a ser el próximo scope no autorizado.
 - **0.2.0 / 2026-11-01:** W1 y W2 cerrados con evidencia; W3/F02 es el siguiente scope no autorizado.
 - **0.1.0 / 2026-11-01:** waves W0–W10, relación con F00–F10, gates P0 y scope incremental recomendado.
