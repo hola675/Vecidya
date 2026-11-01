@@ -32,6 +32,7 @@ import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diag
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
 import { createCandidateSessionV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
+import { CANDIDATE_CALIBRATION_R8B_V2 } from "../../../app/features/diagnostic/qbv2-candidate-calibration";
 import {
   resolveV9ScoringCalibration,
   V9_CURRENT_SCORING_VERSION,
@@ -148,6 +149,24 @@ test("V9 Worker core replay authoritatively rebuilds route, interaction budget, 
 
   const expected = scoreCandidateContextualDimensionsV3({ answers: session.answers, calibration: resolveV9ScoringCalibration(V9_CURRENT_SCORING_VERSION).calibration, strictCorrelation: true }, bank77);
   assert.deepEqual(replay.core.dimensions, expected.dimensions);
+});
+
+test("V9 Worker replays a historical v2 run explicitly and rejects an unknown scoring version", () => {
+  const session = completingV9();
+  const historical = replayQa03bSessionV9Core({
+    ...envelope(session),
+    scoringVersion: CANDIDATE_CALIBRATION_R8B_V2.identity,
+  }, NOW + 100);
+  assert.equal(historical.ok, true);
+  if (historical.ok) {
+    assert.equal(historical.core.identity.scoringVersion, CANDIDATE_CALIBRATION_R8B_V2.identity);
+    assert.equal(historical.core.identity.calibration, CANDIDATE_CALIBRATION_R8B_V2.identity);
+    assert.equal(historical.core.identity.calibrationVersion, 2);
+  }
+  assert.deepEqual(replayQa03bSessionV9Core({
+    ...envelope(session),
+    scoringVersion: "unknown-scoring",
+  }, NOW + 100), { ok: false, reason: "scoring_version" });
 });
 
 test("V9 Worker rejects V8 and hybrid identity envelopes", () => {
@@ -462,6 +481,45 @@ test("V9 finalization verifies ownership, replays D1, persists one trusted resul
     assert.deepEqual(retry.score, result.score);
     assert.deepEqual(retry.evidence, result.evidence);
     assert.deepEqual(retry.recommendations, result.recommendations);
+
+    const historicalRunId = "historical-v2-run";
+    const historicalVersions: V9RunVersions = {
+      ...versions,
+      scoring: CANDIDATE_CALIBRATION_R8B_V2.identity,
+    };
+    await createOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: historicalRunId,
+      identityId: "historical-user-identity",
+      userId: "historical-user",
+      startedAt,
+      versions: historicalVersions,
+    });
+    for (const [index, event] of session.replayTranscript.entries()) {
+      await appendOwnedDiagnosticEventV9(db, {
+        workspaceId: "public",
+        runId: historicalRunId,
+        userId: "historical-user",
+        eventId: `historical-event-${index + 1}`,
+        expectedSeq: index,
+        kind: auditKind(event),
+        payload: auditPayload(event),
+        occurredAt: new Date(NOW + index + 1).toISOString(),
+      });
+    }
+    const historicalResult = await finalizeOwnedDiagnosticRunV9(db, {
+      workspaceId: "public",
+      runId: historicalRunId,
+      userId: "historical-user",
+      expectedVersions: historicalVersions,
+      now: NOW + 300,
+    });
+    const historicalScore = historicalResult.score as {
+      identity: { scoringVersion: string; calibration: string; calibrationVersion: number };
+    };
+    assert.equal(historicalScore.identity.scoringVersion, CANDIDATE_CALIBRATION_R8B_V2.identity);
+    assert.equal(historicalScore.identity.calibration, CANDIDATE_CALIBRATION_R8B_V2.identity);
+    assert.equal(historicalScore.identity.calibrationVersion, 2);
   } finally {
     sqlite.close();
   }
