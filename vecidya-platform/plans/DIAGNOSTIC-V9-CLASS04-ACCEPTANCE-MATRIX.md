@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-04: matriz de aceptación C01–C10
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-10-31  
 **Estado:** PLAN_ONLY · DEFINIDA / NO EJECUTADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -11,6 +11,7 @@ Traducir el contrato CLASS-04 a criterios focales medibles sin ejecutar tests ni
 
 Fuente de contexto:
 - `DIAGNOSTIC-V9-CLASS04-C01-C10-STATIC-COVERAGE.md`
+- `DIAGNOSTIC-V9-CLASS04-GAP-RESOLUTION-TRACE.md`
 - plan maestro V9 §10.2
 - suites V9/QA03B ya existentes
 
@@ -27,8 +28,8 @@ Fuente de contexto:
 4. produce prioridades/recomendaciones pertinentes al contexto;
 5. replay reproduce exactamente answers, scoring y resultado.
 
-**Cobertura source existente:** personas authored locales y journeys.  
-**Gap:** validación completa de resultado/prioridades.
+**Cobertura source existente:** personas authored locales y journeys; el pipeline V9 de finalización genera overall/recomendaciones/solutions desde replay y banco fijado.  
+**Gap:** validación end-to-end específica de resultado/prioridades C01.
 
 ---
 
@@ -73,8 +74,8 @@ Fuente de contexto:
 4. identidad comercial y entidad legal no se confunden;
 5. resultado sigue siendo útil aunque archetype permanezca parcialmente unresolved.
 
-**Cobertura source existente:** entidad individual/professional.  
-**Gap:** fixture/afirmación explícita de “marca comercial” y sus invariantes.
+**Cobertura source existente:** entidad individual/professional y camino V9 de resultado.  
+**Gap:** fixture/aceptación explícita de “marca comercial” y resultado final C04.
 
 ---
 
@@ -102,9 +103,10 @@ Fuente de contexto:
 2. no exige reserva online;
 3. booking, attendance, reminders y rebooking se separan semánticamente;
 4. dental especializada solo sustituye genérica cuando sus gates aplican;
-5. continuidad N/A no penaliza servicios sin retorno.
+5. continuidad N/A no penaliza servicios sin retorno;
+6. recomendación concreta de booking solo aparece con evidencia específica.
 
-**Cobertura source existente:** amplia.  
+**Cobertura source existente:** amplia; el matcher V9 solo selecciona `online_booking` ante evidencia directa de `q2_appointments_booking_friction`.  
 **Gap:** resultado/prioridades C06 end-to-end.
 
 ---
@@ -151,8 +153,10 @@ Fuente de contexto:
 5. replay V9 mantiene componentes y scoring;
 6. businessModel hybrid solo se acepta si existen mecanismos independientes con procedencia suficiente.
 
-**Cobertura source existente:** resolver y contexto QA03B.  
-**Gap:** replay/result V9 focal del fixture híbrido.
+**Cobertura source existente:** `qa03b-context.test.ts` demuestra exactamente `retail+online_checkout → hybrid [ecommerce,retail]`; resolver base prueba independencia/determinismo.  
+**Gap:** replay/result/finalization V9 focal del fixture `tienda-hibrida`.
+
+**Nota:** `businessModel=hybrid` está soportado por el resolver, pero el banco 77 inspeccionado solo produce monetización `slot:"primary"`. No declarar alcanzabilidad desde el flujo actual mientras no exista producer secundario real.
 
 ---
 
@@ -176,8 +180,8 @@ Fuente de contexto:
 7. reclasificación no reinicia ni amplía budget;
 8. evento manipulado falla cerrado.
 
-**Cobertura source existente:** muy fuerte para cambios; parcial para sector literal unknown.  
-**Gap:** caso explícito `sector=unknown` sobre bundle V9 principal.
+**Cobertura source existente:** muy fuerte para cambios. `QA03B_CANDIDATE_SECTOR_V4` conserva literalmente `unknown`, y `applyClassificationInteractionV9` valida sector contra ese catálogo, por lo que el bundle principal lo acepta estáticamente.  
+**Gap:** falta test focal explícito `sector=unknown` + replay, no una decisión de implementación.
 
 ## 3. Gates transversales
 
@@ -185,7 +189,7 @@ Fuente de contexto:
 Los tres estados deben permanecer diferenciados desde routing hasta scoring y reporte.
 
 ### X04-02 — Híbridos
-No producir hybrid por duplicación de la misma señal. Requerir evidencia independiente suficiente.
+No producir hybrid por duplicación de la misma señal. Requerir evidencia independiente suficiente. Distinguir `archetype hybrid` alcanzable de `businessModel hybrid` no demostrado desde banco actual.
 
 ### X04-03 — Edición de contexto
 Cambiar sector, buyer, modalidad o status debe reconciliar respuestas y eliminar solo las que dejan de ser elegibles.
@@ -222,19 +226,20 @@ No basta un assert de elegibilidad aislado para certificar el caso completo.
 
 | Caso | Cobertura source | Certificación |
 |---|---|---|
-| C01 | Representativa | NO |
+| C01 | Representativa + camino de resultado | NO |
 | C02 | Fuerte | NO |
 | C03 | Focal | NO |
-| C04 | Parcial | NO |
+| C04 | Parcial + camino de resultado | NO |
 | C05 | Focal | NO |
-| C06 | Fuerte | NO |
+| C06 | Fuerte + matcher conservador | NO |
 | C07 | Focal | NO |
 | C08 | Focal | NO |
-| C09 | Parcial/fuerte en resolver | NO |
-| C10 | Fuerte en cambios, parcial unknown sector | NO |
+| C09 | Hybrid alcanzable en contexto; replay focal pendiente | NO |
+| C10 | Fuerte; sector unknown aceptado estáticamente | NO |
 
 **CLASS-04 permanece PARCIAL / NO CERTIFICADA.**
 
 ## 6. Changelog
 
+- **0.1.1 / 2026-10-31:** sector unknown resuelto estáticamente; aclarada alcanzabilidad de hybrid; añadida ruta de resultado C01/C04/C06 y matcher conservador C06.
 - **0.1.0 / 2026-10-31:** matriz C01–C10, seis gates transversales y evidencia mínima futura.
