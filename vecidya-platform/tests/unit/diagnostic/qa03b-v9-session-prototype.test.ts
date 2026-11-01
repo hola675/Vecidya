@@ -69,11 +69,11 @@ test("V9 identity, schema and storage are separate from the frozen public V8 con
   assert.equal(SESSION_SCHEMA, 8);
   assert.equal(CANDIDATE_SESSION_STORAGE_KEY_V3, "vecidya.diagnostic.v3.candidate.session.8");
 
-  assert.equal(QA03B_V9_SESSION_SCHEMA, 9);
-  assert.equal(QA03B_V9_SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.9");
+  assert.equal(QA03B_V9_SESSION_SCHEMA, 10);
+  assert.equal(QA03B_V9_SESSION_KEY, "vecidya.diagnostic.v3.candidate.session.10");
   assert.notEqual(QA03B_V9_QUESTION_BANK_ID, QUESTION_BANK_ID);
   assert.notEqual(QA03B_V9_ENGINE_ID, "diag-v3-candidate-global-quartiles-v5");
-  assert.equal(QA03B_V9_REPLAY_VERSION, "qa03b-worker-replay-v7-candidate");
+  assert.equal(QA03B_V9_REPLAY_VERSION, "qa03b-worker-replay-v8-candidate-extension");
 });
 
 test("sector and specialty consume one historical interaction while storing two explicit answers", () => {
@@ -146,9 +146,10 @@ test("historical interaction cost is never refunded when active answers become f
   };
   const planned = buildCandidateQuestionPlanV9Prototype(active, [], 24);
   assert.equal(planned.visibleInteractionCount, 24);
-  assert.equal(planned.plan.completion.hardCapReached, true);
+  assert.equal(planned.plan.completion.hardCapReached, false);
   assert.equal(planned.plan.routeLength, 24);
   assert.equal(planned.plan.nextQuestionId, undefined);
+  assert.equal(planned.extension.consentRequired, true);
 });
 
 test("V9 transcript replay reproduces answers and interaction count exactly", () => {
@@ -214,7 +215,7 @@ test("V9 recompone la cola tras cada respuesta y edición, sin mantener pregunta
     const expected = buildCandidateQuestionPlanV9Prototype(current.answers, events, current.interactionCount);
     assert.deepEqual(current.queue, expected.plan.selectedQuestionIds.filter((id) =>
       expected.plan.eligibleQuestionIds.includes(id) && current.answers[id] === undefined));
-    assert.ok(current.queue.length <= 24 - current.interactionCount);
+    assert.ok(current.queue.length <= 29 - current.interactionCount);
   };
   verify(session);
   session = advanceToSector(session, 31_000);
