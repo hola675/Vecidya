@@ -41,6 +41,8 @@ type RunState = {
   interactionCount: number;
   answers: Record<string, string | string[]>;
   terminalReason: string | null;
+  extensionConsent: "not_offered" | "pending" | "accepted" | "rejected" | "withdrawn";
+  extensionInteractionsRemaining: number;
 };
 
 type CompletedResult = {
@@ -142,8 +144,9 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     [state?.nextQuestionId],
   );
 
-  async function sendEvent(kind: "answer" | "classification", payload: unknown) {
-    if (!state || busy || !state.nextQuestionId || state.status !== "active") return;
+  async function sendEvent(kind: "answer" | "classification" | "extension_consent", payload: unknown) {
+    if (!state || busy || state.status !== "active") return;
+    if (kind !== "extension_consent" && !state.nextQuestionId) return;
     setBusy(true);
     setError(null);
     try {
@@ -166,6 +169,10 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     } finally {
       setBusy(false);
     }
+  }
+
+  function submitExtensionConsent(decision: "accepted" | "rejected" | "withdrawn") {
+    void sendEvent("extension_consent", { decision });
   }
 
   async function finalize() {
@@ -230,6 +237,13 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
             <>
               <p role="status">Interacciones completadas: {state.interactionCount} · Eventos guardados: {state.lastSeq}</p>
               {error ? <p role="alert" className="df-screen__note">{error}</p> : null}
+              {state.extensionConsent === "accepted" && state.interactionCount >= 24 && state.status === "active" ? (
+                <div className="df-screen__note">
+                  <p>Extensión opcional: quedan hasta {state.extensionInteractionsRemaining} interacciones.</p>
+                  <button className="button" type="button" disabled={busy}
+                    onClick={() => submitExtensionConsent("withdrawn")}>Finalizar ahora</button>
+                </div>
+              ) : null}
               {state.status === "completed" ? (
                 <div className="df-screen__note">
                   <h2>Diagnóstico completado</h2>
@@ -252,6 +266,22 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
                     </>
                   ) : null}
                   <p><Link to="/app/diagnosticos">Consultar mis diagnósticos</Link> o <Link to="/login?redirectTo=%2Fapp%2Fdiagnosticos">iniciar sesión para recuperar tu historial</Link>.</p>
+                </div>
+              ) : state.extensionConsent === "pending" ? (
+                <div className="df-screen__note">
+                  <h2>¿Quieres responder hasta 5 preguntas más?</h2>
+                  <p>Ya completaste 24 interacciones. Solo proponemos esta extensión porque queda evidencia crítica que puede cambiar una conclusión del diagnóstico.</p>
+                  <p>El consentimiento no cuenta como interacción y puedes finalizar sin continuar.</p>
+                  <div className="df-actions">
+                    <button className="button button--primary" type="button" disabled={busy}
+                      onClick={() => submitExtensionConsent("accepted")}>
+                      {busy ? "Guardando…" : "Sí, continuar"}
+                    </button>
+                    <button className="button" type="button" disabled={busy}
+                      onClick={() => submitExtensionConsent("rejected")}>
+                      Finalizar sin preguntas extra
+                    </button>
+                  </div>
                 </div>
               ) : state.readyToFinalize ? (
                 <div>
