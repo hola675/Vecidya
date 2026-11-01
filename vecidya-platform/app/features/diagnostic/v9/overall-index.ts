@@ -6,9 +6,13 @@ import type {
 import { V9_DIGITAL_DIMENSIONS } from "./scoring-contract";
 
 export const V9_OVERALL_INDEX_ID = "diag-v9-overall-index-v1" as const;
+export const V9_HISTORICAL_OVERALL_COMPAT_ID = "diag-v9-historical-observable-overall-compat-v1" as const;
+export type V9OverallIndexIdentity =
+  | typeof V9_OVERALL_INDEX_ID
+  | typeof V9_HISTORICAL_OVERALL_COMPAT_ID;
 
 export type V9OverallIndex = {
-  readonly identity: typeof V9_OVERALL_INDEX_ID;
+  readonly identity: V9OverallIndexIdentity;
   readonly rawScore: number | null;
   readonly displayScore: number | null;
   readonly scoredDimensions: readonly V9DigitalDimensionId[];
