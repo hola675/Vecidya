@@ -1,8 +1,8 @@
 # Diagnostic V9 — W2/F01 Autonomy Boundary and Contract Registry
 
-**Versión:** 0.1.0  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** W2/F01 AUTHORIZED · PENDING_FOCAL · F02–F10 PLAN_ONLY  
+**Estado:** W2/F01 DONE_WITH_EVIDENCE · F02–F10 PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Alcance
@@ -211,13 +211,28 @@ F01 solo fija el contrato.
 
 ## 10. Gates F01
 
-F01 puede cerrar cuando:
-- inventario está documentado;
-- prueba allowlist pasa;
-- no existen imports legacy desconocidos en archivos censados;
-- storage final queda explícitamente deferred, no supuesto;
-- registry objetivo queda definido;
-- F02/F04 conocen qué deben reemplazar.
+F01 quedó cerrado porque:
+- inventario documentado;
+- allowlist estática aprobada por prueba focal;
+- cero imports legacy desconocidos en los archivos censados;
+- storage final explícitamente DEFERRED a F07;
+- registry objetivo definido;
+- F02/F04 tienen destinos REPLACE/ADAPTER explícitos.
+
+### Evidencia focal
+- SHA de código/test: `7f598dcc83756e7a764200ed86cb7aa74f71525d`;
+- GitHub Actions run: `41325376095`;
+- job: `124904090779`;
+- archivo: `qa03b-v9-autonomy-boundary.test.ts`;
+- **3/3 PASS, 0 FAIL**;
+- regresión general: **SKIPPED**.
+
+Historia útil del test:
+- `9b5e3c99...`: detectó `./context` faltante en la allowlist de applicability;
+- `35b09565...`: detectó `./context` faltante en engine;
+- `7f598dcc...`: allowlist reconciliada con el código real y PASS.
+
+Los dos fallos iniciales fueron errores del inventario F01, no fallos runtime de V9.
 
 ## 11. Fuera de alcance
 
@@ -233,4 +248,5 @@ No hacer en F01:
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** F01 cerrado con 3/3 PASS; allowlist corregida tras dos fallos útiles de inventario; F02+ vuelve a PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** frontera autónoma, clasificación, ADR storage, registry y allowlist de imports; pendiente prueba focal.

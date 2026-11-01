@@ -1,8 +1,8 @@
 # Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
 
-**Versión:** 0.2.0  
+**Versión:** 0.3.0  
 **Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · COMPATIBILIDAD DOCUMENTADA / EJECUCIÓN NO AUTORIZADA  
+**Estado:** W1/F00 + W2/F01 DONE_WITH_EVIDENCE · F02+ PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Resumen ejecutivo
@@ -13,7 +13,7 @@
 | CLASS-02 | puente oldValue→atributos, persistencia, replay, ownership y consumers | PARCIAL / NO CERTIFICADA |
 | CLASS-03 | reglas/fallbacks dental, food, agency, real estate | PARCIAL / NO CERTIFICADA |
 | CLASS-04 | C01–C10, híbridos, unknown, cambio de sector, replay | PARCIAL / NO CERTIFICADA |
-| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / W1-F00 DONE / W2+ PLAN_ONLY |
+| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / W1-F00 DONE / W2-F01 DONE / F02+ PLAN_ONLY |
 
 Ninguna clase está certificada bajo el SHA actual porque la fase vigente continúa siendo PLAN_ONLY.
 
@@ -47,7 +47,7 @@ Documentado:
 - banco fijado del replay;
 - cinco versiones persistidas;
 - ledger, seq, snapshots;
-- SQL `0030..0035`;
+- SQL V9 `0038..0043`;
 - identidad, ownership, claim y organización;
 - cobertura SQLite existente.
 
@@ -113,7 +113,8 @@ Estado:
 - A/D/F/G = APPROVED;
 - B/C/E/H = APPROVED_WITH_FALLBACK;
 - W1/F00 = DONE_WITH_EVIDENCE;
-- PLAN_ONLY sigue vigente para W2+;
+- W2/F01 = DONE_WITH_EVIDENCE;
+- PLAN_ONLY sigue vigente para F02+;
 - no hay autorización de merge a main, deploy ni producción.
 
 Bloqueos transversales priorizados:
@@ -121,7 +122,7 @@ Bloqueos transversales priorizados:
 - correlación de observaciones;
 - ledger D1 anónimo vs borrador local-only;
 - hard cap 24 vs política 24+5;
-- colisión de migraciones main/V9 0030–0035;
+- colisión de migraciones main/V9 = RESUELTA en W1; V9 0038–0043;
 - restore/versionado entre bancos;
 - pruebas CLASS-01…04 sin PASS actual.
 
@@ -147,7 +148,7 @@ Ya existen dos artefactos adicionales:
 - `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`: recomendación consolidada A–H, sin aprobación implícita.
 - `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md`: waves W0–W10, con F00 como primer scope recomendado si se levanta PLAN_ONLY parcialmente.
 
-`DIAGNOSTIC-V9-READY-FOR-AGENT.md` fue actualizado a v0.1.1 y permanece `NOT_READY / PLAN_ONLY`.
+`DIAGNOSTIC-V9-READY-FOR-AGENT.md` está actualizado tras W2; el siguiente gate es W3/F02 y permanece `PLAN_ONLY`.
 
 ## 9. Ruta de salida de PLAN_ONLY
 
@@ -165,7 +166,7 @@ Hasta esa instrucción, el trabajo permitido sigue siendo lectura y documentaci�
 
 ## 10. Estado global
 
-**TAX-CLASS CLASS-01…05: DOCUMENTACIÓN AVANZADA / NO CERTIFICADA / NO READY FOR EXECUTION.**
+**TAX-CLASS CLASS-01…05: W1/F00 + W2/F01 EJECUTADOS / CLASES 01–04 NO CERTIFICADAS / F02+ NO AUTORIZADO.**
 
 La deuda principal ya no es descubrir cómo funciona el código, sino cerrar decisiones humanas, ejecutar aceptación focal autorizada y asociar resultados al SHA final.
 
@@ -173,8 +174,13 @@ La deuda principal ya no es descubrir cómo funciona el código, sino cerrar dec
 
 main quedó ancestro de la rama V9 mediante `5a798b5ab36858d12b95752130cc67bf15492f32`; PR #162 mergeable, draft; 43/43 pruebas focales PASS; W2+ no autorizado.
 
+## W2/F01 2026-11-01
+
+Frontera de autonomía documentada en `DIAGNOSTIC-V9-W2-F01-AUTONOMY-BOUNDARY.md`. La allowlist estática detectó dos omisiones del inventario durante sus primeras corridas y finalmente pasó **3/3** en `7f598dcc83756e7a764200ed86cb7aa74f71525d`. No se modificó runtime, banco ni scoring.
+
 ## Changelog
 
+- **0.3.0 / 2026-11-01:** W2/F01 cerrado con evidencia; storage final deferred, registry objetivo fijado y dependencias legacy congeladas; F02+ PLAN_ONLY.
 - **0.2.0 / 2026-11-01:** A–H aprobadas; W1/F00 ejecutado; migraciones V9 0038–0043; W2+ PLAN_ONLY.
 - **0.1.2 / 2026-11-01:** se incorporan la hoja ejecutiva A–H, el scope condicional W0–W10 y el READY_FOR_AGENT actualizado; no cambia el estado de ejecución.
 - **0.1.1 / 2026-11-01:** CLASS-05 queda documentalmente lista para revisión humana; A–H tienen paquetes propios, sin aprobación ni ejecución; se registran bloqueos transversales P0.

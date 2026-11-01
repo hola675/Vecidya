@@ -1,5 +1,5 @@
 # Diagnóstico V9 — Backlog ejecutable F00–F10 (propuesta)
-Versión: 0.1.0 | 2026-10-31 | Estado: PLAN_ONLY / NO AUTORIZADO
+Versión: 0.2.0 | 2026-11-01 | Estado: F00-F01 DONE_WITH_EVIDENCE / F02-F10 PLAN_ONLY
 Repositorio: hola675/Vecidya | PR #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## Contrato
@@ -21,8 +21,8 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 | --- | --- | --- | --- | --- | --- |
 | F00-01 | autorización de ejecución | Inventario PR/ramas/main/HEAD y matriz INCLUDE/ALREADY/SUPERSEDED/REVIEW | Git + plans/DIAGNOSTIC-V9-MAIN-SYNC-CONFLICT-MATRIX.md | SHA, diff, lista de ramas y PR | Detener ante commits concurrentes o cambios ajenos |
 | F00-02 | F00-01 | main ancestro de rama V9, sin pérdida de MiniWeb/Aprende | Worktree aislado, 9 archivos de atención en matriz | conflictos reales, diff, pruebas de archivos afectados y CI | Backup, no force-push; si conflicto transversal, escalar |
-| F01-01 | F00-01 | Mapa import/export QBV2/QA03B/V9, rutas y consumidores | app/features/diagnostic, app/routes, db/migrations, tests | grep de imports + tabla consumidor→sustituto→test | No eliminar imports en esta tarea |
-| F01-02 | F01-01 | Contrato de separación REPLACE/SHARED/ADAPTER/RETAIN/DELETE | Documento de arquitectura V9 | revisión de ciclos y matriz de eliminación | Bloquear F04 si quedan dependencias desconocidas |
+| F01-01 | F00-01 | **DONE_WITH_EVIDENCE** — mapa import/export QBV2/QA03B/V9, rutas y consumidores | app/features/diagnostic, app/routes, db/migrations, tests | allowlist estática 3/3 PASS | No se eliminaron imports |
+| F01-02 | F01-01 | **DONE_WITH_EVIDENCE** — contrato REPLACE/SHARED/ADAPTER/RETAIN/DELETE_AFTER_CUT | DIAGNOSTIC-V9-W2-F01-AUTONOMY-BOUNDARY.md | registry/storage ADR + allowlist 3/3 PASS | F04 bloqueado ante dependencia nueva |
 | F02-01 | DEC-C y F01-01 | Inventario exacto 77/82/90, variantes, versiones, opciones ES/EN | qa03b/bank.ts, specialty-branches-wave1.ts, specialty-candidate-bank.ts | validadores focales de IDs/copy/semántica | No migrar pending por conteo |
 | F02-02 | F02-01 | Decisión humana KEEP/REWRITE/REMOVE/ADD/DEFER por pregunta y opción | Matriz editorial versionada | 100% de celdas con aprobador, motivo, estado | Si falta aprobación, HOLD por ítem |
 | F02-03 | F02-02 | Banco V9 canónico versionado, siete generales directas condicionadas y una de apoyo solo si aprobadas | futuro v9/bank y contratos | unitarias de neutralidad, paridad y versionado | Sin activación de evidenceV3 sin paridad |
@@ -69,6 +69,7 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - Las 13 pruebas focales PASS documentadas corresponden al commit 231fba058803, no a este HEAD ni a aceptación integral.
 
 ## Changelog
+- 0.2.0 / 2026-11-01: F00–F01 cerrados con evidencia; F02–F10 permanecen PLAN_ONLY.
 - 0.1.0 / 2026-10-31: backlog inicial de 23 tareas F00–F10, dependencias, pruebas y stop conditions; solo documentación.
 
 
@@ -79,4 +80,5 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - Main remoto: 0030 producción; Aprende 0031–0033 producción; MiniWeb 0034–0037 solo local/no publicado según STATUS.
 - V9 0030–0035: no aplicadas/deploy; renumeradas de forma segura a 0038–0043.
 - Prueba focal W1: 43/43 PASS en Actions run 41323269814; regresión general skipped.
-- **F01 y F02–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.
+- **F01-01/F01-02: DONE_WITH_EVIDENCE.** Run 41325376095, job 124904090779, 3/3 PASS.
+- **F02–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.

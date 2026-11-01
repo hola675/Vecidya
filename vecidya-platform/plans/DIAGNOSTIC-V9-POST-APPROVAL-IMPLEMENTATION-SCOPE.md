@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.1.0  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -83,7 +83,7 @@ STOP:
 
 ---
 
-### W2 — F01: frontera autónoma V9
+### W2 — F01: frontera autónoma V9 — DONE_WITH_EVIDENCE
 
 Objetivo:
 - mapa de imports/exports/consumidores;
@@ -100,9 +100,15 @@ Pruebas focales:
 - ciclos;
 - consumidores de contratos compartidos.
 
-Gate:
-- cada dependencia legacy tiene destino;
-- ningún store se asume por conveniencia.
+Gate alcanzado:
+- cada dependencia legacy censada tiene destino;
+- allowlist estática impide drift silencioso;
+- ningún store se asume por conveniencia;
+- registry objetivo definido;
+- prueba focal 3/3 PASS en run 41325376095.
+
+Estado posterior:
+- F02–F10 permanecen PLAN_ONLY.
 
 ---
 
@@ -352,10 +358,10 @@ Producción no se infiere de CI/staging.
 |---|---|
 | v2/v4 calibration binding | W5 |
 | doble conteo/correlación | W5 |
-| local-only vs ledger D1 | W2 + W6 |
+| local-only vs ledger D1 | W2 contrato cerrado; implementación W6 |
 | hard cap 24 vs 24+5 | W4 |
 | migraciones 0030–0035 | W1 |
-| restore/versioning | W2/W3/W5 |
+| restore/versioning | W2 registry objetivo cerrado; implementación W3/W5 |
 | A–H sin aprobación | W0 |
 | CLASS-01…04 sin PASS actual | W3–W8 |
 
@@ -401,4 +407,5 @@ READY_FOR_AGENT solo puede declararse cuando:
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** W1 y W2 cerrados con evidencia; W3/F02 es el siguiente scope no autorizado.
 - **0.1.0 / 2026-11-01:** waves W0–W10, relación con F00–F10, gates P0 y scope incremental recomendado.

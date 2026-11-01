@@ -1,9 +1,11 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.2.0 | 2026-11-01 | Estado: W1_F00_DONE / NOT_READY_FOR_W2 / PLAN_ONLY_W2_PLUS
+Versión: 0.3.0 | 2026-11-01 | Estado: W1_F00_DONE / W2_F01_DONE / NOT_READY_FOR_W3 / PLAN_ONLY_F02_PLUS
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**W1/F00 DONE_WITH_EVIDENCE; NO READY_FOR W2.** A–H están aprobadas con fallbacks. La autorización recibida cubrió únicamente W1/F00; F01/W2+ no están autorizados. El merge `main→V9` quedó en `5a798b5ab36858d12b95752130cc67bf15492f32`, con `main` como ancestro y pruebas W1 focales 43/43 PASS.n documentadas y DEC-A…H ya tienen paquetes y recomendación consolidada, pero siguen sin aprobación humana. También están documentados los bloqueos P0 de calibración v2/v4, correlación, persistencia anónima, 24+5 y migraciones. Este paquete sigue siendo un protocolo de arranque futuro, no autorización para implementar, ejecutar CI, hacer merge o desplegar.
+**W1/F00 y W2/F01 DONE_WITH_EVIDENCE; NO READY FOR W3/F02.** A–H están aprobadas con fallbacks. W1 reconcilió main/migraciones; W2 congeló la frontera autónoma. V9 todavía NO es autónomo porque scoring/planner/session/finalization conservan dependencias QBV2/QA03B permitidas por la allowlist F01. F02–F10 siguen sin autorización.
+
+Evidencia W2/F01: `7f598dcc83756e7a764200ed86cb7aa74f71525d`, run `41325376095`, job `124904090779`, **3/3 PASS**; suite general skipped.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -34,7 +36,7 @@ Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-gra
 ## 4. Gates de implementación (después de autorización)
 | Gate | Tareas | Condición de salida |
 | --- | --- | --- |
-| IMPL-G00 | F00–F01 | F00 PASS; F01 no autorizado. main ya es ancestro; inventario legacy F01 pendiente |
+| IMPL-G00 | F00–F01 | **PASS focal**: main ancestro + frontera legacy congelada; storage final deferred y registry objetivo definido |
 | IMPL-G01 | F02 | Banco aprobado, ES/EN y evidencia versionada |
 | IMPL-G02 | F03 | Grafo y recorridos C01–C10 sin huecos, presupuesto 24+5 |
 | IMPL-G03 | F04 | Motor autónomo, determinista, sin doble evidencia y sin imports runtime QBV2 |
@@ -56,7 +58,7 @@ Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-gra
 ## 6. Evidencia histórica que no debe exagerarse
 La documentación registra 13/13 PASS del archivo focal del banco90/correlador para commit 231fba058803, GitHub Actions run 41200765557. No es un PASS del HEAD posterior ni de E2E, identidad, staging o producción.
 El correlador experimental existe pero no está conectado al scorer V9; el P0 de doble conteo continúa abierto.
-PR #162 permanece draft y no fusionable automáticamente según el último checkpoint; revalidar antes de implementar.
+PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes de cada nuevo scope.
 
 ## 7. Formato obligatorio del reporte de cada tarea futura
 - ID / gate / fecha / HEAD inicial / HEAD final.
@@ -67,9 +69,10 @@ PR #162 permanece draft y no fusionable automáticamente según el último check
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-El siguiente gate requiere nueva autorización: W2/F01. No iniciar F01 ni ningún cambio de W2+ hasta mensaje explícito del responsable. Revalidar HEAD/main inmediatamente antes de cualquier nuevo scope.
+El siguiente gate requiere nueva autorización: **W3/F02**. No iniciar banco editorial canónico, rewrites, ADD 82/90 ni ningún cambio F02+ hasta mensaje explícito del responsable. Revalidar HEAD/main antes de ese scope.
 
 ## Changelog
+- 0.3.0 / 2026-11-01: W2/F01 cerrado; frontera legacy allowlisted 3/3 PASS; storage final deferred y registry objetivo fijado; F02+ PLAN_ONLY.
 - 0.2.0 / 2026-11-01: A–H aprobadas; W1/F00 ejecutado con main ancestro, migraciones V9 0038–0043 y 43/43 pruebas focales PASS; W2+ sigue PLAN_ONLY.
 - 0.1.1 / 2026-11-01: A–H ya están READY_FOR_HUMAN_REVIEW; se añaden hoja ejecutiva, scope post-aprobación y estados actualizados de gates sin levantar PLAN_ONLY.
 - 0.1.0 / 2026-10-31: índice, matrices de aceptación, protocolo de arranque, stop conditions y reporte por tarea. Sin cambios de runtime.
