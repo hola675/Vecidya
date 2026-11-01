@@ -15,10 +15,12 @@ import {
   parseCandidateSessionV9Prototype,
   submitCandidateAnswerV9Prototype,
   submitClassificationV9Prototype,
+  submitExtensionConsentV9Prototype,
   type CandidateReplayEventV9,
   type CandidateSessionV9Prototype,
 } from "./v9-session-prototype";
 import { buildCandidateQuestionPlanV9Prototype } from "./v9-classification-bundle";
+import { V9_ABSOLUTE_INTERACTION_LIMIT, v9ExtensionInteractionsUsed } from "../v9/route-budget";
 
 export const QA03B_V9_WORKER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
@@ -61,6 +63,8 @@ export type Qa03bWorkerCoreResultV9 = {
   readonly insufficientContextDimensions: readonly string[];
   readonly unresolvedApplicableDimensions: readonly string[];
   readonly dimensions: ReturnType<typeof scoreCandidateContextualDimensionsV3>["dimensions"];
+  readonly extensionConsent: CandidateSessionV9Prototype["extensionConsent"];
+  readonly extensionInteractions: number;
 };
 
 export type Qa03bWorkerReplayV9 =
@@ -96,6 +100,13 @@ function replayEventsAuthoritatively(
   if (parsed.replayTranscript.length > QA03B_V9_REPLAY_LIMIT) return null;
 
   for (const event of parsed.replayTranscript) {
+    if (event.kind === "extension_consent") {
+      if (event.atInteractionCount !== replayed.interactionCount) return null;
+      const consent = submitExtensionConsentV9Prototype(replayed, event.decision, "qa03b-v9-worker", ++clock);
+      if (!consent.ok) return null;
+      replayed = consent.session;
+      continue;
+    }
     if (event.kind === "classification") {
       if (event.mode === "answer") {
         if (currentCandidateQuestionIdV9(replayed) !== "q2_sector") return null;
@@ -197,7 +208,7 @@ export function replayQa03bSessionV9Core(
     parsed.terminalReason === null ||
     parsed.queue.length !== 0
   ) return { ok: false, reason: "incomplete" };
-  if (parsed.interactionCount > 24) return { ok: false, reason: "route" };
+  if (parsed.interactionCount > V9_ABSOLUTE_INTERACTION_LIMIT) return { ok: false, reason: "route" };
 
   const replayed = replayEventsAuthoritatively(parsed);
   if (!replayed) return { ok: false, reason: "route" };
@@ -219,8 +230,9 @@ export function replayQa03bSessionV9Core(
     replayed.answers,
     classificationEvents(replayed.replayTranscript),
     replayed.interactionCount,
+    replayed.extensionConsent,
   );
-  if (planView.plan.nextQuestionId !== undefined || planView.plan.routeLength > 24) {
+  if (planView.plan.nextQuestionId !== undefined || planView.plan.routeLength > V9_ABSOLUTE_INTERACTION_LIMIT) {
     return { ok: false, reason: "incomplete" };
   }
 
@@ -248,6 +260,8 @@ export function replayQa03bSessionV9Core(
       insufficientContextDimensions: planView.plan.evidenceSufficiency.insufficientContextDimensions,
       unresolvedApplicableDimensions: planView.plan.evidenceSufficiency.unresolvedApplicableDimensions,
       dimensions: scoring.dimensions,
+      extensionConsent: replayed.extensionConsent,
+      extensionInteractions: v9ExtensionInteractionsUsed(replayed.interactionCount),
     },
   };
 }
