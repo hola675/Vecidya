@@ -64,6 +64,22 @@ function canonicalizePersistedJson<T>(value: T): T {
   }
 }
 
+function canonicalJsonValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalJsonValue);
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([left], [right]) => left.localeCompare(right))
+        .map(([key, item]) => [key, canonicalJsonValue(item)]),
+    );
+  }
+  return value;
+}
+
+function sameCanonicalJson(left: unknown, right: unknown): boolean {
+  return JSON.stringify(canonicalJsonValue(left)) === JSON.stringify(canonicalJsonValue(right));
+}
+
 /**
  * Completes an owned V9 run from the append-only D1 event stream.
  * No score, evidence, or recommendation is accepted from the browser.
@@ -122,7 +138,7 @@ export async function finalizeOwnedDiagnosticRunV9(
     calibration: scoringProfile.calibration,
     strictCorrelation: true,
   });
-  if (JSON.stringify(outcome.scoring.dimensions) !== JSON.stringify(replay.core.dimensions)) {
+  if (!sameCanonicalJson(outcome.scoring.dimensions, replay.core.dimensions)) {
     throw new Error("v9_finalize_scoring_parity_failure");
   }
   const legacyIndex = outcome.overall.index;
@@ -131,8 +147,8 @@ export async function finalizeOwnedDiagnosticRunV9(
     legacyIndex.displayScore !== replay.core.overall.displayScore ||
     legacyIndex.coverage !== replay.core.overall.coverage ||
     legacyIndex.sufficient !== replay.core.overall.sufficient ||
-    JSON.stringify(legacyIndex.scoredDimensions) !== JSON.stringify(replay.core.overall.scoredDimensions) ||
-    JSON.stringify(legacyIndex.applicableDimensions) !== JSON.stringify(replay.core.overall.applicableDimensions)
+    !sameCanonicalJson(legacyIndex.scoredDimensions, replay.core.overall.scoredDimensions) ||
+    !sameCanonicalJson(legacyIndex.applicableDimensions, replay.core.overall.applicableDimensions)
   ) {
     throw new Error("v9_finalize_overall_parity_failure");
   }
