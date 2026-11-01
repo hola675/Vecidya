@@ -1,6 +1,7 @@
 import { loadDiagnosticEventHistoryV9, type V9RunVersions } from "./v9-audit-repository";
 import { recoverDiagnosticAuditSessionV9 } from "./v9-audit-replay.server";
 import { v9ExtensionInteractionsRemaining } from "../v9/route-budget";
+import { resolveV9ScoringCalibration } from "../v9/scoring-calibration-registry";
 import {
   readOwnedDiagnosticRunV9,
   type V9IdentityDb,
@@ -43,6 +44,8 @@ export async function readOwnedDiagnosticRunStateV9(
       run.consent_version !== expected.consent) {
     throw new Error("v9_run_version_mismatch");
   }
+
+  resolveV9ScoringCalibration(run.scoring_version);
 
   if (run.status === "failed" || run.status === "abandoned") {
     throw new Error("v9_run_not_resumable");
