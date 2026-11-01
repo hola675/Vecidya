@@ -5,6 +5,12 @@ import { resolveEligibleQuestionsV2 } from "./engine";
 import { buildCandidateQuestionPlanFromBankV3, type CandidateQuestionPlanV3 } from "./v9-candidate-planner";
 import { QA03B_CANDIDATE_SECTOR_V4, QA03B_SPECIALTY_SELECTORS_V1 } from "./specialty-candidate-bank";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
+import {
+  V9_ABSOLUTE_INTERACTION_LIMIT,
+  V9_BASE_INTERACTION_LIMIT,
+  v9ExtensionInteractionsRemaining,
+  type V9ExtensionConsentState,
+} from "../v9/route-budget";
 
 /**
  * V9 PROTOTYPE ONLY.
@@ -165,27 +171,128 @@ export function planDiagnosticClassificationStateV9(
   );
 }
 
+export type V9ExtensionPlan = {
+  readonly consentState: V9ExtensionConsentState;
+  readonly consentRequired: boolean;
+  readonly criticalQuestionIds: readonly string[];
+  readonly remainingInteractions: number;
+};
+
+function criticalExtensionQuestionIdsV9(plan: CandidateQuestionPlanV3): readonly string[] {
+  const criticalDimensions = new Set([
+    ...plan.evidenceSufficiency.unresolvedApplicableDimensions,
+    ...plan.evidenceSufficiency.insufficientContextDimensions,
+  ]);
+  const usefulContext = new Set(plan.evidenceSufficiency.usefulContextQuestionIds);
+  const trace = new Map(plan.trace.map((entry) => [entry.questionId, entry] as const));
+  return plan.selectedQuestionIds.filter((id) => {
+    const entry = trace.get(id);
+    if (!entry) return false;
+    if (entry.reason === "confirmation") return true;
+    if (entry.evidenceDimensions.some((dimension) => criticalDimensions.has(dimension))) return true;
+    return usefulContext.has(id) &&
+      (entry.reason === "required_context" || entry.reason === "unlock_routing" || entry.reason === "prospective_evidence");
+  });
+}
+
 export function buildCandidateQuestionPlanV9Prototype(
   answers: AnswersV2,
   classificationEvents: readonly ClassificationInteractionEventV9[],
   historicalInteractionCount?: number,
-): { readonly plan: CandidateQuestionPlanV3; readonly visibleInteractionCount: number; readonly activeAnswers: AnswersV2 } {
+  extensionConsent: V9ExtensionConsentState = "not_offered",
+): {
+  readonly plan: CandidateQuestionPlanV3;
+  readonly visibleInteractionCount: number;
+  readonly activeAnswers: AnswersV2;
+  readonly extension: V9ExtensionPlan;
+} {
   const activeAnswers = resolveActiveDiagnosticAnswersV9(answers);
-  // Historical interactions are monotonic: removing stale answers cannot refund spent slots.
-  // Ignore invalid/non-finite historical counts instead of contaminating the planner with NaN.
   const historicalFloor = historicalInteractionCount !== undefined && Number.isSafeInteger(historicalInteractionCount)
     ? Math.max(0, historicalInteractionCount)
     : historicalInteractionCount !== undefined && Number.isFinite(historicalInteractionCount)
       ? Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, Math.trunc(historicalInteractionCount)))
       : 0;
-  const visibleInteractionCount = Math.max(
-    countVisibleInteractionsV9(activeAnswers, classificationEvents),
-    historicalFloor,
+  const visibleInteractionCount = Math.min(
+    V9_ABSOLUTE_INTERACTION_LIMIT,
+    Math.max(countVisibleInteractionsV9(activeAnswers, classificationEvents), historicalFloor),
   );
-  const plan = buildCandidateQuestionPlanFromBankV3(
-    { answers: activeAnswers, answeredInteractionCount: visibleInteractionCount },
+
+  if (visibleInteractionCount < V9_BASE_INTERACTION_LIMIT) {
+    const plan = buildCandidateQuestionPlanFromBankV3(
+      { answers: activeAnswers, answeredInteractionCount: visibleInteractionCount },
+      QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+      "utility_first",
+    );
+    return {
+      plan,
+      visibleInteractionCount,
+      activeAnswers,
+      extension: {
+        consentState: extensionConsent,
+        consentRequired: false,
+        criticalQuestionIds: [],
+        remainingInteractions: v9ExtensionInteractionsRemaining(visibleInteractionCount),
+      },
+    };
+  }
+
+  const probe = buildCandidateQuestionPlanFromBankV3(
+    {
+      answers: activeAnswers,
+      answeredInteractionCount: visibleInteractionCount,
+      absoluteHardMax: V9_ABSOLUTE_INTERACTION_LIMIT,
+    },
     QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
     "utility_first",
   );
-  return { plan, visibleInteractionCount, activeAnswers };
+  const criticalQuestionIds = criticalExtensionQuestionIdsV9(probe);
+  const remainingInteractions = v9ExtensionInteractionsRemaining(visibleInteractionCount);
+  const consentRequired =
+    visibleInteractionCount === V9_BASE_INTERACTION_LIMIT &&
+    criticalQuestionIds.length > 0 &&
+    extensionConsent !== "accepted" &&
+    extensionConsent !== "rejected" &&
+    extensionConsent !== "withdrawn";
+
+  if (extensionConsent === "accepted") {
+    const selectedQuestionIds = criticalQuestionIds.slice(0, remainingInteractions);
+    const hardCapReached = visibleInteractionCount >= V9_ABSOLUTE_INTERACTION_LIMIT;
+    const plan: CandidateQuestionPlanV3 = {
+      ...probe,
+      selectedQuestionIds,
+      nextQuestionId: selectedQuestionIds[0],
+      routeLength: visibleInteractionCount + selectedQuestionIds.length,
+      completion: {
+        ready: hardCapReached || selectedQuestionIds.length === 0,
+        hardCapReached,
+        terminalReason: selectedQuestionIds.length > 0
+          ? "useful_questions_remaining"
+          : probe.evidenceSufficiency.terminalReason,
+      },
+    };
+    return {
+      plan,
+      visibleInteractionCount,
+      activeAnswers,
+      extension: { consentState: extensionConsent, consentRequired: false, criticalQuestionIds, remainingInteractions },
+    };
+  }
+
+  const plan: CandidateQuestionPlanV3 = {
+    ...probe,
+    selectedQuestionIds: [],
+    nextQuestionId: undefined,
+    routeLength: visibleInteractionCount,
+    completion: {
+      ready: !consentRequired,
+      hardCapReached: false,
+      terminalReason: consentRequired ? "useful_questions_remaining" : "no_useful_questions",
+    },
+  };
+  return {
+    plan,
+    visibleInteractionCount,
+    activeAnswers,
+    extension: { consentState: extensionConsent, consentRequired, criticalQuestionIds, remainingInteractions },
+  };
 }
