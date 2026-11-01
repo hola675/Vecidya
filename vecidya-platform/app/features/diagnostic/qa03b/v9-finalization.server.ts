@@ -11,6 +11,7 @@ import {
 import { replayDiagnosticAuditEventsV9 } from "./v9-audit-replay.server";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import { buildCandidateRecommendationsAndSolutionsV3 } from "./qbv2-candidate-recommendations";
+import { resolveV9ScoringCalibration } from "../v9/scoring-calibration-registry";
 
 export type V9FinalizationOwner = {
   workspaceId: string;
@@ -97,6 +98,8 @@ export async function finalizeOwnedDiagnosticRunV9(
   }
   if (run.status !== "active") throw new Error("v9_run_not_active");
 
+  const scoringProfile = resolveV9ScoringCalibration(run.scoring_version);
+
   const history = await loadDiagnosticEventHistoryV9(db, input.workspaceId, input.runId);
   if (history.length !== run.last_seq) throw new Error("v9_history_incomplete");
   const now = input.now ?? Date.now();
@@ -106,6 +109,7 @@ export async function finalizeOwnedDiagnosticRunV9(
     runId: input.runId,
     startedAt,
     events: history,
+    scoringVersion: run.scoring_version,
     now,
   });
   if (!replay.ok) throw new Error(`v9_replay_failed:${replay.reason}`);
@@ -115,6 +119,8 @@ export async function finalizeOwnedDiagnosticRunV9(
   const outcome = buildCandidateRecommendationsAndSolutionsV3({
     answers: replay.session.answers,
     bank: QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+    calibration: scoringProfile.calibration,
+    strictCorrelation: true,
   });
   if (JSON.stringify(outcome.scoring.dimensions) !== JSON.stringify(replay.core.dimensions)) {
     throw new Error("v9_finalize_scoring_parity_failure");
