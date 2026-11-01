@@ -125,6 +125,17 @@ export async function finalizeOwnedDiagnosticRunV9(
   if (JSON.stringify(outcome.scoring.dimensions) !== JSON.stringify(replay.core.dimensions)) {
     throw new Error("v9_finalize_scoring_parity_failure");
   }
+  const legacyIndex = outcome.overall.index;
+  if (
+    legacyIndex.rawScore !== replay.core.overall.rawScore ||
+    legacyIndex.displayScore !== replay.core.overall.displayScore ||
+    legacyIndex.coverage !== replay.core.overall.coverage ||
+    legacyIndex.sufficient !== replay.core.overall.sufficient ||
+    JSON.stringify(legacyIndex.scoredDimensions) !== JSON.stringify(replay.core.overall.scoredDimensions) ||
+    JSON.stringify(legacyIndex.applicableDimensions) !== JSON.stringify(replay.core.overall.applicableDimensions)
+  ) {
+    throw new Error("v9_finalize_overall_parity_failure");
+  }
 
   const score = canonicalizePersistedJson({
     identity: replay.core.identity,
@@ -134,9 +145,9 @@ export async function finalizeOwnedDiagnosticRunV9(
     applicableDimensions: replay.core.applicableDimensions,
     insufficientContextDimensions: replay.core.insufficientContextDimensions,
     unresolvedApplicableDimensions: replay.core.unresolvedApplicableDimensions,
-    overall: outcome.overall,
+    overall: replay.core.overall,
   });
-  const evidence = canonicalizePersistedJson(outcome.scoring.dimensions);
+  const evidence = canonicalizePersistedJson(replay.core.dimensions);
   const recommendations = canonicalizePersistedJson({
     version: outcome.recommendations.version,
     items: outcome.recommendations.items,
