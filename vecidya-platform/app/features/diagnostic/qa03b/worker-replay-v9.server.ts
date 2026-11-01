@@ -21,10 +21,15 @@ import {
 } from "./v9-session-prototype";
 import { buildCandidateQuestionPlanV9Prototype } from "./v9-classification-bundle";
 import { V9_ABSOLUTE_INTERACTION_LIMIT, v9ExtensionInteractionsUsed } from "../v9/route-budget";
+import {
+  resolveV9ScoringCalibration,
+  V9_SCORING_CALIBRATION_REGISTRY_ID,
+} from "../v9/scoring-calibration-registry";
+import { V9_EVIDENCE_CORRELATION_REGISTRY_ID } from "../v9/evidence-correlation-registry";
 
 export const QA03B_V9_WORKER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
-export const QA03B_V9_CORE_RESULT_IDENTITY = Object.freeze({
+export const QA03B_V9_CORE_RESULT_IDENTITY_BASE = Object.freeze({
   engine: QA03B_V9_ENGINE_ID,
   questionBank: QA03B_V9_QUESTION_BANK_ID,
   answerSchema: QA03B_V9_ANSWER_SCHEMA_ID,
@@ -34,6 +39,18 @@ export const QA03B_V9_CORE_RESULT_IDENTITY = Object.freeze({
   resultScope: "diagnostic-core-only-v1",
 } as const);
 
+export function buildQa03bV9CoreResultIdentity(scoringVersion: string) {
+  const resolved = resolveV9ScoringCalibration(scoringVersion);
+  return Object.freeze({
+    ...QA03B_V9_CORE_RESULT_IDENTITY_BASE,
+    scoringVersion: resolved.scoringVersion,
+    scoringRegistry: V9_SCORING_CALIBRATION_REGISTRY_ID,
+    calibration: resolved.calibration.identity,
+    calibrationVersion: resolved.calibration.version,
+    correlation: V9_EVIDENCE_CORRELATION_REGISTRY_ID,
+  } as const);
+}
+
 export type Qa03bWorkerReplayRequestV9 = {
   readonly replayVersion: typeof QA03B_V9_REPLAY_VERSION;
   readonly engineIdentity: typeof QA03B_V9_ENGINE_ID;
@@ -41,6 +58,7 @@ export type Qa03bWorkerReplayRequestV9 = {
   readonly questionBank: typeof QA03B_V9_QUESTION_BANK_ID;
   readonly sessionSchema: typeof QA03B_V9_SESSION_SCHEMA;
   readonly sessionKey: typeof QA03B_V9_SESSION_KEY;
+  readonly scoringVersion: string;
   readonly session: unknown;
 };
 
@@ -49,13 +67,15 @@ export type Qa03bWorkerReplayFailureV9 =
   | "identity"
   | "schema"
   | "bank"
+  | "scoring_version"
+  | "correlation"
   | "session"
   | "expired"
   | "incomplete"
   | "route";
 
 export type Qa03bWorkerCoreResultV9 = {
-  readonly identity: typeof QA03B_V9_CORE_RESULT_IDENTITY;
+  readonly identity: ReturnType<typeof buildQa03bV9CoreResultIdentity>;
   readonly interactionCount: number;
   readonly context: ReturnType<typeof buildCandidateQuestionPlanV9Prototype>["plan"]["context"];
   readonly terminalReason: CandidateSessionV9Prototype["terminalReason"];
@@ -179,6 +199,7 @@ export function replayQa03bSessionV9Core(
     "questionBank",
     "sessionSchema",
     "sessionKey",
+    "scoringVersion",
     "session",
   ])) return { ok: false, reason: "request" };
 
@@ -194,6 +215,13 @@ export function replayQa03bSessionV9Core(
   ) return { ok: false, reason: "schema" };
 
   if (input.questionBank !== QA03B_V9_QUESTION_BANK_ID) return { ok: false, reason: "bank" };
+  if (typeof input.scoringVersion !== "string" || !input.scoringVersion) return { ok: false, reason: "scoring_version" };
+  let scoringProfile;
+  try {
+    scoringProfile = resolveV9ScoringCalibration(input.scoringVersion);
+  } catch {
+    return { ok: false, reason: "scoring_version" };
+  }
   if (!isRecord(input.session)) return { ok: false, reason: "session" };
 
   if (
@@ -236,10 +264,22 @@ export function replayQa03bSessionV9Core(
     return { ok: false, reason: "incomplete" };
   }
 
-  const scoring = scoreCandidateContextualDimensionsV3(
-    { answers: planView.activeAnswers },
-    QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
-  );
+  let scoring: ReturnType<typeof scoreCandidateContextualDimensionsV3>;
+  try {
+    scoring = scoreCandidateContextualDimensionsV3(
+      {
+        answers: planView.activeAnswers,
+        calibration: scoringProfile.calibration,
+        strictCorrelation: true,
+      },
+      QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
+    );
+  } catch (error) {
+    if (error instanceof Error && error.message === "v9_correlation_not_score_safe") {
+      return { ok: false, reason: "correlation" };
+    }
+    throw error;
+  }
 
   return {
     ok: true,
@@ -252,7 +292,7 @@ export function replayQa03bSessionV9Core(
     },
     completedAt: now,
     core: {
-      identity: QA03B_V9_CORE_RESULT_IDENTITY,
+      identity: buildQa03bV9CoreResultIdentity(scoringProfile.scoringVersion),
       interactionCount: replayed.interactionCount,
       context: planView.plan.context,
       terminalReason: replayed.terminalReason,
