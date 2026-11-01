@@ -4,7 +4,7 @@ import { test } from "node:test";
 
 const boundaryFiles = {
   "qa03b/v9-answer-validation.ts": ["../qbv2-contract"],
-  "qa03b/applicability.ts": ["../qbv2-applicability", "../qbv2-dimensions"],
+  "qa03b/applicability.ts": ["../qbv2-applicability", "../qbv2-dimensions", "./context"],
   "qa03b/context.ts": ["../context-resolver", "../contracts", "../qbv2-rules", "../signals"],
   "qa03b/engine.ts": ["../contracts", "../qbv2-contract", "../qbv2-rules", "../qbv2-signals", "../taxonomy"],
   "qa03b/bank.ts": ["../qbv2-contract", "../qbv2-evidence-v3", "../qbv2-reviewed-evidence", "../qbv2-rules"],
