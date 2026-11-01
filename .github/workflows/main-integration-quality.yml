@@ -46,9 +46,9 @@ jobs:
         run: pnpm test:unit
 
   diagnostic-v9-focused:
-    # PR V9: W4/F03 valida únicamente presupuesto 24+5, consentimiento y replay.
+    # PR V9: W5/F04 valida únicamente correlación, calibration registry y scoring reproducible.
     if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
-    name: Diagnostic V9 W4/F03 budget 24+5
+    name: Diagnostic V9 W5/F04 scoring + correlation
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -66,11 +66,11 @@ jobs:
           cache-dependency-path: vecidya-platform/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: W4/F03 budget and replay contracts
+      - name: W5/F04 scoring, correlation and historical replay contracts
         run: >-
           node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
-          tests/unit/diagnostic/qa03b-v9-extension-budget.test.ts
-          tests/unit/diagnostic/qa03b-v9-session-prototype.test.ts
+          tests/unit/diagnostic/qa03b-v9-f04-scoring-correlation.test.ts
           tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
           tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
           tests/unit/diagnostic/qa03b-v9-run-state-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-public-availability.test.ts
