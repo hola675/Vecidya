@@ -46,11 +46,11 @@ jobs:
         run: pnpm test:unit
 
   diagnostic-v9-focused:
-    # PR V9: W2/F01 comprueba solo la frontera de autonomía/imports.
+    # PR V9: W3/F02 valida únicamente el contrato editorial 77/82/90.
     if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
-    name: Diagnostic V9 W2/F01 autonomy boundary
+    name: Diagnostic V9 W3/F02 canonical bank
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: vecidya-platform
@@ -66,5 +66,9 @@ jobs:
           cache-dependency-path: vecidya-platform/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: W2/F01 static autonomy contract
-        run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-autonomy-boundary.test.ts
+      - name: W3/F02 canonical bank contracts
+        run: >-
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
+          tests/unit/diagnostic/qa03b-v9-canonical-bank.test.ts
+          tests/unit/diagnostic/qa03b-specialty-branches-wave1.test.ts
+          tests/unit/diagnostic/qa03b-v9-general-dimension-probes.test.ts
