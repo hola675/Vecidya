@@ -1,5 +1,6 @@
 import { loadDiagnosticEventHistoryV9, type V9RunVersions } from "./v9-audit-repository";
 import { recoverDiagnosticAuditSessionV9 } from "./v9-audit-replay.server";
+import { v9ExtensionInteractionsRemaining } from "../v9/route-budget";
 import {
   readOwnedDiagnosticRunV9,
   type V9IdentityDb,
@@ -24,6 +25,8 @@ export type V9RecoveredRunState = {
   interactionCount: number;
   readyToFinalize: boolean;
   terminalReason: string | null;
+  extensionConsent: string;
+  extensionInteractionsRemaining: number;
 };
 
 /** The client receives only a projection rebuilt from the immutable server-side audit log. */
@@ -72,5 +75,7 @@ export async function readOwnedDiagnosticRunStateV9(
     interactionCount: reconstructed.session.interactionCount,
     readyToFinalize: run.status === "active" && reconstructed.session.status === "completing",
     terminalReason: reconstructed.session.terminalReason,
+    extensionConsent: reconstructed.session.extensionConsent,
+    extensionInteractionsRemaining: v9ExtensionInteractionsRemaining(reconstructed.session.interactionCount),
   };
 }
