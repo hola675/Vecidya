@@ -308,6 +308,8 @@ export function replayCandidateTranscriptV9(
         : editCandidateAnswerV9Prototype(session, event.questionId, event.value, "v9-transcript-replay", ++clock);
     }
     if (!result.ok) return null;
+    const canonical = result.session.replayTranscript.at(-1);
+    if (!canonical || JSON.stringify(canonical) !== JSON.stringify(event)) return null;
     session = result.session;
   }
   return { answers: session.answers, interactionCount: session.interactionCount, extensionConsent: session.extensionConsent };
