@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.1  
+**Versión:** 0.1.2  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -62,9 +62,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F02, F03, F04.
 
-**Evidencia:** 77/82/90; CLASS-03 Real Estate.
+**Evidencia:** 77/82/90; CLASS-03 Real Estate; `DIAGNOSTIC-V9-DECC-EDITORIAL-BANK-90-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 5. DEC-D — correlación, procedencia y replay
 
@@ -186,7 +186,7 @@ Hasta entonces, el estado permanece documental.
 |---|---|---|---|---|---|
 | A | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-A | DEC-A pack + CLASS-02/04 |
 | B | OPEN | — | — | — | scoring/coverage |
-| C | OPEN | — | — | — | 77/82/90 |
+| C | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-C | DEC-C pack + 77/82/90 |
 | D | OPEN | — | — | — | provenance/replay |
 | E | OPEN | — | — | — | ownership/result |
 | F | OPEN | — | — | — | planner/recommendations |
@@ -195,5 +195,6 @@ Hasta entonces, el estado permanece documental.
 
 ## Changelog
 
+- **0.1.2 / 2026-11-01:** DEC-C pasa a READY_FOR_HUMAN_REVIEW con paquete editorial 77/82/90; no activa banco ni scoring.
 - **0.1.1 / 2026-11-01:** DEC-A pasa a READY_FOR_HUMAN_REVIEW con paquete 8×10; no cambia aprobación ni PLAN_ONLY.
 - **0.1.0 / 2026-10-31:** matriz A–H con propuesta, alternativa, riesgo, fallback, impacto y orden de revisión humana.
