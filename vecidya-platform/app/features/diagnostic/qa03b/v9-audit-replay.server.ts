@@ -69,6 +69,8 @@ export type V9AuditReplayInput = {
   readonly now?: number;
 };
 
+export type V9ScoredAuditReplayInput = V9AuditReplayInput & { readonly scoringVersion: string };
+
 export type V9AuditSessionReconstruction =
   | { readonly ok: true; readonly session: CandidateSessionV9Prototype; readonly nextQuestionId: string | null }
   | Extract<Qa03bWorkerReplayV9, { readonly ok: false }>;
@@ -182,7 +184,7 @@ export function recoverDiagnosticAuditSessionV9(input: V9AuditReplayInput): V9Au
 }
 
 /** A finalized result still must pass authoritative Worker validation. */
-export function replayDiagnosticAuditEventsV9(input: V9AuditReplayInput): Qa03bWorkerReplayV9 {
+export function replayDiagnosticAuditEventsV9(input: V9ScoredAuditReplayInput): Qa03bWorkerReplayV9 {
   const recovered = recoverDiagnosticAuditSessionV9(input);
   if (!recovered.ok) return recovered;
   return replayQa03bSessionV9Core({
@@ -192,6 +194,7 @@ export function replayDiagnosticAuditEventsV9(input: V9AuditReplayInput): Qa03bW
     questionBank: QA03B_V9_QUESTION_BANK_ID,
     sessionSchema: QA03B_V9_SESSION_SCHEMA,
     sessionKey: QA03B_V9_SESSION_KEY,
+    scoringVersion: input.scoringVersion,
     session: recovered.session,
   }, input.now ?? Date.now());
 }
