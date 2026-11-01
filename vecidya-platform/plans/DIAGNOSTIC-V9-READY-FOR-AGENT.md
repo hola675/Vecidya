@@ -1,9 +1,9 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.1.0 | 2026-10-31 | Estado: NOT_READY / PLAN_ONLY
+Versión: 0.1.1 | 2026-11-01 | Estado: NOT_READY / PLAN_ONLY
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**NO READY_FOR_AGENT.** El backlog F00–F10 existe y las políticas de producto D-V9-001–033 están documentadas, pero las decisiones A–H y los contratos/editoriales de cierre aún no están aprobados. Este paquete es un protocolo de arranque futuro, no autorización para implementar, ejecutar CI, hacer merge o desplegar.
+**NO READY_FOR_AGENT.** El backlog F00–F10 existe, las políticas D-V9-001–033 están documentadas y DEC-A…H ya tienen paquetes y recomendación consolidada, pero siguen sin aprobación humana. También están documentados los bloqueos P0 de calibración v2/v4, correlación, persistencia anónima, 24+5 y migraciones. Este paquete sigue siendo un protocolo de arranque futuro, no autorización para implementar, ejecutar CI, hacer merge o desplegar.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -13,20 +13,22 @@ Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-gra
 5. plans/DIAGNOSTIC-V9-PRODUCT-DEFINITION-V1.md — recorrido E0–E5 y fronteras con Aprende/GHL.
 6. plans/DIAGNOSTIC-V9-EVALUATION-MODEL-V1.md — ocho dimensiones candidatas, no aprobadas como taxonomía definitiva.
 7. plans/DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md — banco y evidencia editorial; revisar estado de propuestas.
-8. docs/STATUS.md y docs/TESTING.md — evidencia CI por SHA, no garantía de HEAD actual.
+8. plans/DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md — disposición recomendada A–H; no equivale a aprobación.
+9. plans/DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md — waves W0–W10 y scope incremental condicional.
+10. docs/STATUS.md y docs/TESTING.md — evidencia CI por SHA, no garantía de HEAD actual.
 
 ## 3. Matriz de aceptación del PLAN (antes de tocar código)
-| Gate | Condición comprobable | Estado 2026-10-31 | Evidencia requerida |
+| Gate | Condición comprobable | Estado 2026-11-01 | Evidencia requerida |
 | --- | --- | --- | --- |
 | PLAN-G01 | D-V9-001–033 conciliadas sin reabrir aprobaciones | DOCUMENTED | Registro v0.2.0 y secciones de aprobación del maestro |
-| PLAN-G02 | Taxonomía 8×10 aprobada, aplicabilidad y nombres definitivos | OPEN | Acta de taxonomía + matriz C01–C10 |
-| PLAN-G03 | Banco de 90 candidatos revisado por pregunta/opción | OPEN | Matriz editorial con aprobador y decisión por elemento |
-| PLAN-G04 | Scoring, calibración, confianza, abstención y correlación aprobados | OPEN | Contrato matemático y casos esperados |
-| PLAN-G05 | Informe identificado, permisos, retención y seguimiento definidos | OPEN | Contratos de datos, acceso y snapshots |
-| PLAN-G06 | Adaptadores Aprende/servicios y fallback especificados | OPEN | Campos reales, URL/catálogo verificados y test plan |
+| PLAN-G02 | Taxonomía 8×10 aprobada, aplicabilidad y nombres definitivos | READY_FOR_HUMAN_REVIEW | DEC-A pack + hoja ejecutiva; falta aprobación |
+| PLAN-G03 | Banco de 90 candidatos revisado por pregunta/opción | READY_FOR_HUMAN_REVIEW | DEC-C pack; 77 baseline, 82/90 pending; falta aprobación |
+| PLAN-G04 | Scoring, calibración, confianza, abstención y correlación aprobados | READY_FOR_HUMAN_REVIEW | DEC-B + DEC-D packs; binding v2/v4 sigue P0 |
+| PLAN-G05 | Informe identificado, permisos, retención y seguimiento definidos | READY_FOR_HUMAN_REVIEW | DEC-E pack; local-only/D1/store final aún requieren decisión |
+| PLAN-G06 | Adaptadores Aprende/servicios y fallback especificados | READY_FOR_HUMAN_REVIEW | DEC-G pack; catálogos reales se verifican en implementación |
 | PLAN-G07 | Backlog F00–F10 con tareas, prerequisitos, pruebas y rollback | DOCUMENTED, REQUIRES_REVIEW | Backlog v0.1.0; revisar contra HEAD antes de ejecutar |
-| PLAN-G08 | Matriz C01–C10 y ES/EN con criterios de aceptación | OPEN | Casos, entradas, salida y abstenciones esperadas |
-| PLAN-G09 | Política de integración main, V8, migraciones y rollback aprobada | OPEN | Plan de cutover, checklist, backups |
+| PLAN-G08 | Matriz C01–C10 y ES/EN con criterios de aceptación | DOCUMENTED / NOT_CERTIFIED | CLASS-04 + DEC-A/F; faltan pruebas autorizadas |
+| PLAN-G09 | Política de integración main, V8, migraciones y rollback aprobada | READY_FOR_HUMAN_REVIEW | DEC-H pack; colisión 0030–0035 y aprobación pendientes |
 | PLAN-G10 | Aprobación explícita del responsable para comenzar implementación | NOT_GRANTED | Mensaje/acta de autorización y alcance |
 
 ## 4. Gates de implementación (después de autorización)
@@ -65,7 +67,8 @@ PR #162 permanece draft y no fusionable automáticamente según el último check
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-Cerrar PLAN-G02–G06, G08–G10 en lotes, empezando por taxonomía 8×10 y modelo de evidencia/calibración; contrastar inventario editorial con el banco 90 y después los contratos de informe/integraciones. El responsable aprueba READY_FOR_AGENT solo cuando se cumplan todos los gates o exista aplazamiento explícito con fallback seguro.
+El siguiente gate es humano: revisar la hoja ejecutiva A–H y registrar APPROVED / APPROVED_WITH_FALLBACK / DEFERRED / REJECTED. Después, si se aprueba el paquete, autorizar únicamente W1/F00 como primer levantamiento parcial de PLAN_ONLY; W2+ permanecen bloqueadas hasta cierre del wave anterior. READY_FOR_AGENT solo se declara mediante autorización explícita.
 
 ## Changelog
+- 0.1.1 / 2026-11-01: A–H ya están READY_FOR_HUMAN_REVIEW; se añaden hoja ejecutiva, scope post-aprobación y estados actualizados de gates sin levantar PLAN_ONLY.
 - 0.1.0 / 2026-10-31: índice, matrices de aceptación, protocolo de arranque, stop conditions y reporte por tarea. Sin cambios de runtime.
