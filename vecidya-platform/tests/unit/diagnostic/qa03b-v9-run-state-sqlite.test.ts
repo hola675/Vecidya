@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { V9_CURRENT_SCORING_VERSION } from "../../../app/features/diagnostic/v9/scoring-calibration-registry";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
@@ -20,7 +21,7 @@ const NOW = 1_900_000_000_000;
 const versions: V9RunVersions = {
   bank: "test-bank-v9",
   engine: "test-engine-v9",
-  scoring: "test-scoring-v9",
+  scoring: V9_CURRENT_SCORING_VERSION,
   recommendations: "test-recommendations-v9",
   consent: "test-consent-v9",
 };
