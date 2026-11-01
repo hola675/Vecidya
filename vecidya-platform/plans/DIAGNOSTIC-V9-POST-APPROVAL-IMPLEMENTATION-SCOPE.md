@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.3.0  
+**Versión:** 0.4.0  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -139,7 +139,7 @@ Gate alcanzado con fallback:
 
 ---
 
-### W4 — F03: grafo y presupuesto 24+5
+### W4 — F03: grafo y presupuesto 24+5 — DONE_WITH_EVIDENCE
 
 Aplicar DEC-F:
 
@@ -164,10 +164,19 @@ Pruebas focales mínimas:
 - edición sin doble conteo;
 - aclaración nueva sí cuenta.
 
-Gate:
-- ningún camino >29;
-- ninguna extensión por score/comercial;
-- replay reproduce contador.
+Gate alcanzado:
+- ningún camino V9 >29;
+- extensión solo con preguntas críticas de evidencia/contexto, no supporting/refinement comercial;
+- consentimiento no cuenta;
+- edición no reembolsa;
+- stop temprano probado;
+- replay local/Worker/D1 reproduce contador y consentimiento;
+- budget/session/replay: 31/31 PASS;
+- graph/context: 31/31 PASS.
+
+Diferidos a F08 por no existir hoy como eventos del motor:
+- cambio de idioma;
+- aclaración explícita como turno independiente.
 
 ---
 
@@ -363,7 +372,7 @@ Producción no se infiere de CI/staging.
 | v2/v4 calibration binding | W5 |
 | doble conteo/correlación | W5 |
 | local-only vs ledger D1 | W2 contrato cerrado; implementación W6 |
-| hard cap 24 vs 24+5 | W4 |
+| hard cap 24 vs 24+5 | RESUELTO W4 — core 31/31 PASS |
 | migraciones 0030–0035 | W1 |
 | restore/versioning | W2 registry objetivo cerrado; implementación W3/W5 |
 | A–H sin aprobación | W0 |
@@ -411,6 +420,7 @@ READY_FOR_AGENT solo puede declararse cuando:
 
 ## Changelog
 
+- **0.4.0 / 2026-11-01:** W4/F03 cerrado con evidencia; W5/F04 es el siguiente scope no autorizado.
 - **0.3.0 / 2026-11-01:** W3/F02 cerrado con fallback; W4/F03 pasa a ser el próximo scope no autorizado.
 - **0.2.0 / 2026-11-01:** W1 y W2 cerrados con evidencia; W3/F02 es el siguiente scope no autorizado.
 - **0.1.0 / 2026-11-01:** waves W0–W10, relación con F00–F10, gates P0 y scope incremental recomendado.

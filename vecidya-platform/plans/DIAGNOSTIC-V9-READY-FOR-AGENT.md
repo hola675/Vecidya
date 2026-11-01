@@ -1,11 +1,11 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.4.0 | 2026-11-01 | Estado: W1_F00_DONE / W2_F01_DONE / W3_F02_DONE_WITH_FALLBACK / NOT_READY_FOR_W4 / PLAN_ONLY_F03_PLUS
+Versión: 0.5.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03 DONE_WITH_EVIDENCE / NOT_READY_FOR_F04
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**W1/F00 y W2/F01 DONE_WITH_EVIDENCE; W3/F02 DONE_WITH_FALLBACK; NO READY FOR W4/F03.** El baseline editorial canónico queda fijado en 77 mediante un manifest V9-owned. Las 59 decisiones REWRITE no están implementadas: conservan la semántica/versiones fuente hasta su gate individual. Los 13 ADD 82/90 siguen pending.
+**F00–F01 DONE_WITH_EVIDENCE; F02 DONE_WITH_FALLBACK; F03 DONE_WITH_EVIDENCE; NO READY FOR F04.** El core 24+5 está implementado: 24 base, consentimiento explícito, hasta 5 críticos, hard cap 29 y replay autoritativo. El graph/context gate y budget/session/replay pasan 31/31 cada uno sobre el SHA de código F03.
 
-Evidencia F02: `92271d398400647dfa9c62097964f5a20f5d0a77`, run `41327887999`, job `124911583189`, **29/29 PASS**; suite general skipped.
+F04 sigue bloqueado por DEC-B/DEC-D: binding scoring_version→calibration, correlación y eliminación de defaults implícitos todavía no están implementados.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -38,7 +38,7 @@ Evidencia F02: `92271d398400647dfa9c62097964f5a20f5d0a77`, run `41327887999`, jo
 | --- | --- | --- |
 | IMPL-G00 | F00–F01 | **PASS focal**: main ancestro + frontera legacy congelada; storage final deferred y registry objetivo definido |
 | IMPL-G01 | F02 | Banco aprobado, ES/EN y evidencia versionada |
-| IMPL-G02 | F03 | Grafo y recorridos C01–C10 sin huecos, presupuesto 24+5 |
+| IMPL-G02 | F03 | **PASS CORE** — graph/context 31/31 + budget/session/replay 31/31; idioma/aclaración UI quedan F08 |
 | IMPL-G03 | F04 | Motor autónomo, determinista, sin doble evidencia y sin imports runtime QBV2 |
 | IMPL-G04 | F05–F06 | Resumen/informe/recomendaciones justificadas, recursos publicados o fallback |
 | IMPL-G05 | F07 | Sesión, claim, organización, historial y privacidad sin acceso cruzado |
@@ -69,9 +69,10 @@ PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes d
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-El siguiente gate requiere nueva autorización: **W4/F03**. No modificar grafo/planner, 24+5 ni routing F03+ hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
+El siguiente gate requiere nueva autorización: **W5/F04**. No modificar scoring, calibration, correlación ni registry runtime hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
 
 ## Changelog
+- 0.5.0 / 2026-11-01: W4/F03 cerrado; 24+5/replay y graph 31/31 cada uno; W5/F04 no autorizado.
 - 0.4.0 / 2026-11-01: W3/F02 cerrado con fallback; canonical manifest 77, 29/29 PASS; W4/F03 no autorizado.
 - 0.3.0 / 2026-11-01: W2/F01 cerrado; frontera legacy allowlisted 3/3 PASS; storage final deferred y registry objetivo fijado; F02+ PLAN_ONLY.
 - 0.2.0 / 2026-11-01: A–H aprobadas; W1/F00 ejecutado con main ancestro, migraciones V9 0038–0043 y 43/43 pruebas focales PASS; W2+ sigue PLAN_ONLY.

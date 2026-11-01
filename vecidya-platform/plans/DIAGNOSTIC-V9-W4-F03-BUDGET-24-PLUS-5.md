@@ -1,8 +1,8 @@
 # Diagnostic V9 — W4/F03 Budget 24+5
 
-**Versión:** 0.1.0  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** W4/F03 AUTHORIZED · PENDING_FOCAL · F04–F10 PLAN_ONLY  
+**Estado:** W4/F03 DONE_WITH_EVIDENCE · F04–F10 PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Contrato implementado
@@ -82,15 +82,40 @@ No se modifica:
 
 ## 9. Gate focal
 
-Pendiente ejecutar exclusivamente:
-- `qa03b-v9-extension-budget.test.ts`;
-- `qa03b-v9-session-prototype.test.ts`;
-- `qa03b-worker-replay-v9.test.ts`;
-- `qa03b-v9-event-ingestion-sqlite.test.ts`;
-- `qa03b-v9-run-state-sqlite.test.ts`.
+### Budget/session/replay — PASS
+SHA: `68fb6a8a7e3a04d1346527ae9b6222740454d1a4`  
+Run: `41330844707`  
+Job: `124920421628`
 
-La suite general permanece fuera del primer gate.
+- **31 tests / 31 pass / 0 fail**.
+- cubre 24+5, consentimiento no contable, aceptación/rechazo/withdraw, hard cap 29;
+- cubre stop temprano <24 y ausencia de extensión falsa al boundary 24;
+- cubre edición sin reembolso, resume/restore, transcript replay, Worker replay, D1 replay, ingestión y run-state;
+- general typecheck/build/unit regression: **SKIPPED**.
+
+### Graph/context — PASS
+SHA: `68fb6a8a7e3a04d1346527ae9b6222740454d1a4`  
+Run: `41330844766`  
+Job: `124920421548`
+
+- **31 tests / 31 pass / 0 fail**;
+- C03/C05/C07/C08 y full-bank graph;
+- dependencias faltantes quedan pending;
+- neutralidad no autoriza specialist;
+- pending no consume budget.
+
+### Fallo útil corregido
+En SHA `2dcedbc1465cc0734662db273cd032704da9b52f`, run `41330302766`, job `124919227554`, el gate obtuvo **29/30**. La reescritura de replay había perdido la comprobación de canonicalidad del evento classification; un `nicheQuestionId` manipulado podía reconstruirse desde sector/niche.
+
+Corrección en `932ca6d8b9e2b76dd24fae543d0adef0b8de11d9`: cada evento replayado debe coincidir exactamente con su evento canónico reconstruido o falla cerrado.
+
+### Casos de UI diferidos a F08
+- cambio de idioma: actualmente no es un evento diagnóstico y por tanto no puede incrementar el contador; se certificará en UI/E2E F08;
+- “aclaración” como turno separado: no existe superficie/event kind hoy; si se añade, deberá consumir interacción y tendrá prueba propia.
+
+No bloquean el core F03 porque ninguna de las dos superficies existe actualmente en el motor de sesión.
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** W4/F03 cerrado; budget/replay 31/31 y graph 31/31; canonical replay fail-closed corregido; F04+ vuelve a PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** contrato 24+5, consentimiento persistente, hard cap 29 y replay; pendiente evidencia focal.

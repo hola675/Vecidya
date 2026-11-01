@@ -1,8 +1,8 @@
 # Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
 
-**Versión:** 0.4.0  
+**Versión:** 0.5.0  
 **Fecha:** 2026-11-01  
-**Estado:** W1/F00 + W2/F01 DONE · W3/F02 DONE_WITH_FALLBACK · F03+ PLAN_ONLY  
+**Estado:** F00-F01 DONE · F02 DONE_WITH_FALLBACK · F03 DONE_WITH_EVIDENCE · F04+ PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Resumen ejecutivo
@@ -13,7 +13,7 @@
 | CLASS-02 | puente oldValue→atributos, persistencia, replay, ownership y consumers | PARCIAL / NO CERTIFICADA |
 | CLASS-03 | reglas/fallbacks dental, food, agency, real estate | PARCIAL / NO CERTIFICADA |
 | CLASS-04 | C01–C10, híbridos, unknown, cambio de sector, replay | PARCIAL / NO CERTIFICADA |
-| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03+ PLAN_ONLY |
+| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / F00-F01 DONE / F02 FALLBACK / F03 DONE / F04+ PLAN_ONLY |
 
 Ninguna clase está certificada bajo el SHA actual porque la fase vigente continúa siendo PLAN_ONLY.
 
@@ -115,14 +115,15 @@ Estado:
 - W1/F00 = DONE_WITH_EVIDENCE;
 - W2/F01 = DONE_WITH_EVIDENCE;
 - W3/F02 = DONE_WITH_FALLBACK;
-- PLAN_ONLY sigue vigente para F03+;
+- W4/F03 = DONE_WITH_EVIDENCE;
+- PLAN_ONLY sigue vigente para F04+;
 - no hay autorización de merge a main, deploy ni producción.
 
 Bloqueos transversales priorizados:
 - binding de calibración v2/v4;
 - correlación de observaciones;
 - ledger D1 anónimo vs borrador local-only;
-- hard cap 24 vs política 24+5;
+- hard cap 24 vs política 24+5 = RESUELTO EN F03;
 - colisión de migraciones main/V9 = RESUELTA en W1; V9 0038–0043;
 - restore/versionado entre bancos;
 - pruebas CLASS-01…04 sin PASS actual.
@@ -149,7 +150,7 @@ Ya existen dos artefactos adicionales:
 - `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`: recomendación consolidada A–H, sin aprobación implícita.
 - `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md`: waves W0–W10, con F00 como primer scope recomendado si se levanta PLAN_ONLY parcialmente.
 
-`DIAGNOSTIC-V9-READY-FOR-AGENT.md` está actualizado tras W2; el siguiente gate es W3/F02 y permanece `PLAN_ONLY`.
+`DIAGNOSTIC-V9-READY-FOR-AGENT.md` está actualizado tras F03; el siguiente gate es W5/F04 y permanece `PLAN_ONLY`.
 
 ## 9. Ruta de salida de PLAN_ONLY
 
@@ -167,7 +168,7 @@ Hasta esa instrucción, el trabajo permitido sigue siendo lectura y documentaci�
 
 ## 10. Estado global
 
-**TAX-CLASS CLASS-01…05: F00–F01 DONE / F02 BASELINE DONE_WITH_FALLBACK / CLASES 01–04 NO CERTIFICADAS / F03+ NO AUTORIZADO.**
+**TAX-CLASS CLASS-01…05: F00–F01 DONE / F02 FALLBACK / F03 DONE_WITH_EVIDENCE / CLASES 01–04 AÚN NO CERTIFICADAS / F04+ NO AUTORIZADO.**
 
 La deuda principal ya no es descubrir cómo funciona el código, sino cerrar decisiones humanas, ejecutar aceptación focal autorizada y asociar resultados al SHA final.
 
@@ -183,8 +184,13 @@ Frontera de autonomía documentada en `DIAGNOSTIC-V9-W2-F01-AUTONOMY-BOUNDARY.md
 
 Manifest V9-owned de 77 preguntas creado sin imports QA03B/QBV2. Se preservan 18 KEEP y 59 rewrite_pending; las 13 extensiones 82/90 permanecen fuera y pending. Gate focal: 29/29 PASS en SHA `92271d398400647dfa9c62097964f5a20f5d0a77`.
 
+## W4/F03 2026-11-01
+
+Core 24+5 implementado con schema de sesión 10, consentimiento auditado y hard cap 29. Gate de budget/session/replay: 31/31 PASS. Gate graph/context: 31/31 PASS. El primer intento detectó una pérdida de canonicalidad de classification replay, corregida fail-closed antes del cierre.
+
 ## Changelog
 
+- **0.5.0 / 2026-11-01:** W4/F03 cerrado con evidencia; F04+ PLAN_ONLY.
 - **0.4.0 / 2026-11-01:** W3/F02 cerrado con fallback; canonical 77 v1 y 29/29 PASS; F03+ PLAN_ONLY.
 - **0.3.0 / 2026-11-01:** W2/F01 cerrado con evidencia; storage final deferred, registry objetivo fijado y dependencias legacy congeladas; F02+ PLAN_ONLY.
 - **0.2.0 / 2026-11-01:** A–H aprobadas; W1/F00 ejecutado; migraciones V9 0038–0043; W2+ PLAN_ONLY.

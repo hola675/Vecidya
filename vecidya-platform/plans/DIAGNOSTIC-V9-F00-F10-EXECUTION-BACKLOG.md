@@ -1,5 +1,5 @@
 # Diagnóstico V9 — Backlog ejecutable F00–F10 (propuesta)
-Versión: 0.3.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03-F10 PLAN_ONLY
+Versión: 0.4.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03 DONE_WITH_EVIDENCE / F04-F10 PLAN_ONLY
 Repositorio: hola675/Vecidya | PR #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## Contrato
@@ -26,8 +26,8 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 | F02-01 | DEC-C y F01-01 | **DONE_WITH_EVIDENCE** — inventario 77/82/90 + manifest ID→version | v9/canonical-bank-manifest.ts + adapters QA03B | gate F02 29/29 PASS | 82/90 siguen pending |
 | F02-02 | F02-01 | **DEFERRED_WITH_FALLBACK** — 18 KEEP / 59 REWRITE aprobados como decisión; cambios de opción/copy no implementados | matriz editorial + DEC-C | baseline fuente preservado | cada rewrite requiere versión/gate propio |
 | F02-03 | F02-02 | **DONE_WITH_FALLBACK** — manifest canónico 77 v1; 13 extensiones excluidas | v9/canonical-bank-manifest.ts | 29/29 PASS | definiciones ejecutables siguen adapter hasta F03/F04 |
-| F03-01 | F02-02, F01-02 | Grafo sin ciclos, con sustituciones y fallback genérico | qa03b/v9-candidate-planner.ts, futuro v9/graph | rutas focales por sector/estado/nicho y edición | Si pierde cobertura, restaurar fallback |
-| F03-02 | F03-01 | Selector adaptativo con presupuesto 24+5 y consentimiento | futuro v9/engine/selector y UI entrevista | C01–C10, conteo de turnos, abandono y reanudación | No forzar preguntas para fabricar score |
+| F03-01 | F02-02, F01-02 | **DONE_WITH_EVIDENCE** — grafo/contexto conserva gates, pending y fallbacks | v9 graph + QA03B adapter | graph/context 31/31 PASS | C01–C10 integrado se repite en F08 |
+| F03-02 | F03-01 | **DONE_WITH_EVIDENCE** — 24+5, consentimiento, hard cap 29, replay y stop temprano | v9 route-budget/session/planner/UI | budget/session/replay 31/31 PASS | idioma/aclaración UI se certifican F08 |
 | F04-01 | F01-02, F02-03 | Contratos/banco/scoring V9 sin imports QBV2 | qa03b/v9-candidate-scoring.ts y módulos futuros v9 | búsqueda estática, unitarias determinismo y equivalencia contextual | No modificar scorer público V8 |
 | F04-02 | F04-01, DEC-D | Correlación confirmada antes de puntuar, conflicto fail-closed | qa03b/v9-observation-correlation.ts y scorer V9 aislado | mismo evento, eventos independientes, contradicción, unmapped, replay/versiones | No inferir evento desde ID o sector |
 | F04-03 | F04-02, DEC-B | Aplicabilidad, scoring y confianza versionados | calibración y motor V9 | casos con 0/1/2 directas, apoyo-only, neutral, prelaunch, no ventas | Abstenerse ante insuficiencia |
@@ -69,6 +69,7 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - Las 13 pruebas focales PASS documentadas corresponden al commit 231fba058803, no a este HEAD ni a aceptación integral.
 
 ## Changelog
+- 0.4.0 / 2026-11-01: F03 cerrado con evidencia; 24+5 y graph 31/31 cada uno; F04+ PLAN_ONLY.
 - 0.3.0 / 2026-11-01: F02 cerrado con fallback; manifest canónico 77 y 29/29 PASS; F03+ PLAN_ONLY.
 - 0.2.0 / 2026-11-01: F00–F01 cerrados con evidencia; F02–F10 permanecen PLAN_ONLY.
 - 0.1.0 / 2026-10-31: backlog inicial de 23 tareas F00–F10, dependencias, pruebas y stop conditions; solo documentación.
@@ -85,4 +86,5 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - **F02-01 = DONE_WITH_EVIDENCE.**
 - **F02-02 = DEFERRED_WITH_FALLBACK.**
 - **F02-03 = DONE_WITH_FALLBACK.** Run 41327887999, job 124911583189, 29/29 PASS.
-- **F03–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.
+- **F03-01/F03-02: DONE_WITH_EVIDENCE.** Budget/replay 31/31 + graph 31/31.
+- **F04–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.
