@@ -46,11 +46,11 @@ jobs:
         run: pnpm test:unit
 
   diagnostic-v9-focused:
-    # PR V9: ejecutar solo contratos focales afectados por W1/F00.
+    # PR V9: W2/F01 comprueba solo la frontera de autonomía/imports.
     if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
-    name: Diagnostic V9 W1/F00 focused contracts
+    name: Diagnostic V9 W2/F01 autonomy boundary
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     defaults:
       run:
         working-directory: vecidya-platform
@@ -66,19 +66,5 @@ jobs:
           cache-dependency-path: vecidya-platform/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: W1 migration and sector integration contracts
-        run: >-
-          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
-          tests/unit/business-sector-picker.test.ts
-          tests/unit/business-sectors.test.ts
-          tests/unit/diagnostic/qa03b-v9-audit-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-audit-recovery-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-identity-ownership-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-identity-claim-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-organization-link-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-owned-run-create-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-run-state-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-result-finalization-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-v9-identity-assignment-sqlite.test.ts
-          tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
+      - name: W2/F01 static autonomy contract
+        run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-autonomy-boundary.test.ts
