@@ -26,6 +26,7 @@ import {
 import { V9_EVIDENCE_CORRELATION_REGISTRY_ID } from "../v9/evidence-correlation-registry";
 import { V9_SCORING_EVIDENCE_REGISTRY_ID } from "../v9/scoring-evidence-registry";
 import { scoreV9Dimensions, V9_SCORING_ENGINE_ID } from "../v9/scoring-engine";
+import { computeV9OverallIndex, V9_OVERALL_INDEX_ID } from "../v9/overall-index";
 
 export const QA03B_V9_WORKER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
@@ -50,6 +51,7 @@ export function buildQa03bV9CoreResultIdentity(scoringVersion: string) {
     correlation: V9_EVIDENCE_CORRELATION_REGISTRY_ID,
     evidenceRegistry: V9_SCORING_EVIDENCE_REGISTRY_ID,
     scoringEngine: V9_SCORING_ENGINE_ID,
+    overallIndex: V9_OVERALL_INDEX_ID,
   } as const);
 }
 
@@ -85,6 +87,7 @@ export type Qa03bWorkerCoreResultV9 = {
   readonly insufficientContextDimensions: readonly string[];
   readonly unresolvedApplicableDimensions: readonly string[];
   readonly dimensions: ReturnType<typeof scoreV9Dimensions>["dimensions"];
+  readonly overall: ReturnType<typeof computeV9OverallIndex>;
   readonly extensionConsent: CandidateSessionV9Prototype["extensionConsent"];
   readonly extensionInteractions: number;
 };
@@ -283,6 +286,15 @@ export function replayQa03bSessionV9Core(
     throw error;
   }
 
+  const prelaunch =
+    planView.plan.context.activity.status === "resolved" &&
+    planView.plan.context.activity.value === "prelaunch";
+  const overall = computeV9OverallIndex({
+    dimensions: scoring.dimensions,
+    calibration: scoringProfile.calibration,
+    prelaunch,
+  });
+
   return {
     ok: true,
     session: {
@@ -302,6 +314,7 @@ export function replayQa03bSessionV9Core(
       insufficientContextDimensions: planView.plan.evidenceSufficiency.insufficientContextDimensions,
       unresolvedApplicableDimensions: planView.plan.evidenceSufficiency.unresolvedApplicableDimensions,
       dimensions: scoring.dimensions,
+      overall,
       extensionConsent: replayed.extensionConsent,
       extensionInteractions: v9ExtensionInteractionsUsed(replayed.interactionCount),
     },
