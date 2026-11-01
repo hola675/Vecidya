@@ -11,6 +11,7 @@ import { signalProductionContextFields } from "../qbv2-signals";
 import type { DigitalDimensionId } from "../qbv2-dimensions";
 import { FRICTION_RELEVANCE, GOAL_RELEVANCE } from "../qbv2-priorities";
 import { DEFAULT_ROUTE_BUDGET_V1, ROUTE_BANDS, ROUTE_HARD_CAP, type RouteBudgetV1, type QuestionSelectionReason } from "../qbv2-planner";
+import { V9_ABSOLUTE_INTERACTION_LIMIT } from "../v9/route-budget";
 
 export const CANDIDATE_PLANNER_IDENTITY_V3 = "reviewed-evidence-v8+r3+r4-operation-history+candidate-planner-v4" as const;
 export const CANDIDATE_ROUTE_HARD_CAP_V3 = ROUTE_HARD_CAP;
@@ -49,6 +50,8 @@ export type CandidateQuestionPlannerInputV3 = {
   readonly budget?: RouteBudgetV1;
   /** V9 prototype seam: visible interaction count may be lower than answer-key count for an atomic classification bundle. */
   readonly answeredInteractionCount?: number;
+  /** V9-only seam. V8 callers never set this and remain capped at 24. */
+  readonly absoluteHardMax?: number;
 };
 /** Shadow-only experiment: never used by the public session or Worker. */
 export type CandidateShadowSelectionPolicyV1 = "baseline" | "utility_first";
@@ -117,14 +120,21 @@ function canProspectivelyResolveApplicability(question: QuestionDefinitionV2, di
 
 /** Candidate-only planner. Every invocation reconstructs the plan from raw answers. */
 /** @internal Test seam for equivalent bank-order determinism; production entry always supplies the frozen bank. */
-export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET, answeredInteractionCount }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
+export function buildCandidateQuestionPlanFromBankV3({ answers, budget = DEFAULT_BUDGET, answeredInteractionCount, absoluteHardMax }: CandidateQuestionPlannerInputV3, bank: readonly QuestionDefinitionV2[], policy: CandidateShadowSelectionPolicyV1 = "baseline"): CandidateQuestionPlanV3 {
   const rawAnswerCount = Object.keys(answers).length;
+  const effectiveAbsoluteHardMax = Math.min(
+    V9_ABSOLUTE_INTERACTION_LIMIT,
+    Math.max(CANDIDATE_ROUTE_HARD_CAP_V3, absoluteHardMax ?? CANDIDATE_ROUTE_HARD_CAP_V3),
+  );
   const interactionCount = Math.min(
-    CANDIDATE_ROUTE_HARD_CAP_V3,
+    effectiveAbsoluteHardMax,
     Math.max(0, answeredInteractionCount ?? rawAnswerCount),
   );
-  const hardMax = Math.min(CANDIDATE_ROUTE_HARD_CAP_V3, Math.max(1, budget.hardMax, interactionCount));
-  const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, budget.targetMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
+  const requestedHardMax = absoluteHardMax === undefined
+    ? budget.hardMax
+    : Math.max(budget.hardMax, effectiveAbsoluteHardMax);
+  const hardMax = Math.min(effectiveAbsoluteHardMax, Math.max(1, requestedHardMax, interactionCount));
+  const normalizedBudget: RouteBudgetV1 = { ...budget, hardMax, targetMax: Math.min(hardMax, absoluteHardMax === undefined ? budget.targetMax : hardMax), targetMin: Math.min(hardMax, budget.targetMin), materialEvidenceReserve: Math.min(hardMax - 1, Math.max(0, budget.materialEvidenceReserve ?? 0)) };
   const resolution = resolveEligibleQuestionsV2(answers, bank);
   const activeAnswers = resolution.activeAnswers;
   const scoring = scoreCandidateContextualDimensionsV3({ answers: activeAnswers }, bank);
