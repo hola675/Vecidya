@@ -11,14 +11,72 @@ import {
 import { buildCandidateQuestionPlanV9Prototype } from "../../../app/features/diagnostic/qa03b/v9-classification-bundle";
 import {
   createCandidateSessionV9Prototype,
+  currentCandidateQuestionIdV9,
+  submitCandidateAnswerV9Prototype,
+  submitClassificationV9Prototype,
   submitExtensionConsentV9Prototype,
+  type CandidateSessionV9Prototype,
 } from "../../../app/features/diagnostic/qa03b/v9-session-prototype";
+import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 as bank77 } from "../../../app/features/diagnostic/qa03b/specialty-branches-wave1";
+import { AUTHORED_UNKNOWN_CAPABILITIES } from "./qa03b-fixtures";
 
 const sparse = {
   q2_entity: "business",
   q2_has_customers: "yes",
   q2_operational_status: "operating",
 } as const;
+
+const byId = new Map(bank77.map((q) => [q.id, q] as const));
+const restaurantAnswers: Record<string, string | readonly string[]> = {
+  ...AUTHORED_UNKNOWN_CAPABILITIES,
+  q2_entity: "business",
+  q2_operational_status: "operating",
+  q2_has_customers: "yes",
+  q2_other_staff: "yes",
+  q2_monetization: "goods",
+  q2_delivery: ["onsite"],
+  q2_customer_buyer: "b2c",
+  q2_customer_reach: "local",
+  q2_goal: "explain",
+  q2_friction: "conversion",
+  q2_presence_digital_base: "reliable_presence",
+  q2_hospitality_flow_type: "reservation",
+};
+
+function completeRestaurantRoute(): CandidateSessionV9Prototype {
+  let session = createCandidateSessionV9Prototype({ sessionId: "early-stop", writerId: "test", now: 2_000 });
+  for (let turn = 0; turn < 24 && session.status === "in_progress"; turn++) {
+    assert.notEqual(session.extensionConsent, "pending", "known route should finish before extension boundary");
+    const id = currentCandidateQuestionIdV9(session);
+    assert.ok(id);
+    if (id === "q2_sector") {
+      const result = submitClassificationV9Prototype(
+        session,
+        { sector: "food_hospitality", niche: "restaurant" },
+        "test",
+        2_001 + turn,
+      );
+      assert.equal(result.ok, true);
+      if (!result.ok) throw new Error(result.reason);
+      session = result.session;
+      continue;
+    }
+    const question = byId.get(id);
+    assert.ok(question, id);
+    let value = restaurantAnswers[id];
+    if (value === undefined) {
+      const neutral = question.options.find((option) => option.kind === "unknown")
+        ?? question.options.find((option) => option.kind === "not_applicable");
+      assert.ok(neutral, id);
+      value = question.type === "multi" ? [neutral.value] : neutral.value;
+    }
+    const result = submitCandidateAnswerV9Prototype(session, id, value, "test", 2_001 + turn);
+    assert.equal(result.ok, true, id);
+    if (!result.ok) throw new Error(result.reason);
+    session = result.session;
+  }
+  return session;
+}
 
 test("F03 exposes base 24 plus optional 5 with absolute cap 29", () => {
   assert.equal(V9_BASE_INTERACTION_LIMIT, 24);
@@ -84,4 +142,22 @@ test("F03 consent is non-counting and reject/withdraw closes the extension", () 
   assert.equal(rejected.session.interactionCount, 24);
   assert.equal(rejected.session.status, "completing");
   assert.equal(rejected.session.terminalReason, "extension_declined");
+});
+
+
+test("F03 stops before 24 when evidence is already sufficient and does not offer a fake extension at the boundary", () => {
+  const completed = completeRestaurantRoute();
+  assert.equal(completed.status, "completing");
+  assert.ok(completed.interactionCount < 24);
+  const classificationEvents = completed.replayTranscript.flatMap((event) =>
+    event.kind === "classification" ? [event.classification] : []);
+  const atBoundary = buildCandidateQuestionPlanV9Prototype(
+    completed.answers,
+    classificationEvents,
+    24,
+    "not_offered",
+  );
+  assert.equal(atBoundary.extension.consentRequired, false);
+  assert.equal(atBoundary.plan.nextQuestionId, undefined);
+  assert.equal(atBoundary.plan.completion.ready, true);
 });
