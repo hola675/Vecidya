@@ -54,7 +54,7 @@ const boundaryFiles = {
     "./editorial-copy",
     "./recovery-wave2",
   ],
-  "qa03b/worker-replay-v9.server.ts": ["./specialty-branches-wave1"],
+  "qa03b/worker-replay-v9.server.ts": [],
   "qa03b/v9-finalization.server.ts": ["./qbv2-candidate-recommendations", "./specialty-branches-wave1"],
 } as const;
 
