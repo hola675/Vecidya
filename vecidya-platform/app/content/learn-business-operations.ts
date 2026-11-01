@@ -13,7 +13,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "Nombra responsables y conserva un lugar claro para los datos y documentos importantes.",
       "Comparte procesos cuando ayude, pero no mezcles clientes, permisos ni cifras de negocios distintos."
     ],
-    "image": "/assets/learn/diagram-integrations.svg",
+    "image": "/assets/selected/illustrations/services-scene.webp",
     "imageAlt": "Diagrama de distintas herramientas conectadas que ilustra la coordinación de información entre áreas.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -196,7 +196,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "Separa ver información, modificarla, publicarla y administrar accesos.",
       "Revisa permisos cuando alguien cambia de función, sale del equipo o se incorpora a otra sede."
     ],
-    "image": "/assets/learn/diagram-crm.svg",
+    "image": "/assets/selected/illustrations/addons-scene.webp",
     "imageAlt": "Una consulta se registra con contexto y pasa a la persona que tiene permiso y responsabilidad para completar el siguiente paso.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -392,7 +392,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "Cuenta el costo real: suscripción, tiempo de aprender, mantenimiento y posibles consumos externos.",
       "Antes de comprar para toda la empresa, prueba con un equipo y define cómo salir si no funciona."
     ],
-    "image": "/assets/learn/diagram-integrations.svg",
+    "image": "/assets/selected/illustrations/services-scene.webp",
     "imageAlt": "Ilustración de herramientas conectadas para explicar por qué conviene evitar aplicaciones duplicadas.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -585,7 +585,7 @@ export const learnBusinessOperationsArticles: LearnArticle[] = [
       "No confundas consultas, citas, ventas, personas y mensajes: pueden medir cosas diferentes.",
       "Mira cada sede por separado antes de revisar el conjunto y anota qué falta conocer."
     ],
-    "image": "/assets/learn/diagram-analytics.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Gráfico de indicadores de un negocio para ilustrar la comparación de resultados entre áreas.",
     "editorialDraft": false,
     "relatedSlugs": [

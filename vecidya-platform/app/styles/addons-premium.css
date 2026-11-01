@@ -1,0 +1,284 @@
+/* UX-PREMIUM: Addons page treatment, preserving the existing commercial model. */
+.public-site .addons-page {
+  gap: clamp(3.5rem, 7vw, 6.5rem);
+  padding-block: clamp(2rem, 5vw, 4.5rem);
+}
+
+.public-site .addons-hero {
+  position: relative;
+  isolation: isolate;
+  grid-template-columns: minmax(0, 1.05fr) minmax(19rem, .95fr);
+  align-items: center;
+  gap: clamp(2rem, 5.5vw, 4.5rem);
+  min-height: 0;
+  overflow: visible;
+  border-color: var(--v-line);
+  border-radius: var(--v-radius-panel);
+  padding: clamp(2rem, 5vw, 4.5rem);
+  background:
+    radial-gradient(ellipse at 82% 16%, rgb(8 204 243 / 14%), transparent 17rem),
+    radial-gradient(ellipse at 8% 100%, rgb(251 131 0 / 7%), transparent 19rem),
+    linear-gradient(135deg, #fff 0%, var(--v-canvas) 100%);
+  box-shadow: var(--v-shadow-card);
+}
+
+.public-site .addons-hero__copy {
+  position: relative;
+  z-index: 1;
+}
+
+.public-site .addons-hero__copy .eyebrow {
+  color: var(--v-blue-700);
+}
+
+.public-site .addons-hero h1 {
+  max-width: 11ch;
+  margin-block: .75rem 1.15rem;
+  color: var(--v-blue-950);
+  font-size: clamp(3rem, 5.5vw, 5.15rem);
+  letter-spacing: -.065em;
+  line-height: .99;
+}
+
+.public-site .addons-hero__copy > p:not(.eyebrow) {
+  max-width: 35rem;
+  color: var(--v-muted);
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.public-site .addons-hero .public-actions {
+  gap: .85rem;
+  margin-top: 2rem;
+}
+
+.public-site .addons-hero .button {
+  min-height: 3.25rem;
+  border-radius: var(--v-radius-control);
+}
+
+.public-site .addons-hero__visual {
+  display: grid;
+  position: relative;
+  justify-items: center;
+  align-content: center;
+  min-width: 0;
+  padding-top: .5rem;
+}
+
+.public-site .addons-hero__vico {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: min(58%, 14rem);
+  max-height: 17rem;
+  object-fit: contain;
+  animation: addons-vico-float 7s cubic-bezier(.77, 0, .175, 1) 250ms infinite alternate;
+}
+
+.public-site .addons-hero__formula {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  gap: .5rem;
+  margin-top: -1.25rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: var(--v-radius-card);
+  padding: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: #f4f8ff;
+  background: var(--v-gradient-night);
+  box-shadow: 0 1.1rem 2.5rem rgb(7 28 67 / 16%);
+}
+
+.public-site .addons-hero__formula > div:not(.addons-hero__operator) {
+  border-color: rgb(255 255 255 / 18%);
+  border-radius: .85rem;
+  padding: .8rem 1rem;
+  background: rgb(255 255 255 / 8%);
+}
+
+.public-site .addons-hero__formula span {
+  color: #9eeeff;
+  font-size: .68rem;
+  letter-spacing: .13em;
+}
+
+.public-site .addons-hero__formula strong {
+  font-size: 1.05rem;
+  line-height: 1.35;
+}
+
+.public-site .addons-hero__operator {
+  color: #ffd07a;
+  font-size: 1.2rem;
+}
+
+.public-site .addons-hero__formula .addons-hero__result {
+  border-color: rgb(8 204 243 / 44%);
+  background: rgb(8 204 243 / 12%);
+}
+
+.public-site .addons-list {
+  gap: 2rem;
+}
+
+.public-site .addons-section-heading--catalog {
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  align-items: end;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+.public-site .addons-section-heading--catalog .addons-price-note {
+  border-color: var(--v-line);
+  border-left: 3px solid var(--v-orange-500);
+  border-radius: 1rem;
+  padding: 1.15rem 1.35rem;
+  background: linear-gradient(145deg, #fff, #fff8ee);
+}
+
+.public-site .addons-section-heading--catalog .addons-price-note strong {
+  color: var(--v-blue-950);
+}
+
+.public-site .addons-section-heading--catalog .addons-price-note p {
+  color: var(--v-muted);
+  line-height: 1.65;
+}
+
+.public-site .addons-grid {
+  gap: clamp(.85rem, 1.7vw, 1.25rem);
+}
+
+.public-site .addon-card {
+  gap: 1rem;
+  border-color: var(--v-line);
+  border-radius: var(--v-radius-card);
+  padding: clamp(1.2rem, 2.5vw, 1.65rem);
+  background: linear-gradient(160deg, #fff, #f9fbff 82%);
+  box-shadow: 0 .5rem 1.5rem rgb(4 45 108 / 5%);
+}
+
+.public-site .addon-card__top .catalog-card__image--feature {
+  border-color: var(--v-line);
+  border-radius: 1rem;
+  background: #f4f9ff;
+}
+
+.public-site .addon-card h3 {
+  color: var(--v-blue-950);
+  font-size: clamp(1.35rem, 1.8vw, 1.55rem);
+  letter-spacing: -.035em;
+  line-height: 1.15;
+}
+
+.public-site .addon-card__value {
+  color: var(--v-muted);
+  line-height: 1.6;
+}
+
+.public-site .addon-card__benefit,
+.public-site .addon-card__dependency {
+  line-height: 1.55;
+}
+
+.public-site .addon-card__price {
+  color: var(--v-blue-800);
+  font-size: 1.05rem;
+}
+
+.public-site .addon-card__actions {
+  gap: .75rem;
+}
+
+.public-site .addon-card__actions .button {
+  min-height: 3rem;
+  border-radius: var(--v-radius-control);
+  line-height: 1.3;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .public-site .addon-card {
+    transition: border-color var(--v-duration-interaction) var(--v-ease), box-shadow var(--v-duration-interaction) var(--v-ease), transform var(--v-duration-interaction) var(--v-ease);
+  }
+
+  .public-site .addon-card:hover {
+    transform: translateY(-3px);
+    border-color: rgb(7 85 189 / 28%);
+    box-shadow: 0 1rem 2rem rgb(4 45 108 / 9%);
+  }
+}
+
+@keyframes addons-vico-float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-5px); }
+}
+
+@media (max-width: 900px) {
+  .public-site .addons-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, .85fr);
+  }
+
+  .public-site .addons-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .public-site .addon-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    width: min(100%, 32rem);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 760px) {
+  .public-site .addons-page {
+    gap: 3.75rem;
+  }
+
+  .public-site .addons-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+    padding: clamp(1.3rem, 6vw, 2rem);
+  }
+
+  .public-site .addons-hero h1 {
+    max-width: 10ch;
+    font-size: clamp(2.65rem, 11.5vw, 3.8rem);
+  }
+
+  .public-site .addons-hero__visual {
+    width: min(100%, 28rem);
+    margin-inline: auto;
+  }
+
+  .public-site .addons-hero__vico {
+    width: min(48%, 12.5rem);
+    max-height: 14rem;
+  }
+
+  .public-site .addons-section-heading--catalog {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 1rem;
+  }
+
+  .public-site .addons-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .public-site .addon-card:last-child:nth-child(odd) {
+    grid-column: auto;
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-site .addons-hero__vico {
+    animation: none;
+  }
+
+  .public-site .addon-card,
+  .public-site .addon-card:hover {
+    transform: none;
+    transition: none;
+  }
+}

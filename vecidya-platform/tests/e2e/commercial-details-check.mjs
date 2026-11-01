@@ -9,7 +9,7 @@ const assert = (value, message) => { if (!value) throw new Error(message); };
 const group = [
   { path: "/licencias", slugs: ["cuadra", "barrio", "ciudad"], marker: ".license-card" },
   { path: "/addons", slugs: ["whatsapp-business", "telephony-sms", "reputation-reviews", "campaigns-diffusion", "conversational-ai", "voice-ai", "connections-integrations"], marker: ".addon-card" },
-  { path: "/servicios", slugs: ["estructuracion", "formalizacion", "presencia-digital", "automatizacion", "inteligencia-artificial", "visibilidad", "desarrollo-empresarial"], marker: ".services-core-card" },
+  { path: "/servicios", slugs: ["estructuracion", "formalizacion", "presencia-digital", "automatizacion", "inteligencia-artificial", "visibilidad", "desarrollo-empresarial"], marker: ".services-offer" },
 ];
 
 const browser = await chromium.launch(executablePath ? { executablePath } : {});

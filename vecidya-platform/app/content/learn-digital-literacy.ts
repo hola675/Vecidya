@@ -17,7 +17,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
       "Elige pocas prioridades que puedas mantener y deja por escrito qué puede esperar.",
       "Revisa el resultado antes de añadir otra aplicación, canal o automatización.",
     ],
-    image: "/assets/learn/diagram-como-empezar.svg",
+    image: "/assets/selected/illustrations/join-scene.webp",
     imageAlt: "Tres pasos sencillos representan comprender un problema, elegir una prioridad y comprobar el resultado antes de añadir más tecnología.",
     editorialDraft: false,
     relatedSlugs: [
@@ -251,7 +251,7 @@ export const learnDigitalLiteracyArticles: LearnArticle[] = [
       "Conserva accesos, opciones de recuperación y una forma de continuar si el servicio falla.",
       "La IA y la automatización pueden ayudar, pero las decisiones importantes necesitan límites y revisión humana.",
     ],
-    image: "/assets/learn/diagram-como-proteger.svg",
+    image: "/assets/selected/illustrations/diagnostic-scene.webp",
     imageAlt: "Una persona mantiene el control de sus cuentas, decisiones y copias mientras utiliza distintas herramientas digitales.",
     editorialDraft: false,
     relatedSlugs: [

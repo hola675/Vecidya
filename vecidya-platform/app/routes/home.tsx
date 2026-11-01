@@ -45,7 +45,7 @@ export default function Home() {
 
   return (
     <PublicLayout>
-      <main>
+      <main className="public-home">
         <JsonLd data={organizationSchema} />
 
           <section aria-labelledby="home-hero-title" className="public-home-hero">
@@ -58,10 +58,13 @@ export default function Home() {
                 <Link className="button button--secondary" to="/vecindario">Explorar el Vecindario</Link>
               </div>
             </div>
-            <div className="home-hero-visual">
-              <div aria-hidden="true" className="home-hero-visual__glow" />
-              <img alt="Aplicación móvil de Vecidya mostrando descubrimiento de negocios locales" decoding="async" height={1086} src={publicAssets.illustrations.mobileLocalDiscovery} width={1448} />
-              <span className="home-hero-visual__pin" aria-hidden="true"><span>V</span></span>
+            <div className="home-hero-media">
+              <div className="home-hero-visual">
+                <div aria-hidden="true" className="home-hero-visual__glow" />
+                <img alt="Visualización de Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende." className="home-hero-visual__product" decoding="async" height={1024} src={publicAssets.illustrations.homeVecidyaCompanion} width={1536} />
+                <img alt="Logotipo de Vecidya" className="home-hero-visual__brand" decoding="async" height={1254} src={publicAssets.brand.symbol3d} width={1254} />
+              </div>
+              <img alt="Vico, la mascota de Vecidya, da la bienvenida." className="home-hero-visual__vico" decoding="async" height={1536} src={publicAssets.illustrations.vicoHome} width={1024} />
             </div>
           </section>
 

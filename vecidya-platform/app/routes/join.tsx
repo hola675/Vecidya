@@ -1,6 +1,6 @@
 import { PublicLayout, publicMeta } from "../components/public-layout";
-import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
+import { PublicHeroArt } from "../components/public-hero-art";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/join";
@@ -25,7 +25,7 @@ export default function Join() {
             </div>
           </div>
           <div className="join-experience-hero__visual">
-            <img alt="" aria-hidden="true" decoding="async" height={1086} src={publicAssets.illustrations.businessOnboardingForm} width={1448} />
+            <PublicHeroArt page="join" />
             <span>Un comienzo claro</span>
           </div>
         </section>

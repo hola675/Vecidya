@@ -5,6 +5,7 @@ import { getPublishedBusinessProfileFilterOptions, listPublishedBusinessProfiles
 import { serviceModeLabels } from "../../db/business-profile-rules";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { PublicHeroArt } from "../components/public-hero-art";
 import { BusinessCardV2, CTASection, EmptyState, SearchFilters } from "../components/public-v2";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { MINIWEB_MODULE_REGISTRY, SUPPORTED_MINIWEB_MODULE_TYPES, type MiniWebModuleType } from "../features/miniweb/registry";
@@ -66,11 +67,12 @@ export default function DirectoryPage() {
       <main>
         <section className={`public-page directory-page directory-page-v2${profiles.length > 0 && profiles.length <= 2 ? " directory-page-v2--compact" : ""}`} aria-labelledby="directory-title">
           <div className="directory-hero">
-            <div>
+            <div className="directory-hero__copy">
               <p className="eyebrow">VECINDARIO</p>
               <h1 id="directory-title">Descubre negocios con una presencia clara.</h1>
               <p>Explora perfiles publicados por categoría, ciudad, modalidad y lo que cada negocio ofrece.</p>
             </div>
+            <PublicHeroArt page="neighborhood" />
           </div>
 
           <SearchFilters categories={categories} cities={cities} filters={filters} serviceAreas={serviceAreas} serviceModes={serviceModes} offeringKinds={offeringKinds} modules={modules} />

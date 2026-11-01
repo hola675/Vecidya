@@ -13,7 +13,7 @@ export const learnManagement03Articles: LearnArticle[] = [
       "Anota quién paga, qué área usa la herramienta y cuándo vence o se renueva.",
       "Empieza con una prueba pequeña; reserva margen para imprevistos y evalúa el resultado antes de ampliar."
     ],
-    "image": "/assets/learn/diagram-presupuesto-digital.svg",
+    "image": "/assets/selected/illustrations/licenses-scene.webp",
     "imageAlt": "Tres tarjetas amplias representan la cuota del servicio, el tiempo de trabajo y una revisión del presupuesto total.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -215,7 +215,7 @@ export const learnManagement03Articles: LearnArticle[] = [
       "Separa solicitar, aprobar, recibir y registrar cuando el tamaño y riesgo lo requieran.",
       "Conserva evidencia de lo acordado y revisa cambios, devoluciones y proveedores."
     ],
-    "image": "/assets/learn/diagram-compras-proveedores.svg",
+    "image": "/assets/selected/illustrations/licenses-scene.webp",
     "imageAlt": "Tres tarjetas muestran una solicitud, una aprobación y una recepción comprobada.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -416,7 +416,7 @@ export const learnManagement03Articles: LearnArticle[] = [
       "Prepara formas seguras de comunicar y registrar lo imprescindible durante una caída.",
       "Comprueba que las copias y los contactos de recuperación realmente funcionan; no improvises con datos privados."
     ],
-    "image": "/assets/learn/diagram-continuidad-digital.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas representan una interrupción, un modo alternativo de trabajo y la recuperación comprobada.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -614,7 +614,7 @@ export const learnManagement03Articles: LearnArticle[] = [
       "No compartas datos solo porque una herramienta permita pegarlos; revisa su necesidad y las condiciones del proveedor.",
       "Asigna quién prepara, revisa y aprueba el resultado antes de usarlo con clientes o procesos importantes."
     ],
-    "image": "/assets/learn/diagram-gobierno-ia.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una propuesta de IA, una revisión de una persona y una decisión controlada.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -858,7 +858,7 @@ export const learnManagement03Articles: LearnArticle[] = [
       "Observa resultados reales, no solo usuarios registrados, clics o pantallas abiertas.",
       "Escucha al equipo, revisa errores y decide si seguir, ajustar o retirar la solución."
     ],
-    "image": "/assets/learn/diagram-evaluar-mejora.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran la situación inicial, una prueba limitada y una decisión basada en lo aprendido.",
     "editorialDraft": false,
     "relatedSlugs": [

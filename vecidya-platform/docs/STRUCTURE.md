@@ -1,5 +1,7 @@
 # Estructura del código
 
+**UX-PREMIUM-FOUNDATION-01:** `app/styles/premium-foundation.css` aporta tokens namespaced y estilos comunes limitados a `.public-site`, `.app-shell` y `.admin-shell`; `app/root.tsx` lo carga después de las hojas globales actuales. La MiniWeb pública queda fuera del selector para preservar la identidad de cada negocio. Los componentes y layouts por superficie mantienen sus estilos específicos y se migran en checkpoints posteriores.
+
 **FIX-BUSINESS-PROFILE-SECTION-SCROLL (checkpoint local):** `app/routes/business-profile.tsx` organiza identidad, presentación, contacto, redes, atención y horarios en pasos; `app/app.css` reutiliza el workspace MiniWeb con navegación sticky en escritorio y barra horizontal en móvil. Se conserva el guardado conjunto del perfil y el guardado independiente de horarios. `app/routes/miniweb-editor.tsx` continúa administrando logo y portada. Sin rutas nuevas ni cambios a guardas; validación pendiente.
 
 **APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.

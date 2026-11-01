@@ -13,7 +13,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       "Revisa los pendientes de manera breve y periódica: busca bloqueos, no culpables.",
       "Para varias sedes, comparte criterios pero conserva responsables y prioridades de cada equipo."
     ],
-    "image": "/assets/learn/diagram-tareas-equipo.svg",
+    "image": "/assets/selected/illustrations/about-scene.webp",
     "imageAlt": "Tres tarjetas grandes muestran un trabajo sencillo: definir una tarea, nombrar responsable y comprobar el resultado.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -221,7 +221,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       "Usa un nombre o código coherente para cada producto y revisa físicamente las diferencias.",
       "Si hay varios almacenes, identifica dónde ocurrió cada movimiento antes de sumar existencias."
     ],
-    "image": "/assets/learn/diagram-inventario.svg",
+    "image": "/assets/selected/illustrations/addons-scene.webp",
     "imageAlt": "Tres pasos grandes para controlar existencias: recibir productos, registrar los movimientos y comprobar lo que queda.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -435,7 +435,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       "Practicar, equivocarse con datos de ejemplo y recibir ayuda funciona mejor que mirar una presentación interminable.",
       "Acuerda quién da apoyo después y cómo comprobar que la herramienta realmente facilita trabajar."
     ],
-    "image": "/assets/learn/diagram-capacitacion.svg",
+    "image": "/assets/selected/illustrations/learn-journey-scene.webp",
     "imageAlt": "Tres momentos de una capacitación práctica: mostrar una tarea, practicar con ayuda y repetirla en el trabajo.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -652,7 +652,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       "No es lo mismo que un CRM para relaciones con clientes, ni reemplaza necesariamente todos tus sistemas.",
       "Antes de contratar uno, define procesos, responsables, datos que deben coincidir y el costo completo de cambiar."
     ],
-    "image": "/assets/learn/diagram-erp.svg",
+    "image": "/assets/selected/illustrations/services-scene.webp",
     "imageAlt": "Tres áreas de la empresa —compras, almacén y administración— comparten información para coordinar el trabajo.",
     "editorialDraft": false,
     "relatedSlugs": [
@@ -874,7 +874,7 @@ export const learnOperations02Articles: LearnArticle[] = [
       "Prueba con un proceso o equipo, usando datos de ejemplo y una salida segura.",
       "Escucha a quienes hacen el trabajo y amplía solo cuando haya evidencia suficiente."
     ],
-    "image": "/assets/learn/diagram-proyecto-digital.svg",
+    "image": "/assets/selected/illustrations/home-scene.webp",
     "imageAlt": "Un proyecto digital avanza en tres etapas: elegir problema, probar con un equipo y decidir qué ajustar.",
     "editorialDraft": false,
     "relatedSlugs": [

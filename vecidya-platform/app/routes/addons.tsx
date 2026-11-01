@@ -5,6 +5,7 @@ import { CommercialBoundary, CTASection } from "../components/public-v2";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { ADDON_OFFERS } from "../content/commercial-detail";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { PublicHeroArt } from "../components/public-hero-art";
 
 import type { Route } from "./+types/addons";
 
@@ -51,12 +52,15 @@ export default function Addons() {
               <Link className="button button--secondary" to="/licencias">{PUBLIC_ACTION_LABELS.licenses}</Link>
             </div>
           </div>
-          <div className="addons-hero__formula">
-            <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
-            <div aria-hidden="true" className="addons-hero__operator">+</div>
-            <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
-            <div aria-hidden="true" className="addons-hero__operator">↓</div>
-            <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
+          <div className="addons-hero__visual">
+            <PublicHeroArt page="addons" />
+            <div className="addons-hero__formula">
+              <div><span>BASE</span><strong>Licencia Vecidya</strong></div>
+              <div aria-hidden="true" className="addons-hero__operator">+</div>
+              <div><span>CAPACIDAD</span><strong>Complemento específico</strong></div>
+              <div aria-hidden="true" className="addons-hero__operator">↓</div>
+              <div className="addons-hero__result"><span>RESULTADO</span><strong>Una nueva capacidad para tu momento.</strong></div>
+            </div>
           </div>
         </section>
 

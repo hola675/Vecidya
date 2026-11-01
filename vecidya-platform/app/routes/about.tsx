@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { CTASection } from "../components/public-v2";
+import { PublicHeroArt } from "../components/public-hero-art";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
 import type { Route } from "./+types/about";
@@ -34,6 +35,7 @@ export default function About() {
               <source media="(max-width: 768px)" srcSet={publicAssets.about.teamMobile} />
               <img alt="Yoan y Edgar juntos frente al símbolo de Vecidya" decoding="async" height={1080} src={publicAssets.about.team} width={1440} />
             </picture>
+            <PublicHeroArt page="about" />
             <figcaption>Dos perspectivas. Un mismo punto de partida: entender antes de construir.</figcaption>
           </figure>
         </section>
