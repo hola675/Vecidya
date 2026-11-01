@@ -17,6 +17,7 @@ import {
   editClassificationV9Prototype,
   submitCandidateAnswerV9Prototype,
   submitClassificationV9Prototype,
+  submitExtensionConsentV9Prototype,
 } from "./v9-session-prototype";
 import { replayQa03bSessionV9Core, type Qa03bWorkerReplayV9 } from "./worker-replay-v9.server";
 
@@ -105,7 +106,19 @@ export function recoverDiagnosticAuditSessionV9(input: V9AuditReplayInput): V9Au
     try { payload = JSON.parse(event.payload_json) as unknown; } catch { return { ok: false, reason: "session" }; }
     if (!isRecord(payload)) return { ok: false, reason: "route" };
 
-    if (event.kind === "answer") {
+    if (event.kind === "extension_consent") {
+      if (!hasOnlyKeys(payload, ["decision"]) || !["accepted", "rejected", "withdrawn"].includes(String(payload.decision))) {
+        return { ok: false, reason: "route" };
+      }
+      const submitted = submitExtensionConsentV9Prototype(
+        session,
+        payload.decision as "accepted" | "rejected" | "withdrawn",
+        "v9-d1-authoritative-replay",
+        previousTimestamp,
+      );
+      if (!submitted.ok) return { ok: false, reason: "route" };
+      session = submitted.session;
+    } else if (event.kind === "answer") {
       if (!hasOnlyKeys(payload, ["questionId", "value", "mode"]) ||
           typeof payload.questionId !== "string" || payload.questionId.length < 1 ||
           payload.questionId.length > 128 ||
