@@ -9,7 +9,7 @@ import {
   resolveInvitationView,
   type InvitationRecord,
 } from "../../../db/invitation-rules.ts";
-import { safeAppRedirect } from "../../../app/lib/safe-redirect.ts";
+import { safeAppRedirect, safeLearnReturn } from "../../../app/lib/safe-redirect.ts";
 
 const now = new Date("2026-09-25T12:00:00Z");
 const tomorrow = new Date("2026-09-26T12:00:00Z");
@@ -106,10 +106,14 @@ test("los errores de Better Auth al invitar se explican sin culpar al correo", (
   assert.equal(invitationCreateErrorMessage(undefined), "No se pudo crear la invitación. Inténtalo de nuevo.");
 });
 
-test("redirectTo solo acepta rutas internas de /app", () => {
+test("redirectTo solo acepta destinos internos de app o de una guía pública", () => {
   assert.equal(safeAppRedirect("/app/invitations/abc"), "/app/invitations/abc");
   assert.equal(safeAppRedirect("/app"), "/app");
   assert.equal(safeAppRedirect("/app/organization?tab=1"), "/app/organization?tab=1");
+  assert.equal(safeLearnReturn("/aprende/proteger-mi-cuenta#pasos"), "/aprende/proteger-mi-cuenta#pasos");
+  for (const unsafe of ["https://evil.example/aprende/guia", "//evil.example/aprende/guia", "/aprende", "/aprende/guia?next=https://evil.example", "/app/admin", "/aprende/%2f%2fevil"]) {
+    assert.equal(safeLearnReturn(unsafe), null, String(unsafe));
+  }
   for (const unsafe of [null, "", "https://evil.example/app", "//evil.example/app", "/\\evil.example", "/app/../login", "/apple", "/login", "javascript:alert(1)", "app/invitations/x"]) {
     assert.equal(safeAppRedirect(unsafe), null, String(unsafe));
   }

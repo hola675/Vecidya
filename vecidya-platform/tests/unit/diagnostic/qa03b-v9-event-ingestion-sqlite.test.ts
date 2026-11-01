@@ -16,12 +16,12 @@ import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../../../app/features/
 import { finalizeOwnedDiagnosticRunV9 } from "../../../app/features/diagnostic/qa03b/v9-finalization.server";
 
 const migrations = [
-  "0030_diagnostic_v9_audit.sql",
-  "0031_diagnostic_v9_identity_ownership.sql",
-  "0032_diagnostic_v9_claim_guards.sql",
-  "0033_diagnostic_v9_owner_assignment_guards.sql",
-  "0034_diagnostic_v9_identity_claim_integrity.sql",
-  "0035_diagnostic_v9_result_finalization_guards.sql",
+  "0038_diagnostic_v9_audit.sql",
+  "0039_diagnostic_v9_identity_ownership.sql",
+  "0040_diagnostic_v9_claim_guards.sql",
+  "0041_diagnostic_v9_owner_assignment_guards.sql",
+  "0042_diagnostic_v9_identity_claim_integrity.sql",
+  "0043_diagnostic_v9_result_finalization_guards.sql",
 ];
 const versions = {
   bank: "bank-v9-test", engine: "engine-v9-test", scoring: "scoring-v9-test",

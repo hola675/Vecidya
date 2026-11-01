@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
 
-const migration = readFileSync(new URL("../../../db/migrations/0030_diagnostic_v9_audit.sql", import.meta.url), "utf8");
+const migration = readFileSync(new URL("../../../db/migrations/0038_diagnostic_v9_audit.sql", import.meta.url), "utf8");
 
 test("V9 D1 schema: atomic event sequence, isolation and append-only protection", () => {
   const db = new DatabaseSync(":memory:");

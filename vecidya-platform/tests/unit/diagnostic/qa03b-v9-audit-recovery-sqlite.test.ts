@@ -5,7 +5,7 @@ import test from "node:test";
 import { recoverDiagnosticStateV9 } from "../../../app/features/diagnostic/qa03b/v9-audit-recovery";
 import { hashDiagnosticSnapshotV9, type V9AuditDb } from "../../../app/features/diagnostic/qa03b/v9-audit-repository";
 
-const migration = readFileSync(new URL("../../../db/migrations/0030_diagnostic_v9_audit.sql", import.meta.url), "utf8");
+const migration = readFileSync(new URL("../../../db/migrations/0038_diagnostic_v9_audit.sql", import.meta.url), "utf8");
 
 function adapter(db: DatabaseSync): V9AuditDb {
   return {

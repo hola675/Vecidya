@@ -135,6 +135,8 @@ export default function InternalBusinessProfileDetail() {
             <div><dt>Instagram</dt><dd>{profile.instagramUrl ? <a href={profile.instagramUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
             <div><dt>Facebook</dt><dd>{profile.facebookUrl ? <a href={profile.facebookUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
             <div><dt>LinkedIn</dt><dd>{profile.linkedinUrl ? <a href={profile.linkedinUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
+            <div><dt>TikTok</dt><dd>{profile.tiktokUrl ? <a href={profile.tiktokUrl} rel="noreferrer" target="_blank">Ver perfil ↗</a> : "No informado"}</dd></div>
+            <div><dt>YouTube</dt><dd>{profile.youtubeUrl ? <a href={profile.youtubeUrl} rel="noreferrer" target="_blank">Ver canal ↗</a> : "No informado"}</dd></div>
           </dl>
           <div className="admin-review-hours"><h3>Horarios declarados</h3>
             {businessHours.length ? <ul>{businessHours.map((hours) => <li key={hours.dayOfWeek}><span>{dayOfWeekLabels[hours.dayOfWeek] ?? `Día ${hours.dayOfWeek}`}</span><strong>{hours.isClosed ? "Cerrado" : hours.opensAt && hours.closesAt ? `${hours.opensAt}–${hours.closesAt}` : "Horario incompleto"}</strong></li>)}</ul> : <p>Este perfil no tiene horarios declarados.</p>}

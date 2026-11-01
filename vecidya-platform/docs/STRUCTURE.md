@@ -1,14 +1,8 @@
 # Estructura del código
 
-## DIAG-V9-UX-03 — mejoras de selección (2026-10-26; rama, no publicada)
+**UX-PREMIUM-FOUNDATION-01:** `app/styles/premium-foundation.css` aporta tokens namespaced y estilos comunes limitados a `.public-site`, `.app-shell` y `.admin-shell`; `app/root.tsx` lo carga después de las hojas globales actuales. La MiniWeb pública queda fuera del selector para preservar la identidad de cada negocio. Los componentes y layouts por superficie mantienen sus estilos específicos y se migran en checkpoints posteriores.
 
-**DIAG-V9-UX-03:** `qa03b-v9-classification-step.tsx` pregunta por negocio o emprendimiento y filtra hasta siete sugerencias del banco histórico V9, sin respuesta automática. `qa03b/editorial-copy.ts` revisa únicamente el copy candidato. `qa03b/v9-session-prototype.ts` usa un nuevo identificador de motor y banco, y recalcula `queue` desde `buildCandidateQuestionPlanV9Prototype` en cada replan; Worker usa dichas identidades para fallar cerrado ante sesiones incompatibles. Migración al catálogo común pendiente; no modifica los 45 contratos V8.
-
-## DIAG-V9-RECOVERY-01 — ruta candidata aislada (2026-10-26; no publicada)
-
-`/__dev/diagnostico/qa03b/v9` → `routes/dev-diagnostic-qa03b-v9.tsx`: registrada solo en el bloque `isDevelopmentServer`, con comprobación `import.meta.env.DEV`, `noindex`, `no-store` y POST JSON same-origin; permite visualizar clasificación sector+especialidad y probar replay core-only. No entra en rutas públicas de producción. `qa03b/v9-candidate-{planner,scoring}.ts` y el banco especializado dependen de un contrato candidato separado; `qa03b/bank.ts` y archivos públicos V8 permanecen idénticos a `main` en la rama. Requiere typecheck/build, tests y prueba de aislamiento de bundle antes de cualquier integración.
-
-**APP-MINI-02B (integrado en 0.8.3):** `app/routes/business-profile.tsx` mantiene el formulario de perfil sin campo URL de logo; `app/routes/miniweb-editor.tsx` administra el logo en Archivos e identidad. `app/routes/public-business-profile.tsx`, `app/components/miniweb/miniweb-renderer.tsx` y `db/queries/business-profile.server.ts` resuelven medios desde el snapshot publicado para cabecera, identidad y tarjeta Vecindario. Sin rutas nuevas ni cambios a guardas.
+**FIX-BUSINESS-PROFILE-SECTION-SCROLL (checkpoint local):** `app/routes/business-profile.tsx` organiza identidad, presentación, contacto, redes, atención y horarios en pasos; `app/app.css` reutiliza el workspace MiniWeb con navegación sticky en escritorio y barra horizontal en móvil. Se conserva el guardado conjunto del perfil y el guardado independiente de horarios. `app/routes/miniweb-editor.tsx` continúa administrando logo y portada. Sin rutas nuevas ni cambios a guardas; validación pendiente.
 
 **APP-MINI-02C (candidato 0.8.4):** `DefaultMiniWebTemplate` presenta las secciones en flujo vertical uniforme, en el orden persistido; la cabecera muestra la portada como imagen dentro del marco y el logo por encima, sin repetir el icono junto al título. La vista previa comparte la plantilla pública y los controles ↑/↓ de Secciones.
 
@@ -23,7 +17,10 @@ Actualización APP-MINI-REDESIGN-01 (2026-10-23): `app/routes/app.tsx` y `app/ro
 | `app/components/experience-system.tsx` | Guía, métrica, progreso, comparación por barras | Solo presentación; sin acceso a datos ni autorización |
 | `app/lib/experience-metrics.ts` | Escala relativa, porcentaje y recuento finito | Puro; no crea ni estima métricas |
 | `/` → `routes/home.tsx` | Guía pública Descubre → Comprende → Decide | Sin conversiones, testimonios ni cifras ficticias |
-| `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa | Guardas del loader y tenant intactos |
+| `/app` → `routes/app.tsx` | Guía contextual y barra del perfil con datos de organización activa; selector global para `platform_admin` | El selector global navega a gestión con target explícito; no cambia membership ni `activeOrganizationId` |
+| `/app/platform/organizations` y `/:organizationId` | Lista y gestión de organizaciones para `platform_admin` (alias de pantallas de control plane) | Mismas guardas y auditoría de `/app/internal`; sin suplantación del owner |
+| `/app/platform/organizations/:organizationId/{miniweb,training}` | Configuración MiniWeb, capacitación y progreso | `requirePlatformAdminAction`, target URL y auditoría vigentes |
+| `/app/aprende` | Biblioteca personal con progreso/favoritos y avance compartido en nueve itinerarios; recomendación editorial determinista y recientes restaurables | Datos sin ámbito de organización; progreso único por guía; recomendación no concede acceso y el artículo licenciado vuelve a comprobar entitlement |
 | `/app/internal` → `routes/internal.tsx` | Métricas actuales, comparación de pendientes y guía operativa | Guardia `requirePlatformAdmin` intacta |
 | `/app/internal/diagnostic-analytics` | Eventos agregados, barras y tendencia con cero real | No cohortes ni datos personales; mismo acceso protegido |
 | `public-layout.tsx`, `client-area-shell.tsx`, `admin-shell.tsx` | Símbolo y retornos visuales coherentes | Solo navegación entre zonas, sin elevación de privilegios |
@@ -133,7 +130,7 @@ D:\Proyectos\Vecidya            (raíz Git)
 | `/diagnostico/informe/:requestId` | `dev-diagnostic-identified-report.tsx` | cookie opaca + grant/snapshot D1; DELETE/PATCH same-origin; `PlatformFooter` en página y ErrorBoundary, oculto al imprimir | No | HTML identificado bajo gate; sin exportación PDF | `diagnostic-v3-qa03b-check.mjs`, isolation check | no, flag false |
 | `/sobre-nosotros` | `about.tsx` | estático + WebP humanos | — | funcional | `about` | sí |
 | `/aprende` | `knowledge.tsx` | estático | — | APRENDE-EDITORIAL-FINAL-02 candidato: 6 categorías, 48 guías auditadas, 18 borradores pendientes de aprobación explícita, 9 itinerarios; Comprende → Prioriza → Decide; búsqueda de contenido completo | `learn`, `commercial-review` | Aprende quality #123 y Main integration quality #189 PASS; sin merge/deploy |
-| `/aprende/:slug` | `learn-article.tsx` | estático | — | funcional local / release ready; artículo, índice, CTA y metadata | `learn`, `commercial-review` | sí local; deploy pendiente |
+| `/aprende/:slug` | `learn-article.tsx` | estático | — | artículo, índice, CTA y metadata; repaso opcional fuera del progreso | `learn`, `commercial-review` | sin deploy |
 | `/que-debes-saber` | `knowledge-legacy.tsx` | alias estático | — | funcional; canonical `/aprende` | ninguno | sí |
 | `/privacidad` | `privacy.tsx` | estático | — | funcional; datos, límites y contacto claros | `legal-trust` | sí |
 | `/robots.txt` | `robots.ts` | estático | — | funcional | ninguno | sí |
@@ -241,3 +238,6 @@ FUNNEL-01B separa el flujo público `AnonymousDiagnosticFlow` de `DiagnosticFlow
 - `wrangler.jsonc`: Worker `vecidya-platform`, rutas `vecidya.com/*` y `www.vecidya.com/*`, producción top-level con `APP_ENV=production` y D1 `DB=vecidya-prod`; `env.staging` define `vecidya-platform-staging`, `APP_ENV=staging` y `DB=vecidya-staging`; `secrets.required` (`BETTER_AUTH_SECRET`).
 - `react-router.config.ts`: `ssr: true`. `vite.config.ts`: React Router, Tailwind 4 y plugin de Cloudflare. `drizzle.config.ts`: schema `db/schema/index.ts`, salida `db/migrations`, dialecto SQLite.
 - `tsconfig.json`, `tsconfig.cloudflare.json`, `tsconfig.node.json`; `pnpm-workspace.yaml` (build de `esbuild`/`workerd`, excepciones de `minimumReleaseAge` para Better Auth).
+
+**MiniWeb V2 — IMP-03/05/08:** `app/routes/miniweb-v2-editor.tsx` ofrece creación por familia/variante, edición JSON validada de S01–S12, orden/visibilidad, guardado CAS, publicación explícita, selección de sitio y preview con renderer V2. La API exige confirmación/permiso tenant para convertir una publicación V1 allowlisted y registra procedencia. La conversión limita texto a contrato V2 y reporta truncamientos. El editor aún no ofrece formularios especializados ni carga de medios V2.
+**MiniWeb V2 IMP-04:** `app/routes/public-miniweb-v2.tsx` sirve `/miniweb/:siteId` desde snapshot activo; `app/components/miniweb-v2-renderer.tsx` renderiza S01–S12 sin consultar V1. Medios e integración visual avanzada pendientes.

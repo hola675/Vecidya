@@ -5,12 +5,12 @@ import test from "node:test";
 import { linkOwnedDiagnosticRunToOrganizationV9, type V9IdentityDb } from "../../../app/features/diagnostic/qa03b/v9-identity-repository";
 
 const migrations = [
-  readFileSync(new URL("../../../db/migrations/0030_diagnostic_v9_audit.sql", import.meta.url), "utf8"),
-  readFileSync(new URL("../../../db/migrations/0031_diagnostic_v9_identity_ownership.sql", import.meta.url), "utf8"),
-  readFileSync(new URL("../../../db/migrations/0032_diagnostic_v9_claim_guards.sql", import.meta.url), "utf8"),
-  readFileSync(new URL("../../../db/migrations/0033_diagnostic_v9_owner_assignment_guards.sql", import.meta.url), "utf8"),
-  readFileSync(new URL("../../../db/migrations/0034_diagnostic_v9_identity_claim_integrity.sql", import.meta.url), "utf8"),
-  readFileSync(new URL("../../../db/migrations/0035_diagnostic_v9_result_finalization_guards.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0038_diagnostic_v9_audit.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0039_diagnostic_v9_identity_ownership.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0040_diagnostic_v9_claim_guards.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0041_diagnostic_v9_owner_assignment_guards.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0042_diagnostic_v9_identity_claim_integrity.sql", import.meta.url), "utf8"),
+  readFileSync(new URL("../../../db/migrations/0043_diagnostic_v9_result_finalization_guards.sql", import.meta.url), "utf8"),
 ];
 
 function adapter(sqlite: DatabaseSync): V9IdentityDb {

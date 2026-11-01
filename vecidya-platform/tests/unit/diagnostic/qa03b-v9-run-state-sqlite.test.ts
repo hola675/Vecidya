@@ -25,12 +25,12 @@ const versions: V9RunVersions = {
   consent: "test-consent-v9",
 };
 const migrations = [
-  "0030_diagnostic_v9_audit.sql",
-  "0031_diagnostic_v9_identity_ownership.sql",
-  "0032_diagnostic_v9_claim_guards.sql",
-  "0033_diagnostic_v9_owner_assignment_guards.sql",
-  "0034_diagnostic_v9_identity_claim_integrity.sql",
-  "0035_diagnostic_v9_result_finalization_guards.sql",
+  "0038_diagnostic_v9_audit.sql",
+  "0039_diagnostic_v9_identity_ownership.sql",
+  "0040_diagnostic_v9_claim_guards.sql",
+  "0041_diagnostic_v9_owner_assignment_guards.sql",
+  "0042_diagnostic_v9_identity_claim_integrity.sql",
+  "0043_diagnostic_v9_result_finalization_guards.sql",
 ];
 
 function fixture() {

@@ -1,4 +1,138 @@
+## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
+
+- Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.
+- Se actualizaron las ilustraciones de apoyo de Aprende: 30 diagramas SVG y el atlas SVG se sustituyeron por escenas WebP temáticas con texto alternativo ligado al tema de cada guía.
+- La navegación, CTA, textos y lógica se conservan. PR #222 permanece en borrador; sin merge ni deploy.
+
+## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
+
+- Se ajustó `/licencias`: notas comerciales 2×2, hero más claro, tabla comparativa con mayor contraste y tarjetas en una columna desde 900 px; hover breve que respeta movimiento reducido.
+- Se conservaron precios, activaciones, condiciones, rutas y CTAs. E2E focal, typecheck, build, diff-check y revisión visual de cinco anchos PASS. PR #221 abierta en borrador. Sin deploy ni cambios de datos.
+
+## 0.9.2 — publicado (2026-10-29)
+
+- Reúne la entrega de seguridad/accesibilidad y progreso de Aprende registrada en `0.9.1` con el refinamiento global del PR #210: esquinas redondeadas y separación entre secciones, menú «Soluciones» mejorado y controles de progreso compactos.
+- PR #213 quedó integrada en `main@8ed60e51`. D1 de producción recibió `0031–0033` antes del deploy; Wrangler desplegó Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %.
+- GET anónimo a `/` y `/aprende` confirmó HTTP 200, versión `0.9.2`, copyright y 48 guías; `/__health/db` dio 200. Evidencia fechada en `docs/ENVIRONMENTS.md`.
+- La purga de recibos Aprende continúa desactivada; su revisión legal/privacidad/costo sigue pendiente. Sin deploy a staging.
+
+## 0.9.1 — candidata local (2026-10-29; no publicada)
+
+- Correcciones de seguridad: Better Auth 1.7.5 → 1.7.14; `pnpm audit --prod` quedó con cero avisos. CI del PR #201 pasó typecheck, build, regresión completa, privacidad del bundle, regresión Aprende/Diagnóstico y certificación del Worker local.
+- El usuario confirma que la prueba manual con NVDA y zoom 200 % fue ejecutada y aprobada. Se conserva como aceptación humana; no es certificación WCAG y los datos de navegador/lector/viewport no se registraron.
+- En el corte del PR #202, la retención 90/30 seguía pendiente de implementación y revisión legal/privacidad/costo. El checkpoint local siguiente implementa y prueba la purga; no se habilita en producción mientras la revisión legal siga abierta. Sin D1 remota ni deploy.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — retención técnica de recibos (checkpoint local)
+
+- El endpoint rechaza como `expired` los reintentos con más de 30 días; el cron diario purga en tandas los recibos de más de 90 días, conservando progreso y cursor del dispositivo. Ambos flags de purga siguen apagados en producción hasta revisión legal/privacidad/costo.
+- El cursor de dispositivo acepta secuencias estrictamente crecientes con huecos para que descartar operaciones vencidas no bloquee cambios nuevos; sigue rechazando secuencias repetidas o atrasadas.
+- Unitarias de flags, Worker/D1 E2E, typecheck, build y diff-check PASS. No hay migración nueva, cambio D1 remoto ni deploy.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — revisión local de seguridad y accesibilidad
+
+- Actualización de Better Auth 1.7.5→1.7.14 tras auditoría de dependencias; `pnpm audit --prod --json` quedó en cero avisos. Revisión estática de guards, grants, aislamiento, CSRF, sync/replay, privacidad y caché. La CI final del PR #201 pasó la certificación del Worker. La propuesta 90/30 fue aceptada como base operativa, pendiente de validación legal/privacidad/costo y sin purga implementada. El usuario confirma que la pauta NVDA/zoom 200 % fue ejecutada y aprobada. Sin deploy ni D1 remota.
+
 # Changelog
+
+## 2026-10-30 — UX-PREMIUM-02I — Aprende
+
+- Se refina el catálogo público con hero editorial, superficies, tarjetas de guías e itinerarios y se incorpora la variante optimizada Vico Aprende en primer plano sobre el panel de rutas.
+- Búsqueda, filtros, guías, estados, metadatos y CTA se conservan. E2E y comparación visual en cinco viewports, foco y movimiento reducido; sin deploy ni publicación.
+
+## 2026-10-30 — UX-PREMIUM-02H — Complementos
+
+- Se alineó `/addons` con la guía visual premium y se agregó la variante optimizada de Vico Complementos, en primer plano sobre el panel conceptual.
+- Se ajustaron hero, catálogo, tarjetas y responsive; se preservaron copy, catálogo, precios/costes, condiciones, rutas y CTAs. El E2E focal cubre Vico, movimiento normal/reducido y el contenido comercial. Extensión local del PR #222; sin deploy ni publicación.
+
+## 2026-10-30 — UX-PREMIUM-FOUNDATION-01 — base visual compartida
+
+- Se agregan tokens `--v-*` para paleta de referencia, tipografía, radios, sombras y movimiento, junto a una capa común de tipografía/controles/foco en superficies propias de Vecidya. Los botones primarios/secundarios reciben la primera migración explícita de color; otros tokens heredados y la identidad pública de MiniWeb permanecen intactos.
+- Typecheck/build y E2E de navegación pública pasan. Capturas antes/después de Home cubren 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; sin overflow, el foco de teclado es visible y el movimiento reducido acorta las transiciones a 0,01 ms. La aplicación por rutas y la accesibilidad completa siguen pendientes. Sin deploy ni merge.
+## 2026-10-30 — UX-PREMIUM-01-HOME — portada local
+
+- Se renueva la composición de `/` con el texto y los CTA existentes, Vico Inicio en primer plano sobre el borde del recuadro, el símbolo completo de marca sin placa decorativa y una visualización WebP fotorrealista de fondo transparente. Se elimina el pin azul. Vico, la visualización y el logotipo incorporan movimiento ambiental sutil con una variante de fundido para movimiento reducido. La imagen presenta Presencia Digital, CRM, Vecindario, Diagnóstico y Aprende sin cifras inventadas, burbujas ni brújulas. Se mantienen rutas y contenido funcional.
+- Revisión local de cinco viewports y estados interactivos; typecheck/build/diff-check PASS. PR #219 abierta como borrador; sin deploy, D1 remota ni declaración de publicación.
+## 2026-10-30 — UX-PREMIUM-02C — Servicios
+
+- `/servicios` adopta una portada tipográfica, recorrido escalonado, accesos rápidos en filas y siete ofertas editoriales con alcance y CTA visibles. Se conservan contenido, destinos y contratos; no se añaden datos ni funciones.
+- Dos E2E focales, typecheck, build y diff-check PASS; QA visual en cinco anchos, teclado y movimiento reducido. PR local pendiente; sin publicación ni despliegue.
+
+## 2026-10-30 — MiniWeb V2 IMP-08 — adaptación de límites V1
+
+- La conversión voluntaria trunca descripción y zona de servicio al máximo del contrato V2 y deja constancia explícita en el reporte; se valida el documento antes de persistirlo.
+- Unitarias focales 6/6, E2E Worker local, typecheck/build y diff-check PASS. PR #211 pendiente de integración. Sin despliegue ni D1 remota.
+
+## 2026-10-30 — MiniWeb V2 IMP-05/07 — integración local
+
+- La creación sincroniza su documento familiar en el editor; el horario incompleto queda oculto hasta que pueda editarse. Las publicaciones reservan el cupo en batch con todas las columnas, preservan snapshots idempotentes y distinguen cupo agotado de reintento conflictivo.
+- 17 pruebas focales, typecheck, build y diff-check PASS. PR #209 pendiente de revisión e integración. Sin publicación ni cambios remotos de D1.
+
+## 2026-10-29 — UX-COHERENCE-ROUNDED-001 — refinamiento global de interfaz
+
+- Se refina el menú «Soluciones» con panel translúcido, estados más claros y movimiento breve; el foco permanece visible y la animación se desactiva con `prefers-reduced-motion`.
+- En toda la plataforma, tarjetas, paneles, secciones y controles adoptan radios coherentes y los bloques consecutivos reciben más separación. En Aprende, títulos y separaciones se compactan; favoritos, avance y acciones por sección se agrupan arriba, con acciones desplegables y nombres accesibles. El contador destacado mejora su contraste. Typecheck, build y E2E local PASS; sin deploy ni cambios de datos.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — índice compacto móvil (Fase 7; local)
+
+- El índice de secciones del artículo se vuelve un control desplegable nativo `Índice · NN%` en pantallas de hasta 820 px; escritorio conserva su navegación lateral. El porcentaje comparte el estado de progreso y el panel se cierra al seleccionar una sección. La regresión E2E cubre cuatro viewports, teclado, foco, destinos de ancla, actualización de porcentaje, typecheck y build. No es certificación con lector de pantalla/zoom ni auditoría independiente. Decisión legal/operativa de retención permanece pendiente; no se inventó TTL ni se habilitó purga. Sin deploy ni D1 remota.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — paquete local de revisión humana y auditoría
+
+- Define perfiles hipotéticos de cobertura y roles humanos con criterios y evidencia separada. Los perfiles no representan entrevistas ni personas reales; la aprobación posterior del usuario se registra separadamente y con alcance explícito.
+- Auditoría estructural local del catálogo: 48 guías, 6 categorías, 9 itinerarios, 390 IDs de sección, fuentes HTTPS y seis candidatas 6/42; se redactan tres FAQ para cada una de las ocho guías que carecían de ellas. Tres secciones reciben IDs estables; cuatro guías quedan en `contentRevision: 3` y cuatro en `2` tras cambios de fuentes, costos y preguntas frecuentes.
+- El usuario revisó y aprobó las seis candidatas gratuitas en sus revisiones vigentes, la clasificación editorial 6/42 y los cambios de contenido de este checkpoint. La aceptación no cubre las otras 42 guías completas ni revisiones futuras. Revisión legal/operativa, seguridad y accesibilidad manual permanecen pendientes. Sin publicación, deploy ni D1 remota.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 7 (certificación local parcial)
+
+- PR #193 integrada en `main@3fdc17cc`. Worker/D1 `0000–0033`, FK, autorización/revocación, bundle privacy, unitarias focales 81/81, QA 48 guías/9 rutas/4 viewports y consulta manual de licencias, typecheck, build, Drizzle y los workflows del PR pasan. Se actualizó la expectativa de CTA obsoleta en el E2E de licencias. Sin deploy/D1 remota.
+- No es lanzamiento: la aceptación editorial 6/42 se registró después en el checkpoint de revisión humana; siguen pendientes la aprobación legal/operativa de retención/borrado, revisión independiente de seguridad, lector de pantalla y zoom 200 %. AccessLint no pudo arrancar en Windows.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 6 (PR #193 integrada; sin publicar)
+
+- `/app/aprende` comparte el progreso ya guardado por guía entre los nueve itinerarios y sugiere una siguiente guía con reglas editoriales estables basadas en actividad reciente. PR #193 quedó integrada en `main@3fdc17cc`.
+- Añade restauración de guías ocultas con avance intacto y control de versión; el repaso del lector es opcional. Sin migración nueva, deploy ni D1 remota. Unitarias, Worker/D1 local, build/typecheck y QA responsive/teclado pasan.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 5 integrada (PR #190)
+
+- Cola local con vencimiento, aislamiento por cuenta, reintento online, importación anónima con consentimiento, controles para conflictos/reinicios y limpieza al cerrar sesión salvo retención opt-in. API D1 transaccional con recibos idempotentes, secuencia de dispositivo, límites de payload, validación editorial, entitlement y `reset_epoch`.
+- Migración `0033` integrada en `main@3d91f15d`; Worker/D1 local valida dos dispositivos, replay idempotente y barrera de reset. Los tres workflows requeridos de CI pasan. No desplegado ni aplicado a D1 remota; la purga de recibos y su activación en producción siguen pendientes de revisión legal/operativa.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — Fase 4 integrada (PR #187)
+
+- `main@67c2d1fa` contiene progreso personal y favoritos en D1 local, checks manuales, biblioteca `/app/aprende`, reset epoch y guardas de entitlement. CI y certificación local PASS. Sin deploy ni migración remota.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — catálogo, previews y retorno (Fases 1–3, integradas)
+
+- PR #186 integró identidad editorial, entitlement, catálogo filtrable, previews y retorno validado en `main@9b39ffde`. La fase protege el cuerpo con licencia mediante owner/grant y licencia vigente, sin publicar el modelo 6/42 provisional.
+- QA responsive, typecheck, build, unitarias y CI pasan. Sin deploy ni migración D1 remota.
+
+## 2026-10-29 — APRENDE-PLAN-V1 — experiencia de acceso (checkpoint local)
+
+- El catálogo muestra si cada guía tiene acceso abierto o requiere licencia, permite filtrar por acceso junto con tema y búsqueda, y presenta «Empieza aquí».
+- Los previews explican la activación manual por licencia/grant. El botón de login conserva un retorno interno y validado a la guía solicitada.
+- Suite unitaria completa 1.756/1.756, QA público responsive, typecheck, build y diff-check pasan; revisión e integración siguen pendientes. Sin deploy ni cambio de D1 remota.
+
+## 2026-10-28 — APRENDE-PLAN-V1 — primer paso de catálogo
+
+- `/aprende` serializa tarjetas desde un DTO allowlist que excluye secciones y otros campos del cuerpo; la búsqueda usa título, extracto y categoría. Prueba focal 6/6, QA pública local, typecheck, build y diff-check PASS.
+- Sin IDs editoriales, clasificación 6/42, guard de licencia, migración, cambio en contenido ni publicación del modelo nuevo. La validación editorial de las seis candidatas sigue pendiente.
+
+## 0.9.0 — producción (2026-10-28)
+
+- Las cuentas con `platform_admin` ven en el selector de `/app` todas las organizaciones registradas y pueden abrir su ficha administrativa directamente desde el área de la aplicación.
+- Se añade `/app/platform` con listado, búsqueda, detalle, ciclo de vida, equipo, servicios, licencias, integraciones, MiniWeb, capacitación y trazabilidad. Las mutaciones mantienen sus permisos de plataforma y auditoría existentes.
+- El cambio usa una ruta de gestión con organización objetivo explícita; no altera la membresía activa ni suplanta a un owner. Cambio de owner y transferencia/eliminación de propiedad siguen fuera de las acciones disponibles.
+- Versión `0.8.5` → `0.9.0` (MINOR según la convención pre-1.0 del proyecto: nuevas capacidades compatibles). PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`.
+- Se agrega acceso global de `platform_admin` a todas las organizaciones desde `/app`, manteniendo organización objetivo explícita, permisos de plataforma y auditoría; sin suplantación de owners.
+- Se agregan campos opcionales de TikTok y YouTube al paso Redes de Mi negocio. Se validan contra los dominios de cada plataforma, se guardan en el perfil, se publican en Vecindario y MiniWeb y se incluyen en `sameAs`. La migración aditiva `0030_business-profile-tiktok-youtube.sql` se aplicó a `vecidya-prod` el 2026-10-28.
+- Se mantiene el snapshot público en schema v4 y se rellena `null` para TikTok/YouTube en publicaciones previas, sin cambiar su contrato.
+- Wrangler 4.152.0 desplegó `vecidya-platform` en producción, Version ID `0c997949-e1b8-4e92-b905-33b55d898842`.
+- HTTP anónimo de `GET https://vecidya.com/` → 200 con `0.9.0` y © 2026 Vecidya, `2026-10-28T19:05:48Z`. GitHub CI de #180 PASS. No se ejecutaron pruebas de certificación manuales por instrucción del usuario; no se verificaron rutas autenticadas en producción.
+
+## 0.8.5 — candidato local
+
+- «Mi negocio» ahora usa el flujo de secciones del editor MiniWeb: navegación fija al desplazarse en escritorio, barra horizontal en móvil y panel con una sección visible por vez. Se mantienen los campos, la vista previa y los guardados existentes.
+- El usuario pidió integración, incremento de versión y despliegue a producción, y especificó no ejecutar pruebas de certificación. Typecheck, build y diff-check pasan; E2E no certificado por falta de secretos Auth locales. Integración, deploy y HTTP pendiente.
 
 ## 0.8.4 — publicado (2026-10-27, PR #175, `main@7eff191a`)
 

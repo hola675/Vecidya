@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { commercialWhatsAppUrl, PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
+import { PublicHeroArt } from "../components/public-hero-art";
 import { buildCommercialContactLinks, PUBLIC_ACTION_LABELS, resolveCommercialContactReturn } from "../content/public-copy";
 
 import type { Route } from "./+types/contact";
@@ -42,6 +43,7 @@ export default function Contact() {
               Escribir por WhatsApp
             </a>
           </div>
+          <PublicHeroArt page="contact" />
         </section>
 
         <section className="contact-channel" aria-labelledby="contact-channel-title">

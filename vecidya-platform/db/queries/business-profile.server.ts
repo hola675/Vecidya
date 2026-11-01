@@ -56,6 +56,8 @@ export type BusinessProfileInput = {
   instagramUrl: string | null;
   facebookUrl: string | null;
   linkedinUrl: string | null;
+  tiktokUrl: string | null;
+  youtubeUrl: string | null;
   serviceMode: "in_person" | "remote" | "hybrid" | null;
   serviceArea: string | null;
 };
@@ -246,7 +248,8 @@ export async function saveBusinessProfileForOrganization(
     displayName: "display_name", slug: "slug", shortDescription: "short_description", description: "description",
     category: "category", city: "city", country: "country", phone: "phone", publicEmail: "public_email",
     websiteUrl: "website_url", logoUrl: "logo_url", whatsapp: "whatsapp", instagramUrl: "instagram_url",
-    facebookUrl: "facebook_url", linkedinUrl: "linkedin_url", serviceMode: "service_mode", serviceArea: "service_area",
+    facebookUrl: "facebook_url", linkedinUrl: "linkedin_url", tiktokUrl: "tiktok_url", youtubeUrl: "youtube_url",
+    serviceMode: "service_mode", serviceArea: "service_area",
   };
   const fields = Object.keys(fieldColumns) as (keyof BusinessProfileInput)[];
   const columns = fields.map((key) => fieldColumns[key]);

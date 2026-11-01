@@ -3,7 +3,7 @@ import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright";
 import { learnArticles, learnCategories, learnPathways } from "../../app/content/learn.ts";
-import { getPublicLearnArticles, getPublicLearnPathways } from "../../app/content/learn-publication.ts";
+import { getLearnGuideAccess, getPublicLearnArticles, getPublicLearnPathways } from "../../app/content/learn-publication.ts";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
 // APRENDE-PUBLIC-QA-01 runs only against a loopback dev server. It does not
@@ -120,17 +120,26 @@ try {
   }
   check("HTTP: 48 artículos aprobados responden 200; no quedan borradores");
 
-  for (const width of [320, 390, 768, 1366]) {
-    activePage = await browser.newPage({ viewport: { width, height: 900 }, deviceScaleFactor: 1 });
+  for (const { width, height } of [
+    { width: 320, height: 720 },
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1366, height: 768 },
+    { width: 1920, height: 1080 },
+  ]) {
+    activePage = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 1 });
     const pageErrors = [];
     activePage.on("pageerror", (error) => pageErrors.push(error.message));
     await activePage.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     await activePage.locator(".learn-guide-list > li").first().waitFor();
+    const rejectOptionalCookies = activePage.getByRole("button", { name: "Rechazar opcionales" });
+    if (await rejectOptionalCookies.isVisible().catch(() => false)) await rejectOptionalCookies.click();
     assert.equal(await activePage.locator("main h1").count(), 1, width + "px: H1 duplicado.");
     assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, width + "px: deben verse 48 guías.");
     assert.equal(await activePage.locator(".learn-topic-list > li").count(), 6, width + "px: temas incorrectos.");
     assert.equal(await activePage.locator(".learn-path-list > li").count(), publicPaths.length, width + "px: itinerarios públicos incorrectos.");
-    assert.equal(await activePage.locator(".learn-guide__topic span").count(), 0, width + "px: muestra badges editoriales inaccesibles.");
+    assert.equal(await activePage.locator(".learn-guide__topic span").count(), 48, width + "px: cada guía debe explicar su tipo de acceso.");
+    assert.equal(await activePage.getByText("En revisión editorial", { exact: true }).count(), 0, width + "px: no deben mostrarse etiquetas de revisión en guías aprobadas.");
     const listingHrefs = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
     assertAllVisibleLinksPublished(listingHrefs, width + "px listado");
     const pathwayHrefs = await activePage.locator(".learn-path__guides a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
@@ -141,17 +150,34 @@ try {
       await image.decode().catch(() => {});
       return image.naturalWidth > 0;
     }), width + "px: no carga la ilustración.");
+    const vico = activePage.locator(".learn-atlas__vico");
+    const scene = activePage.locator(".learn-atlas__map img");
+    assert.equal(await vico.getAttribute("src"), "/assets/selected/illustrations/vico-aprende.webp", width + "px: variante de Vico incorrecta.");
+    assert.equal(await vico.getAttribute("alt"), "Vico acompaña el recorrido de Aprende.", width + "px: Vico necesita texto alternativo.");
+    assert(await vico.evaluate(async (image) => { await image.decode().catch(() => {}); return image.naturalWidth > 0; }), width + "px: no carga Vico Aprende.");
+    assert.equal(await scene.getAttribute("src"), "/assets/selected/illustrations/learn-journey-scene.webp", width + "px: escena de Aprende incorrecta.");
+    assert(await scene.evaluate(async (image) => { await image.decode().catch(() => {}); return image.naturalWidth > 0; }), width + "px: no carga la escena de Aprende.");
     await noHorizontalOverflow(activePage, width + "px listado");
     assert.deepEqual(pageErrors, [], width + "px: errores JavaScript.");
-    if (width === 320 || width === 390 || width === 1366) {
+    if ([320, 390, 768, 1366, 1920].includes(width)) {
       await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled" });
     }
     results.viewports.push({ width, listing: "pass", guides: listingHrefs.length, pathways: publicPaths.length });
 
     if (width === 390) {
       const search = activePage.getByRole("searchbox", { name: "Buscar en las guías" });
+      const searchButton = activePage.getByRole("button", { name: "Buscar", exact: true });
+      await search.focus();
+      await search.press("Tab");
+      assert(await searchButton.evaluate((element) => document.activeElement === element && getComputedStyle(element).outlineStyle !== "none"), "La acción de búsqueda no muestra foco de teclado.");
+      await activePage.emulateMedia({ reducedMotion: "reduce" });
+      assert.equal(await activePage.locator(".learn-atlas__map img").evaluate((element) => getComputedStyle(element).animationName), "none", "La ilustración debe respetar movimiento reducido.");
+      assert.equal(await vico.evaluate((element) => getComputedStyle(element).animationName), "none", "Vico debe respetar movimiento reducido.");
+      assert.equal(await activePage.locator(".learn-guide-list > li").first().evaluate((element) => getComputedStyle(element).transitionDuration), "0s", "Las tarjetas deben respetar movimiento reducido.");
+      await activePage.emulateMedia({ reducedMotion: "no-preference" });
+      assert.equal(await vico.evaluate((element) => getComputedStyle(element).animationName), "learn-vico-float", "Vico debe tener movimiento ambiental suave.");
       await search.fill("analitica");
-      await activePage.getByRole("button", { name: "Buscar", exact: true }).click();
+      await searchButton.click();
       await activePage.waitForURL(/q=analitica/);
       assert(await activePage.locator('meta[name="robots"][content="noindex, follow"]').count() === 1, "Los resultados filtrados deben ser noindex.");
       const hrefs = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
@@ -175,19 +201,93 @@ try {
       const filtered = await visibleLinks(activePage).evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
       assert(filtered.length > 0 && filtered.length < 48, "El filtro de categoría no funciona.");
       assertAllVisibleLinksPublished(filtered, "filtro CRM");
+      await activePage.getByRole("link", { name: "Con licencia", exact: true }).click();
+      await activePage.waitForURL(/acceso=licencia/);
+      const expectedLicensedCrm = publicArticles
+        .filter((article) => article.category === "CRM y clientes" && getLearnGuideAccess(article.slug) === "licensed")
+        .map((article) => `/aprende/${article.slug}`);
+      await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "Con licencia" }).waitFor();
+      await activePage.waitForFunction((count) => document.querySelectorAll(".learn-guide h3 a").length === count, expectedLicensedCrm.length);
+      const licensedCrm = await activePage.locator(".learn-guide h3 a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      assert.deepEqual(licensedCrm, expectedLicensedCrm, "El filtro de licencia conserva categoría y limita las guías correctamente.");
+      await activePage.getByRole("link", { name: "Acceso abierto", exact: true }).click();
+      await activePage.waitForURL(/acceso=abierto/);
+      const expectedFreeCrm = publicArticles
+        .filter((article) => article.category === "CRM y clientes" && getLearnGuideAccess(article.slug) === "always_free")
+        .map((article) => `/aprende/${article.slug}`);
+      await activePage.locator('.learn-discovery__chip[aria-current="page"]').filter({ hasText: "Acceso abierto" }).waitFor();
+      await activePage.waitForFunction((count) => document.querySelectorAll(".learn-guide h3 a").length === count, expectedFreeCrm.length);
+      const freeCrm = await activePage.locator(".learn-guide h3 a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      assert.deepEqual(freeCrm, expectedFreeCrm, "El filtro de acceso abierto conserva la categoría.");
       await activePage.locator(".learn-path-list summary").first().click();
       assert(await activePage.locator(".learn-path-list details").first().getAttribute("open") !== null, "No se expande itinerario.");
-      check("Búsqueda sin tildes, vacío, recuperación, categoría e itinerarios");
+      check("Búsqueda sin tildes, vacío, recuperación, filtros de categoría/acceso e itinerarios");
     }
 
-    if (width === 390 || width === 1366) {
-      const sample = publicArticles.find((article) => article.slug === "correo-profesional-dominio-registros-mx-txt") ?? publicArticles[0];
+    {
+      const licensedSample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "licensed");
+      assert(licensedSample, "Debe existir al menos una guía licenciada para verificar su preview.");
+      await activePage.goto(new URL("/aprende/" + licensedSample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+      assert.equal(await activePage.locator("main h1").textContent(), licensedSample.title);
+      assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + licensedSample.slug);
+      assert.equal(await activePage.locator(".learn-article-preview").count(), 1, "Guía licenciada sin sesión debe mostrar preview.");
+      assert.equal(await activePage.locator(".learn-article-toc").count(), 0, "Preview no muestra índice de contenido protegido.");
+      assert.equal((await activePage.content()).includes(licensedSample.sections[0].heading), false, "HTML e hidratación no contienen encabezados protegidos.");
+      assert(await activePage.getByRole("link", { name: "Ver licencias Vecidya" }).isVisible());
+      const signInHref = await activePage.getByRole("link", { name: "Iniciar sesión" }).getAttribute("href");
+      assert.equal(signInHref, `/login?redirectTo=${encodeURIComponent(`/aprende/${licensedSample.slug}`)}`, "La sesión conserva el retorno a la guía solicitada.");
+
+      const sample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "always_free") ?? publicArticles[0];
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
-      assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
-      const toc = await activePage.locator(".learn-article-toc a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
-      for (const href of toc) assert.equal(await activePage.locator(href).count(), 1, "TOC con ancla rota: " + href);
+      const progressPanel = activePage.locator(".learn-progress-panel");
+      assert(await progressPanel.isVisible(), "Los controles personales deben quedar agrupados en el bloque superior de avance.");
+      const progressDisclosure = progressPanel.locator(".learn-section-progress-disclosure");
+      await progressDisclosure.locator("summary").click();
+      assert(await progressDisclosure.getAttribute("open") !== null, "Las acciones compactas por sección se pueden desplegar.");
+      assert.equal(await progressPanel.locator(".learn-section-progress").count(), sample.sections.length, "El panel agrupa las acciones de todas las secciones.");
+      const firstSectionAction = progressPanel.locator(".learn-section-progress").first();
+      assert((await firstSectionAction.getAttribute("aria-label"))?.includes(sample.sections[0].heading), "Las acciones identifican la sección correspondiente.");
+      if (width >= 1366) {
+        const controlHeight = await firstSectionAction.locator(".button").evaluate((button) => button.getBoundingClientRect().height);
+        assert(controlHeight <= 44, "Los controles de sección deben tener altura compacta: " + controlHeight);
+      }
+      const isMobileIndex = width <= 820;
+      const mobileDetails = activePage.locator(".learn-article-toc-mobile details");
+      const mobileSummary = mobileDetails.locator("summary");
+      assert.equal(await activePage.locator(".learn-article-toc-mobile").isVisible(), isMobileIndex, width + "px visibilidad del índice compacto.");
+      assert.equal(await activePage.locator(".learn-article-rail .learn-article-toc").isVisible(), !isMobileIndex, width + "px visibilidad del índice de escritorio.");
+      if (isMobileIndex) {
+        assert.match((await mobileSummary.textContent())?.trim() ?? "", /^Índice · \d+%$/, "El control compacto muestra el progreso.");
+        await mobileSummary.focus();
+        await mobileSummary.press("Enter");
+        assert(await mobileDetails.getAttribute("open") !== null, "El índice compacto se puede abrir con teclado.");
+        assert.equal(await mobileDetails.locator("nav[aria-label='Índice del artículo'] a").count(), sample.sections.length);
+        assert(await mobileSummary.evaluate((node) => document.activeElement === node), "El foco permanece en el disclosure al abrir el panel.");
+        await mobileSummary.press("Tab");
+        assert(await mobileDetails.locator("nav a").first().evaluate((node) => document.activeElement === node), "El foco avanza al primer enlace del índice abierto.");
+        await mobileSummary.focus();
+        await mobileSummary.press("Enter");
+        assert.equal(await mobileDetails.getAttribute("open"), null, "El índice compacto se puede cerrar con teclado.");
+        await mobileSummary.press("Enter");
+        assert(await mobileDetails.getAttribute("open") !== null, "El índice compacto vuelve a abrirse antes de navegar.");
+        const firstSectionHref = await mobileDetails.locator("nav a").first().getAttribute("href");
+        assert(firstSectionHref?.startsWith("#"));
+        const firstSectionId = firstSectionHref.slice(1);
+        await mobileDetails.locator("nav a").first().evaluate((link) => link.click());
+        await activePage.waitForFunction((sectionId) => window.location.hash === `#${sectionId}`, firstSectionId);
+        assert.equal(await mobileDetails.getAttribute("open"), null, "Elegir una sección cierra el índice compacto.");
+        const destination = await activePage.locator(`[id="${firstSectionId}"]`).boundingBox();
+        assert(destination && destination.y >= 60, "El destino de ancla no queda detrás del índice compacto cerrado.");
+        const progressButton = activePage.locator(".learn-section-progress button.button--secondary").first();
+        await progressButton.click();
+        assert.equal((await mobileSummary.textContent())?.trim(), `Índice · ${Math.round(100 / sample.sections.length)}%`, "El porcentaje del índice refleja el progreso recién marcado.");
+      } else {
+        assert.equal(await activePage.locator(".learn-article-toc a").count(), sample.sections.length);
+      }
+      const toc = await activePage.locator(isMobileIndex ? ".learn-article-toc-mobile__nav a" : ".learn-article-toc a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
+      for (const href of toc) assert.equal(await activePage.locator(`[id="${href.slice(1)}"]`).count(), 1, "TOC con ancla rota: " + href);
       const image = activePage.locator(".learn-article-image");
       assert((await image.getAttribute("alt"))?.trim(), "Falta alt descriptivo.");
       assert(await image.evaluate(async (node) => { await node.decode().catch(() => {}); return node.naturalWidth > 0; }), "Imagen de artículo sin cargar.");
@@ -198,8 +298,24 @@ try {
       for (const item of await sourceLinks.evaluateAll((nodes) => nodes.map((node) => ({ href: node.href, target: node.target, rel: node.rel })))) {
         assert(item.href.startsWith("https://") && item.target === "_blank" && item.rel.includes("noopener"), "Fuente insegura: " + item.href);
       }
-      await activePage.locator(".learn-article-toc a").first().focus();
-      assert(await activePage.locator(".learn-article-toc a").first().evaluate((node) => document.activeElement === node), "El índice no es accesible por teclado.");
+      if (!isMobileIndex) {
+        const desktopFirstTocLink = activePage.locator(".learn-article-toc a").first();
+        await desktopFirstTocLink.focus();
+        assert(await desktopFirstTocLink.evaluate((node) => document.activeElement === node), "El índice no es accesible por teclado.");
+      }
+      const reviewHeading = activePage.getByRole("heading", { name: "Repaso opcional: comprueba lo aprendido" });
+      assert(await reviewHeading.isVisible(), "El repaso se presenta como actividad opcional.");
+      const reviewSummary = activePage.locator(".learn-article-review summary").first();
+      await reviewSummary.focus();
+      await reviewSummary.press("Enter");
+      assert(await reviewSummary.locator("xpath=..").getAttribute("open") !== null, "El repaso se puede abrir por teclado.");
+      await reviewSummary.press("Space");
+      assert(await reviewSummary.locator("xpath=..").getAttribute("open") === null, "El repaso se puede cerrar por teclado.");
+      const skipReview = activePage.getByRole("link", { name: "Omitir el repaso y ver otras guías" });
+      await skipReview.focus();
+      assert(await skipReview.evaluate((node) => document.activeElement === node), "El enlace para omitir el repaso recibe foco de teclado.");
+      await skipReview.click();
+      assert(await activePage.getByRole("heading", { name: "Otras guías de Aprende Vecidya" }).isVisible(), "Omitir repaso mueve el foco visual a otras guías.");
       await noHorizontalOverflow(activePage, width + "px artículo");
       assert.deepEqual(pageErrors, [], width + "px artículo: error JavaScript.");
       await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled" });

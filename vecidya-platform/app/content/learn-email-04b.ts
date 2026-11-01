@@ -13,7 +13,7 @@ export const learnEmail04BArticles: LearnArticle[] = [
       "SPF, DKIM y DMARC ayudan a autenticar el uso del dominio, pero no hacen lo mismo.",
       "Usa la configuración oficial de tu proveedor y prueba envío y recepción después de cada cambio.",
     ],
-    image: "/assets/learn/diagram-correo-para.svg",
+    image: "/assets/selected/illustrations/contact-scene.webp",
     imageAlt: "Un dominio conecta buzones de correo mediante registros DNS separados de la configuración de la página web.",
     editorialDraft: false,
     relatedSlugs: [

@@ -14,7 +14,7 @@ test("cada servicio recomendado existe como anchor y título en /servicios", () 
     assert.ok(offer, `anchor ${id} no existe en el catálogo comercial`);
     assert.equal(offer.title, service.title, `el catálogo público no conserva el título de ${id}`);
   }
-  assert.match(source, /SERVICE_OFFERS\.map\(\(offer,/);
+  assert.match(source, /const services = SERVICE_OFFERS\.map\(\(offer\)/);
   assert.match(source, /id: offer\.id/);
   assert.match(source, /title: offer\.title/);
 });

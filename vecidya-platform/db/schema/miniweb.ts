@@ -25,6 +25,56 @@ export const miniWebSite = sqliteTable(
   (table) => [uniqueIndex("miniweb_site_organization_unique").on(table.organizationId)],
 );
 
+/** V2's editable source is isolated from V1 miniweb_site/modules and its snapshots. */
+export const miniWebV2Site = sqliteTable(
+  "miniweb_v2_site",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }),
+    ownerUserId: text("owner_user_id").notNull(),
+    familyKey: text("family_key").notNull(),
+    visualVariant: text("visual_variant").notNull(),
+    sourceOrganizationId: text("source_organization_id"),
+    sourcePublicationVersion: integer("source_publication_version"),
+    conversionMigrationVersion: integer("conversion_migration_version"),
+    conversionReportJson: text("conversion_report_json"),
+    conversionConsentedAt: integer("conversion_consented_at", { mode: "timestamp_ms" }),
+    conversionConsentedByUserId: text("conversion_consented_by_user_id"),
+    draftRevision: integer("draft_revision").notNull().default(0),
+    publishedRevision: integer("published_revision"),
+    activePublicationId: text("active_publication_id"),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).$onUpdate(() => new Date()).notNull(),
+  },
+  (t) => [index("miniweb_v2_site_org_family_idx").on(t.organizationId, t.familyKey), index("miniweb_v2_site_owner_idx").on(t.ownerUserId)],
+);
+
+export const miniWebV2Draft = sqliteTable("miniweb_v2_draft", {
+  siteId: text("site_id").primaryKey().references(() => miniWebV2Site.id, { onDelete: "cascade" }),
+  revision: integer("revision").notNull(),
+  schemaVersion: integer("schema_version").notNull(),
+  documentJson: text("document_json").notNull(),
+  updatedByUserId: text("updated_by_user_id").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
+});
+
+export const miniWebV2Publication = sqliteTable("miniweb_v2_publication", {
+  id: text("id").primaryKey(),
+  siteId: text("site_id").notNull().references(() => miniWebV2Site.id, { onDelete: "cascade" }),
+  revision: integer("revision").notNull(),
+  schemaVersion: integer("schema_version").notNull(),
+  documentJson: text("document_json").notNull(),
+  publishedByUserId: text("published_by_user_id").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
+}, (t) => [uniqueIndex("miniweb_v2_publication_site_revision_unique").on(t.siteId, t.revision), index("miniweb_v2_publication_site_created_idx").on(t.siteId, t.createdAt)]);
+
+/** A slot is occupied only after publication; historical publications retain the slot. */
+export const miniWebV2PublicationSlot = sqliteTable("miniweb_v2_publication_slot", {
+  siteId: text("site_id").primaryKey().references(() => miniWebV2Site.id, { onDelete: "cascade" }),
+  ownerUserId: text("owner_user_id").notNull(),
+  reservedAt: integer("reserved_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
+}, (t) => [index("miniweb_v2_slot_owner_idx").on(t.ownerUserId, t.reservedAt)]);
+
 export const miniWebModule = sqliteTable(
   "miniweb_module",
   {

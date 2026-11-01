@@ -1,4 +1,4 @@
-import { Form, Link, redirect, useActionData, useLoaderData } from "react-router";
+import { Form, Link, redirect, useActionData, useLoaderData, useLocation } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { createOrganizationWithOwnerInvitation } from "../../db/queries/platform-organization-lifecycle.server";
 import { AdminShell } from "../components/admin-shell";
@@ -32,14 +32,17 @@ export async function action({ context, request }: Route.ActionArgs) {
   } catch {
     console.error("PLATFORM_OWNER_INVITATION_DELIVERY_UNCONFIRMED", { invitationId: created.invitationId });
   }
-  return redirect(`/app/internal/organizations/${created.organizationId}?created=1&delivery=${delivery}`);
+  const routeBase = new URL(request.url).pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  return redirect(`${routeBase}/organizations/${created.organizationId}?created=1&delivery=${delivery}`);
 }
 
 export default function InternalOrganizationCreate() {
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
   const { workspaceUser, emailConfigured } = useLoaderData<typeof loader>();
   const result = useActionData<typeof action>();
   return <AdminShell active="organizations" workspaceUser={workspaceUser}>
-    <main className="admin-main"><Link className="back-link" to="/app/internal/organizations">← Volver a organizaciones</Link>
+    <main className="admin-main"><Link className="back-link" to={`${routeBase}/organizations`}>← Volver a organizaciones</Link>
       <div className="page-heading"><div><p className="eyebrow">CONTROL PLANE</p><h1>Nueva organización</h1><p>El espacio queda pendiente hasta que su propietario acepte la invitación y verifique el correo.</p></div></div>
       <Card><Form method="post" className="form-stack">
         {result && "error" in result ? <Alert>{result.error}</Alert> : null}

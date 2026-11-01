@@ -2,6 +2,7 @@ import { type ReactNode, useState } from "react";
 import { Form, Link, useNavigate, useRevalidator } from "react-router";
 
 import { authClient } from "../lib/auth-client";
+import { LearnOfflineQueue } from "../features/learn/learn-offline";
 import { Button, Icon, type IconName } from "./ui";
 import { PlatformFooter } from "./platform-footer";
 import { publicAssets } from "../assets/public-assets";
@@ -22,35 +23,42 @@ const groups: NavGroup[] = [
     ],
   },
   { label: "ORGANIZACIÓN", links: [{ id: "organization", label: "Equipo", to: "/app/organization", icon: "team" }] },
-  { label: "APRENDIZAJE", links: [{ id: "training", label: "Capacitación", to: "/app/training", icon: "spark" }] },
+  { label: "APRENDIZAJE", links: [{ id: "learn", label: "Mi aprendizaje", to: "/app/aprende", icon: "spark" }, { id: "training", label: "Capacitación", to: "/app/training", icon: "team" }] },
   { label: "CUENTA", links: [{ id: "account", label: "Mi cuenta", to: "/app/account", icon: "user" }] },
 ];
 
-type WorkspaceUser = { name: string; email: string };
-type WorkspaceOrganization = { id: string; name: string; slug: string; role: string };
+type WorkspaceUser = { id?: string; name: string; email: string };
+type WorkspaceOrganization = { id: string; name: string; slug: string; role?: string };
 
 type ClientAreaShellProps = {
   active: (typeof groups)[number]["links"][number]["id"];
   children: ReactNode;
   workspaceUser: WorkspaceUser;
   organizations: WorkspaceOrganization[];
+  platformOrganizationOptions?: WorkspaceOrganization[];
   activeOrganization: { id: string; name: string } | null;
   isPlatformAdmin?: boolean;
   organizationSwitchLocked?: boolean;
 };
 
-export function ClientAreaShell({ active, children, workspaceUser, organizations, activeOrganization, isPlatformAdmin = false, organizationSwitchLocked = false }: ClientAreaShellProps) {
+export function ClientAreaShell({ active, children, workspaceUser, organizations, platformOrganizationOptions = [], activeOrganization, isPlatformAdmin = false, organizationSwitchLocked = false }: ClientAreaShellProps) {
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
   const [submitting, setSubmitting] = useState(false);
   const [organizationError, setOrganizationError] = useState<string | null>(null);
   const { closeNavigation, isMobileNavigation, menuButtonRef, navigationOpen, navigationRef, setNavigationOpen } =
     useResponsiveNavigationDrawer({ breakpoint: 980, firstItemSelector: "#app-navigation a" });
-  const hasOrganization = organizations.length > 0;
-  const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA");
+  const switcherOrganizations = isPlatformAdmin ? (platformOrganizationOptions.length ? platformOrganizationOptions : organizations) : organizations;
+  const hasOrganization = organizations.length > 0 || switcherOrganizations.length > 0;
+  const visibleGroups = hasOrganization ? groups : groups.filter((group) => group.label === null || group.label === "CUENTA" || group.label === "APRENDIZAJE").map((group) => group.label === "APRENDIZAJE" ? { ...group, links: group.links.filter((link) => link.id === "learn") } : group);
 
   async function handleSetActiveOrganization(organizationId: string) {
-    if (organizationSwitchLocked || !organizationId || organizationId === activeOrganization?.id) return;
+    if (organizationSwitchLocked || !organizationId) return;
+    if (isPlatformAdmin) {
+      navigate(`/app/platform/organizations/${encodeURIComponent(organizationId)}`);
+      return;
+    }
+    if (organizationId === activeOrganization?.id) return;
     setSubmitting(true);
     setOrganizationError(null);
     try {
@@ -71,6 +79,10 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
     event.preventDefault();
     setSubmitting(true);
     await authClient.signOut();
+    if (workspaceUser.id) {
+      const queue = new LearnOfflineQueue(window.localStorage);
+      if (!queue.retainAfterSignOut(workspaceUser.id)) queue.clear(workspaceUser.id);
+    }
     navigate("/login");
   }
 
@@ -120,8 +132,8 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
 
         <div className="app-sidebar__footer">
           {isPlatformAdmin ? (
-            <Link className="app-sidebar__admin-link" to="/app/internal">
-              <Icon name="admin" /> Administración Vecidya
+            <Link className="app-sidebar__admin-link" to="/app/platform/organizations">
+              <Icon name="admin" /> Superadministración
             </Link>
           ) : null}
           <Link className="app-sidebar__public-link" to="/vecindario"><Icon name="eye" /> Explorar el Vecindario</Link>
@@ -149,7 +161,7 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
 
           {hasOrganization ? (
             <div className="organization-switcher">
-              <label htmlFor="organization-switcher">Negocio activo</label>
+              <label htmlFor="organization-switcher">{isPlatformAdmin ? "Administrar organización" : "Negocio activo"}</label>
               {organizationSwitchLocked ? <span className="organization-switcher__locked" id="organization-switcher-locked">Guarda tus cambios antes de cambiar de negocio.</span> : null}
               <select
                 aria-describedby={[organizationError ? "organization-switcher-error" : null, organizationSwitchLocked ? "organization-switcher-locked" : null].filter(Boolean).join(" ") || undefined}
@@ -157,10 +169,10 @@ export function ClientAreaShell({ active, children, workspaceUser, organizations
                 disabled={submitting || organizationSwitchLocked}
                 id="organization-switcher"
                 onChange={(event) => handleSetActiveOrganization(event.currentTarget.value)}
-                value={activeOrganization?.id ?? ""}
+                value={isPlatformAdmin ? "" : activeOrganization?.id ?? ""}
               >
                 <option value="" disabled>Selecciona un negocio</option>
-                {organizations.map((organization) => (
+                {switcherOrganizations.map((organization) => (
                   <option key={organization.id} value={organization.id}>{organization.name}</option>
                 ))}
               </select>

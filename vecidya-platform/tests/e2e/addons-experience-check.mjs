@@ -37,6 +37,12 @@ async function runViewport(width, height) {
   const sitemap = await fetch(new URL("/sitemap.xml", baseUrl));
   assert((await sitemap.text()).includes("/addons"), `${label} sitemap no incluye Addons.`);
   assert(await page.getByRole("heading", { name: "Añade capacidades cuando las necesites." }).isVisible(), `${label} no mostró el hero.`);
+  const vico = page.locator(".addons-hero .public-hero-art__vico");
+  const scene = page.locator(".addons-hero .public-hero-art__scene");
+  assert(await vico.getAttribute("src") === "/assets/selected/illustrations/vico-addons.webp", `${label} no mostró la variante de Vico para Complementos.`);
+  assert(await vico.getAttribute("alt") === "Vico presenta los complementos.", `${label} no describió la ilustración de Vico.`);
+  assert(await vico.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó la ilustración de Vico para Complementos.`);
+  assert(await scene.getAttribute("src") === "/assets/selected/illustrations/addons-scene.webp" && await scene.evaluate((image) => image.complete && image.naturalWidth > 0), `${label} no cargó la escena generada de Complementos.`);
   for (const name of ["WhatsApp Business", "Telefonía y SMS", "Reputación y Reseñas", "Campañas y Difusión", "IA Conversacional", "IA de Voz", "Conexiones e Integraciones"]) {
     assert(await page.locator(".addon-card").getByRole("heading", { name, exact: true }).isVisible(), `${label} no mostró el addon ${name}.`);
   }
@@ -51,11 +57,19 @@ async function runViewport(width, height) {
   await page.getByRole("link", { name: "Encontrar qué necesito" }).focus();
   assert(await page.getByRole("link", { name: "Encontrar qué necesito" }).evaluate((element) => document.activeElement === element), `${label} CTA no recibe foco.`);
   await assertNoOverflow(page, label);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  assert(await vico.evaluate((image) => getComputedStyle(image).animationName === "none"), `${label} no respeta movimiento reducido.`);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.waitForTimeout(400);
+  const transformStart = await vico.evaluate((image) => getComputedStyle(image).transform);
+  await page.waitForTimeout(750);
+  const transformEnd = await vico.evaluate((image) => getComputedStyle(image).transform);
+  assert(transformStart !== transformEnd, `${label} no anima Vico con movimiento permitido.`);
   await browser.close();
 }
 
-for (const [width, height] of [[1366, 900], [768, 900], [390, 844], [360, 800]]) {
+for (const [width, height] of [[320, 720], [390, 844], [768, 1024], [1366, 768], [1920, 1080]]) {
   await runViewport(width, height);
 }
 
-console.log("PASS: Addons verificó hero, siete complementos V1, precios, costes de uso, separación licencia/addon/servicio, CTAs, metadata, sitemap, keyboard focus y responsive 1366/768/390/360.");
+console.log("PASS: Addons verificó pareja de assets, siete complementos V1, precios/costes, separación licencia/addon/servicio, CTAs, metadata, sitemap, foco, movimiento normal/reducido y los cinco viewports acordados.");

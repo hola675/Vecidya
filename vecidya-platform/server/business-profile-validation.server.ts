@@ -91,6 +91,8 @@ export function parseBusinessProfileForm(formData: FormData): BusinessProfileInp
     instagramUrl: optionalSocialUrl(formData.get("instagramUrl"), "Instagram", ["instagram.com"]),
     facebookUrl: optionalSocialUrl(formData.get("facebookUrl"), "Facebook", ["facebook.com", "fb.com"]),
     linkedinUrl: optionalSocialUrl(formData.get("linkedinUrl"), "LinkedIn", ["linkedin.com"]),
+    tiktokUrl: optionalSocialUrl(formData.get("tiktokUrl"), "TikTok", ["tiktok.com"]),
+    youtubeUrl: optionalSocialUrl(formData.get("youtubeUrl"), "YouTube", ["youtube.com", "youtu.be"]),
     serviceMode: optionalServiceMode(formData.get("serviceMode")),
     serviceArea: optionalText(formData.get("serviceArea"), 280),
   };

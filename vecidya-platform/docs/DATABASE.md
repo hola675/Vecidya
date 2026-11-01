@@ -1,3 +1,6 @@
+## MiniWeb V2 IMP-02 — persistencia aislada (checkpoint local)
+
+Migraciones `0034`–`0035` crean `miniweb_v2_site`, `miniweb_v2_draft` y `miniweb_v2_publication`, separadas de V1. El borrador tiene revisión CAS; publicación copia un documento inmutable y actualiza el puntero activo mediante batch D1. Las tablas están tenant-scoped por `organization_id`; las consultas reciben la organización explícita y no resuelven membresía por sí mismas, por lo que solo deben llamarse tras guard server-side. Las familias repetibles no tienen índice único. Verificación local: ambas migraciones aplicadas a D1 local limpia; typecheck/build pendientes de registrar al cierre. Sin remoto.
 # Base de datos
 
 ## Migración productiva 0029 — release 0.8.2 (2026-10-26)
@@ -43,6 +46,36 @@ El release directo de `0.8.1` no contiene migraciones ni realizó lecturas/escri
 | 0027 | `0027_business-media-draft-removal.sql` | Añade `is_active` para retirar medios del próximo snapshot sin borrar un objeto que aún usa la publicación vigente. | Aditiva, default `true` conserva todas las filas existentes. Producción confirmó ledger `0000–0028` el 2026-10-25; staging sin evidencia de aplicación. |
 | 0028 | `0028_miniweb-offering-image.sql` | Añade `business_offering.image_asset_id` nullable para referenciar una imagen tenant-scoped del negocio desde cada oferta. | Aditiva y sin backfill; las referencias solo pueden asignarse a imágenes activas de la organización por la API protegida. Aplicada a producción el 2026-10-25; staging no se modificó. |
 | 0029 | `0029_organization-license-single-current.sql` | Índice único parcial sobre `organization_license(organization_id)` mientras `status <> 'cancelled'`. | Evita más de una licencia vigente por organización bajo concurrencia; aplicada en D1 local y producción el 2026-10-26 tras preflight sin duplicados. Staging no se modificó. |
+| 0030 | `0030_business-profile-tiktok-youtube.sql` | Redes sociales | Añade `business_profile.tiktok_url` y `business_profile.youtube_url`, opcionales; aplicada a producción el 2026-10-28 (ver `ENVIRONMENTS.md`). |
+| 0031 | `0031_learn-access-grant.sql` | Grants Aprende | Añade un grant por `member.id`, con actor y fecha; FK a `member` en cascada para revocarlo al retirar la membresía y FK a `user` para auditar al owner. Sin backfill; no concede grants automáticamente. |
+| 0032 | `0032_learn-personal-progress.sql` | Aprende personal | Añade progreso por `(user_id, guide_id)`, checks por sección con cascada al progreso de la guía y favoritos separados; FK a `user` en cascada. Versiones, `reset_epoch`, revisión editorial y fechas. Sin backfill ni datos de organización. |
+| 0033 | `0033_learn-sync-operations.sql` | Aprende sync | Conserva tombstones/versiones para check y favorito; añade cursor de dispositivo y recibos idempotentes con unique `(user, device, sequence)`. Sin backfill; defaults conservan checks y favoritos de 0032. |
+
+### Migración local — `0033_learn-sync-operations` (checkpoint F5)
+
+**Alcance:** conservar tombstones `unchecked` y `unfavorite` con versiones por target; agregar recibos idempotentes y cursor por dispositivo para `client_sequence`. Los recibos no guardan contenido editorial, solo operación/resultado/versión. La cola local y el endpoint descartan operaciones con más de 30 días. El Worker implementa purga diaria por lotes de recibos con más de 90 días usando el índice `created_at`; no elimina progreso, favoritos ni cursores de dispositivo. El cursor acepta secuencias estrictamente crecientes con huecos para que descartar operaciones vencidas no bloquee cambios posteriores.
+
+La purga programada requiere que `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` sean ambos `true`. La configuración de producción mantiene ambos en `false` hasta completar la revisión legal, de privacidad y costo; la validación local puede habilitarlos explícitamente. La base operativa 90/30 fue aceptada por el usuario, pero no constituye aprobación legal ni habilita producción.
+
+**Riesgo y rollback:** aditivo, con defaults que interpretan checks/favoritos F4 existentes como activos. Revertir el Worker y conservar las columnas/tablas; no borrar progreso ni recibos. Wrangler local aplicó migraciones `0000–0033` y la certificación Worker/D1 F5 verificó sync, replay, dispositivos independientes y barrera de reset. Ningún D1 remoto se inspecciona o modifica.
+
+**Gate pendiente fuera del código:** revisión de privacidad, retención, aviso y exportación/borrado antes de activar sync/importación en producción. La purga técnica local está implementada, pero no habilitada en producción; no inferir consentimiento legal a partir de una acción de UI.
+
+### Plan de migración — `0032_learn-personal-progress`
+
+**Riesgo:** bajo; tres tablas nuevas aditivas, sin backfill ni cambios al esquema existente. La clave de usuario impide compartir progreso entre cuentas; los checks tienen FK compuesta a la fila personal de guía y se eliminan al reiniciar. Los favoritos viven en tabla aparte, así que un reinicio o pérdida de entitlement no los borra.
+
+**Aplicación y rollback:** probar toda la cadena `0000–0032` en D1 local efímera. Si se revierte el Worker, dejar las tablas y cualquier dato personal inactivo; no hacer `DROP TABLE` ni purgar progreso. No aplicar esta migración en staging o producción en este checkpoint.
+
+**Verificación:** confirmar ledger hasta `0032`, creación de las tres tablas, relación/cascada de secciones, usuario propietario y separación entre favoritos y progreso; `PRAGMA foreign_key_check` vacío en D1 local. No se consulta ni modifica D1 remota.
+
+### Plan de migración — `0031_learn-access-grant`
+
+**Riesgo:** bajo, aditivo. La migración solo crea `organization_learn_access_grant`; no altera tablas existentes ni modifica filas. El grant se identifica por la membresía Better Auth aceptada, no por correo, rol `admin` ni `billing_account`.
+
+**Aplicación y rollback:** generar con Drizzle y probar la cadena completa desde una D1 local vacía. El rollback de aplicación consiste en revertir el Worker y dejar la tabla sin uso; no eliminar grants existentes automáticamente. Si en un entorno aislado se decide retirar el esquema antes de guardar datos, `DROP TABLE organization_learn_access_grant` revierte la estructura. En entornos compartidos/remotos no se aplicará ni se eliminará sin autorización y revisión de datos; nunca usar `drizzle-kit push`.
+
+**Verificación:** ledger `0000–0031`, `PRAGMA foreign_key_check`, cascada al retirar una membresía, unicidad de `member_id`, rechazo de grant cross-organization en el servicio y auditoría atómica de conceder/revocar. La evidencia de D1 local de este checkpoint se registra en `TESTING.md`; ninguna D1 remota se consulta ni modifica.
 
 No se detectan `DROP TABLE`, borrados de filas ni renombrados; `0019` es la única contracción (`DROP COLUMN`). `0010` contiene seeds de tres precios y cuatro tiers; las migraciones posteriores no los actualizan. Integridad de seeds, datos sintéticos, relaciones, índices y snapshot/token se verificó localmente.
 
@@ -259,7 +292,7 @@ en «Licenciamiento multi-negocio» más abajo.
 | `organization` | **el tenant**; `slug`, `logo`, `metadata` | — | único `slug` (global) | raíz del tenant | `0002` |
 | `member` | vínculo usuario–organización; `role` texto (`owner/admin/member`) | organization (cascade), user (cascade) | **único `(organization_id, user_id)`**; índices por columna | `organization_id` | `0002`; índice único añadido en `0003` |
 | `invitation` | invitaciones (email, rol, estado, expiración) | organization (cascade), inviter (cascade) | índices `organization_id`, `email` | `organization_id` | `0002` |
-| `business_profile` | perfil comercial (borrador/publicado) | organization (cascade) | **único `organization_id`**; **único `slug` (global)** | `organization_id`, 1:1 | `0003`; `0007` (whatsapp, redes); `0008` (`service_mode`, `service_area`) |
+| `business_profile` | perfil comercial (borrador/publicado) | organization (cascade) | **único `organization_id`**; **único `slug` (global)** | `organization_id`, 1:1 | `0003`; `0007` (whatsapp, redes); `0030` (TikTok, YouTube); `0008` (`service_mode`, `service_area`) |
 | `business_hours` | horario por día (1–7 ISO), `is_closed` | organization (cascade) | único `(organization_id, day_of_week)` | `organization_id` | `0008` |
 | `business_profile_governance` | verificación y estado de plataforma; solo escribe `platform_admin` | business_profile (cascade); `verified_by`/`suspended_by` → user (**sin acción**) | único `business_profile_id` | indirecta vía perfil; propiedad de plataforma | `0009` |
 | `miniweb_site` | configuración draft de plantilla/layout y snapshot publicado de configuración estructural | organization (cascade) | único `organization_id` | `organization_id`, 1:1 | `0017` (ledger pendiente) |
@@ -395,7 +428,7 @@ renovación automática. E2E del Worker/D1 local y navegador PASS; ver `TESTING.
 
 ## Migraciones
 
-`_journal.json` tiene entradas consecutivas `0000`–`0029`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. Drizzle generó `0029` y su snapshot a partir del schema; el ledger de D1 del checkpoint se aplicó solo en local.
+`_journal.json` tiene entradas consecutivas `0000`–`0031`, incluidos los checkpoints concurrentes `0016` Diagnóstico y `0017` MiniWeb. `0030` se aplicó a producción el 2026-10-28; `0031` se generó desde el schema y se probó en D1 local aislada. El ledger remoto no se consultó en este checkpoint.
 
 | # | Archivo | Propósito | Cambios |
 | --- | --- | --- | --- |
@@ -507,3 +540,11 @@ ORDER BY event_day, diagnostic_version, event_type;
 5. Nunca modificar manualmente un schema remoto ni guardar secretos en Git.
 6. El Worker público usa `vecidya-prod` desde el cutover registrado el 2026-10-02; `vecidya-staging` es un entorno separado y no debe tratarse como el D1 público. Ver `ENVIRONMENTS.md` para la fecha y evidencia de publicación. Cualquier migración remota requiere autorización explícita.
 7. Todo recurso con `organization_id` se consulta filtrando por la organización verificada (membresía) y nunca por un identificador del cliente sin verificar.
+
+## MiniWeb V2 IMP-07 — reserva inicial de cupos
+
+`0036_miniweb-v2-publication-slots.sql` añade ocupación por propietario, separada de los snapshots. Capacidad base según contrato: 3 con al menos una licencia activa asociada a la billing account del owner, 0 sin licencia. No se añadieron cupos adicionales porque el schema comercial actual no representa un add-on explícito de capacidad; no se infiere desde cantidad de organizaciones ni desde plan CRM. La publicación reserva slot condicionalmente dentro del mismo batch que snapshot/puntero; re-publicar conserva el slot. Validado por generación de esquema y aplicación D1 local; concurrencia Worker todavía pendiente.
+
+## MiniWeb V2 IMP-08 — procedencia de conversión V1
+
+`0037_miniweb-v2-conversion-provenance.sql` añade a `miniweb_v2_site` organización y versión de publicación V1 fuente, versión del conversor, reporte JSON de importados/omitidos, marca temporal de consentimiento y actor que confirmó. Los campos son nulos para sitios creados vacíos. La conversión almacena un snapshot independiente como revisión inicial 1 en la misma operación batch de creación de sitio y borrador; no altera la publicación V1 ni otra revisión. Migración aplicada solo en D1 local; sin datos remotos.

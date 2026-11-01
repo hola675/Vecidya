@@ -241,12 +241,12 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
   try {
     sqlite.exec("PRAGMA foreign_keys=ON");
     for (const migrationName of [
-      "0030_diagnostic_v9_audit.sql",
-      "0031_diagnostic_v9_identity_ownership.sql",
-      "0032_diagnostic_v9_claim_guards.sql",
-      "0033_diagnostic_v9_owner_assignment_guards.sql",
-      "0034_diagnostic_v9_identity_claim_integrity.sql",
-      "0035_diagnostic_v9_result_finalization_guards.sql",
+      "0038_diagnostic_v9_audit.sql",
+      "0039_diagnostic_v9_identity_ownership.sql",
+      "0040_diagnostic_v9_claim_guards.sql",
+      "0041_diagnostic_v9_owner_assignment_guards.sql",
+      "0042_diagnostic_v9_identity_claim_integrity.sql",
+      "0043_diagnostic_v9_result_finalization_guards.sql",
     ]) {
       sqlite.exec(readFileSync(new URL(`../../../db/migrations/${migrationName}`, import.meta.url), "utf8"));
     }
@@ -322,12 +322,12 @@ test("V9 finalization verifies ownership, replays D1, persists one trusted resul
   try {
     sqlite.exec("PRAGMA foreign_keys=ON");
     for (const migrationName of [
-      "0030_diagnostic_v9_audit.sql",
-      "0031_diagnostic_v9_identity_ownership.sql",
-      "0032_diagnostic_v9_claim_guards.sql",
-      "0033_diagnostic_v9_owner_assignment_guards.sql",
-      "0034_diagnostic_v9_identity_claim_integrity.sql",
-      "0035_diagnostic_v9_result_finalization_guards.sql",
+      "0038_diagnostic_v9_audit.sql",
+      "0039_diagnostic_v9_identity_ownership.sql",
+      "0040_diagnostic_v9_claim_guards.sql",
+      "0041_diagnostic_v9_owner_assignment_guards.sql",
+      "0042_diagnostic_v9_identity_claim_integrity.sql",
+      "0043_diagnostic_v9_result_finalization_guards.sql",
     ]) {
       sqlite.exec(readFileSync(new URL(`../../../db/migrations/${migrationName}`, import.meta.url), "utf8"));
     }

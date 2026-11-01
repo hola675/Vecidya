@@ -1,6 +1,6 @@
 {
   "name": "vecidya-platform",
-  "version": "0.8.4",
+  "version": "0.9.2",
   "private": true,
   "type": "module",
   "devEngines": {
@@ -21,7 +21,10 @@
     "test:e2e:aprende-public": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/aprende-public-qa-check.mjs",
     "test:e2e:cookie-consent": "node tests/e2e/cookie-consent-check.mjs",
     "test:e2e:app-dashboard-redesign": "node tests/e2e/app-dashboard-redesign-check.mjs",
+    "test:e2e:miniweb-v2-conversion": "node tests/e2e/miniweb-v2-conversion-check.mjs",
     "test:e2e:platform-admin-global": "node tests/e2e/platform-admin-global-certification-check.mjs",
+    "test:aprende-bundle": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/learn-client-bundle-privacy-check.mjs",
+    "test:e2e:learn-entitlement": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/learn-entitlement-check.mjs",
     "test:e2e:diagnostic-act03": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-certification-check.mjs",
     "test:e2e:diagnostic-act04": "node tests/e2e/diagnostic-act-04-check.mjs",
     "test:e2e:diagnostic-act031": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-session-hardening-check.mjs && node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/diagnostic-v3-candidate-pdf-samples.mjs",
@@ -35,7 +38,7 @@
   "dependencies": {
     "@react-router/node": "^8.5.0",
     "@react-router/serve": "^8.5.0",
-    "better-auth": "1.7.5",
+    "better-auth": "1.7.14",
     "drizzle-orm": "^0.45.4",
     "isbot": "^5.2.2",
     "react": "^19.3.1",

@@ -32,6 +32,8 @@ function toProfileSource(profile: BusinessProfileRecord | null): MiniWebProfileS
     instagramUrl: profile?.instagramUrl ?? null,
     facebookUrl: profile?.facebookUrl ?? null,
     linkedinUrl: profile?.linkedinUrl ?? null,
+    tiktokUrl: profile?.tiktokUrl ?? null,
+    youtubeUrl: profile?.youtubeUrl ?? null,
     category: profile?.category ?? null,
     city: profile?.city ?? null,
     country: profile?.country ?? null,

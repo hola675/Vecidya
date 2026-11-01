@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { CTASection } from "../components/public-v2";
 import { PublicLayout, publicMeta } from "../components/public-layout";
+import { PublicHeroArt } from "../components/public-hero-art";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { LICENSE_OFFERS } from "../content/commercial-detail";
 
@@ -62,6 +63,7 @@ export default function Licenses() {
             <div aria-hidden="true" className="licenses-hero__path-line" />
             <div className="licenses-hero__path-item"><span>03</span><strong>Escalar</strong><small>Ciudad</small></div>
           </div>
+          <PublicHeroArt page="licenses" />
         </section>
 
         <section aria-labelledby="licenses-levels-title" className="licenses-levels">

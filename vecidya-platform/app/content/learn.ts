@@ -61,7 +61,7 @@ export const learnArticles: LearnArticle[] = [
       "Registra qué necesita la persona, quién responde y cuál es el siguiente paso.",
       "Considera un CRM cuando coordinar conversaciones y pendientes deja de ser fácil.",
     ],
-    image: "/assets/learn/diagram-crm.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se registra con contexto y puede continuar, retomarse después o cerrarse, según lo que ocurra",
     relatedSlugs: ["organizar-consultas-mensajes-llamadas-formularios", "como-responder-la-primera-consulta-de-un-cliente", "datos-de-clientes-que-puedes-pedir-y-como-protegerlos"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no es un CRM ni crea una base de contactos." },
@@ -175,7 +175,7 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "ICO — Advice for small and medium organisations", url: "https://ico.org.uk/for-organisations/advice-for-small-organisations/", scope: "Orientación para organizaciones pequeñas en el contexto regulatorio del Reino Unido." },
           ],
         }, {
@@ -200,7 +200,7 @@ export const learnArticles: LearnArticle[] = [
       "Comprueba respuestas inventadas, datos sensibles y preguntas fuera de alcance.",
       "Mantén revisión humana y detén la prueba si los errores superan lo aceptable.",
     ],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Un asistente de IA responde desde una fuente revisada y deriva los casos dudosos a una persona.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     editorialDraft: false,
@@ -310,6 +310,15 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Debo revisar cada respuesta durante el piloto?", answer: "Al inicio, revisa cada respuesta antes de usarla con una persona. Mantén revisión humana para precios, condiciones y decisiones importantes, aunque amplíes las pruebas." },
+          { question: "¿Qué hago si el asistente inventa un dato?", answer: "Pausa el piloto, comprueba la fuente y corrige límites o instrucciones. Repite el caso y otros parecidos antes de reanudar; no envíes la respuesta dudosa." },
+          { question: "¿Qué información uso para probarlo?", answer: "Prefiere datos sintéticos o información pública confirmada. No copies conversaciones ni datos personales sin autorización y sin revisar las condiciones del proveedor." },
+        ] }],
+      },
+      {
         heading: "Fuentes y alcance",
         paragraphs: [
           "Estas referencias ayudan a identificar riesgos y controles de una prueba de IA. No garantizan resultados ni sustituyen requisitos legales locales.",
@@ -317,9 +326,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos durante el diseño, uso y evaluación de sistemas de IA." },
+            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos de IA; NIST indica que la versión 1.0 está en revisión." },
             { label: "NIST AI 600-1: Generative Artificial Intelligence Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Describe riesgos de IA generativa como confabulación, privacidad y relación entre personas y sistemas." },
-            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; comprueba las reglas aplicables en tu jurisdicción." },
+            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; el ICO indica que está en revisión tras cambios legales. Comprueba las reglas vigentes de tu jurisdicción." },
           ],
         }],
       },
@@ -336,7 +345,7 @@ export const learnArticles: LearnArticle[] = [
       "Trabaja con información confirmada y revisa nombres, cifras, fechas y condiciones.",
       "Empieza en pequeño y no compartas datos sensibles si la tarea no los necesita.",
     ],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se convierte en un borrador de IA que una persona revisa antes de responder o transferir",
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y prioridades digitales; no instala asistentes ni activa herramientas de IA." },
     relatedSlugs: ["como-probar-un-asistente-de-ia-con-supervision-humana"],
@@ -426,7 +435,7 @@ export const learnArticles: LearnArticle[] = [
             { question: "¿La IA puede responder a clientes sin revisión?", answer: "Depende del riesgo y del alcance. Empieza con límites estrictos y una fuente autorizada; una persona debe revisar las decisiones o compromisos importantes." },
             { question: "¿Puedo copiar conversaciones de clientes para entrenar un asistente?", answer: "No por defecto. Revisa autorización, privacidad y condiciones del proveedor; empieza con datos anonimizados o sintéticos cuando sea posible." },
             { question: "¿Qué opciones de inteligencia artificial ofrece Vecidya?", answer: "IA Conversacional e IA de Voz son complementos opcionales para Barrio o Ciudad; no se activan por defecto. Apoyan respuestas, clasificación inicial o atención por voz." },
-            { question: "¿Cómo se cobra el consumo de IA?", answer: "El cargo mensual va separado del consumo del proveedor: tokens (unidades de texto procesado) y, para voz, minutos/telefonía. Se acuerdan alcance, límites de uso y supervisión." },
+            { question: "¿Cómo se cobra el consumo de IA?", answer: "Según modalidad: tarifa de función y consumos variables. Confirma si tokens (unidades de texto procesado) o minutos de telefonía se cobran aparte, límites de uso y supervisión; no hay una tarifa universal." },
           ],
         }],
       },
@@ -436,9 +445,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos durante diseño, uso y evaluación de sistemas de IA." },
+            { label: "NIST AI Risk Management Framework (AI RMF 1.0)", url: "https://www.nist.gov/itl/ai-risk-management-framework", scope: "Marco voluntario para gestionar riesgos de IA; NIST indica que la versión 1.0 está en revisión." },
             { label: "NIST AI 600-1 — Generative AI Profile", url: "https://doi.org/10.6028/NIST.AI.600-1", scope: "Perfil sobre riesgos de IA generativa como confabulación, privacidad y relación entre personas y sistemas." },
-            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; verifica las reglas de tu jurisdicción." },
+            { label: "ICO — Guidance on AI and data protection", url: "https://ico.org.uk/for-organisations/uk-gdpr-guidance-and-resources/artificial-intelligence/guidance-on-ai-and-data-protection/", scope: "Orientación del Reino Unido sobre IA y protección de datos; el ICO indica que está en revisión tras cambios legales. Comprueba las reglas vigentes de tu jurisdicción." },
           ],
         }, {
           type: "summary",
@@ -462,7 +471,7 @@ export const learnArticles: LearnArticle[] = [
       "Comprueba oferta, destino, presupuesto y capacidad de respuesta antes de lanzar.",
       "Mide una prueba limitada y decide después si continuar, ajustar o parar.",
     ],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Canales digitales conectados para informar y recibir consultas",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital", "analitica-web-que-medir-en-tu-negocio"],
     editorialDraft: false,
@@ -607,7 +616,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Aprende a revisar datos comerciales, contacto, reseñas, accesibilidad y seguridad en los canales que ya utilizas.",
     excerpt: "Crea una rutina para mantener horarios, contacto, reseñas, accesibilidad y seguridad coherentes en los canales que sí atiendes.",
     enPocasPalabras: ["Comprueba que horarios, servicios y contacto coincidan entre canales.","No inventes reseñas ni afirmaciones para ganar confianza.","Revisa accesibilidad, privacidad y seguridad antes de ampliar tu presencia."],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Sitio web, perfil de empresa y red social muestran de forma coherente la oferta, la zona de atención y el contacto.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     editorialDraft: false,
@@ -679,9 +688,13 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Qué puedes hacer ahora",
+        heading: "Preguntas frecuentes y qué puedes hacer ahora",
         paragraphs: [],
-        blocks: [{
+        blocks: [{ type: "faq", items: [
+          { question: "¿Cada cuánto debo revisar mis canales digitales?", answer: "Elige una frecuencia que puedas cumplir y revisa también después de cambios de horario, servicios, ubicación o contacto. No hay un intervalo único para todos los negocios." },
+          { question: "¿Qué hago si dos canales muestran información distinta?", answer: "Confirma el dato con la persona responsable y una fuente interna vigente. Corrige los canales afectados y vuelve a probar cómo los ve una persona visitante." },
+          { question: "¿Puedo publicar cualquier reseña que me envíen?", answer: "Usa testimonios reales con permiso y sin exponer datos privados. No inventes reseñas ni atribuyas frases a personas que no las autorizaron." },
+        ] }, {
           type: "summary",
           items: [
             "Haz una lista de los canales que realmente mantienes y asigna quién actualiza cada uno.",
@@ -711,7 +724,7 @@ export const learnArticles: LearnArticle[] = [
       "Mantén coherentes horarios, contacto y servicios en los canales que realmente atiendes.",
       "La publicidad puede dar visibilidad, pero no arregla información contradictoria ni un contacto que no funciona.",
     ],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "Tres canales digitales —sitio web, perfil de empresa y redes sociales— muestran de forma coherente una oferta, una zona de atención y opciones de contacto",
     cta: { label: "Conocer el Diagnóstico", to: "/diagnostico", copy: "Si quieres ordenar prioridades, el Diagnóstico de presencia digital puede servir como punto de partida; no promete visibilidad, clientes ni resultados comerciales." },
     relatedSlugs: ["publicidad-digital-como-preparar-una-primera-campana", "como-mantener-actualizada-y-confiable-tu-presencia-digital", "perfil-empresa-google-completar-y-mantener-actualizado", "redes-sociales-o-pagina-web-que-necesita-tu-negocio", "analitica-web-que-medir-en-tu-negocio"],
@@ -867,7 +880,7 @@ export const learnArticles: LearnArticle[] = [
       "Define qué situaciones requieren intervención humana y quién es responsable.",
       "Conserva una forma de pausar, revisar y volver al proceso manual.",
     ],
-    image: "/assets/learn/diagram-automation.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una automatización pasa por pruebas, revisión humana y una salida manual antes de usarse en el trabajo real.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio"],
     editorialDraft: false,
@@ -978,6 +991,15 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Cómo pruebo una automatización sin contactar a clientes?", answer: "Usa datos de ensayo y un entorno o canal de prueba. Desactiva envíos, cobros y otras acciones externas; confirma que ningún caso de prueba alcance a una persona real." },
+          { question: "¿Qué conviene vigilar después de activarla?", answer: "Revisa ejecuciones correctas y fallidas, reintentos, duplicados y casos que pasan a revisión. Conserva solo los datos necesarios para investigar errores." },
+          { question: "¿Qué hago si empieza a repetir una acción?", answer: "Pausa el flujo, usa el proceso manual acordado y comprueba qué ocurrió antes de reactivarlo. Corrige el caso y prueba de nuevo con datos controlados." },
+        ] }],
+      },
+      {
         heading: "Fuentes y alcance",
         paragraphs: [
           "Estas referencias ayudan a pensar en privacidad, seguridad y comunicaciones. No sustituyen las obligaciones de tu país ni la documentación de las herramientas que utilices.",
@@ -985,9 +1007,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad en organizaciones." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "NIST Cybersecurity Framework 2.0", url: "https://www.nist.gov/cyberframework", scope: "Marco para gestionar riesgos de ciberseguridad, responsabilidades y controles de forma proporcional." },
-            { label: "ICO — Electronic mail marketing", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre comunicaciones electrónicas y preferencias; verifica las reglas de tu jurisdicción." },
+            { label: "ICO — Electronic mail marketing", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo; el ICO indica que está en revisión tras cambios legales. Verifica las reglas vigentes de tu jurisdicción." },
           ],
         }],
       },
@@ -1004,7 +1026,7 @@ export const learnArticles: LearnArticle[] = [
       "Define qué la dispara, qué condición debe cumplirse y quién revisa las excepciones.",
       "Prueba duplicados y fallos, y conserva una forma de detener o revertir el flujo.",
     ],
-    image: "/assets/learn/diagram-automation.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Flujo de automatización: un evento se evalúa mediante una condición y puede ejecutar una acción o pasar a revisión humana si no se cumple",
     cta: { label: "Consultar servicios", to: "/servicios", copy: "La implementación de una automatización personalizada puede formar parte de un servicio profesional; su alcance debe confirmarse previamente." },
     relatedSlugs: ["como-probar-y-supervisar-automatizaciones-sin-perder-datos"],
@@ -1122,9 +1144,9 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{
           type: "sources",
           items: [
-            { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad." },
+            { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
             { label: "NIST Cybersecurity Framework (CSF) 2.0", url: "https://www.nist.gov/cyberframework", scope: "Marco para gestionar riesgos de ciberseguridad y definir controles proporcionales." },
-            { label: "Electronic mail marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo electrónico; verifica las reglas de tu jurisdicción." },
+            { label: "Electronic mail marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/electronic-mail-marketing/", scope: "Orientación del Reino Unido sobre marketing por correo; el ICO indica que está en revisión tras cambios legales. Verifica las reglas vigentes de tu jurisdicción." },
           ],
         }, {
           type: "summary",
@@ -1148,7 +1170,7 @@ export const learnArticles: LearnArticle[] = [
       "Compara renovación, soporte, copias, exportación y salida; no solo el precio de entrada.",
       "El negocio debe poder recuperar las cuentas importantes y saber quién tiene permiso para cambiarlas.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una persona compara dominio, DNS, alojamiento y correo antes de elegir quién administrará cada servicio.",
     relatedSlugs: [
       "dominio-hosting-sitio-web-como-funcionan",
@@ -1319,7 +1341,7 @@ export const learnArticles: LearnArticle[] = [
       "HTTPS protege la conexión con la web; no demuestra por sí solo que el negocio sea confiable.",
       "Web y correo pueden usar proveedores y registros diferentes, así que conviene comprobarlos por separado.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Esquema de un dominio que conecta por separado una página web segura y un servicio de correo.",
     relatedSlugs: [
       "dominio-hosting-sitio-web-como-funcionan",
@@ -1423,9 +1445,13 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Qué puedes hacer ahora",
+        heading: "Preguntas frecuentes y qué puedes hacer ahora",
         paragraphs: [],
-        blocks: [{
+        blocks: [{ type: "faq", items: [
+          { question: "¿Puedo cambiar DNS sin afectar la web o el correo?", answer: "Depende de los registros y servicios actuales. Guarda la configuración, identifica quién mantiene web y correo y sigue los valores de sus proveedores; no reemplaces registros que no entiendas." },
+          { question: "¿Qué hace un registro MX?", answer: "Indica qué servicio recibe el correo del dominio. La web puede funcionar con otro proveedor; confirma los registros necesarios con quien administra el correo." },
+          { question: "¿El candado HTTPS demuestra que un sitio es confiable?", answer: "No. HTTPS protege la conexión y verifica el certificado para el dominio; no demuestra que el negocio sea legítimo ni que su oferta sea segura." },
+        ] }, {
           type: "summary",
           items: [
             "Dibuja por separado dominio, DNS, web y correo y anota quién controla cada pieza.",
@@ -1461,7 +1487,7 @@ export const learnArticles: LearnArticle[] = [
       "El alojamiento mantiene la web y el DNS ayuda al navegador a encontrar el servidor correcto.",
       "Conserva quién administra cada servicio y cuándo debe renovarse.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Recorrido de una persona al escribir una dirección: el navegador puede consultar DNS si no tiene una respuesta vigente en caché, conecta con el servidor web y recibe la página solicitada.",
     relatedSlugs: [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -1593,7 +1619,7 @@ export const learnArticles: LearnArticle[] = [
       "Un candado no garantiza que el vendedor, la oferta o el contenido sean confiables.",
       "Si aparece una advertencia de seguridad, no la ignores: revisa la dirección y corrige la causa.",
     ],
-    image: "/assets/learn/diagram-domain-dns-hosting.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Una conexión segura protege el trayecto entre un navegador y un sitio web, pero no demuestra la honestidad del negocio.",
     relatedSlugs: [
       "dns-https-y-correo-como-se-conecta-tu-dominio",
@@ -1734,7 +1760,7 @@ export const learnArticles: LearnArticle[] = [
       "Elige primero la pregunta que quieres responder y después la métrica.",
       "Compara pocos datos, con el mismo criterio, y evita conclusiones basadas en una cifra aislada.",
     ],
-    image: "/assets/learn/diagram-analytics.svg",
+    image: "/assets/selected/illustrations/diagnostic-scene.webp",
     imageAlt: "Un recorrido sencillo separa visitas, acciones y resultados confirmados por el negocio.",
     relatedSlugs: [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -1848,6 +1874,15 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
+        heading: "Preguntas frecuentes",
+        paragraphs: [],
+        blocks: [{ type: "faq", items: [
+          { question: "¿Qué debería medir primero?", answer: "Empieza con una pregunta que pueda cambiar una decisión. Elige una señal del sitio y un resultado que puedas comprobar, como consultas atendidas, y define cómo se cuentan." },
+          { question: "¿Más visitas significan más clientes?", answer: "No necesariamente. Una visita, un clic, una consulta y una venta son acciones distintas; revisa el recorrido y confirma los resultados fuera del tablero." },
+          { question: "¿Debo identificar a cada visitante?", answer: "No si la pregunta puede responderse con datos agregados. Reduce la recolección y verifica las reglas de privacidad y consentimiento aplicables a tu caso." },
+        ] }],
+      },
+      {
         heading: "Fuentes y alcance",
         paragraphs: [
           "Las definiciones dependen del producto de analítica. Estas referencias ayudan a comprobar qué registra Google Analytics y qué consideraciones de privacidad publica su proveedor.",
@@ -1858,7 +1893,7 @@ export const learnArticles: LearnArticle[] = [
             { label: "About events — Google Analytics Help", url: "https://support.google.com/analytics/answer/9322688", scope: "Explica eventos e interacciones en Google Analytics; la configuración determina qué se registra." },
             { label: "Conversions vs. key events — Google Analytics Help", url: "https://support.google.com/analytics/answer/13965727", scope: "Distingue los eventos clave usados para analizar acciones importantes de las conversiones utilizadas para medir campañas publicitarias." },
             { label: "Google Analytics policies", url: "https://support.google.com/analytics/answer/6004245", scope: "Políticas publicadas por Google Analytics, incluidas restricciones sobre información de identificación personal." },
-            { label: "ICO — Cookies and similar technologies", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación británica sobre cookies; comprueba las reglas aplicables a tu ubicación y actividad." },
+            { label: "ICO — Cookies and similar technologies", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/cookies-and-similar-technologies/", scope: "Orientación británica sobre cookies; el ICO indica que la guía PECR está en revisión tras cambios legales. Comprueba las reglas vigentes de tu ubicación y actividad." },
           ],
         }],
       },
@@ -1871,7 +1906,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Una persona llena un formulario, pero su mensaje se pierde antes de llegar a quien debe responder. Conectar herramientas puede ayudar, si sabes qué información pasa de un lugar a otro.",
     excerpt: "Entiende cómo comparten datos las aplicaciones y qué comprobar antes de conectarlas.",
     enPocasPalabras: ["Conecta herramientas solo cuando resuelvas un problema concreto.","Decide dónde está la información correcta y qué pasa si falla la conexión.","Prueba con ejemplos antes de usar datos reales."],
-    image: "/assets/learn/diagram-integrations.svg",
+    image: "/assets/selected/illustrations/services-scene.webp",
     imageAlt: "Dos herramientas intercambian solo los datos acordados mediante una conexión revisada, con una persona que verifica duplicados y errores.",
     relatedSlugs: ["automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio", "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos y capacidades; no conecta cuentas ni sincroniza registros entre plataformas." },
@@ -1981,7 +2016,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Alguien busca un negocio como el tuyo y quiere comprobar horario, lugar y contacto. Una ficha correcta puede ayudarle, pero antes debes saber si tu actividad puede tenerla.",
     excerpt: "Revisa quién puede crear la ficha y cómo mantener datos, fotos y horarios verdaderos.",
     enPocasPalabras: ["Comprueba primero si tu negocio puede tener un Perfil de Empresa en Google.","Si puedes crearlo, revisa horario, contacto y fotos reales.","Mantenerlo actualizado orienta a las personas, pero no garantiza visitas."],
-    image: "/assets/learn/diagram-presence-digital.svg",
+    image: "/assets/selected/illustrations/home-scene.webp",
     imageAlt: "El Perfil de Empresa forma parte de una presencia coherente junto con el sitio web y otros canales digitales.",
     relatedSlugs: ["antes-de-hacer-publicidad-organiza-tu-presencia-digital"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar capacidades digitales; no gestiona ni verifica Perfiles de Empresa de Google." },
@@ -2035,7 +2070,7 @@ export const learnArticles: LearnArticle[] = [
         }],
       },
       {
-        heading: "Errores frecuentes y una rutina de mantenimiento",
+        heading: "Preguntas frecuentes y rutina de mantenimiento",
         paragraphs: ["Un dato impreciso puede hacer perder una llamada o provocar un desplazamiento innecesario. Una revisión breve después de cada cambio importante ayuda a corregirlo."],
         blocks: [{ type: "steps", label: "Revisa mensualmente y después de cambios", items: [
           { title: "Comprueba elegibilidad", detail: "Consulta las normas antes de crear una ficha o añadir otra ubicación." },
@@ -2048,6 +2083,10 @@ export const learnArticles: LearnArticle[] = [
           "Actualiza horarios, servicios, fotos y avisos; responde reseñas sin revelar datos.",
           "Comprueba que la información coincida con la web.",
           "No prometas posiciones ni resultados.",
+        ] }, { type: "faq", items: [
+          { question: "¿Qué información conviene comprobar primero?", answer: "Confirma elegibilidad y revisa nombre, categoría, horario, zona o ubicación y formas de contacto con información real. Las reglas de Google pueden cambiar; consulta la ayuda oficial vigente." },
+          { question: "¿Debo compartir la contraseña para que alguien ayude?", answer: "No compartas credenciales. Usa los permisos de acceso que ofrece la plataforma y concede solo el nivel necesario a personas de confianza." },
+          { question: "¿Puedo responder una reseña con datos del cliente?", answer: "Responde con cortesía sin confirmar información privada ni detalles del servicio. Mantén la conversación sobre datos personales en un canal apropiado." },
         ] }],
       },
       {
@@ -2075,7 +2114,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "Recibes mensajes por una red, llamadas y formularios. ¿Cómo recuerdas a quién debes responder? Empieza con una lista de pendientes clara.",
     excerpt: "Organiza mensajes, llamadas y formularios sin perder el siguiente paso.",
     enPocasPalabras: ["Reúne las consultas pendientes en un solo lugar.","Deja claro quién responde y qué hará después.","Atender una solicitud no da permiso automático para enviar publicidad."],
-    image: "/assets/learn/diagram-crm.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "Una consulta se registra, recibe un responsable y un próximo paso hasta resolverse o cerrarse.",
     relatedSlugs: ["que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no es un CRM ni recibe o conserva consultas de clientes." },
@@ -2142,11 +2181,15 @@ export const learnArticles: LearnArticle[] = [
         blocks: [{ type: "callout", tone: "caution", title: "Una consulta no autoriza promociones", text: "El teléfono compartido para recibir una respuesta no demuestra permiso para una campaña comercial." }],
       },
       {
-        heading: "Qué puedes poner en marcha hoy",
+        heading: "Preguntas frecuentes y qué puedes poner en marcha hoy",
         paragraphs: [],
-        blocks: [{ type: "sources", items: [
-          { label: "NIST Privacy Framework", url: "https://www.nist.gov/privacy-framework", scope: "Marco voluntario para identificar y gestionar riesgos de privacidad; no es una ley universal." },
-          { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido que distingue comunicaciones de servicio de marketing directo y describe las reglas PECR; los requisitos varían según jurisdicción." },
+        blocks: [{ type: "faq", items: [
+          { question: "¿Debo copiar la conversación completa al registro común?", answer: "No por defecto. Guarda el contexto mínimo para responder y la referencia al mensaje original; limita el acceso y evita datos sensibles que no hagan falta." },
+          { question: "¿Responder una consulta permite enviar promociones después?", answer: "No automáticamente. Mantén separada la respuesta solicitada del permiso para marketing y sigue las reglas del canal y la jurisdicción." },
+          { question: "¿Cómo evitamos que dos personas respondan lo mismo?", answer: "Asigna una persona responsable, un estado visible y una próxima acción. Antes de contestar, revisa el registro compartido y el canal original." },
+        ] }, { type: "sources", items: [
+          { label: "NIST Privacy Framework (v1.0; v1.1 en borrador)", url: "https://www.nist.gov/privacy-framework", scope: "Herramienta voluntaria de gestión de riesgos de privacidad; NIST publica un borrador inicial de la versión 1.1, no una versión final ni una ley." },
+          { label: "Electronic and telephone marketing — ICO", url: "https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guide-to-pecr/electronic-and-telephone-marketing/", scope: "Orientación del Reino Unido sobre marketing directo; el ICO indica que su guía PECR está en revisión tras cambios legales. Los requisitos dependen de la jurisdicción." },
         ] }, { type: "summary", items: [
           "Reúne consultas en un registro autorizado y limita los datos.",
           "Asigna responsable, estado y próxima acción a cada pendiente.",
@@ -2163,7 +2206,7 @@ export const learnArticles: LearnArticle[] = [
     intro: "¿Quieres ayuda para responder un mensaje o escribir una publicación? La IA puede preparar el primer borrador. La información real y la decisión de publicarlo siguen siendo tuyas.",
     excerpt: "Aprende a pedir un borrador útil, proteger datos y revisar cada frase antes de enviarla.",
     enPocasPalabras: ["La IA prepara borradores; tú confirmas los datos.","Dile qué información puede utilizar y qué no debe inventar.","Revisa y aprueba todo mensaje antes de enviarlo o publicarlo."],
-    image: "/assets/learn/diagram-ai.svg",
+    image: "/assets/selected/illustrations/addons-scene.webp",
     imageAlt: "La IA prepara un borrador que una persona revisa antes de responder o publicar.",
     relatedSlugs: ["que-puede-hacer-una-inteligencia-artificial-por-un-negocio"],
     cta: { label: "Revisar mi punto de partida digital", to: "/diagnostico", copy: "El Diagnóstico ayuda a revisar procesos; no genera ni aprueba respuestas o publicaciones con IA." },
@@ -2222,13 +2265,17 @@ export const learnArticles: LearnArticle[] = [
         ] }],
       },
       {
-        heading: "Errores frecuentes y límites de la IA",
+        heading: "Preguntas frecuentes y límites de la IA",
         paragraphs: ["Un texto fluido aún puede equivocarse. La IA no conoce cambios recientes ni lo que puedes cumplir: confirma cada afirmación."],
         blocks: [{ type: "list", items: [
           "Pedir algo «atractivo» sin objetivo ni límites.",
           "Copiar hechos, citas, enlaces o condiciones sin verificarlos.",
           "Compartir detalles de clientes que no hacen falta.",
           "Enviar o publicar automáticamente sin aprobación humana.",
+        ] }, { type: "faq", items: [
+          { question: "¿Puedo pegar mensajes de clientes en una herramienta de IA?", answer: "No por defecto. Usa ejemplos sintéticos o datos públicos; revisa permisos, condiciones del proveedor y necesidad antes de procesar información personal." },
+          { question: "¿Puedo publicar directamente el texto generado?", answer: "Trátalo como borrador. Comprueba hechos, enlaces, precios, fechas, tono y privacidad; una persona responsable debe aprobarlo antes de enviarlo o publicarlo." },
+          { question: "¿Cómo evito que la IA complete datos que no conoce?", answer: "Proporciona datos confirmados e indica que señale lo que falta en vez de inferirlo. Aun así, verifica cada afirmación con la fuente original." },
         ] }, { type: "summary", items: [
           "Define tarea, público, tono y datos aprobados.",
           "Pide que marque lo pendiente y no invente datos.",
@@ -2257,7 +2304,7 @@ export const learnArticles: LearnArticle[] = [
       "Elige un problema real antes de decidir qué herramienta necesitas.",
       "Empieza con una mejora pequeña que puedas mantener."
     ],
-    "image": "/assets/learn/diagram-como-empezar.svg",
+    "image": "/assets/selected/illustrations/join-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: ordenar el trabajo, elegir una tarea y comprobar si la mejora funciona.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -2442,7 +2489,7 @@ export const learnArticles: LearnArticle[] = [
       "Una conexión confiable importa más que tener muchos programas.",
       "Protege el equipo y prepara una alternativa cuando se vaya internet."
     ],
-    "image": "/assets/learn/diagram-que-necesita.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: definir la tarea, usar equipo suficiente y preparar una alternativa si falla la conexión.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -2627,7 +2674,7 @@ export const learnArticles: LearnArticle[] = [
       "Escribe asuntos claros y guarda los documentos donde puedas encontrarlos.",
       "No compartas contraseñas: da acceso a cada persona cuando el servicio lo permita."
     ],
-    "image": "/assets/learn/diagram-correo-para.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: recibir el mensaje, conservar su contexto y responder con claridad.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -2812,7 +2859,7 @@ export const learnArticles: LearnArticle[] = [
       "Activa la verificación en dos pasos en las cuentas importantes.",
       "Si un mensaje te mete prisa, verifica por el canal oficial antes de actuar."
     ],
-    "image": "/assets/learn/diagram-como-proteger.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: usar una clave diferente, añadir un segundo control y verificar avisos sospechosos.",
     "relatedSlugs": [
       "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes",
@@ -2997,7 +3044,7 @@ export const learnArticles: LearnArticle[] = [
       "Mantén una copia protegida que no dependa del mismo teléfono.",
       "Prueba a recuperar un archivo: una copia que nunca se comprobó podría fallar."
     ],
-    "image": "/assets/learn/diagram-como-hacer.svg",
+    "image": "/assets/selected/illustrations/learn-journey-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: organizar archivos, guardar otra copia y probar que la recuperación funciona.",
     "relatedSlugs": [
       "como-empezar-a-digitalizar-un-negocio-desde-cero",
@@ -3182,7 +3229,7 @@ export const learnArticles: LearnArticle[] = [
       "Empieza con pocas columnas que realmente usarás.",
       "Una tabla ordenada ayuda a revisar pendientes, pero no sustituye una contabilidad profesional cuando hace falta."
     ],
-    "image": "/assets/learn/diagram-hojas-de.svg",
+    "image": "/assets/selected/illustrations/services-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: registrar datos, revisar pendientes y mantener la tabla actualizada.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -3368,7 +3415,7 @@ export const learnArticles: LearnArticle[] = [
       "No necesitas un sitio enorme: explica qué haces, dónde atiendes y cómo contactarte.",
       "Escoge canales que puedas mantener, no los que estén de moda."
     ],
-    "image": "/assets/learn/diagram-redes-sociales.svg",
+    "image": "/assets/selected/illustrations/home-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: mostrar novedades, reunir información estable y facilitar una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -3553,7 +3600,7 @@ export const learnArticles: LearnArticle[] = [
       "Cambia palabras vagas por ejemplos reales de tu trabajo.",
       "Pide a alguien que no te conozca que te diga qué entendió."
     ],
-    "image": "/assets/learn/diagram-como-explicar.svg",
+    "image": "/assets/selected/illustrations/learn-journey-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: decir qué haces, explicar para quién y ofrecer un siguiente paso.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -3738,7 +3785,7 @@ export const learnArticles: LearnArticle[] = [
       "Si faltan datos, pregunta solo lo necesario para orientar.",
       "Termina con un paso claro y respeta si la persona no continúa."
     ],
-    "image": "/assets/learn/diagram-como-responder.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: escuchar la consulta, responder con claridad y acordar qué ocurrirá después.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -3923,7 +3970,7 @@ export const learnArticles: LearnArticle[] = [
       "Usa fotos reales con buena luz y permiso cuando corresponda.",
       "Incluye un texto claro: qué muestras, para quién sirve y qué se puede hacer después."
     ],
-    "image": "/assets/learn/diagram-fotos-y.svg",
+    "image": "/assets/selected/illustrations/home-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: enseñar algo real, explicar el servicio y ofrecer una forma de contacto.",
     "relatedSlugs": [
       "antes-de-hacer-publicidad-organiza-tu-presencia-digital",
@@ -4108,7 +4155,7 @@ export const learnArticles: LearnArticle[] = [
       "Utiliza servicios de pago confiables y verifica sus costos y requisitos.",
       "Lleva un registro de pedidos y explica cómo resolver cambios o problemas."
     ],
-    "image": "/assets/learn/diagram-como-vender.svg",
+    "image": "/assets/selected/illustrations/addons-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: confirmar el pedido, cobrar con cuidado y cumplir la entrega acordada.",
     "relatedSlugs": [
       "hojas-de-calculo-para-organizar-un-negocio-pequeno",
@@ -4293,7 +4340,7 @@ export const learnArticles: LearnArticle[] = [
       "Aclara para qué usarás los datos y quién podrá verlos.",
       "Responder una consulta no equivale a aceptar publicidad ni campañas."
     ],
-    "image": "/assets/learn/diagram-datos-de.svg",
+    "image": "/assets/selected/illustrations/diagnostic-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: pedir lo mínimo, explicar para qué se usa y proteger los datos.",
     "relatedSlugs": [
       "organizar-consultas-mensajes-llamadas-formularios",
@@ -4478,7 +4525,7 @@ export const learnArticles: LearnArticle[] = [
       "No publiques reseñas inventadas, ni siquiera si una IA las redacta.",
       "Responde las críticas con calma, sin revelar información privada."
     ],
-    "image": "/assets/learn/diagram-como-pedir.svg",
+    "image": "/assets/selected/illustrations/contact-scene.webp",
     "imageAlt": "Tres tarjetas muestran una secuencia: invitar a opinar, aceptar críticas y usar lo aprendido para mejorar.",
     "relatedSlugs": [
       "perfil-empresa-google-completar-y-mantener-actualizado",

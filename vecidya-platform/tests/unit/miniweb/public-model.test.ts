@@ -25,6 +25,8 @@ test("el modelo MiniWeb público expone solo campos allowlisted de negocio", () 
     instagramUrl: null,
     facebookUrl: null,
     linkedinUrl: null,
+    tiktokUrl: null,
+    youtubeUrl: null,
     serviceMode: null,
     serviceArea: null,
   };
@@ -32,8 +34,8 @@ test("el modelo MiniWeb público expone solo campos allowlisted de negocio", () 
   const model = toMiniWebPublicProfile(databaseRow, "verified");
   assert.deepEqual(Object.keys(model ?? {}).sort(), [
     "category", "city", "country", "description", "displayName", "facebookUrl", "instagramUrl",
-    "linkedinUrl", "logoUrl", "phone", "publicEmail", "serviceArea", "serviceMode", "shortDescription",
-    "slug", "verificationStatus", "websiteUrl", "whatsapp",
+    "linkedinUrl", "logoUrl", "phone", "publicEmail", "serviceArea", "serviceMode", "shortDescription", "tiktokUrl",
+    "slug", "verificationStatus", "websiteUrl", "whatsapp", "youtubeUrl",
   ].sort());
   assert.equal(model?.verificationStatus, "verified");
   assert.equal("organizationId" in (model ?? {}), false);

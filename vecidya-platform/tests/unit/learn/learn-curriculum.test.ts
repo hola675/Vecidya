@@ -100,7 +100,7 @@ test("itinerarios apuntan únicamente a artículos reales y tienen pasos útiles
   }
 });
 
-test("enlaces relacionados y diagramas referencian contenidos existentes", () => {
+test("enlaces relacionados e ilustraciones WebP referencian contenidos existentes y tienen contexto accesible", () => {
   const slugs = new Set(learnArticles.map((article) => article.slug));
   for (const article of learnArticles) {
     for (const slug of article.relatedSlugs ?? []) {
@@ -110,7 +110,9 @@ test("enlaces relacionados y diagramas referencian contenidos existentes", () =>
     const localImage = join(process.cwd(), "public", article.image.replace(/^\//, ""));
     assert(existsSync(localImage), `Falta ilustración: ${article.image}`);
     assert(article.imageAlt.trim(), `Falta texto alternativo: ${article.slug}`);
-    const svg = readFileSync(localImage, "utf8");
-    assert(svg.includes("<svg") && svg.includes("<title") && svg.includes("<desc"), `Ilustración sin contexto: ${article.slug}`);
+    const image = readFileSync(localImage);
+    assert.equal(image.toString("ascii", 0, 4), "RIFF", `Ilustración no es RIFF/WebP: ${article.slug}`);
+    assert.equal(image.toString("ascii", 8, 12), "WEBP", `Ilustración no es WebP: ${article.slug}`);
+    assert(article.imageAlt.trim().length >= 30, `Texto alternativo sin contexto: ${article.slug}`);
   }
 });

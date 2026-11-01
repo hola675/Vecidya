@@ -1,7 +1,8 @@
-import { Form, Link, useActionData, useLoaderData } from "react-router";
+import { Form, Link, useActionData, useLoaderData, useLocation } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { correctOrganizationTrainingProgress, listOrganizationTraining, listOrganizationTrainingProgress, assignOrganizationTraining } from "../../db/queries/platform-training.server";
+import { listPlatformOrganizationOptions } from "../../db/queries/platform-organizations.server";
 import { learnArticles } from "../content/learn";
 import { AdminShell } from "../components/admin-shell";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -17,16 +18,18 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const access = await requirePlatformAdmin(env, request);
   const database = createDatabase(env.DB);
-  const [organization, assignments, progress] = await Promise.all([
+  const [organization, assignments, progress, organizationOptions] = await Promise.all([
     database.query.organization.findFirst({ where: (table, { eq }) => eq(table.id, params.organizationId) }),
     listOrganizationTraining(database, params.organizationId),
     listOrganizationTrainingProgress(database, params.organizationId),
+    listPlatformOrganizationOptions(database),
   ]);
   if (!organization) throw new Response("Organización no encontrada", { status: 404 });
   return {
     organization,
     assignments,
     progress,
+    organizationOptions,
     courses: learnArticles.filter((article) => !article.editorialDraft).map(({ slug, title }) => ({ slug, title })),
     workspaceUser: access.workspaceUser,
   };
@@ -59,13 +62,15 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 }
 
 export default function InternalOrganizationTraining() {
-  const { organization, assignments, progress, courses, workspaceUser } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  const { organization, assignments, progress, courses, organizationOptions, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const assigned = new Set(assignments.map((item) => item.trainingSlug));
   const courseTitle = (slug: string) => courses.find((course) => course.slug === slug)?.title ?? slug;
-  return <AdminShell active="organizations" workspaceUser={workspaceUser}>
+  return <AdminShell active="organizations" workspaceUser={workspaceUser} organizationOptions={organizationOptions} selectedOrganizationId={organization.id}>
     <main className="admin-main">
-      <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
+      <Link className="back-link" to={`${routeBase}/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
       <div className="page-heading"><div><p className="eyebrow">CAPACITACIÓN</p><h1>Aprendizaje asignado</h1><p>El progreso lo declara cada miembro. Las correcciones quedan registradas con motivo.</p></div></div>
       {actionData?.ok ? <p className="alert alert--success" role="status">{actionData.operation === "assign" ? "Capacitación asignada a la organización." : "Progreso actualizado; motivo registrado en auditoría."}</p> : null}
       <section className="card admin-detail-card">

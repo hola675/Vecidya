@@ -1,6 +1,7 @@
-import { Form, Link, redirect, useActionData, useLoaderData } from "react-router";
+import { Form, Link, redirect, useActionData, useLoaderData, useLocation } from "react-router";
 import { createDatabase } from "../../db/client.server";
 import { getBusinessProfileForOrganization } from "../../db/queries/business-profile.server";
+import { listPlatformOrganizationOptions } from "../../db/queries/platform-organizations.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization, saveMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
 import { getMiniWebContentForOrganization } from "../../db/queries/miniweb-content.server";
@@ -38,7 +39,8 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
       published: isBusinessPublicationCurrent(publication.publishedVersion, publication.snapshot, currentSnapshot),
     };
   });
-  return { organization, configuration: state.draftConfiguration, draftRevision, hasProfile: state.hasProfile, published: state.published, workspaceUser: access.workspaceUser };
+  const organizationOptions = await listPlatformOrganizationOptions(database);
+  return { organization, organizationOptions, configuration: state.draftConfiguration, draftRevision, hasProfile: state.hasProfile, published: state.published, workspaceUser: access.workspaceUser };
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
@@ -66,15 +68,18 @@ export async function action({ context, params, request }: Route.ActionArgs) {
     if (error instanceof Response && error.status === 409) return { error: await error.text(), submittedRevision: expectedRevision };
     throw error;
   }
-  return redirect(`/app/internal/organizations/${organization.id}/miniweb`);
+  const routeBase = new URL(request.url).pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  return redirect(`${routeBase}/organizations/${organization.id}/miniweb`);
 }
 
 export default function InternalOrganizationMiniWeb() {
-  const { organization, configuration, draftRevision, hasProfile, published, workspaceUser } = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const routeBase = location.pathname.startsWith("/app/platform") ? "/app/platform" : "/app/internal";
+  const { organization, organizationOptions, configuration, draftRevision, hasProfile, published, workspaceUser } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const formDraftRevision = actionData?.error ? actionData.submittedRevision : draftRevision;
-  return <AdminShell active="organizations" workspaceUser={workspaceUser}><main className="admin-main">
-    <Link className="back-link" to={`/app/internal/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
+  return <AdminShell active="organizations" workspaceUser={workspaceUser} organizationOptions={organizationOptions} selectedOrganizationId={organization.id}><main className="admin-main">
+    <Link className="back-link" to={`${routeBase}/organizations/${organization.id}`}>← Volver a {organization.name}</Link>
     <div className="page-heading"><div><p className="eyebrow">MINIWEB</p><h1>Configuración de {organization.name}</h1><p>Las acciones se registran en la auditoría de la organización.</p></div></div>
     <Card><h2>Borrador de configuración</h2>{actionData?.error ? <p className="alert alert--error" role="alert">{actionData.error}</p> : null}<Form method="post" className="form-stack"><input name="draftRevision" type="hidden" value={formDraftRevision} /><textarea aria-label="Configuración JSON" name="configuration" defaultValue={JSON.stringify(configuration, null, 2)} rows={24} spellCheck={false} /><Button type="submit" name="intent" value="save" tone="secondary">Guardar borrador</Button></Form>
       <Form method="post"><input name="draftRevision" type="hidden" value={formDraftRevision} /><Button type="submit" name="intent" value="publish" disabled={!hasProfile || published}>Publicar MiniWeb</Button></Form>

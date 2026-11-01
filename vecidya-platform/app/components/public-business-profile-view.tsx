@@ -154,6 +154,8 @@ export function PublicBusinessContact({ profile, preview = false }: { profile: P
     profile.instagramUrl ? { label: "Instagram", href: safeWebUrl(profile.instagramUrl) } : null,
     profile.facebookUrl ? { label: "Facebook", href: safeWebUrl(profile.facebookUrl) } : null,
     profile.linkedinUrl ? { label: "LinkedIn", href: safeWebUrl(profile.linkedinUrl) } : null,
+    profile.tiktokUrl ? { label: "TikTok", href: safeWebUrl(profile.tiktokUrl) } : null,
+    profile.youtubeUrl ? { label: "YouTube", href: safeWebUrl(profile.youtubeUrl) } : null,
   ].filter((link): link is { label: string; href: string } => link?.href != null);
 
   return (

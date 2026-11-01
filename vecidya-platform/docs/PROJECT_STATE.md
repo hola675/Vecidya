@@ -1,6 +1,30 @@
-## Corte vigente — release 0.8.4 publicado (2026-10-27)
+## UX-PREMIUM-02J — Vico y escenas transparentes para 10 páginas (2026-10-31)
 
-PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; Worker `vecidya-platform` Version ID `ea502d10-b3b0-4041-bd88-bb373375da11`. Incluye la configuración compacta de MiniWeb y Mi negocio, la paginación de Organizaciones ya integrada por #173 y el paquete A Team. La D1 productiva respondió `No migrations to apply`; no se realizaron escrituras de esquema o datos. GET anónimo de `https://vecidya.com/` devolvió 200 con versión 0.8.4 y © 2026 Vecidya a las 2026-10-27T23:44:23Z. Sin pruebas automatizadas por petición del usuario.
+El checkpoint local de PR #222 asocia las 10 variantes WebP de Vico a Inicio, Vecindario, Aprende, Diagnóstico, Licencias, Servicios, Complementos, Sobre nosotros, Contacto y Únete; Vico se amplió en las escenas de apoyo. Se generaron 10 WebP transparentes y se preservó el hero aprobado de Inicio. Los 30 diagramas SVG educativos y el atlas de Aprende se sustituyeron por WebP temáticos con alt por guía. No cambia la lógica, el contenido, las rutas ni los CTAs. E2E en 10 rutas × cinco viewports, capturas full-page antes/después 50 + 50, typecheck/build/diff-check: PASS. Axe, lector de pantalla y zoom 200 % pendientes; sin merge, D1 remota, deploy ni HTTP pública.
+
+## UX-PREMIUM-02I — refinamiento visual de Aprende (2026-10-30)
+
+Extensión de PR #222 en `/aprende`: se incorpora `vico-aprende.webp` optimizado, flotación suave con movimiento reducido, superficie editorial para el hero, catálogo, itinerarios y filtros. Se conservan las rutas, búsqueda, contenido y CTA. E2E, typecheck, build y diff-check locales PASS. Capturas comparativas de cinco viewports en `.playwright-mcp/`. Sin cambios funcionales, migraciones, D1 remota ni deploy; accesibilidad no certificada.
+
+## UX-PREMIUM-02H — refinamiento visual de Complementos (2026-10-30)
+
+Extensión del PR #222 en `/addons`: se incorporó la variante transparente WebP de Vico Complementos sobre el panel conceptual y una capa CSS propia para hero, fórmula, catálogo y acciones. Se conservan contenido comercial, catálogo de siete complementos, precios/costes, rutas y destinos. E2E focal verifica imagen/alt, CTA, foco, contenido y preferencias de movimiento; typecheck/build/diff-check finales en `TESTING.md`. Sin función nueva, schema, migración, D1 remota ni deploy.
+
+## UX-PREMIUM-02G — refinamiento visual de Licencias (2026-10-30)
+
+Checkpoint local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-licenses-03`; PR #221 abierta en borrador. `/licencias` refina el hero y el comparador, distribuye las notas de alcance en 2×2 y ajusta las tarjetas a una columna desde 900 px; el hover tiene elevación breve con soporte de movimiento reducido. Se preservan catálogo, precios, activaciones, contenido, rutas y CTA. `licenses-experience-check.mjs`, typecheck, build y diff-check PASS. Capturas completas a 1366/1024/768/390/360 px sin overflow; reduced motion verificado en navegador. Sin D1 remota, deploy ni HTTP pública fechada; no es certificación WCAG.
+
+**Publicación APRENDE/UX 0.9.2 (2026-10-29; PR #213, `main@8ed60e51`):** PR #201 integró revisión de seguridad y Better Auth 1.7.14; PR #210 refinó la UI global. CI requerido PASS. Las migraciones `0031–0033` se aplicaron a `vecidya-prod`; Worker Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %. HTTP anónimo del 2026-10-30T03:40:21Z confirmó `/`, `/aprende` y `/__health/db` con 200, versión/copyright y 48 guías. La prueba humana NVDA/zoom 200 % fue aprobada por el usuario, pero faltan metadatos y no se declara conformidad WCAG. Los flags de purga Aprende siguen apagados mientras legal/privacidad/costo continúan pendientes.
+
+**Reconciliación APRENDE-PLAN-V1 (2026-10-29):** Fases 1–6 integradas por PR #193 y la revisión de seguridad por PR #201. En `0.9.2` quedaron publicados el código, las guardas y el schema `0031–0033`; la expiración a 30 días y purga a 90 están implementadas, pero los switches de producción siguen apagados. Worker/D1 local certificó purga, conservación de cursores y recepción de secuencias posteriores a huecos. El modelo comercial 6/42 no se declara habilitado; sigue pendiente revisión legal/privacidad/costo. La publicación y HTTP se documentan en `ENVIRONMENTS.md`.
+
+## APP-PLATFORM-ADMIN-ORGS — producción 0.9.0 (2026-10-28)
+
+El selector superior de `/app` expone a `platform_admin` activo el directorio de todas las organizaciones, con navegación a `/app/platform/organizations/:organizationId`. El contexto global es explícito y separado de `session.active_organization_id`: el actor conserva su identidad `platform_admin`, sin convertirse en miembro/owner ni cambiar de sesión tenant. Las rutas de gestión reutilizan permisos de plataforma y auditoría ya existentes para lifecycle, equipo (roles `admin|member`), servicios, licencias, integraciones, capacitación y MiniWeb; no agregan capacidades de transferencia/eliminación de owner ni edición del perfil comercial desde el editor cliente. TikTok/YouTube se añadieron al perfil, publicación y MiniWeb mediante migración `0030`. PR #180 quedó integrada en `main@1aa0a969`; Worker `vecidya-platform` desplegado con Version ID `0c997949-e1b8-4e92-b905-33b55d898842`. GET anónimo a `/` dio 200 con `0.9.0` y copyright el 2026-10-28T19:05:48Z. No se ejecutaron certificaciones manuales; no se verificaron rutas autenticadas de producción.
+
+## Corte vigente — release 0.9.0 publicado (2026-10-28)
+
+PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`; Worker `vecidya-platform` Version ID `0c997949-e1b8-4e92-b905-33b55d898842`. La migración D1 `0030_business-profile-tiktok-youtube.sql` se aplicó a `vecidya-prod`. GET anónimo de `https://vecidya.com/` devolvió 200 con versión `0.9.0` y © 2026 Vecidya a las `2026-10-28T19:05:48Z`. Los checks automáticos de CI de #180 pasaron; no se ejecutaron pruebas de certificación manuales.
 
 ## Código integrado y estado Admin (2026-10-27)
 
@@ -42,6 +66,10 @@ PR #103 integra el checkpoint en `origin/main@ae7a768`. El editor MiniWeb distin
 ## UX-PREMIUM-06A — accesibilidad pública por muestra (2026-10-24)
 
 En la rama local `feat/app-mini-ux-06-public-a11y` se corrigieron problemas encontrados por AccessLint en 13 rutas públicas representativas: landmarks complementarios anidados, contraste inferior al umbral automatizado, nombres accesibles que ocultaban texto visible y tabla de comparación sin teclado. Escaneos finales con AccessLint 0.21.0 / Chromium 156, 94 reglas por ruta y ninguna omitida: cero violaciones en las 13 rutas. Se verificaron por teclado menús desktop/móvil y desplazamiento del comparador; a 320 px se presenta el formato compacto sin overflow. Typecheck/build/diff-check PASS. Es una muestra, no certificación WCAG: falta lector de pantalla, zoom 200 % y revisión de rutas no cubiertas. No hay deploy ni HTTP pública fechada.
+
+## UX-PREMIUM-02C — Servicios públicos (checkpoint local, 2026-10-30)
+
+En `feat/app-mini-ux-premium-services-02`, `/servicios` presenta el título como pieza tipográfica, organiza el recorrido en tres pasos escalonados, conserva siete accesos por ancla y reformatea el catálogo como filas editoriales con el detalle visible y los CTA existentes. Se eliminaron imágenes decorativas duplicadas; ningún contenido de oferta ni contrato comercial cambió. Dos pruebas E2E pasaron, incluida la navegación a Contacto y Únete; foco de teclado y `prefers-reduced-motion` se revisaron en el navegador. Typecheck, build y `git diff --check` PASS. Sin deploy ni D1 remota; zoom real al 200 %, lector de pantalla y axe siguen pendientes.
 
 ## UX-PREMIUM-02B — página pública de Servicios (2026-10-24)
 
@@ -410,6 +438,8 @@ CTAs con función separada: Diagnóstico (punto de partida), Vecindario (descubr
 
 ### Aprende (`knowledge.tsx`, `learn-article.tsx`)
 
+- UX-COHERENCE-ROUNDED-001 (publicado en `0.9.2`): la plataforma aplica radios coherentes a tarjetas, paneles, secciones y controles, y separa bloques consecutivos. El menú «Soluciones» mejora estados de foco/activo, chevrón, superficie translúcida y movimiento reducido. Aprende compacta el encabezado y agrupa controles de avance arriba con acciones desplegables y nombres accesibles. Typecheck/build/E2E y checks CI PASS; HTTP anónimo confirma la versión en `ENVIRONMENTS.md`.
+
 - `/aprende` es la ruta canónica y `/que-debes-saber` conserva el alias legado.
 - Estado histórico de APRENDE-EDITORIAL-FINAL-02 (2026-10-25): **48 guías auditadas, 18 borradores y 30 no marcadas como borrador**, 9 itinerarios y 6 categorías. En ese checkpoint se conservaron las banderas por falta de autorización expresa. El estado fue superado por APRENDE-EDITORIAL-APPROVAL-01 arriba.
 - CI del HEAD `322850f` pasó `Aprende quality` #123, `Main integration quality` #189 y 1740/1740 unitarias; PR #138 se integró posteriormente en `main@4dcc27f`. Esta evidencia es histórica y no certifica el nuevo contrato 48/0.
@@ -636,7 +666,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 
 ## Licenciamiento multi-negocio (LICENSE-STRATEGY-001, foundation, solo local)
 
-1 organización = 1 negocio = 1 licencia; la cantidad de organizaciones no depende del plan de ninguna de ellas. `billing_account` (quien paga) es independiente de `member`: pertenecer a una organización (incluida una invitación aceptada) nunca hace que su licencia cuente para el portafolio de otra persona. Portafolio aprobado por el usuario: 1 organización sin descuento, 2 → 10%, 3-4 → 15%, 5+ → 20%, calculado en centavos enteros por `db/pricing/calculator.ts` (función pura, sin acceso a base de datos, 21 pruebas unitarias). Un cambio de plan cancela la licencia vigente y crea una nueva, conservando historial y sin afectar a otras organizaciones del mismo `billing_account`; el precio contratado (`price_id`) no se recalcula cuando cambia el precio de lista (grandfathering real). Solo `platform_admin` asigna, cambia, suspende/reactiva o transfiere una licencia (`/api/platform/organizations/:id/license`), auditado en `platform_audit_log`. No hay checkout, proveedor de cobro, UI de Admin ni entitlement enforcement todavía; la migración `0010` solo se aplicó en local. Detalle completo en [DATABASE.md](DATABASE.md#licenciamiento-multi-negocio-license-strategy-001).
+1 organización = 1 negocio = 1 licencia; la cantidad de organizaciones no depende del plan de ninguna de ellas. `billing_account` (quien paga) es independiente de `member`: pertenecer a una organización (incluida una invitación aceptada) nunca hace que su licencia cuente para el portafolio de otra persona. Portafolio aprobado por el usuario: 1 organización sin descuento, 2 → 10%, 3-4 → 15%, 5+ → 20%, calculado en centavos enteros por `db/pricing/calculator.ts` (función pura, sin acceso a base de datos, 21 pruebas unitarias). Un cambio de plan cancela la licencia vigente y crea una nueva, conservando historial y sin afectar a otras organizaciones del mismo `billing_account`; el precio contratado (`price_id`) no se recalcula cuando cambia el precio de lista (grandfathering real). Solo `platform_admin` asigna, cambia, suspende/reactiva o transfiere una licencia (`/api/platform/organizations/:id/license`), auditado en `platform_audit_log`. Aprende añade en el checkpoint local F2 enforcement server-side con migración `0031` local; no hay checkout, proveedor de cobro ni UI de Admin. No se consultó D1 remota. Detalle de licenciamiento en [DATABASE.md](DATABASE.md#licenciamiento-multi-negocio-license-strategy-001) y evidencia de Aprende en [STATUS.md](STATUS.md).
 
 ## Business Profile: matriz de campos
 
@@ -656,6 +686,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | `logo_url` | `0003` | http/https | sí (URL) | sí | imagen | imagen | `image` | IMPL solo como **URL de texto** (sin subida ni R2) |
 | `whatsapp` | `0007` | `+` + 8–15 dígitos | sí | sí | CTA `wa.me` | no | (deliberado: no) | IMPL |
 | `instagram_url`, `facebook_url`, `linkedin_url` | `0007` | host esperado | sí | sí | enlaces | no | `sameAs` | IMPL |
+| `tiktok_url`, `youtube_url` | `0030` | host esperado | sí | sí | enlaces | no | `sameAs` | migración candidata; pendiente de aplicación y publicación |
 | `service_mode` | `0008` | enum `in_person/remote/hybrid` | sí | sí | «Cómo atiende» | no | — | IMPL |
 | `service_area` | `0008` | ≤280 texto libre | sí | sí | «Cobertura» | no | `areaServed` | IMPL |
 | horarios (`business_hours`) | `0008` | `HH:MM`, apertura<cierre, 1–7 | sí (sección propia) | sí | compactados | no | `openingHoursSpecification` | IMPL |
@@ -690,7 +721,7 @@ Vecidya **no puede hoy**: listar/banear/suplantar usuarios, transferir ownership
 | Adaptador Gmail transaccional (`server/email/mail.server.ts`) | **PASS en producción; Gmail API send, entrega real y password reset E2E confirmados; verificación/invitaciones separadas** |
 | GHL | **OPS-001 DOCUMENTAL** (capacidad/contrato definido; cuenta real NOT VERIFIED; 0 código) |
 | Google, Meta, WhatsApp API, Stripe, Twilio | **NOT FOUND** |
-| WhatsApp/Instagram/Facebook/LinkedIn en perfil | Campos y enlaces (`wa.me`), no integración |
+| WhatsApp/Instagram/Facebook/LinkedIn/TikTok/YouTube en perfil | Campos y enlaces (`wa.me`), no integración; TikTok/YouTube candidatos en 0.9.0 y pendientes de publicación |
 
 Vecidya es responsable de cuentas, organizaciones, membresías, permisos, perfiles, servicios, directorio, experiencia pública, portal y metadata de integraciones. GHL será el system of record de contactos, leads, oportunidades, pipelines, conversaciones, citas, workflows, automatizaciones y seguimiento. OPS-001 define un piloto mínimo de una location, pero no lo ejecuta. No se implementa un CRM paralelo.
 
@@ -772,6 +803,16 @@ QA-03B usa calibración v4 en el código de `/diagnostico` y el replay del Worke
 ## Release de producción 0.8.2 (2026-10-26)
 
 PR #139 integrado y migración `0029` aplicada; versión `0.8.2` desplegada al 100 % con GET anónimo posterior al deploy. El release incorpora QA-03B integrado en `/diagnostico`, cuyo estado de publicación específico no se certifica por esta nota. Version ID, HTTP y estado de staging: `ENVIRONMENTS.md`.
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — integrado en 0.9.0
+
+`/app/business-profile` comparte la composición de edición por secciones de MiniWeb: panel lateral persistente en escritorio, navegación horizontal en viewport estrecho y un grupo visible por vez. Se mantienen los contratos de perfil/horarios, preview, permisos y publicación explícita. PR #180 integra además TikTok y YouTube en el paso Redes; release `0.9.0` y migración `0030` están publicados/aplicados. Sin verificación manual de rutas autenticadas de producción.
+
 ## APP-MINI-02B — publicado en 0.8.3 (2026-10-26)
 
 PR #153 integrado en `main@ede3f187` y desplegado a producción como `0.8.3` (Worker Version ID `a9ee55c5-f346-49a2-8f74-b8c6e45db36a`, deployment al 100 %). Se corrigen validación y navegación de horarios, se administra el logo solo en Archivos e identidad de Mi MiniWeb, y la portada aparece detrás del logo dentro de su marco. MiniWeb y Vecindario comparten los medios del snapshot publicado; las secciones y tarjetas tienen una composición responsive más uniforme. E2E MiniWeb 134/134, E2E horarios, typecheck/build/diff-check PASS. GET anónimo de solo lectura en `/` confirmó HTTP 200, versión 0.8.3 y © 2026 Vecidya a las 20:43:33Z. No se probaron rutas de producción ni se cambió D1 remota. Evidencia: `ENVIRONMENTS.md`.
+## Mi Vecidya / MiniWeb V2 — implementación por checkpoints (2026-10-29)
+
+IMP-01–08 tienen código local en ramas/checkpoints apilados; varios son implementaciones parciales y no están integradas ni publicadas. IMP-08 añade conversión V1 voluntaria a un sitio V2 independiente con allowlist y provenance (`0037`, solo D1 local); pruebas unitarias y Worker local PASS. Deuda transversal aún abierta: controles de sección más guiados, pruebas Worker/CAS/cupo/rollback, revisión visual de 45 combinaciones y aceptación VIS-01, SEC-QA, decisión comercial COM-01 para P6A, IMP-10 e IMP-11. IMP-12 pagos P6B permanece aplazado; no se han autorizado merge o despliegue.
+## UX-PREMIUM-01 — base visual en checkpoint
+
+La guía premium se aplica progresivamente a web pública, Mi Vecidya, Admin y MiniWeb V2 bajo el alcance aprobado el 2026-10-30. `app/styles/premium-foundation.css`, importado por `app/root.tsx`, contiene tokens `--v-*` y refinamientos de tipografía/controles en `.public-site`, `.app-shell` y `.admin-shell`. Los botones primarios/secundarios son la primera migración explícita de color. No reemplaza otros tokens heredados ni aplica la identidad Vecidya a la MiniWeb pública del negocio. Evidencia local: typecheck/build, E2E público, cinco capturas comparables de Home, foco por teclado y movimiento reducido PASS. La implementación visual por ruta, la matriz para App/Admin/MiniWeb y revisión de estados protegidos quedan pendientes; esto no certifica accesibilidad ni el conjunto de la plataforma.

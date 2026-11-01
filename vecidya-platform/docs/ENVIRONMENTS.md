@@ -1,6 +1,28 @@
-# Entornos y release de producción 0.8.4 (2026-10-27)
+# Entornos y release de producción 0.9.2 (2026-10-29)
 
-## Release de producción 0.8.4 — publicado
+PR #213 quedó integrada en `main@8ed60e51ecc295c5ef897c95ca0f6dd3ba7305a9`; `package.json` fija `0.9.2`. Incluye el refinamiento global de interfaz del PR #210 y la entrega de seguridad/accesibilidad/progreso de Aprende previamente candidata como `0.9.1`.
+
+**D1 RAN 2026-10-29 (hora local):** se aplicaron en orden `0031_learn-access-grant.sql`, `0032_learn-personal-progress.sql` y `0033_learn-sync-operations.sql` en `vecidya-prod` (`8edc3f04-258e-4c29-9f33-76fec3d25042`). Las migraciones crean/ajustan tablas e índices de grants, progreso y recibos; no incluyen backfill de filas de usuario. La consulta posterior confirmó `No migrations to apply`.
+
+**Deploy RAN 2026-10-30T03:40:09Z:** Wrangler 4.152.0 desplegó `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), Version ID `6e3d05e2-6c56-4496-b2a8-9c67ccaaf033` al 100 %. Rutas `vecidya.com/*` y `www.vecidya.com/*`, `DB=vecidya-prod`, R2 `vecidya-business-media-prod` y Cron `17 3 * * *` se conservaron. Los flags `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` permanecen `false`; la revisión legal/privacidad/costo sigue pendiente.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-30T03:40:21Z (2026-10-29 hora local):** `GET /` y `GET /aprende` → 200, versión `0.9.2` y `© 2026 Vecidya`; `/aprende` muestra 48 guías. `GET /__health/db` → 200. Sin sesión ni acceso a datos de usuario. Esto acredita publicación pública; no es certificación WCAG ni activa las políticas de purga pendientes.
+
+# Entornos y release de producción 0.9.0 (2026-10-28)
+
+## Release de producción 0.9.0 — publicado
+
+PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`; versión de aplicación `0.9.0`. Incluye acceso global `platform_admin` desde `/app`, navegación administrativa con organización objetivo explícita y enlaces opcionales TikTok/YouTube en Mi negocio, Vecindario y MiniWeb.
+
+**D1 RAN 2026-10-28:** preflight de `vecidya-prod` (ID `8edc3f04-258e-4c29-9f33-76fec3d25042`) encontró solo pendiente `0030_business-profile-tiktok-youtube.sql`; se aplicó correctamente con Wrangler remoto. Migración aditiva de dos columnas nullable; sin backfill ni cambios de datos existentes.
+
+**Deploy RAN 2026-10-28:** Wrangler 4.152.0 desplegó `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), Worker Version ID `0c997949-e1b8-4e92-b905-33b55d898842`, rutas `vecidya.com/*` y `www.vecidya.com/*`, binding `DB=vecidya-prod`, R2 `vecidya-business-media-prod` y Cron `17 3 * * *`.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-28T19:05:48Z:** `GET https://vecidya.com/` → 200; HTML con versión `0.9.0` y `© 2026 Vecidya`. No se abrió sesión ni se verificaron rutas autenticadas de la aplicación en producción.
+
+Typecheck, build y los checks automáticos de CI de la PR #180 terminaron PASS. No se ejecutaron pruebas de certificación manuales, según instrucción del usuario.
+
+## Release de producción 0.8.4 — publicado (2026-10-27)
 
 PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; versión de aplicación `0.8.4`. Incluye refinamientos del editor MiniWeb y Mi negocio, paginación de organizaciones ya integrada en PR #173 y el paquete A Team que el usuario pidió incluir.
 
@@ -82,7 +104,7 @@ El preflight inicial encontró Wrangler sin login y se completó tras la autenti
 
 ## DIAG-PRIVACY-PURGE-01 — automatización preparada, switches cerrados (2026-10-22)
 
-`wrangler.jsonc` programa Cron diario `17 3 * * *` (UTC) para el Worker base, pero `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED=false` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED=false` evitan todo borrado en producción hasta aprobación y cambio autorizado de ambos. Staging no registra Cron y mantiene ambos valores en `false`. Desarrollo puede habilitar ambos solo para ensayos con `AUTHZ_D1_PERSIST_TO` dirigido a una D1 temporal. Esto es configuración de código, no cron desplegado ni ejecución publicada: sin deploy, D1 remota o HTTP público. No usar `--remote`.
+`wrangler.jsonc` programa Cron diario `17 3 * * *` (UTC) para el Worker base. Los flags `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED` y `DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED` controlan el borrado del funnel. Para Aprende, `LEARN_OPERATION_RECEIPT_PURGE_ENABLED` y `LEARN_OPERATION_RECEIPT_PURGE_APPROVED` permanecen `false` en la configuración productiva del repositorio y exigen ambos `true`; no se cambian hasta la revisión legal/privacidad/costo. Staging no registra Cron y conserva ambos flags Aprende en `false`. Desarrollo puede habilitarlos explícitamente solo con una D1 temporal. Esto es configuración de código, no cron/despliegue/ejecución publicada: sin deploy, D1 remota o HTTP público. No usar `--remote`.
 
 ## DIAG-V3-FUNNEL-01C — pruebas locales (2026-10-12)
 

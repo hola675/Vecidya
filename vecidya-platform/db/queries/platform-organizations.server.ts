@@ -19,6 +19,11 @@ export async function updatePlatformTeamRole(database: Database, input: { organi
 export type OrganizationProfileFilter = "all" | "published" | "draft" | "none";
 export type OrganizationSort = "name-asc" | "name-desc" | "created-asc" | "created-desc";
 
+export async function listPlatformOrganizationOptions(database: Database) {
+  return database.select({ id: organization.id, name: organization.name, slug: organization.slug })
+    .from(organization).orderBy(asc(sql`lower(${organization.name})`), asc(organization.id));
+}
+
 export async function listPlatformOrganizationsPage(database: Database, options: {
   search: string;
   profile: OrganizationProfileFilter;
