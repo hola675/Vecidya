@@ -51,6 +51,18 @@ const entries: readonly V9EvidenceCorrelationMetadata[] = [
   { questionId: "q2_dental_care_continuation", dimension: "relationship_recurrence", directness: "direct", constructKey: "appointment_rebooking", overlapGroup: "appointment_continuation", observationScope: "recent_period" },
   { questionId: "q2_food_menu_visibility", dimension: "clarity_positioning", directness: "direct", constructKey: "offer_clarity", overlapGroup: "offer_clarity_specialization", observationScope: "current_state" },
   { questionId: "q2_marketing_agency_scope_clarity", dimension: "clarity_positioning", directness: "direct", constructKey: "offer_clarity", overlapGroup: "offer_clarity_specialization", observationScope: "current_state" },
+  { questionId: "q2_startup_problem_clarity", dimension: "clarity_positioning", directness: "direct", constructKey: "startup_problem_audience_clarity", observationScope: "current_state" },
+  { questionId: "q2_startup_validation_evidence", dimension: "clarity_positioning", directness: "supporting", constructKey: "startup_problem_validation", observationScope: "recent_period" },
+  { questionId: "q2_startup_offer_readiness", dimension: "clarity_positioning", directness: "direct", constructKey: "startup_offer_readiness", observationScope: "current_state" },
+  { questionId: "q2_ecommerce_checkout_friction", dimension: "conversion_access", directness: "direct", constructKey: "ecommerce_checkout_completion_friction", observationScope: "recent_period" },
+  { questionId: "q2_nonprofit_donation_clarity", dimension: "conversion_access", directness: "direct", constructKey: "nonprofit_donation_access", observationScope: "current_state" },
+  { questionId: "q2_ecommerce_cart_visibility", dimension: "measurement_optimization", directness: "supporting", constructKey: "ecommerce_cart_abandonment_visibility", observationScope: "recent_period" },
+  { questionId: "q2_ecommerce_cart_followup", dimension: "relationship_recurrence", directness: "direct", constructKey: "ecommerce_cart_followup", observationScope: "recent_period" },
+  { questionId: "q2_b2b_qualification", dimension: "digital_readiness", directness: "direct", constructKey: "b2b_opportunity_qualification", observationScope: "current_state" },
+  { questionId: "q2_nonprofit_membership_lifecycle", dimension: "conversion_access", directness: "direct", constructKey: "nonprofit_membership_access", observationScope: "current_state" },
+  { questionId: "q2_operations_process_ownership", dimension: "digital_readiness", directness: "direct", constructKey: "operational_process_ownership", observationScope: "current_state" },
+  { questionId: "q2_followup_status_visibility", dimension: "relationship_recurrence", directness: "direct", constructKey: "followup_status_review", observationScope: "recent_period" },
+  { questionId: "q2_measurement_source_confidence", dimension: "measurement_optimization", directness: "direct", constructKey: "acquisition_source_attribution", observationScope: "recent_period" },
 ] as const;
 
 const keyOf = (questionId: string, dimension: DigitalDimensionId) =>
