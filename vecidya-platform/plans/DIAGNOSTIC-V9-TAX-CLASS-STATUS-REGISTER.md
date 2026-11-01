@@ -1,7 +1,7 @@
 # Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
 
-**Versión:** 0.1.0  
-**Fecha:** 2026-10-31  
+**Versión:** 0.1.1  
+**Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · COMPATIBILIDAD DOCUMENTADA / EJECUCIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
@@ -13,7 +13,7 @@
 | CLASS-02 | puente oldValue→atributos, persistencia, replay, ownership y consumers | PARCIAL / NO CERTIFICADA |
 | CLASS-03 | reglas/fallbacks dental, food, agency, real estate | PARCIAL / NO CERTIFICADA |
 | CLASS-04 | C01–C10, híbridos, unknown, cambio de sector, replay | PARCIAL / NO CERTIFICADA |
-| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | ABIERTA / NO AUTORIZADA |
+| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | READY_FOR_HUMAN_REVIEW / NO APROBADA |
 
 Ninguna clase está certificada bajo el SHA actual porque la fase vigente continúa siendo PLAN_ONLY.
 
@@ -98,7 +98,8 @@ Bloqueos:
 
 Fuentes:
 - `DIAGNOSTIC-V9-CLASS05-HUMAN-APPROVAL-HANDOFF.md` — blob `87097824b5a160efb9fb69e77277f47710e4e49d`;
-- `DIAGNOSTIC-V9-CLASS05-APPROVAL-MATRIX.md` — blob `e3002b22033c5c6bcd32076da92eb3b870bebf3c`.
+- `DIAGNOSTIC-V9-CLASS05-APPROVAL-MATRIX.md` — blob `4a664f6feafd0bffafd74fc9acaa250f8c673353`;
+- `DIAGNOSTIC-V9-CLASS05-CLOSURE-REGISTER.md` — blob `903fced4ed7831b2651d9a3df3b024226179c44f`.
 
 Preparado:
 - decisiones A–H;
@@ -109,9 +110,19 @@ Preparado:
 - orden recomendado de revisión humana.
 
 Estado:
-- A–H = OPEN;
+- A–H = READY_FOR_HUMAN_REVIEW;
+- ninguna DEC está APPROVED;
 - PLAN_ONLY sigue vigente;
 - ninguna implementación/prueba autorizada por estos documentos.
+
+Bloqueos transversales priorizados:
+- binding de calibración v2/v4;
+- correlación de observaciones;
+- ledger D1 anónimo vs borrador local-only;
+- hard cap 24 vs política 24+5;
+- colisión de migraciones main/V9 0030–0035;
+- restore/versionado entre bancos;
+- pruebas CLASS-01…04 sin PASS actual.
 
 ## 7. Invariantes globales
 
@@ -150,4 +161,5 @@ La deuda principal ya no es descubrir cómo funciona el código, sino cerrar dec
 
 ## Changelog
 
+- **0.1.1 / 2026-11-01:** CLASS-05 queda documentalmente lista para revisión humana; A–H tienen paquetes propios, sin aprobación ni ejecución; se registran bloqueos transversales P0.
 - **0.1.0 / 2026-10-31:** consolidación global CLASS-01…05, invariantes y gate de salida de PLAN_ONLY.
