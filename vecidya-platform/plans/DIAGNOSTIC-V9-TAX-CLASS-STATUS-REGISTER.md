@@ -1,6 +1,6 @@
 # Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
 
-**Versión:** 0.1.1  
+**Versión:** 0.1.2  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · COMPATIBILIDAD DOCUMENTADA / EJECUCIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -139,7 +139,16 @@ Bloqueos transversales priorizados:
 11. No borrar V8/legacy/migraciones históricas antes de gates F08/F09.
 12. Merge/deploy requieren autorización separada.
 
-## 8. Ruta de salida de PLAN_ONLY
+## 8. Consolidación ejecutiva disponible
+
+Ya existen dos artefactos adicionales:
+
+- `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`: recomendación consolidada A–H, sin aprobación implícita.
+- `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md`: waves W0–W10, con F00 como primer scope recomendado si se levanta PLAN_ONLY parcialmente.
+
+`DIAGNOSTIC-V9-READY-FOR-AGENT.md` fue actualizado a v0.1.1 y permanece `NOT_READY / PLAN_ONLY`.
+
+## 9. Ruta de salida de PLAN_ONLY
 
 El siguiente cambio de estado no debe ocurrir por inferencia.
 
@@ -153,7 +162,7 @@ Para pasar de documentación a ejecución se necesita instrucción explícita de
 
 Hasta esa instrucción, el trabajo permitido sigue siendo lectura y documentación.
 
-## 9. Estado global
+## 10. Estado global
 
 **TAX-CLASS CLASS-01…05: DOCUMENTACIÓN AVANZADA / NO CERTIFICADA / NO READY FOR EXECUTION.**
 
@@ -161,5 +170,6 @@ La deuda principal ya no es descubrir cómo funciona el código, sino cerrar dec
 
 ## Changelog
 
+- **0.1.2 / 2026-11-01:** se incorporan la hoja ejecutiva A–H, el scope condicional W0–W10 y el READY_FOR_AGENT actualizado; no cambia el estado de ejecución.
 - **0.1.1 / 2026-11-01:** CLASS-05 queda documentalmente lista para revisión humana; A–H tienen paquetes propios, sin aprobación ni ejecución; se registran bloqueos transversales P0.
 - **0.1.0 / 2026-10-31:** consolidación global CLASS-01…05, invariantes y gate de salida de PLAN_ONLY.
