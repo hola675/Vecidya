@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.2  
+**Versión:** 0.1.3  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -78,9 +78,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F04, F08.
 
-**Evidencia:** CLASS-02 scorer; CLASS-03 specialty/real-estate; replay V9.
+**Evidencia:** CLASS-02 scorer; CLASS-03 specialty/real-estate; replay V9; `DIAGNOSTIC-V9-DECD-OBSERVATION-CORRELATION-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 6. DEC-E — informe identificado, retención y acceso
 
@@ -187,7 +187,7 @@ Hasta entonces, el estado permanece documental.
 | A | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-A | DEC-A pack + CLASS-02/04 |
 | B | OPEN | — | — | — | scoring/coverage |
 | C | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-C | DEC-C pack + 77/82/90 |
-| D | OPEN | — | — | — | provenance/replay |
+| D | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-D | DEC-D pack + provenance/replay |
 | E | OPEN | — | — | — | ownership/result |
 | F | OPEN | — | — | — | planner/recommendations |
 | G | OPEN | — | — | — | D-V9-007/008 |
@@ -195,6 +195,7 @@ Hasta entonces, el estado permanece documental.
 
 ## Changelog
 
+- **0.1.3 / 2026-11-01:** DEC-D pasa a READY_FOR_HUMAN_REVIEW con paquete de correlación y deduplicación; sin integración runtime.
 - **0.1.2 / 2026-11-01:** DEC-C pasa a READY_FOR_HUMAN_REVIEW con paquete editorial 77/82/90; no activa banco ni scoring.
 - **0.1.1 / 2026-11-01:** DEC-A pasa a READY_FOR_HUMAN_REVIEW con paquete 8×10; no cambia aprobación ni PLAN_ONLY.
 - **0.1.0 / 2026-10-31:** matriz A–H con propuesta, alternativa, riesgo, fallback, impacto y orden de revisión humana.
