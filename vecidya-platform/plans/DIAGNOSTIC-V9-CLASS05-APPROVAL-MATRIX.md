@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.5  
+**Versión:** 0.1.6  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -94,9 +94,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F05, F07, F08, F10.
 
-**Evidencia:** CLASS-02 ownership/claims/migrations.
+**Evidencia:** CLASS-02 ownership/claims/migrations; `DIAGNOSTIC-V9-DECE-IDENTITY-RETENTION-REPORT-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 7. DEC-F — priorización, presupuesto y fallbacks
 
@@ -188,13 +188,14 @@ Hasta entonces, el estado permanece documental.
 | B | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; resolver binding v2/v4 y revisar paquete DEC-B | DEC-B pack + scoring/coverage |
 | C | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-C | DEC-C pack + 77/82/90 |
 | D | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-D | DEC-D pack + provenance/replay |
-| E | OPEN | — | — | — | ownership/result |
+| E | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; reconciliar ledger anónimo con D029/D033 y decidir alcance D1 | DEC-E pack + ownership/result |
 | F | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; hard cap técnico 24 no implementa aún 24+5 | DEC-F pack + planner/recommendations |
 | G | OPEN | — | — | — | D-V9-007/008 |
 | H | OPEN | — | — | — | F00/F09/F10 |
 
 ## Changelog
 
+- **0.1.6 / 2026-11-01:** DEC-E pasa a READY_FOR_HUMAN_REVIEW; se documenta la tensión entre ledger D1 individual y borrador anónimo local/analítica agregada.
 - **0.1.5 / 2026-11-01:** DEC-F pasa a READY_FOR_HUMAN_REVIEW; se documenta la brecha hard cap 24 vs política 24+5 y el ranking multicriterio pendiente.
 - **0.1.4 / 2026-11-01:** DEC-B pasa a READY_FOR_HUMAN_REVIEW; se registra como bloqueo la falta de binding explícito entre scoring_version y calibración v2/v4.
 - **0.1.3 / 2026-11-01:** DEC-D pasa a READY_FOR_HUMAN_REVIEW con paquete de correlación y deduplicación; sin integración runtime.
