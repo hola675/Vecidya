@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-05 Closure Register
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · DOCUMENTACIÓN LISTA PARA REVISIÓN HUMANA · NO APROBADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -128,7 +128,26 @@ Estado Git revalidado:
 
 **Bloqueo P0:** reconciliar historia de migraciones antes de F00.
 
-## 4. Orden recomendado de aprobación
+## 4. Hoja ejecutiva y alcance condicional
+
+Se añadieron dos artefactos de consolidación:
+
+- `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md` — recomendación compacta de disposición A–H; no es aprobación.
+- `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md` — waves W0–W10 y orden incremental de ejecución condicionado a aprobación y levantamiento parcial de PLAN_ONLY.
+
+Recomendación consolidada actual, **no aprobada**:
+- A APPROVED;
+- B APPROVED_WITH_FALLBACK;
+- C APPROVED_WITH_FALLBACK;
+- D APPROVED;
+- E APPROVED_WITH_FALLBACK;
+- F APPROVED;
+- G APPROVED;
+- H APPROVED_WITH_FALLBACK.
+
+La hoja conserva los P0 y no autoriza código.
+
+## 5. Orden recomendado de aprobación
 
 1. **A** — definir qué se evalúa.
 2. **C** — aprobar qué se pregunta.
@@ -141,7 +160,7 @@ Estado Git revalidado:
 
 El orden evita calibrar un banco no aprobado o diseñar corte sobre contratos aún variables.
 
-## 5. Condición de aprobación
+## 6. Condición de aprobación
 
 Cada DEC debe registrar:
 - APPROVED / APPROVED_WITH_FALLBACK / DEFERRED / REJECTED;
@@ -152,7 +171,7 @@ Cada DEC debe registrar:
 
 La aprobación de una DEC no levanta PLAN_ONLY automáticamente.
 
-## 6. Condición para READY_FOR_AGENT
+## 7. Condición para READY_FOR_AGENT
 
 Se requiere:
 1. A–H aprobadas o diferidas con fallback explícito;
@@ -161,7 +180,7 @@ Se requiere:
 4. tests focales permitidos;
 5. instrucción explícita de levantar PLAN_ONLY total o parcialmente.
 
-## 7. Bloqueos transversales prioritarios
+## 8. Bloqueos transversales prioritarios
 
 Antes de cualquier implementación amplia deben resolverse:
 
@@ -173,7 +192,7 @@ Antes de cualquier implementación amplia deben resolverse:
 6. **Restore/versioning:** bancos y resultados históricos.
 7. **CLASS-01…04 tests:** no existen PASS actuales del SHA final.
 
-## 8. Qué sigue permitido bajo PLAN_ONLY
+## 9. Qué sigue permitido bajo PLAN_ONLY
 
 - revisar A–H;
 - corregir/afinar documentos;
@@ -189,7 +208,7 @@ No permitido:
 - activar V9;
 - deploy.
 
-## 9. Estado final de CLASS-05
+## 10. Estado final de CLASS-05
 
 **CLASS-05 = DOCUMENTALMENTE PREPARADA / READY_FOR_HUMAN_REVIEW / NO APROBADA / NO READY_FOR_EXECUTION.**
 
@@ -197,4 +216,5 @@ El siguiente gate ya no es inventario técnico amplio: es revisión humana de A�
 
 ## Changelog
 
+- **0.1.1 / 2026-11-01:** se añaden hoja ejecutiva A–H y scope post-aprobación W0–W10; no cambia aprobación ni PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** cierre documental CLASS-05; ocho DEC listas para revisión humana, siete bloqueos transversales y gate READY_FOR_AGENT.
