@@ -26,7 +26,12 @@ import {
 import { V9_EVIDENCE_CORRELATION_REGISTRY_ID } from "../v9/evidence-correlation-registry";
 import { V9_SCORING_EVIDENCE_REGISTRY_ID } from "../v9/scoring-evidence-registry";
 import { scoreV9Dimensions, V9_SCORING_ENGINE_ID } from "../v9/scoring-engine";
-import { computeV9OverallIndex, V9_OVERALL_INDEX_ID } from "../v9/overall-index";
+import {
+  computeV9OverallIndex,
+  V9_HISTORICAL_OVERALL_COMPAT_ID,
+  V9_OVERALL_INDEX_ID,
+} from "../v9/overall-index";
+import { computeHistoricalV9OverallCompat } from "./v9-historical-overall-compat";
 
 export const QA03B_V9_WORKER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
@@ -51,7 +56,9 @@ export function buildQa03bV9CoreResultIdentity(scoringVersion: string) {
     correlation: V9_EVIDENCE_CORRELATION_REGISTRY_ID,
     evidenceRegistry: V9_SCORING_EVIDENCE_REGISTRY_ID,
     scoringEngine: V9_SCORING_ENGINE_ID,
-    overallIndex: V9_OVERALL_INDEX_ID,
+    overallIndex: resolved.calibration.overall.coverageBasis === "applicable_dimensions"
+      ? V9_OVERALL_INDEX_ID
+      : V9_HISTORICAL_OVERALL_COMPAT_ID,
   } as const);
 }
 
@@ -289,11 +296,18 @@ export function replayQa03bSessionV9Core(
   const prelaunch =
     planView.plan.context.activity.status === "resolved" &&
     planView.plan.context.activity.value === "prelaunch";
-  const overall = computeV9OverallIndex({
-    dimensions: scoring.dimensions,
-    calibration: scoringProfile.calibration,
-    prelaunch,
-  });
+  const overall = scoringProfile.calibration.overall.coverageBasis === "applicable_dimensions"
+    ? computeV9OverallIndex({
+        dimensions: scoring.dimensions,
+        calibration: scoringProfile.calibration,
+        prelaunch,
+      })
+    : computeHistoricalV9OverallCompat({
+        dimensions: scoring.dimensions,
+        answers: planView.activeAnswers,
+        calibration: scoringProfile.calibration,
+        prelaunch,
+      });
 
   return {
     ok: true,
