@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { V9_CURRENT_SCORING_VERSION } from "../../../app/features/diagnostic/v9/scoring-calibration-registry";
 import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import test from "node:test";
@@ -24,7 +25,7 @@ const migrations = [
   "0043_diagnostic_v9_result_finalization_guards.sql",
 ];
 const versions = {
-  bank: "bank-v9-test", engine: "engine-v9-test", scoring: "scoring-v9-test",
+  bank: "bank-v9-test", engine: "engine-v9-test", scoring: V9_CURRENT_SCORING_VERSION,
   recommendations: "recommendations-v9-test", consent: "consent-v9-test",
 };
 
