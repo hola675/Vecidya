@@ -7,6 +7,7 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
+import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
 
 /**
  * DIAG-V3-R6-B: candidate-only question topics, kept out of the shared (publicly bundled)
@@ -22,7 +23,7 @@ const CANDIDATE_QUESTION_TOPICS_V3: Readonly<Record<string, string>> = {
   q2_measurement_practice: "la forma de registrar y revisar los resultados",
 };
 
-export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[] };
+export type CandidateNarrativeAndOverallInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[]; readonly strictCorrelation?: boolean; readonly correlations?: readonly ConfirmedObservationCorrelationV1[] };
 
 export type CandidateNarrativeAndOverallV3 = CandidateInterpretationCoreV3 & {
   readonly narrative: DiagnosticNarrative;
@@ -48,7 +49,7 @@ function hasCandidateObservability(index: DigitalPresenceStatus["index"]): index
 export function buildCandidateNarrativeAndOverallV3(input: CandidateNarrativeAndOverallInputV3): CandidateNarrativeAndOverallV3 {
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
   const bank = input.bank ?? REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
-  const core = buildCandidateInterpretationCoreV3({ answers: input.answers, calibration, bank });
+  const core = buildCandidateInterpretationCoreV3({ answers: input.answers, calibration, bank, strictCorrelation: input.strictCorrelation, correlations: input.correlations });
   const narrative = buildDiagnosticNarrative({
     answers: core.activeAnswers,
     scoring: core.scoring,
