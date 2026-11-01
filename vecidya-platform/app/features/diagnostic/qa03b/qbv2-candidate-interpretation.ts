@@ -8,6 +8,7 @@ import type { DigitalDimensionId } from "../qbv2-dimensions";
 import type { AnswersV2 } from "../qbv2-rules";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
+import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
 
 /**
  * DIAG-V3-R6-A: the only seam through which candidate semantic facts learn evidence authority. Derived
@@ -34,7 +35,7 @@ function candidateSemanticEvidenceCatalogForBank(bank: readonly QuestionDefiniti
 export const CANDIDATE_SEMANTIC_EVIDENCE_CATALOG_V3: SemanticEvidenceCatalog =
   candidateSemanticEvidenceCatalogForBank(REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3);
 
-export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[] };
+export type CandidateInterpretationCoreInputV3 = { readonly answers: AnswersV2; readonly calibration?: CandidateCalibrationV3; readonly bank?: readonly QuestionDefinitionV2[]; readonly strictCorrelation?: boolean; readonly correlations?: readonly ConfirmedObservationCorrelationV1[] };
 
 export type CandidateInterpretationCoreV3 = {
   readonly activeAnswers: AnswersV2;
@@ -58,7 +59,7 @@ export function buildCandidateInterpretationCoreV3(input: CandidateInterpretatio
   const bank = input.bank ?? REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3;
   const scoring = input.bank === undefined
     ? scoreCandidateContextualDimensionsV3({ answers: input.answers, calibration })
-    : scorePinnedCandidateContextualDimensionsV3({ answers: input.answers, calibration }, bank);
+    : scorePinnedCandidateContextualDimensionsV3({ answers: input.answers, calibration, strictCorrelation: input.strictCorrelation, correlations: input.correlations }, bank);
   const priorities = deriveConstraintsAndPriorities(scoring, calibration.severity);
   // Semantic facts must read the resolved active answers, never the caller's raw/stale ones: an earlier
   // answer that routing invalidated must not resurrect stale evidence, constraints, or provenance.
