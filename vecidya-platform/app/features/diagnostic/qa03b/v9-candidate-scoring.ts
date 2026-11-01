@@ -11,6 +11,11 @@ import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
+import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
+import {
+  applyV9ObservationCorrelationPolicy,
+  type V9CorrelationPolicyResult,
+} from "../v9/evidence-correlation-registry";
 
 export type CandidateContextualDimensionResultV3 = Omit<ReturnType<typeof scoreDimensionWithApplicability>, "applicability"> & {
   readonly applicability: DimensionApplicabilityDecisionV3["applicability"];
@@ -23,12 +28,16 @@ export type CandidateContextualScoringResultV3 = {
   readonly activeAnswers: AnswersV2;
   readonly context: ResolvedDomainContext;
   readonly dimensions: readonly CandidateContextualDimensionResultV3[];
+  readonly correlation: V9CorrelationPolicyResult | null;
 };
 
 export type CandidateContextualScoringInputV3 = {
   readonly answers: AnswersV2;
   /** DIAG-V3-R8-A: candidate numeric calibration; defaults to the isolated baseline `CANDIDATE_CALIBRATION_V3`. */
   readonly calibration?: CandidateCalibrationV3;
+  /** Authoritative V9 callers enable this. Lower-level historical QA remains unchanged by default. */
+  readonly strictCorrelation?: boolean;
+  readonly correlations?: readonly ConfirmedObservationCorrelationV1[];
 };
 
 function sameAnswer(left: string | readonly string[] | undefined, right: readonly string[]): boolean {
@@ -95,8 +104,13 @@ export function scoreCandidateContextualDimensionsV3(
   const calibration = input.calibration ?? CANDIDATE_CALIBRATION_V3;
   const resolution = resolveEligibleQuestionsV2(input.answers, bank);
   const derived = deriveContextualEvidence(resolution.activeAnswers, bank);
-  const evidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)
+  const calibratedEvidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)
     .map((item) => ({ ...item, contribution: calibration.capabilityContribution[item.state] }));
+  const correlation = input.strictCorrelation
+    ? applyV9ObservationCorrelationPolicy(calibratedEvidence, input.correlations ?? [])
+    : null;
+  if (correlation && !correlation.scoreSafe) throw new Error("v9_correlation_not_score_safe");
+  const evidence = correlation?.accepted ?? calibratedEvidence;
   const dimensionCalibration = candidateDimensionCalibrationV3(calibration);
 
   const dimensions = DIGITAL_DIMENSIONS.map((definition) => {
@@ -114,5 +128,5 @@ export function scoreCandidateContextualDimensionsV3(
     };
   });
 
-  return { activeAnswers: resolution.activeAnswers, context: resolution.context, dimensions };
+  return { activeAnswers: resolution.activeAnswers, context: resolution.context, dimensions, correlation };
 }
