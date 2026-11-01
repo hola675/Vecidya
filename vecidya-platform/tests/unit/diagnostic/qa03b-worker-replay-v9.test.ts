@@ -20,7 +20,7 @@ import {
   type CandidateSessionV9Prototype,
 } from "../../../app/features/diagnostic/qa03b/v9-session-prototype";
 import {
-  QA03B_V9_CORE_RESULT_IDENTITY,
+  buildQa03bV9CoreResultIdentity,
   QA03B_V9_WORKER_TTL_MS,
   replayQa03bSessionV9Core,
 } from "../../../app/features/diagnostic/qa03b/worker-replay-v9.server";
@@ -32,6 +32,10 @@ import { scoreCandidateContextualDimensionsV3 } from "../../../app/features/diag
 import { CANDIDATE_RESULT_IDENTITY_V3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-pipeline";
 import { ANSWER_SCHEMA_ID, QUESTION_BANK_ID, SESSION_KEY, SESSION_SCHEMA, WORKER_REPLAY_VERSION } from "../../../app/features/diagnostic/qa03b/contract";
 import { createCandidateSessionV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-session";
+import {
+  resolveV9ScoringCalibration,
+  V9_CURRENT_SCORING_VERSION,
+} from "../../../app/features/diagnostic/v9/scoring-calibration-registry";
 
 const NOW = 1_900_000_000_000;
 const byId = new Map(bank77.map((q) => [q.id, q]));
@@ -119,6 +123,7 @@ function envelope(session: CandidateSessionV9Prototype) {
     questionBank: QA03B_V9_QUESTION_BANK_ID,
     sessionSchema: QA03B_V9_SESSION_SCHEMA,
     sessionKey: QA03B_V9_SESSION_KEY,
+    scoringVersion: V9_CURRENT_SCORING_VERSION,
     session,
   };
 }
@@ -133,7 +138,7 @@ test("V9 Worker core replay authoritatively rebuilds route, interaction budget, 
   assert.equal(replay.session.interactionCount, session.interactionCount);
   assert.deepEqual(replay.session.answers, session.answers);
   assert.deepEqual(replay.session.answeredQuestionIds, session.answeredQuestionIds);
-  assert.deepEqual(replay.core.identity, QA03B_V9_CORE_RESULT_IDENTITY);
+  assert.deepEqual(replay.core.identity, buildQa03bV9CoreResultIdentity(V9_CURRENT_SCORING_VERSION));
   assert.equal(replay.core.interactionCount, session.interactionCount);
   assert.equal(replay.core.context.niche.status, "resolved");
   if (replay.core.context.niche.status === "resolved") {
@@ -141,7 +146,7 @@ test("V9 Worker core replay authoritatively rebuilds route, interaction budget, 
   }
   assert.equal(replay.core.dimensions.length, 8);
 
-  const expected = scoreCandidateContextualDimensionsV3({ answers: session.answers }, bank77);
+  const expected = scoreCandidateContextualDimensionsV3({ answers: session.answers, calibration: resolveV9ScoringCalibration(V9_CURRENT_SCORING_VERSION).calibration, strictCorrelation: true }, bank77);
   assert.deepEqual(replay.core.dimensions, expected.dimensions);
 });
 
@@ -155,6 +160,7 @@ test("V9 Worker rejects V8 and hybrid identity envelopes", () => {
     questionBank: QUESTION_BANK_ID,
     sessionSchema: SESSION_SCHEMA,
     sessionKey: SESSION_KEY,
+    scoringVersion: V9_CURRENT_SCORING_VERSION,
     session: v8Session,
   };
   assert.equal(replayQa03bSessionV9Core(v8, NOW + 100).ok, false);
@@ -225,6 +231,7 @@ test("V9 D1 audit replay reconstructs the same authoritative result as the sessi
     runId: session.sessionId,
     startedAt: session.startedAt,
     events,
+    scoringVersion: V9_CURRENT_SCORING_VERSION,
     now: NOW + 100,
   });
   const direct = replayQa03bSessionV9Core(envelope(session), NOW + 100);
@@ -247,7 +254,7 @@ test("V9 D1 audit replay fails closed on sequence gaps, actor changes and malfor
     schema_version: 1,
     actor_type: "client",
   }));
-  const base = { runId: session.sessionId, startedAt: session.startedAt, now: NOW + 100 };
+  const base = { runId: session.sessionId, startedAt: session.startedAt, scoringVersion: V9_CURRENT_SCORING_VERSION, now: NOW + 100 };
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, seq: 2 } : event) }), { ok: false, reason: "route" });
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, actor_type: "operator" } : event) }), { ok: false, reason: "route" });
   assert.deepEqual(replayDiagnosticAuditEventsV9({ ...base, events: events.map((event, index) => index === 0 ? { ...event, payload_json: "not-json" } : event) }), { ok: false, reason: "session" });
@@ -292,7 +299,7 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
     const versions: V9RunVersions = {
       bank: QA03B_V9_QUESTION_BANK_ID,
       engine: QA03B_V9_ENGINE_ID,
-      scoring: "candidate-scoring-test-v1",
+      scoring: V9_CURRENT_SCORING_VERSION,
       recommendations: "recommendations-not-certified",
       consent: "consent-test-v1",
     };
@@ -322,6 +329,7 @@ test("V9 SQLite audit persistence round-trips into authoritative replay", async 
       runId: session.sessionId,
       startedAt: session.startedAt,
       events: history,
+      scoringVersion: V9_CURRENT_SCORING_VERSION,
       now: NOW + 100,
     });
     assert.equal(replayed.ok, true);
@@ -390,7 +398,7 @@ test("V9 finalization verifies ownership, replays D1, persists one trusted resul
     const versions: V9RunVersions = {
       bank: QA03B_V9_QUESTION_BANK_ID,
       engine: QA03B_V9_ENGINE_ID,
-      scoring: "candidate-scoring-test-v1",
+      scoring: V9_CURRENT_SCORING_VERSION,
       recommendations: "recommendations-test-v1",
       consent: "consent-test-v1",
     };
