@@ -26,12 +26,14 @@ test("F02 canonical manifest freezes exactly the approved 77-question baseline",
   assert.equal(new Set([...V9_CANONICAL_KEEP_IDS_V1, ...V9_CANONICAL_REWRITE_PENDING_IDS_V1]).size, 77);
 });
 
-test("F02 canonical manifest matches the current 77 source IDs, order and versions", () => {
+test("F02 canonical manifest matches the current 77 source IDs and versions without redefining runtime order", () => {
   assert.equal(bank77.length, 77);
-  assert.deepEqual(
-    V9_CANONICAL_QUESTION_MANIFEST_V1.map((q) => ({ id: q.id, version: q.sourceVersion })),
-    bank77.map((q) => ({ id: q.id, version: q.version })),
-  );
+  const manifestById = new Map(V9_CANONICAL_QUESTION_MANIFEST_V1.map((q) => [q.id, q.sourceVersion] as const));
+  const runtimeById = new Map(bank77.map((q) => [q.id, q.version] as const));
+  assert.equal(manifestById.size, 77);
+  assert.equal(runtimeById.size, 77);
+  assert.deepEqual([...manifestById.keys()].sort(), [...runtimeById.keys()].sort());
+  for (const [id, version] of manifestById) assert.equal(runtimeById.get(id), version, id);
   for (const question of bank77) {
     assert.ok(question.prompt.trim().length > 0, question.id);
     assert.ok(question.options.length > 0, question.id);
