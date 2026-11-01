@@ -1,8 +1,8 @@
 # Diagnostic V9 — CLASS-05 Closure Register
 
-**Versión:** 0.1.1  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · DOCUMENTACIÓN LISTA PARA REVISIÓN HUMANA · NO APROBADA  
+**Estado:** A–H APROBADAS · W1/F00 DONE_WITH_EVIDENCE · W2+ PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Propósito
@@ -20,14 +20,14 @@ Los ocho paquetes DEC-A…H ya están preparados. Ninguna decisión está marcad
 
 | DEC | Tema | Estado |
 |---|---|---|
-| A | Taxonomía/aplicabilidad 8×10 | READY_FOR_HUMAN_REVIEW |
-| B | Calibración, score, confianza | READY_FOR_HUMAN_REVIEW |
-| C | Banco editorial 77/82/90 | READY_FOR_HUMAN_REVIEW |
-| D | Correlación/procedencia/replay | READY_FOR_HUMAN_REVIEW |
-| E | Identidad, retención, informe | READY_FOR_HUMAN_REVIEW |
-| F | Prioridad, presupuesto, fallbacks | READY_FOR_HUMAN_REVIEW |
-| G | Aprende, servicios, GHL | READY_FOR_HUMAN_REVIEW |
-| H | Main, corte, rollback | READY_FOR_HUMAN_REVIEW |
+| A | Taxonomía/aplicabilidad 8×10 | APPROVED |
+| B | Calibración, score, confianza | APPROVED_WITH_FALLBACK |
+| C | Banco editorial 77/82/90 | APPROVED_WITH_FALLBACK |
+| D | Correlación/procedencia/replay | APPROVED |
+| E | Identidad, retención, informe | APPROVED_WITH_FALLBACK |
+| F | Prioridad, presupuesto, fallbacks | APPROVED |
+| G | Aprende, servicios, GHL | APPROVED |
+| H | Main, corte, rollback | APPROVED_WITH_FALLBACK |
 
 Fuente de estado: `DIAGNOSTIC-V9-CLASS05-APPROVAL-MATRIX.md` v0.1.8, blob `4a664f6feafd0bffafd74fc9acaa250f8c673353`.
 
@@ -210,11 +210,20 @@ No permitido:
 
 ## 10. Estado final de CLASS-05
 
-**CLASS-05 = DOCUMENTALMENTE PREPARADA / READY_FOR_HUMAN_REVIEW / NO APROBADA / NO READY_FOR_EXECUTION.**
+**CLASS-05 = DECISIONES A–H APROBADAS / W1-F00 EJECUTADO / W2+ NO AUTORIZADO.**
 
 El siguiente gate ya no es inventario técnico amplio: es revisión humana de A–H y resolución explícita de los bloqueos P0 antes de convertir el plan en ejecución.
 
+## W1/F00 ejecutado
+
+- merge main→V9: `5a798b5ab36858d12b95752130cc67bf15492f32`;
+- migraciones V9: 0038–0043;
+- prueba focal: 43/43 PASS;
+- main sin cambios; sin deploy;
+- W2+ vuelve a PLAN_ONLY.
+
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** A–H aprobadas y W1/F00 cerrado con evidencia; W2+ permanece no autorizado.
 - **0.1.1 / 2026-11-01:** se añaden hoja ejecutiva A–H y scope post-aprobación W0–W10; no cambia aprobación ni PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** cierre documental CLASS-05; ocho DEC listas para revisión humana, siete bloqueos transversales y gate READY_FOR_AGENT.

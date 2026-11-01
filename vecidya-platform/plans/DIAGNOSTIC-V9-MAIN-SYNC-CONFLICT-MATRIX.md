@@ -42,3 +42,22 @@ Fecha: 2026-10-29. PR maestro: #162. Main contiene squash de MiniWeb V2 (#184).
 - Aprende sin modificaciones involuntarias.
 - Pruebas focalizadas y evidencia de CI registradas.
 - PR #162 sigue abierto hasta certificación del motor V9.
+
+
+## W1/F00 — ejecución 2026-11-01
+
+**DONE_WITH_EVIDENCE** sobre `5a798b5ab36858d12b95752130cc67bf15492f32`.
+
+- main integrado hacia rama V9; `main=e92c10e9ebcbb87768661eb383f16564340e63cf` queda ancestro.
+- PR #162 permanece draft y ahora GitHub reporta `mergeable=true`.
+- V9 quedó `ahead=667 / behind=0` respecto al main integrado.
+- main conservado en Aprende/MiniWeb/UI/docs compartidos; rutas/CSS V9 reintegradas puntualmente.
+- migraciones V9 no aplicadas se renumeraron de 0030–0035 a **0038–0043**.
+- journal final: main 0030–0037 + V9 0038–0043.
+- no se modificó `main`, no force-push, no deploy.
+
+Prueba focal W1/F00:
+- Actions run `41323269814`, job `124897800170`;
+- 13 archivos de test focales;
+- **43/43 PASS, 0 FAIL**;
+- job general typecheck/build/unit regression: **SKIPPED** para PR V9.

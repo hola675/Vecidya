@@ -1,8 +1,8 @@
 # Diagnostic V9 — Hoja ejecutiva de decisión humana A–H
 
-**Versión:** 0.1.0  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · RECOMENDACIÓN DEL AGENTE · REQUIERE APROBACIÓN HUMANA EXPLÍCITA  
+**Estado:** APROBADA POR RESPONSABLE · FALLBACKS VIGENTES · W2+ PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Propósito
@@ -244,7 +244,24 @@ Si la historia de migraciones no puede demostrarse:
 - conservar V8;
 - aislar trabajo documental/código no D1 hasta resolverlo.
 
-## 11. Paquete recomendado de aprobación
+## 11. Decisión humana registrada — 2026-11-01
+
+El responsable del proyecto aprobó expresamente las recomendaciones A–H, incluidos fallbacks y condiciones:
+
+- A = APPROVED
+- B = APPROVED_WITH_FALLBACK
+- C = APPROVED_WITH_FALLBACK
+- D = APPROVED
+- E = APPROVED_WITH_FALLBACK
+- F = APPROVED
+- G = APPROVED
+- H = APPROVED_WITH_FALLBACK
+
+La misma autorización levantó PLAN_ONLY **solo para W1/F00**. W2+ continúa bloqueado hasta nueva autorización.
+
+W1/F00 quedó ejecutado en el merge commit `5a798b5ab36858d12b95752130cc67bf15492f32`.
+
+## 12. Paquete aprobado
 
 La recomendación consolidada es:
 
@@ -259,7 +276,7 @@ La recomendación consolidada es:
 
 Esto **no levanta PLAN_ONLY automáticamente**.
 
-## 12. Condiciones obligatorias antes de código
+## 13. Condiciones obligatorias antes de W2+
 
 Incluso si el responsable aprueba el paquete completo, deben permanecer como gates previos:
 
@@ -271,7 +288,7 @@ Incluso si el responsable aprueba el paquete completo, deben permanecer como gat
 6. restore/versioning;
 7. plan focal de pruebas.
 
-## 13. Qué autorizar después, no ahora
+## 14. Qué autorizar después, no ahora
 
 Tras aprobación humana del paquete:
 - actualizar matriz A–H con estados reales;
@@ -280,7 +297,7 @@ Tras aprobación humana del paquete:
 - pedir/registrar levantamiento explícito y parcial de PLAN_ONLY;
 - empezar por gates estructurales, no por UI ni deploy.
 
-## 14. Frase de aprobación inequívoca
+## 15. Registro histórico de la frase de aprobación
 
 Si el responsable desea aceptar exactamente este paquete, la instrucción inequívoca sería:
 
@@ -290,4 +307,5 @@ Esta frase es solo una plantilla; este documento no presume dicha aprobación.
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** aprobación humana A–H registrada; W1/F00 autorizado y ejecutado; W2+ permanece PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** consolidación ejecutiva A–H con disposición recomendada, fallbacks y condiciones P0.

@@ -1,8 +1,8 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.8  
+**Versión:** 0.2.0  
 **Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
+**Estado:** A–H APROBADAS · W1/F00 EJECUTADO · PLAN_ONLY PARA W2+  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Uso de esta matriz
@@ -184,17 +184,22 @@ Hasta entonces, el estado permanece documental.
 
 | DEC | Estado | Aprobador | Fecha | Condiciones/Fallback | Evidencia |
 |---|---|---|---|---|---|
-| A | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-A | DEC-A pack + CLASS-02/04 |
-| B | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; resolver binding v2/v4 y revisar paquete DEC-B | DEC-B pack + scoring/coverage |
-| C | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-C | DEC-C pack + 77/82/90 |
-| D | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-D | DEC-D pack + provenance/replay |
-| E | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; reconciliar ledger anónimo con D029/D033 y decidir alcance D1 | DEC-E pack + ownership/result |
-| F | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; hard cap técnico 24 no implementa aún 24+5 | DEC-F pack + planner/recommendations |
-| G | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; mantener enriquecimiento posterior al ranking y frontera GHL | DEC-G pack + D-V9-007/008 |
-| H | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; resolver divergencia main y colisión 0030–0035 antes de F00 | DEC-H pack + F00/F09/F10 |
+| A | APPROVED | Responsable del proyecto | 2026-11-01 | Ocho dimensiones + baseline 8×10 | DEC-A pack + hoja ejecutiva |
+| B | APPROVED_WITH_FALLBACK | Responsable del proyecto | 2026-11-01 | Sin bandas públicas; binding scoring_version→calibration antes de F04 | DEC-B pack |
+| C | APPROVED_WITH_FALLBACK | Responsable del proyecto | 2026-11-01 | 77 baseline; 82/90 pending | DEC-C pack |
+| D | APPROVED | Responsable del proyecto | 2026-11-01 | Opción B de correlación; fail-closed | DEC-D pack |
+| E | APPROVED_WITH_FALLBACK | Responsable del proyecto | 2026-11-01 | Borrador local; resolver store final/D1 antes de F07 | DEC-E pack |
+| F | APPROVED | Responsable del proyecto | 2026-11-01 | 24+5 consentido; sin pesos inventados | DEC-F pack |
+| G | APPROVED | Responsable del proyecto | 2026-11-01 | Enriquecimiento posterior; GHL opcional | DEC-G pack |
+| H | APPROVED_WITH_FALLBACK | Responsable del proyecto | 2026-11-01 | main→V9; V8 activo; migraciones reconciliadas en W1 | DEC-H pack + F00 report |
+
+## Ejecución autorizada W1/F00 — 2026-11-01
+
+El responsable aprobó A–H con sus fallbacks y autorizó levantar PLAN_ONLY únicamente para W1/F00. W1/F00 se ejecutó en `5a798b5ab36858d12b95752130cc67bf15492f32`; W2+ permanece PLAN_ONLY.
 
 ## Changelog
 
+- **0.2.0 / 2026-11-01:** A–H registradas como aprobadas según la hoja ejecutiva; W1/F00 autorizado y ejecutado; W2+ no autorizado.
 - **0.1.8 / 2026-11-01:** DEC-H pasa a READY_FOR_HUMAN_REVIEW; PR #162 sigue dirty/divergido y se registra la colisión de migraciones 0030–0035.
 - **0.1.7 / 2026-11-01:** DEC-G pasa a READY_FOR_HUMAN_REVIEW con separación Diagnóstico→Aprende→servicios→GHL y neutralidad comercial.
 - **0.1.6 / 2026-11-01:** DEC-E pasa a READY_FOR_HUMAN_REVIEW; se documenta la tensión entre ledger D1 individual y borrador anónimo local/analítica agregada.

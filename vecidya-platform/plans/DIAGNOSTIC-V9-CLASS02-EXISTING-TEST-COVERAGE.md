@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-02: cobertura de pruebas existentes y hardening SQL
 
-**Versión:** 0.1.1  
+**Versión:** 0.1.2  
 **Fecha:** 2026-10-31  
 **Estado:** PLAN_ONLY · INVENTARIO ESTÁTICO · PRUEBAS NO EJECUTADAS  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -11,12 +11,12 @@ La capa persistente V9 no termina en `0031`. El inventario real de la rama inclu
 
 | Migración | Blob | Garantía documental |
 |---|---|---|
-| `0030_diagnostic_v9_audit.sql` | `08fef3f330766a5b411d7dbfcadbb3371fc59cc9` | secuencia de eventos, `last_seq`, auditoría inmutable |
-| `0031_diagnostic_v9_identity_ownership.sql` | `3cb6102757643af4d57dacb4a314847deb924536` | identidades, ownership, organizaciones y claims |
-| `0032_diagnostic_v9_claim_guards.sql` | `06278ab8d538a8ca2f06489c04b62f3f2c314f38` | máximo un claim pendiente por identidad y coherencia de `completed_at` |
-| `0033_diagnostic_v9_owner_assignment_guards.sql` | `0538cd59b1e629b1abf233bb7799c124abf39c13` | impide asignar ownership incompatible con estado/tipo de identidad |
-| `0034_diagnostic_v9_identity_claim_integrity.sql` | `066fe83d34e5d1cfaf5d381ca5a325d7d931304e` | coherencia de marca de identidad reclamada, usuario destino existente e inmutabilidad posterior |
-| `0035_diagnostic_v9_result_finalization_guards.sql` | `781513d047830a6e760b6dd1117c118acba018b1` | run completed exige resultado; estados terminales y resultados quedan inmutables |
+| `0038_diagnostic_v9_audit.sql` | `08fef3f330766a5b411d7dbfcadbb3371fc59cc9` | secuencia de eventos, `last_seq`, auditoría inmutable |
+| `0039_diagnostic_v9_identity_ownership.sql` | `3cb6102757643af4d57dacb4a314847deb924536` | identidades, ownership, organizaciones y claims |
+| `0040_diagnostic_v9_claim_guards.sql` | `06278ab8d538a8ca2f06489c04b62f3f2c314f38` | máximo un claim pendiente por identidad y coherencia de `completed_at` |
+| `0041_diagnostic_v9_owner_assignment_guards.sql` | `0538cd59b1e629b1abf233bb7799c124abf39c13` | impide asignar ownership incompatible con estado/tipo de identidad |
+| `0042_diagnostic_v9_identity_claim_integrity.sql` | `066fe83d34e5d1cfaf5d381ca5a325d7d931304e` | coherencia de marca de identidad reclamada, usuario destino existente e inmutabilidad posterior |
+| `0043_diagnostic_v9_result_finalization_guards.sql` | `781513d047830a6e760b6dd1117c118acba018b1` | run completed exige resultado; estados terminales y resultados quedan inmutables |
 
 ### Detalle estático
 
@@ -105,9 +105,14 @@ La infraestructura documental de persistencia, ownership, replay y hardening SQL
 1. las pruebas existentes no se han ejecutado bajo la autorización actual;
 2. están confirmados gaps focales AUTH-03, AUTH-08, AUTH-10, AUTH-11 y AUTH-13;
 3. AUTH-12 necesita confirmación específica en finalización;
-4. no se ha verificado aplicación real de migraciones `0030..0035` en un entorno autorizado.
+4. no se ha verificado aplicación real de migraciones `0038..0043` en un entorno autorizado.
+
+## W1/F00 2026-11-01
+
+Migraciones V9 renumeradas a 0038–0043 por colisión con main. La suite focal de reconciliación que carga estas migraciones pasó 43/43; esto no cierra los gaps AUTH restantes de CLASS-02.
 
 ## Changelog
 
+- **0.1.2 / 2026-11-01:** referencias actualizadas tras W1/F00; 0038–0043 y 43/43 focal PASS.
 - **0.1.1 (2026-10-31):** inspección focal de AUTH-03/08/11; gaps confirmados; definido conjunto mínimo de cinco pruebas faltantes; harness genérico no se cuenta como cobertura V9.
-- **0.1.0 (2026-10-31):** inventario estático de migraciones V9 `0030..0035`, pruebas focales existentes, gaps AUTH y comando de ejecución propuesto sin ejecutar.
+- **0.1.0 (2026-10-31):** inventario estático de migraciones V9 `0038..0043`, pruebas focales existentes, gaps AUTH y comando de ejecución propuesto sin ejecutar.

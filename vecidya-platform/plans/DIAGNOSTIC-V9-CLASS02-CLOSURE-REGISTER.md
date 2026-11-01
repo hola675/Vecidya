@@ -1,6 +1,6 @@
 # Diagnostic V9 — CLASS-02 Closure Register
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-10-31  
 **Estado:** PLAN_ONLY · CLASS-02 PARCIAL / NO CERTIFICADA  
 **Rama auditada:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -25,7 +25,7 @@ La clase ya posee trazabilidad documental suficiente para identificar:
 - banco fijado del replay V9;
 - cinco versiones persistidas y verificadas;
 - ledger de eventos, secuencia, snapshots y replay;
-- migraciones V9 `0030..0035`;
+- migraciones V9 `0038..0043`;
 - identidad personal, ownership, claim anónimo y asociación a organización;
 - cobertura de pruebas SQLite ya escrita;
 - gaps focales exactos que impiden certificación.
@@ -113,14 +113,14 @@ El claim de historial no depende de `isV9PublicRuntimeAvailable`. La UI de histo
 
 | Migración | Estado fuente |
 |---|---|
-| 0030 audit | Secuencia, ledger, snapshots/results base |
-| 0031 identity/ownership | Identidades, ownership, org-links, claims |
-| 0032 claim guards | Un pending claim por identidad + timestamp coherente |
-| 0033 owner assignment guards | Ownership compatible con estado/tipo de identidad |
-| 0034 identity claim integrity | Marca de claim coherente e inmutable |
-| 0035 result finalization guards | Completed exige resultado; terminal/result inmutables |
+| 0038 audit | Secuencia, ledger, snapshots/results base |
+| 0039 identity/ownership | Identidades, ownership, org-links, claims |
+| 0040 claim guards | Un pending claim por identidad + timestamp coherente |
+| 0041 owner assignment guards | Ownership compatible con estado/tipo de identidad |
+| 0042 identity claim integrity | Marca de claim coherente e inmutable |
+| 0043 result finalization guards | Completed exige resultado; terminal/result inmutables |
 
-**Límite:** no se verificó aplicación efectiva de `0030..0035` en D1 de staging/producción.
+**Límite:** no se verificó aplicación efectiva de `0038..0043` en D1 de staging/producción.
 
 ## 6. Cobertura de pruebas ya escrita — NO EJECUTADA
 
@@ -164,7 +164,7 @@ El comportamiento de claim con `DIAGNOSTIC_V9_PUBLIC_ENABLED=false` está identi
 Existen checks de versión y pruebas de mismatch en otros servicios; falta confirmar prueba focal específica sobre finalización owned.
 
 ### B02-08 — Migraciones desplegadas
-No se ha comprobado que `0030..0035` estén aplicadas y activas en un entorno autorizado.
+No se ha comprobado que `0038..0043` estén aplicadas y activas en un entorno autorizado.
 
 ## 8. Gate de cierre futuro
 
@@ -173,7 +173,7 @@ CLASS-02 solo podrá pasar a **CERTIFICADA** cuando, como mínimo:
 1. B02-02..B02-07 tengan prueba focal equivalente;
 2. se ejecute únicamente el conjunto focal pertinente sobre el SHA final;
 3. resultados sean PASS y queden asociados al commit probado;
-4. se confirme aplicación de migraciones `0030..0035` en el entorno objetivo;
+4. se confirme aplicación de migraciones `0038..0043` en el entorno objetivo;
 5. se ratifique política AUTH-13;
 6. cualquier fallo abra una corrección separada y vuelva a ejecutar exclusivamente la matriz afectada;
 7. no se use un PASS histórico de otro SHA como certificación del HEAD.
@@ -193,6 +193,11 @@ El siguiente trabajo documental debe:
 - reutilizar las distinciones establecidas aquí: fuente vs inferencia, sesión V3 vs run V9, banco candidate vs producción, static evidence vs PASS;
 - mantener `PLAN_ONLY`.
 
+## W1/F00 2026-11-01
+
+La colisión nominal con main quedó resuelta renumerando V9 a 0038–0043. Pruebas focales de migración/ownership/replay: 43/43 PASS. CLASS-02 continúa NO CERTIFICADA por AUTH gaps y por no haberse aplicado migraciones a un entorno remoto.
+
 ## Changelog
 
+- **0.1.1 / 2026-11-01:** migraciones V9 reconciliadas 0038–0043; evidencia focal 43/43; certificación global sin cambios.
 - **0.1.0 / 2026-10-31:** registro consolidado de cierre documental CLASS-02; evidencia, contratos, hardening, cobertura existente, ocho bloqueos y gate futuro de certificación.

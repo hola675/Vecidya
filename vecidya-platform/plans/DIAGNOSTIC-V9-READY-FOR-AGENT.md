@@ -1,9 +1,9 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.1.1 | 2026-11-01 | Estado: NOT_READY / PLAN_ONLY
+Versión: 0.2.0 | 2026-11-01 | Estado: W1_F00_DONE / NOT_READY_FOR_W2 / PLAN_ONLY_W2_PLUS
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**NO READY_FOR_AGENT.** El backlog F00–F10 existe, las políticas D-V9-001–033 están documentadas y DEC-A…H ya tienen paquetes y recomendación consolidada, pero siguen sin aprobación humana. También están documentados los bloqueos P0 de calibración v2/v4, correlación, persistencia anónima, 24+5 y migraciones. Este paquete sigue siendo un protocolo de arranque futuro, no autorización para implementar, ejecutar CI, hacer merge o desplegar.
+**W1/F00 DONE_WITH_EVIDENCE; NO READY_FOR W2.** A–H están aprobadas con fallbacks. La autorización recibida cubrió únicamente W1/F00; F01/W2+ no están autorizados. El merge `main→V9` quedó en `5a798b5ab36858d12b95752130cc67bf15492f32`, con `main` como ancestro y pruebas W1 focales 43/43 PASS.n documentadas y DEC-A…H ya tienen paquetes y recomendación consolidada, pero siguen sin aprobación humana. También están documentados los bloqueos P0 de calibración v2/v4, correlación, persistencia anónima, 24+5 y migraciones. Este paquete sigue siendo un protocolo de arranque futuro, no autorización para implementar, ejecutar CI, hacer merge o desplegar.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -29,12 +29,12 @@ Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-gra
 | PLAN-G07 | Backlog F00–F10 con tareas, prerequisitos, pruebas y rollback | DOCUMENTED, REQUIRES_REVIEW | Backlog v0.1.0; revisar contra HEAD antes de ejecutar |
 | PLAN-G08 | Matriz C01–C10 y ES/EN con criterios de aceptación | DOCUMENTED / NOT_CERTIFIED | CLASS-04 + DEC-A/F; faltan pruebas autorizadas |
 | PLAN-G09 | Política de integración main, V8, migraciones y rollback aprobada | READY_FOR_HUMAN_REVIEW | DEC-H pack; colisión 0030–0035 y aprobación pendientes |
-| PLAN-G10 | Aprobación explícita del responsable para comenzar implementación | NOT_GRANTED | Mensaje/acta de autorización y alcance |
+| PLAN-G10 | Aprobación explícita del responsable para comenzar implementación | GRANTED_W1_F00_ONLY | W1/F00 ejecutado; W2+ requiere nueva autorización |
 
 ## 4. Gates de implementación (después de autorización)
 | Gate | Tareas | Condición de salida |
 | --- | --- | --- |
-| IMPL-G00 | F00–F01 | main ancestro, inventario legacy y consumidores con sustitutos |
+| IMPL-G00 | F00–F01 | F00 PASS; F01 no autorizado. main ya es ancestro; inventario legacy F01 pendiente |
 | IMPL-G01 | F02 | Banco aprobado, ES/EN y evidencia versionada |
 | IMPL-G02 | F03 | Grafo y recorridos C01–C10 sin huecos, presupuesto 24+5 |
 | IMPL-G03 | F04 | Motor autónomo, determinista, sin doble evidencia y sin imports runtime QBV2 |
@@ -67,8 +67,9 @@ PR #162 permanece draft y no fusionable automáticamente según el último check
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-El siguiente gate es humano: revisar la hoja ejecutiva A–H y registrar APPROVED / APPROVED_WITH_FALLBACK / DEFERRED / REJECTED. Después, si se aprueba el paquete, autorizar únicamente W1/F00 como primer levantamiento parcial de PLAN_ONLY; W2+ permanecen bloqueadas hasta cierre del wave anterior. READY_FOR_AGENT solo se declara mediante autorización explícita.
+El siguiente gate requiere nueva autorización: W2/F01. No iniciar F01 ni ningún cambio de W2+ hasta mensaje explícito del responsable. Revalidar HEAD/main inmediatamente antes de cualquier nuevo scope.
 
 ## Changelog
+- 0.2.0 / 2026-11-01: A–H aprobadas; W1/F00 ejecutado con main ancestro, migraciones V9 0038–0043 y 43/43 pruebas focales PASS; W2+ sigue PLAN_ONLY.
 - 0.1.1 / 2026-11-01: A–H ya están READY_FOR_HUMAN_REVIEW; se añaden hoja ejecutiva, scope post-aprobación y estados actualizados de gates sin levantar PLAN_ONLY.
 - 0.1.0 / 2026-10-31: índice, matrices de aceptación, protocolo de arranque, stop conditions y reporte por tarea. Sin cambios de runtime.

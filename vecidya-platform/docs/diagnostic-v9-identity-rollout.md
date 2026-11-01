@@ -43,7 +43,7 @@ El secreto de la cookie autoriza acciones de esa identidad. Nunca registrarlo en
 
 `POST /api/diagnostic/claim-anonymous` exige sesión autenticada y la cookie de identidad anónima. La reclamación se registra como pendiente y se finaliza con un lote D1 que marca la identidad y transfiere todas sus ejecuciones a la identidad de usuario. La cookie se elimina al completar la reclamación. Una reclamación repetida no debe volver a transferir la propiedad.
 
-Las migraciones `0031`–`0035` establecen propiedad, unicidad de reclamaciones pendientes, guardas contra la carrera entre asignación y reclamación, la inmutabilidad del estado de reclamación y las reglas de finalización de resultados.
+Las migraciones `0039`–`0043` establecen propiedad, unicidad de reclamaciones pendientes, guardas contra la carrera entre asignación y reclamación, la inmutabilidad del estado de reclamación y las reglas de finalización de resultados.
 
 ## Historial y organizaciones
 
@@ -55,10 +55,10 @@ Las migraciones `0031`–`0035` establecen propiedad, unicidad de reclamaciones 
 ## Pendientes antes de producción
 
 1. Cerrar CI focalizada y typecheck/build completos para las nuevas rutas y pruebas de finalización.
-2. Aplicar las migraciones 0031–0035 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual.
+2. Aplicar las migraciones 0039–0043 únicamente en un entorno de pruebas y validar upgrade desde el esquema actual.
 3. Conectar la interfaz V9 con creación, eventos y finalización; certificar la paridad del pipeline de recomendaciones y el contrato de consentimiento. El cuestionario público existente sigue en contrato V8; no se debe cambiar a V9 solo por tener estos endpoints.
 4. Añadir pruebas E2E para login posterior, reclamación, permisos, pérdida de cookie, conflictos de secuencia y vinculación organizacional.
 5. Certificar versiones de banco, motor, puntuación, recomendaciones y consentimiento; mantener la bandera desactivada hasta entonces.
 6. Validar política de retención y limpieza de identidades anónimas abandonadas antes de habilitar el bootstrap para todo el tráfico.
 
-No se han aplicado migraciones ni se ha realizado despliegue de producción.
+Las migraciones V9 renumeradas 0038–0043 no se han aplicado ni desplegado; W1/F00 solo reconcilió Git/journal.

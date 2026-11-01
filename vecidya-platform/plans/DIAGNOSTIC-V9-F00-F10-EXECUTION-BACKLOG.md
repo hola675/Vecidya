@@ -70,3 +70,13 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 
 ## Changelog
 - 0.1.0 / 2026-10-31: backlog inicial de 23 tareas F00–F10, dependencias, pruebas y stop conditions; solo documentación.
+
+
+## Registro de ejecución W1/F00 — 2026-11-01
+
+- **F00-01: DONE_WITH_EVIDENCE.** Revalidación: main `e92c10e9...`, rama `14a34c6b...`, PR #162 draft; historia de migraciones revisada.
+- **F00-02: DONE_WITH_EVIDENCE.** Merge main→V9 en `5a798b5ab36858d12b95752130cc67bf15492f32`; main ancestro, no force-push.
+- Main remoto: 0030 producción; Aprende 0031–0033 producción; MiniWeb 0034–0037 solo local/no publicado según STATUS.
+- V9 0030–0035: no aplicadas/deploy; renumeradas de forma segura a 0038–0043.
+- Prueba focal W1: 43/43 PASS en Actions run 41323269814; regresión general skipped.
+- **F01 y F02–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.
