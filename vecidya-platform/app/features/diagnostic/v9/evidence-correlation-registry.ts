@@ -1,13 +1,14 @@
 import type {
-  V9V9ContextualEvidence,
-  V9V9DigitalDimensionId,
-  V9V9EvidenceDirectness,
+  V9ContextualEvidence,
+  V9DigitalDimensionId,
+  V9EvidenceDirectness,
 } from "./scoring-contract";
 import {
   correlateV9Observations,
   type V9ConfirmedObservationCorrelation,
   type V9CorrelatedObservationConflict,
 } from "./observation-correlation";
+import { listV9ScoringEvidenceMappings } from "./scoring-evidence-registry";
 
 export const V9_EVIDENCE_CORRELATION_REGISTRY_ID =
   "diag-v9-evidence-correlation-registry-v1" as const;
@@ -80,6 +81,35 @@ export function v9EvidenceCorrelationMetadata(
 
 export function listV9EvidenceCorrelationMetadata(): readonly V9EvidenceCorrelationMetadata[] {
   return entries;
+}
+
+export function validateV9EvidenceCorrelationRegistry(): readonly string[] {
+  const issues: string[] = [];
+  const scoring = new Map(
+    listV9ScoringEvidenceMappings().map((mapping) => [
+      keyOf(mapping.questionId, mapping.dimension),
+      mapping,
+    ] as const),
+  );
+  for (const metadata of entries) {
+    const mapping = scoring.get(keyOf(metadata.questionId, metadata.dimension));
+    if (!mapping) {
+      issues.push(`orphan correlation metadata: ${metadata.questionId}/${metadata.dimension}`);
+      continue;
+    }
+    if (mapping.directness !== metadata.directness) {
+      issues.push(`directness mismatch: ${metadata.questionId}/${metadata.dimension}`);
+    }
+    if (!metadata.constructKey.trim()) {
+      issues.push(`empty constructKey: ${metadata.questionId}/${metadata.dimension}`);
+    }
+  }
+  for (const mapping of scoring.values()) {
+    if (!byKey.has(keyOf(mapping.questionId, mapping.dimension))) {
+      issues.push(`missing correlation metadata: ${mapping.questionId}/${mapping.dimension}`);
+    }
+  }
+  return issues;
 }
 
 export type V9CorrelationPolicyResult = {
