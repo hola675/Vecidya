@@ -26,6 +26,9 @@ for (const [width, height] of viewports) {
     const page = await browser.newPage({ viewport: { width, height } });
     const errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") errors.push(`console: ${message.text()}`);
+    });
     const response = await page.goto(new URL(spec.path, baseUrl).toString(), { waitUntil: "domcontentloaded" });
     if (!response?.ok()) throw new Error(`${spec.name} ${width}: HTTP ${response?.status()}`);
     const rejectCookies = page.getByRole("button", { name: "Rechazar opcionales" });
@@ -54,7 +57,7 @@ for (const [width, height] of viewports) {
     if (spec.name === "home" ? Number.parseFloat(motion.duration) > 0.2 : motion.name !== "none") throw new Error(`${spec.name} ${width}: Vico no respeta movimiento reducido (${JSON.stringify(motion)}).`);
     await page.emulateMedia({ reducedMotion: "no-preference" });
     if (width === 320 || width === 390 || width === 768 || width === 1366 || width === 1920) {
-      await page.screenshot({ path: join(output, `${spec.name}-${width}x${height}.png`), fullPage: true, animations: "disabled" });
+      await page.screenshot({ path: join(output, `${spec.name}-${width}x${height}.png`), fullPage: true, animations: "disabled", caret: "initial" });
     }
     if (errors.length) throw new Error(`${spec.name} ${width}: ${errors.join("; ")}`);
     await page.close();
