@@ -1,20 +1,21 @@
-import type { DigitalDimensionId } from "../qbv2-dimensions";
-import type { EvidenceDirectness } from "../qbv2-coverage";
-import type { ContextualEvidence } from "../qbv2-contextual-scoring";
-import type { QuestionDefinitionV2 } from "../qbv2-contract";
+import type {
+  V9V9ContextualEvidence,
+  V9V9DigitalDimensionId,
+  V9V9EvidenceDirectness,
+} from "./scoring-contract";
 import {
-  correlateCandidateObservationsV1,
-  type ConfirmedObservationCorrelationV1,
-  type CorrelatedObservationConflictV1,
-} from "../qa03b/v9-observation-correlation";
+  correlateV9Observations,
+  type V9ConfirmedObservationCorrelation,
+  type V9CorrelatedObservationConflict,
+} from "./observation-correlation";
 
 export const V9_EVIDENCE_CORRELATION_REGISTRY_ID =
   "diag-v9-evidence-correlation-registry-v1" as const;
 
 export type V9EvidenceCorrelationMetadata = {
   readonly questionId: string;
-  readonly dimension: DigitalDimensionId;
-  readonly directness: EvidenceDirectness;
+  readonly dimension: V9DigitalDimensionId;
+  readonly directness: V9EvidenceDirectness;
   /** Editorial construct identity. Never inferred from questionId at runtime. */
   readonly constructKey: string;
   /** Only families with a real double-observation risk share an overlap group. */
@@ -65,67 +66,36 @@ const entries: readonly V9EvidenceCorrelationMetadata[] = [
   { questionId: "q2_measurement_source_confidence", dimension: "measurement_optimization", directness: "direct", constructKey: "acquisition_source_attribution", observationScope: "recent_period" },
 ] as const;
 
-const keyOf = (questionId: string, dimension: DigitalDimensionId) =>
+const keyOf = (questionId: string, dimension: V9DigitalDimensionId) =>
   JSON.stringify([questionId, dimension]);
 
 const byKey = new Map(entries.map((entry) => [keyOf(entry.questionId, entry.dimension), entry] as const));
 
 export function v9EvidenceCorrelationMetadata(
   questionId: string,
-  dimension: DigitalDimensionId,
+  dimension: V9DigitalDimensionId,
 ): V9EvidenceCorrelationMetadata | undefined {
   return byKey.get(keyOf(questionId, dimension));
 }
 
-export function validateV9EvidenceCorrelationRegistry(
-  bank: readonly QuestionDefinitionV2[],
-): readonly string[] {
-  const issues: string[] = [];
-  const expected = new Set<string>();
-  for (const question of bank) {
-    if (question.evidenceMigration !== "migrated" || !question.evidenceV3) continue;
-    for (const reading of question.evidenceV3.dimensions) {
-      const key = keyOf(question.id, reading.dimension);
-      expected.add(key);
-      const metadata = byKey.get(key);
-      if (!metadata) {
-        issues.push(`missing correlation metadata: ${question.id}/${reading.dimension}`);
-        continue;
-      }
-      if (metadata.directness !== reading.directness) {
-        issues.push(`directness mismatch: ${question.id}/${reading.dimension}`);
-      }
-      if (!metadata.constructKey.trim()) {
-        issues.push(`empty constructKey: ${question.id}/${reading.dimension}`);
-      }
-    }
-  }
-  for (const entry of entries) {
-    if (!expected.has(keyOf(entry.questionId, entry.dimension))) {
-      issues.push(`orphan correlation metadata: ${entry.questionId}/${entry.dimension}`);
-    }
-  }
-  return issues;
-}
-
 export type V9CorrelationPolicyResult = {
   readonly registryIdentity: typeof V9_EVIDENCE_CORRELATION_REGISTRY_ID;
-  readonly accepted: readonly ContextualEvidence[];
-  readonly deduplicated: readonly ContextualEvidence[];
-  readonly unmapped: readonly ContextualEvidence[];
-  readonly conflicts: readonly CorrelatedObservationConflictV1[];
+  readonly accepted: readonly V9ContextualEvidence[];
+  readonly deduplicated: readonly V9ContextualEvidence[];
+  readonly unmapped: readonly V9ContextualEvidence[];
+  readonly conflicts: readonly V9CorrelatedObservationConflict[];
   readonly scoreSafe: boolean;
 };
 
 export function applyV9ObservationCorrelationPolicy(
-  evidence: readonly ContextualEvidence[],
-  correlations: readonly ConfirmedObservationCorrelationV1[] = [],
+  evidence: readonly V9ContextualEvidence[],
+  correlations: readonly V9ConfirmedObservationCorrelation[] = [],
 ): V9CorrelationPolicyResult {
-  const accepted: ContextualEvidence[] = [];
-  const deduplicated: ContextualEvidence[] = [];
-  const unmapped: ContextualEvidence[] = [];
-  const conflicts: CorrelatedObservationConflictV1[] = [];
-  const overlap = new Map<string, ContextualEvidence[]>();
+  const accepted: V9ContextualEvidence[] = [];
+  const deduplicated: V9ContextualEvidence[] = [];
+  const unmapped: V9ContextualEvidence[] = [];
+  const conflicts: V9CorrelatedObservationConflict[] = [];
+  const overlap = new Map<string, V9ContextualEvidence[]>();
 
   for (const reading of evidence) {
     const metadata = byKey.get(keyOf(reading.questionId, reading.dimension));
@@ -161,7 +131,7 @@ export function applyV9ObservationCorrelationPolicy(
       unmapped.push(...matches);
       continue;
     }
-    const correlated = correlateCandidateObservationsV1(matches, relevant);
+    const correlated = correlateV9Observations(matches, relevant);
     accepted.push(...correlated.accepted);
     deduplicated.push(...correlated.deduplicated);
     unmapped.push(...correlated.unmapped);
