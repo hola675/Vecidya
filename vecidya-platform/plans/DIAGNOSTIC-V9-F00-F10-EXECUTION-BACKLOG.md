@@ -1,5 +1,5 @@
 # Diagnóstico V9 — Backlog ejecutable F00–F10 (propuesta)
-Versión: 0.4.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03 DONE_WITH_EVIDENCE / F04-F10 PLAN_ONLY
+Versión: 0.5.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03-F04 DONE_WITH_EVIDENCE / F05-F10 PLAN_ONLY
 Repositorio: hola675/Vecidya | PR #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## Contrato
@@ -28,9 +28,9 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 | F02-03 | F02-02 | **DONE_WITH_FALLBACK** — manifest canónico 77 v1; 13 extensiones excluidas | v9/canonical-bank-manifest.ts | 29/29 PASS | definiciones ejecutables siguen adapter hasta F03/F04 |
 | F03-01 | F02-02, F01-02 | **DONE_WITH_EVIDENCE** — grafo/contexto conserva gates, pending y fallbacks | v9 graph + QA03B adapter | graph/context 31/31 PASS | C01–C10 integrado se repite en F08 |
 | F03-02 | F03-01 | **DONE_WITH_EVIDENCE** — 24+5, consentimiento, hard cap 29, replay y stop temprano | v9 route-budget/session/planner/UI | budget/session/replay 31/31 PASS | idioma/aclaración UI se certifican F08 |
-| F04-01 | F01-02, F02-03 | Contratos/banco/scoring V9 sin imports QBV2 | qa03b/v9-candidate-scoring.ts y módulos futuros v9 | búsqueda estática, unitarias determinismo y equivalencia contextual | No modificar scorer público V8 |
-| F04-02 | F04-01, DEC-D | Correlación confirmada antes de puntuar, conflicto fail-closed | qa03b/v9-observation-correlation.ts y scorer V9 aislado | mismo evento, eventos independientes, contradicción, unmapped, replay/versiones | No inferir evento desde ID o sector |
-| F04-03 | F04-02, DEC-B | Aplicabilidad, scoring y confianza versionados | calibración y motor V9 | casos con 0/1/2 directas, apoyo-only, neutral, prelaunch, no ventas | Abstenerse ante insuficiencia |
+| F04-01 | F01-02, F02-03 | **DONE_WITH_EVIDENCE** — scoring autónomo V9 sin imports runtime QBV2/QA03B | app/features/diagnostic/v9/scoring-* | autonomía + F04 focal 32/32 PASS | V8 no modificado |
+| F04-02 | F04-01, DEC-D | **DONE_WITH_EVIDENCE** — correlación antes de score, same-event dedup, conflicto/unmapped fail-closed | v9/observation-correlation.ts + evidence-correlation-registry.ts | same fact/different event/conflict/direct>supporting PASS | no inferencia desde ID/sector |
+| F04-03 | F04-02, DEC-B | **DONE_WITH_EVIDENCE** — scoring_version→calibration, v1-v4 histórico, v4 actual, 3+60%, direct-required | v9/scoring-calibration-registry.ts + scoring-engine.ts | F04 focal 32/32 PASS | unknown scoring version falla cerrado |
 | F05-01 | F04-03, DEC-E | Resumen anónimo con explicación breve y sin datos personales | rutas/resultados y report V9 | snapshots ES/EN, privacidad y trazabilidad interna | No exigir cuenta para resumen |
 | F05-02 | F05-01, F07-02 | Informe identificado, prioridades y versiones reproducibles | report V9 + persistencia autenticada | snapshots, acceso y replay | Sin acceso cruzado |
 | F06-01 | F05-01, DEC-F | Priorización multicriterio y etapas Ahora/Después/Más adelante | recommendations V9 | desempates, dependencias, objetivos confirmados, no plazos inventados | No promesas comerciales |
@@ -69,6 +69,7 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - Las 13 pruebas focales PASS documentadas corresponden al commit 231fba058803, no a este HEAD ni a aceptación integral.
 
 ## Changelog
+- 0.5.0 / 2026-11-01: F04 cerrado con evidencia; scorer V9 autónomo, correlación fail-closed y calibration registry; 32/32 PASS; F05+ PLAN_ONLY.
 - 0.4.0 / 2026-11-01: F03 cerrado con evidencia; 24+5 y graph 31/31 cada uno; F04+ PLAN_ONLY.
 - 0.3.0 / 2026-11-01: F02 cerrado con fallback; manifest canónico 77 y 29/29 PASS; F03+ PLAN_ONLY.
 - 0.2.0 / 2026-11-01: F00–F01 cerrados con evidencia; F02–F10 permanecen PLAN_ONLY.
@@ -87,4 +88,5 @@ Fuentes: plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md (1.70.0), plans/DIAGNOS
 - **F02-02 = DEFERRED_WITH_FALLBACK.**
 - **F02-03 = DONE_WITH_FALLBACK.** Run 41327887999, job 124911583189, 29/29 PASS.
 - **F03-01/F03-02: DONE_WITH_EVIDENCE.** Budget/replay 31/31 + graph 31/31.
-- **F04–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.
+- **F04-01/F04-02/F04-03: DONE_WITH_EVIDENCE.** Run 41334411521, job 124931051762, 32/32 PASS.
+- **F05–F10: HOLD / PLAN_ONLY.** Requieren nueva autorización.

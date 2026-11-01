@@ -1,11 +1,11 @@
 # Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.5.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03 DONE_WITH_EVIDENCE / NOT_READY_FOR_F04
+Versión: 0.6.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03-F04 DONE_WITH_EVIDENCE / NOT_READY_FOR_F05
 Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
 
 ## 1. Decisión de preparación
-**F00–F01 DONE_WITH_EVIDENCE; F02 DONE_WITH_FALLBACK; F03 DONE_WITH_EVIDENCE; NO READY FOR F04.** El core 24+5 está implementado: 24 base, consentimiento explícito, hasta 5 críticos, hard cap 29 y replay autoritativo. El graph/context gate y budget/session/replay pasan 31/31 cada uno sobre el SHA de código F03.
+**F00–F01 DONE_WITH_EVIDENCE; F02 DONE_WITH_FALLBACK; F03–F04 DONE_WITH_EVIDENCE; NO READY FOR F05.** El core 24+5 está implementado: 24 base, consentimiento explícito, hasta 5 críticos, hard cap 29 y replay autoritativo. El graph/context gate y budget/session/replay pasan 31/31 cada uno sobre el SHA de código F03.
 
-F04 sigue bloqueado por DEC-B/DEC-D: binding scoring_version→calibration, correlación y eliminación de defaults implícitos todavía no están implementados.
+Los bloqueos técnicos P0 de F04 quedaron resueltos: `scoring_version` liga explícitamente una calibración registrada, replay/finalization reproducen calibración histórica, correlación se aplica antes del scorer y conflictos/unmapped fallan cerrado. El gate focal del HEAD de código F04 pasó 32/32. F05+ permanece fuera de autorización.
 
 ## 2. Índice de lectura obligatorio para el agente
 1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
@@ -39,7 +39,7 @@ F04 sigue bloqueado por DEC-B/DEC-D: binding scoring_version→calibration, corr
 | IMPL-G00 | F00–F01 | **PASS focal**: main ancestro + frontera legacy congelada; storage final deferred y registry objetivo definido |
 | IMPL-G01 | F02 | Banco aprobado, ES/EN y evidencia versionada |
 | IMPL-G02 | F03 | **PASS CORE** — graph/context 31/31 + budget/session/replay 31/31; idioma/aclaración UI quedan F08 |
-| IMPL-G03 | F04 | Motor autónomo, determinista, sin doble evidencia y sin imports runtime QBV2 |
+| IMPL-G03 | F04 | **PASS CORE** — scorer V9-owned, 40 mappings, correlation fail-closed, v1-v4 registry, histórico v2 y v4 actual; 32/32 PASS |
 | IMPL-G04 | F05–F06 | Resumen/informe/recomendaciones justificadas, recursos publicados o fallback |
 | IMPL-G05 | F07 | Sesión, claim, organización, historial y privacidad sin acceso cruzado |
 | IMPL-G06 | F08 | UX accesible, seguridad, E2E y regresiones pertinentes |
@@ -57,7 +57,7 @@ F04 sigue bloqueado por DEC-B/DEC-D: binding scoring_version→calibration, corr
 
 ## 6. Evidencia histórica que no debe exagerarse
 La documentación registra 13/13 PASS del archivo focal del banco90/correlador para commit 231fba058803, GitHub Actions run 41200765557. No es un PASS del HEAD posterior ni de E2E, identidad, staging o producción.
-El correlador experimental existe pero no está conectado al scorer V9; el P0 de doble conteo continúa abierto.
+El correlador V9 ya está conectado al scorer autónomo antes de agregación; el P0 de doble conteo queda cerrado para los mappings/overlap groups registrados en F04. Nuevos mappings solapados deberán declarar metadata antes de scoring.
 PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes de cada nuevo scope.
 
 ## 7. Formato obligatorio del reporte de cada tarea futura
@@ -69,9 +69,10 @@ PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes d
 - Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
 
 ## 8. Próximo paso de planificación
-El siguiente gate requiere nueva autorización: **W5/F04**. No modificar scoring, calibration, correlación ni registry runtime hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
+El siguiente gate requiere nueva autorización: **F05**. No modificar resumen/informe/recomendaciones ni superficies posteriores hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
 
 ## Changelog
+- 0.6.0 / 2026-11-01: W5/F04 cerrado; scorer autónomo y calibration/correlation reproducibles 32/32; F05+ no autorizado.
 - 0.5.0 / 2026-11-01: W4/F03 cerrado; 24+5/replay y graph 31/31 cada uno; W5/F04 no autorizado.
 - 0.4.0 / 2026-11-01: W3/F02 cerrado con fallback; canonical manifest 77, 29/29 PASS; W4/F03 no autorizado.
 - 0.3.0 / 2026-11-01: W2/F01 cerrado; frontera legacy allowlisted 3/3 PASS; storage final deferred y registry objetivo fijado; F02+ PLAN_ONLY.

@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.4.0  
+**Versión:** 0.5.0  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -180,7 +180,7 @@ Diferidos a F08 por no existir hoy como eventos del motor:
 
 ---
 
-### W5 — F04: motor, correlación y calibración
+### W5 — F04: motor, correlación y calibración — DONE_WITH_EVIDENCE
 
 Orden interno obligatorio:
 
@@ -219,10 +219,17 @@ Pruebas focales:
 - mismatch version;
 - replay/finalization parity.
 
-Gate:
-- mismo input/version produce mismo resultado;
-- calibration identity reproducible;
-- no doble conteo.
+Gate alcanzado:
+- scoring autónomo V9 sin imports runtime QBV2/QA03B;
+- registry V9-owned cubre 40 mappings migrados del bank77;
+- mismo hecho/dos IDs solo deduplica con correlación explícita;
+- eventos distintos permanecen independientes;
+- conflicto/unmapped = fail-closed;
+- direct-required, supporting cap y neutral=null;
+- v4 exige >=3 dimensiones y >=60% aplicables;
+- runs históricos v1-v4 resuelven calibración explícita; versión desconocida falla cerrado;
+- Worker/finalization/result identity incluyen scoring/calibration reproducibles;
+- gate focal: 32/32 PASS en run 41334411521 / job 124931051762.
 
 ---
 
@@ -369,8 +376,8 @@ Producción no se infiere de CI/staging.
 
 | Bloqueo actual | Wave que lo resuelve |
 |---|---|
-| v2/v4 calibration binding | W5 |
-| doble conteo/correlación | W5 |
+| v2/v4 calibration binding | RESUELTO W5 — registry explícito y replay histórico |
+| doble conteo/correlación | RESUELTO W5 — correlation fail-closed antes del scorer |
 | local-only vs ledger D1 | W2 contrato cerrado; implementación W6 |
 | hard cap 24 vs 24+5 | RESUELTO W4 — core 31/31 PASS |
 | migraciones 0030–0035 | W1 |
@@ -420,6 +427,7 @@ READY_FOR_AGENT solo puede declararse cuando:
 
 ## Changelog
 
+- **0.5.0 / 2026-11-01:** W5/F04 cerrado con evidencia focal 32/32; F05+ permanece no autorizado.
 - **0.4.0 / 2026-11-01:** W4/F03 cerrado con evidencia; W5/F04 es el siguiente scope no autorizado.
 - **0.3.0 / 2026-11-01:** W3/F02 cerrado con fallback; W4/F03 pasa a ser el próximo scope no autorizado.
 - **0.2.0 / 2026-11-01:** W1 y W2 cerrados con evidencia; W3/F02 es el siguiente scope no autorizado.
