@@ -26,7 +26,7 @@ Nuevo archivo:
 `app/features/diagnostic/v9/canonical-bank-manifest.ts`.
 
 Propósito:
-- fijar IDs y versiones fuente del baseline 77;
+- fijar IDs y versiones fuente del baseline 77 como identidad editorial; el orden de ensamblaje runtime no se redefine en F02;
 - registrar KEEP vs `rewrite_pending`;
 - mantener fuera los 13 ADD;
 - no importar QA03B/QBV2;
@@ -117,7 +117,7 @@ La comparación con el banco QA03B ocurre únicamente en tests de migración/par
 F02 puede cerrar si:
 1. manifest = 77 IDs únicos;
 2. 18 KEEP + 59 rewrite_pending;
-3. ID/version coincide con bank77 actual;
+3. el conjunto ID→version coincide con bank77 actual; el orden runtime queda delegado al adapter hasta F03;
 4. bank82/bank90 no contaminan canonical 77;
 5. 13 ADD siguen pending y sin evidenceV3;
 6. real-estate fallback se preserva;
