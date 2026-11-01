@@ -1,5 +1,3 @@
-import { scoreCandidateContextualDimensionsV3 } from "./v9-candidate-scoring";
-import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import {
   QA03B_V9_ANSWER_SCHEMA_ID,
   QA03B_V9_ENGINE_ID,
@@ -26,6 +24,8 @@ import {
   V9_SCORING_CALIBRATION_REGISTRY_ID,
 } from "../v9/scoring-calibration-registry";
 import { V9_EVIDENCE_CORRELATION_REGISTRY_ID } from "../v9/evidence-correlation-registry";
+import { V9_SCORING_EVIDENCE_REGISTRY_ID } from "../v9/scoring-evidence-registry";
+import { scoreV9Dimensions, V9_SCORING_ENGINE_ID } from "../v9/scoring-engine";
 
 export const QA03B_V9_WORKER_TTL_MS = 14 * 24 * 60 * 60 * 1000;
 
@@ -48,6 +48,8 @@ export function buildQa03bV9CoreResultIdentity(scoringVersion: string) {
     calibration: resolved.calibration.identity,
     calibrationVersion: resolved.calibration.version,
     correlation: V9_EVIDENCE_CORRELATION_REGISTRY_ID,
+    evidenceRegistry: V9_SCORING_EVIDENCE_REGISTRY_ID,
+    scoringEngine: V9_SCORING_ENGINE_ID,
   } as const);
 }
 
@@ -82,7 +84,7 @@ export type Qa03bWorkerCoreResultV9 = {
   readonly applicableDimensions: readonly string[];
   readonly insufficientContextDimensions: readonly string[];
   readonly unresolvedApplicableDimensions: readonly string[];
-  readonly dimensions: ReturnType<typeof scoreCandidateContextualDimensionsV3>["dimensions"];
+  readonly dimensions: ReturnType<typeof scoreV9Dimensions>["dimensions"];
   readonly extensionConsent: CandidateSessionV9Prototype["extensionConsent"];
   readonly extensionInteractions: number;
 };
@@ -264,18 +266,18 @@ export function replayQa03bSessionV9Core(
     return { ok: false, reason: "incomplete" };
   }
 
-  let scoring: ReturnType<typeof scoreCandidateContextualDimensionsV3>;
+  let scoring: ReturnType<typeof scoreV9Dimensions>;
   try {
-    scoring = scoreCandidateContextualDimensionsV3(
-      {
-        answers: planView.activeAnswers,
-        calibration: scoringProfile.calibration,
-        strictCorrelation: true,
-      },
-      QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
-    );
+    scoring = scoreV9Dimensions({
+      answers: planView.activeAnswers,
+      context: planView.plan.context,
+      calibration: scoringProfile.calibration,
+    });
   } catch (error) {
-    if (error instanceof Error && error.message === "v9_correlation_not_score_safe") {
+    if (error instanceof Error && (
+      error.message === "v9_correlation_not_score_safe" ||
+      error.message.startsWith("v9_scoring_answer_unmapped:")
+    )) {
       return { ok: false, reason: "correlation" };
     }
     throw error;
