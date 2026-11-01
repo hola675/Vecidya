@@ -1,7 +1,7 @@
 # Diagnostic V9 — CLASS-05: matriz de aprobación humana A–H
 
-**Versión:** 0.1.0  
-**Fecha:** 2026-10-31  
+**Versión:** 0.1.1  
+**Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · PROPUESTAS PARA APROBACIÓN · NO AUTORIZA EJECUCIÓN  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
@@ -14,6 +14,7 @@ Cada fila debe terminar en uno de estos estados:
 - **DEFERRED**
 - **REJECTED**
 - **OPEN**
+- **READY_FOR_HUMAN_REVIEW** (estado preparatorio, no aprobación)
 
 Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
@@ -29,9 +30,9 @@ Ninguna propuesta de esta tabla se considera aprobada por estar documentada.
 
 **Impacto:** F02, F04, F05, F08.
 
-**Evidencia:** CLASS-02 fuentes/consumidores; CLASS-04 matriz C01–C10.
+**Evidencia:** CLASS-02 fuentes/consumidores; CLASS-04 matriz C01–C10; `DIAGNOSTIC-V9-DECA-DIMENSION-TAXONOMY-DECISION-PACK.md` v0.1.0.
 
-**Estado:** OPEN.
+**Estado:** READY_FOR_HUMAN_REVIEW. No aprobado.
 
 ## 3. DEC-B — calibración, score y confianza
 
@@ -183,7 +184,7 @@ Hasta entonces, el estado permanece documental.
 
 | DEC | Estado | Aprobador | Fecha | Condiciones/Fallback | Evidencia |
 |---|---|---|---|---|---|
-| A | OPEN | — | — | — | CLASS-02/04 |
+| A | READY_FOR_HUMAN_REVIEW | — | — | No aprobado; revisar paquete DEC-A | DEC-A pack + CLASS-02/04 |
 | B | OPEN | — | — | — | scoring/coverage |
 | C | OPEN | — | — | — | 77/82/90 |
 | D | OPEN | — | — | — | provenance/replay |
@@ -194,4 +195,5 @@ Hasta entonces, el estado permanece documental.
 
 ## Changelog
 
+- **0.1.1 / 2026-11-01:** DEC-A pasa a READY_FOR_HUMAN_REVIEW con paquete 8×10; no cambia aprobación ni PLAN_ONLY.
 - **0.1.0 / 2026-10-31:** matriz A–H con propuesta, alternativa, riesgo, fallback, impacto y orden de revisión humana.
