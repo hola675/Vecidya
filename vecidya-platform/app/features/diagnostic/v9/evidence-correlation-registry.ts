@@ -78,6 +78,10 @@ export function v9EvidenceCorrelationMetadata(
   return byKey.get(keyOf(questionId, dimension));
 }
 
+export function listV9EvidenceCorrelationMetadata(): readonly V9EvidenceCorrelationMetadata[] {
+  return entries;
+}
+
 export type V9CorrelationPolicyResult = {
   readonly registryIdentity: typeof V9_EVIDENCE_CORRELATION_REGISTRY_ID;
   readonly accepted: readonly V9ContextualEvidence[];
