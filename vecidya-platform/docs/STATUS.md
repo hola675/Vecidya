@@ -1051,3 +1051,8 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | TEST-001, TEST-002 | **Reabiertas** como `TEST-D1-NAME`: la afirmación «runner estabilizado» ya no se sostiene con el D1 actual |
 | `7B.2-DELIVERY` | Reemplazada por `INVITE-001`, que añade el bloqueo de verificación de email |
 | Piloto: «no hay deuda de datos» | Sustituida por `PILOT-*` |
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — checkpoint local (2026-11-02)
+
+Se aplicó una capa visual acotada a App (`/app`), Admin (`/app/internal`) y al editor/preview de MiniWeb V2, siguiendo la guía premium y respetando la identidad configurable del sitio comercial. Incluye superficies, navegación, tarjetas/tablas, controles y adaptación responsive; no cambia contratos, rutas, datos ni permisos. `node tests/e2e/app-dashboard-redesign-check.mjs` recorrió App y MiniWeb V2 y las cinco anchuras de la portada Admin, con D1 sintética eliminada al finalizar. Quedó bloqueado al comprobar teclado: el drawer Admin abre, pero el foco sigue en `body` en vez del primer enlace. Se conserva sin cambios el hook compartido; accesibilidad interactiva no certificada. `typecheck` y `build` PASS; `git diff --check` PASS tras corregir espacios de documentación. El detalle de evidencias y límites está en `TESTING.md`. Sin commit, PR o publicación todavía.
+
+React #418 continúa independiente y sin resolver: no se reprodujo ni identificó causa en este checkpoint.

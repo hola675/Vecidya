@@ -2733,3 +2733,8 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - `/privacidad`, `/sobre-nosotros`, `/que-debes-saber` y la navegación pública están implementadas.
 - `7B.2` invitaciones sigue bloqueada por configuración externa de correo y demostración de delivery real.
 
+## 2026-11-02 — UX-PREMIUM-APP-ADMIN-MINIWEB-01 (local, sin publicar)
+
+- Se añade una capa visual premium para App, Admin y editor/preview MiniWeb V2 con estilos acotados y variantes por familia de MiniWeb.
+- La prueba local confirma navegación inicial y responsive de App/MiniWeb; falla en el foco del drawer Admin móvil. Validación final incompleta; ver `TESTING.md`.
+- Sin cambios funcionales, de esquema, D1 remota, merge ni despliegue. React #418 continúa independiente y sin resolver.
