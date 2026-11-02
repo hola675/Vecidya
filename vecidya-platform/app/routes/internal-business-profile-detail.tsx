@@ -3,6 +3,7 @@ import { data, Form, Link, useActionData, useLoaderData, useNavigation } from "r
 import { getPlatformBusinessProfileDetail } from "../../db/queries/platform-business-profiles.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { dayOfWeekLabels } from "../../db/business-hours-rules";
+import { formatPlatformDateTime } from "../lib/platform-date-format";
 import { serviceModeLabels } from "../../db/business-profile-rules";
 import {
   applyGovernanceAction,
@@ -31,10 +32,6 @@ const auditActionLabels: Record<string, string> = {
   "business_profile.suspend": "Suspendió el perfil",
   "business_profile.reactivate": "Reactivó el perfil",
 };
-
-function formatTimestamp(date: Date) {
-  return new Date(date).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
-}
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
@@ -176,7 +173,7 @@ export default function InternalBusinessProfileDetail() {
               {activity.map((entry) => (
                 <li key={entry.id}>
                   <p><strong>{auditActionLabels[entry.action] ?? entry.action}</strong> · {entry.actorName ?? entry.actorEmail ?? "Actor desconocido"}</p>
-                  <p className="admin-audit-list__meta">{entry.previousValue} → {entry.newValue} · {formatTimestamp(entry.createdAt)}</p>
+                  <p className="admin-audit-list__meta">{entry.previousValue} → {entry.newValue} · {formatPlatformDateTime(entry.createdAt)}</p>
                 </li>
               ))}
             </ul>
