@@ -12,7 +12,7 @@ React #418 sigue como deuda independiente de App/Admin y permanece abierta sin c
 
 ## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal completada (2026-11-02)
 
-PR #226 corrige el foco inicial del drawer móvil de Admin al quitar la transición de `visibility`, que mantenía temporalmente oculto el primer enlace, y contiene el elemento `.sr-only` de la tabla Servicios dentro de su scroller para evitar overflow del documento. E2E local, typecheck/build y diff-check PASS; capturas de App, Admin y MiniWeb a cinco viewports y Servicios móvil/escritorio registradas en `TESTING.md`. El CI no ejecuta este E2E. La revisión no equivale a auditoría WCAG/axe, lector de pantalla ni zoom 200 %. React #418 global permanece abierto. PR pendiente de integración; sin deploy.
+PR #226 corrige el foco inicial del drawer móvil de Admin al quitar la transición de `visibility`, que mantenía temporalmente oculto el primer enlace; contiene el elemento `.sr-only` de la tabla Servicios dentro de su scroller, y permite desplazar la barra lateral de Admin en escritorio para alcanzar «Cerrar sesión» con viewport bajo. E2E local, typecheck/build y diff-check PASS; capturas de App, Admin y MiniWeb a cinco viewports y Servicios móvil/escritorio registradas en `TESTING.md`. El CI no ejecuta este E2E. La revisión no equivale a auditoría WCAG/axe, lector de pantalla ni zoom 200 %. React #418 global permanece abierto. PR pendiente de integración; sin deploy.
 
 ## UX-PREMIUM-02J — Vico y escenas en 10 páginas públicas (2026-10-31)
 

@@ -266,6 +266,16 @@ INSERT INTO member (id,organization_id,user_id,role,created_at) SELECT ${sqlLite
     if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   }
+  await page.setViewportSize({ width: 1366, height: 768 });
+  const adminSidebarScroll = await page.locator(".admin-sidebar").evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+    const signout = element.querySelector(".admin-sidebar__signout");
+    const bounds = signout?.getBoundingClientRect();
+    return { scrollHeight: element.scrollHeight, clientHeight: element.clientHeight, scrollTop: element.scrollTop, signoutVisible: Boolean(bounds && bounds.top >= 0 && bounds.bottom <= window.innerHeight) };
+  });
+  if (adminSidebarScroll.scrollHeight <= adminSidebarScroll.clientHeight || adminSidebarScroll.scrollTop === 0 || !adminSidebarScroll.signoutVisible) {
+    throw new Error(`La barra lateral de Admin no permite alcanzar "Cerrar sesión" con poca altura: ${JSON.stringify(adminSidebarScroll)}.`);
+  }
   phase = "internal services table and assignment controls";
   await page.goto(new URL(`/app/internal/services?organizationId=${organizationId}`, baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Servicios por organización" }).waitFor();

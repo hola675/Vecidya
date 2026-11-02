@@ -212,7 +212,7 @@
 }
 
 @media (min-width: 981px) {
-  .admin-sidebar { position: sticky; top: 0; height: 100vh; min-height: 100svh; }
+  .admin-sidebar { position: sticky; top: 0; align-self: start; height: 100dvh; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
 }
 
 @media (max-width: 600px) {
