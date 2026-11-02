@@ -1,5 +1,12 @@
 # 2026-11-02 — React #418 — corrección focal integrada, deuda global abierta
 
+## 2026-11-02 — UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal de PR #226
+
+- Revisión arquitectónica identificó que la transición CSS `visibility` ocultaba temporalmente el primer enlace del drawer Admin cuando el hook intentaba enfocarlo. Se mantuvo el hook compartido y se cambió la transición visual a `transform`/`opacity` con `pointer-events`; E2E confirma foco inicial, navegación y cierre.
+- El scroller de la tabla de Servicios ahora contiene el elemento `.sr-only` que causaba overflow del documento en móvil; la tabla mantiene scroll horizontal propio.
+- E2E Worker/D1 local y capturas de App/Admin/MiniWeb en cinco viewports PASS; typecheck, build y diff-check PASS. D1 sintética eliminada y ausencia verificada. Evidencia y límites en `TESTING.md`.
+- No cambian rutas, lógica, contratos, permisos ni datos. La deuda global React #418 y la certificación integral de accesibilidad permanecen abiertas. Sin deploy.
+
 - Se añadió un E2E que aplica migraciones en D1 efímera, crea fixtures sintéticas de App/Admin e integración metadata local, y verifica eliminación al cerrar.
 - Se reprodujo React #418 en `/app/internal` por una diferencia locale de fecha entre SSR y Chromium `America/New_York`; se centralizó el formato determinista de fecha/hora en las rutas internas identificadas. El caso focal pasa; la certificación App/Admin sigue abierta.
 - PR #225 integrada en `main@a457e7e4`; unitarias focales 2/2, E2E React #418 y CI (1814/1814 unitarias, typecheck/build/regresión) PASS. La corrección se limita al escenario/rutas identificadas; App/Admin continúa como deuda por certificar.
