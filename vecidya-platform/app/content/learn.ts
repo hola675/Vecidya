@@ -4,6 +4,7 @@ import { learnManagement03Articles } from "./learn-management-03";
 import { learnDigitalLiteracyArticles } from "./learn-digital-literacy";
 import { learnTechnical04BArticles } from "./learn-technical-04b";
 import { learnEmail04BArticles } from "./learn-email-04b";
+import { learnGuideIllustrations } from "./learn-illustrations";
 
 export type LearnBlock =
   | { type: "paragraph"; text: string }
@@ -49,7 +50,7 @@ export const learnCategories = [
   { name: "Gestión y equipos", description: "Coordinar personas, sedes, información y varios negocios sin perder claridad." },
 ] as const;
 
-export const learnArticles: LearnArticle[] = [
+const learnArticleSources: LearnArticle[] = [
   {
     slug: "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo",
     category: "CRM y clientes",
@@ -4707,6 +4708,12 @@ export const learnArticles: LearnArticle[] = [
   ...learnOperations02Articles,
   ...learnManagement03Articles,
 ];
+
+export const learnArticles: LearnArticle[] = learnArticleSources.map((article) => {
+  const illustration = learnGuideIllustrations[article.slug];
+  if (!illustration) throw new Error(`Falta una ilustración propia para la guía Aprende: ${article.slug}`);
+  return { ...article, ...illustration };
+});
 
 
 export const learnPathways = [
