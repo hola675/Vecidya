@@ -12,6 +12,7 @@ import { Badge, Icon } from "../components/ui";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
 import { platformAuditActionLabels } from "../lib/platform-audit-labels";
+import { formatPlatformDateTime } from "../lib/platform-date-format";
 
 import type { Route } from "./+types/internal-licenses";
 
@@ -206,7 +207,7 @@ export default function InternalLicenses() {
                   }
                   return statusNames[value] ?? planNames[value as PlanCode] ?? value;
                 };
-                return <li key={event.id}><time dateTime={event.createdAt.toISOString()}>{new Intl.DateTimeFormat("es", { dateStyle: "medium", timeStyle: "short" }).format(event.createdAt)}</time> · <strong>{platformAuditActionLabels[event.action] ?? event.action}</strong> · {event.actorName} ({event.actorEmail}) · {billingValue(event.previousValue)} → {billingValue(event.newValue)}</li>;
+                return <li key={event.id}><time dateTime={event.createdAt.toISOString()}>{formatPlatformDateTime(event.createdAt)}</time> · <strong>{platformAuditActionLabels[event.action] ?? event.action}</strong> · {event.actorName} ({event.actorEmail}) · {billingValue(event.previousValue)} → {billingValue(event.newValue)}</li>;
               })}</ol> : <p>Aún no hay acciones de licencia registradas.</p>}
             </details>
           </section>

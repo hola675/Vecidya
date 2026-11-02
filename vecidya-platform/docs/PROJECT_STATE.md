@@ -1,3 +1,7 @@
+## React #418 — fix local de hidratación App/Admin (2026-11-02)
+
+Se aisló el mismatch en la actividad reciente: `Intl` generaba texto distinto entre Cloudflare Worker y Edge, y la zona podía cambiar el día. Las rutas internas ahora usan un formateador determinista de Bogotá. El E2E Worker/D1 aislado con fixture sintético y zona de navegador distinta pasa sin error React y verifica la eliminación de la base. Código local en `fix/react-418-hydration-local-repro`, todavía no integrado ni desplegado; el E2E amplio conserva un fallo independiente de overflow en su fixture. Ver `STATUS.md` y `TESTING.md`.
+
 ## UX-PREMIUM-02J — Vico y escenas transparentes para 10 páginas (2026-10-31)
 
 El checkpoint local de PR #222 asocia las 10 variantes WebP de Vico a Inicio, Vecindario, Aprende, Diagnóstico, Licencias, Servicios, Complementos, Sobre nosotros, Contacto y Únete; Vico se amplió en las escenas de apoyo. Se generaron 10 WebP transparentes y se preservó el hero aprobado de Inicio. Los 30 diagramas SVG educativos y el atlas de Aprende se sustituyeron por WebP temáticos con alt por guía. No cambia la lógica, el contenido, las rutas ni los CTAs. E2E en 10 rutas × cinco viewports, capturas full-page antes/después 50 + 50, typecheck/build/diff-check: PASS. Axe, lector de pantalla y zoom 200 % pendientes; sin merge, D1 remota, deploy ni HTTP pública.
