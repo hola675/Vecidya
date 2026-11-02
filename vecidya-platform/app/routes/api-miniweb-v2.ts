@@ -1,4 +1,6 @@
 import { createDatabase } from "../../db/client.server";
+import { listBusinessMediaForOrganization } from "../../db/queries/business-media.server";
+import { publishedMiniWebV2ImageIds } from "../features/miniweb-v2/media";
 import { getBusinessPublicationSnapshotForOrganization } from "../../db/queries/business-publication.server";
 import { member } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
@@ -89,6 +91,14 @@ export async function action(args: Route.ActionArgs) {
     if (!current || current.site.id !== input.siteId || current.draft.revision !== input.expectedRevision) return Response.json({ error: "La revisión cambió.", code: "REVISION_CONFLICT" }, { status: 409 });
     const validation = validateMiniWebV2Document(JSON.parse(current.draft.documentJson), { publishable: true });
     if (!validation.valid) return Response.json({ error: "El borrador no se puede publicar.", details: validation.errors }, { status: 400 });
+    // Evita enlaces rotos y referencias a medios ajenos o borrados al publicar.
+    const referenced = publishedMiniWebV2ImageIds(validation.value);
+    if (referenced.size) {
+      const available = await listBusinessMediaForOrganization(database, organization.id);
+      const authorized = new Set(available.filter((asset) => asset.mediaType === "image").map((asset) => asset.id));
+      const missing = [...referenced].filter((id) => !authorized.has(id));
+      if (missing.length) return Response.json({ error: "Hay imágenes no disponibles en este negocio. Revisa la galería y las secciones antes de publicar.", code: "MEDIA_NOT_AVAILABLE" }, { status: 409 });
+    }
     const capacity = await getMiniWebV2PublicationCapacity(database, current.site.ownerUserId);
     const published = await publishMiniWebV2Draft(database, { siteId: input.siteId, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: input.expectedRevision as number, publicationId: crypto.randomUUID(), capacity: capacity.capacity });
     if (published.ok) return Response.json(published);

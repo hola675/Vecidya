@@ -69,6 +69,14 @@ Capturas comparables antes/después en `.playwright-mcp/aprende-{before,after}-{
 
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
+## UX-IMPL-03 — editor guiado, publicación y medios V2 (candidato local, 2026-11-02)
+
+**RAN local:** unitarias focales — 26/26 PASS en validación de secciones/publicación, estado del editor, familias, conversión, horarios, medios, categorías y Vecindario. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `pnpm exec node tests/e2e/miniweb-v2-conversion-check.mjs` PASS sobre Wrangler Worker con D1 y R2 locales efímeras; prueba rechazo de documento sin portada, referencias cross-tenant/video, publicación explícita, carga de bytes/MIME, metadata/canonical, sitemap, aislamiento entre borrador y publicación, y retiro por medio inactivo o sin referencia vigente. El arnés elimina el almacenamiento local al terminar.
+
+El build mantiene avisos locales de secretos opcionales ausentes, imports dinámicos ineficaces y sourcemap CSS; no se leyeron secretos y no impidieron compilar. No se verificó bucket R2 remoto, D1 remota, deploy, HTTP pública, sesión visual de formularios a cinco viewports ni accesibilidad integral (axe, lector, zoom 200 %). Esto no certifica WCAG ni publicación.
+
+## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
+
 **RAN local:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-publication-query.test.ts tests/unit/miniweb-v2-sections.test.ts` — 3/3 PASS. El test revisa el SQL Drizzle de snapshot (incluye `created_at`, `ON CONFLICT DO NOTHING`) y que un segundo intento de la misma revisión responda `conflict`. Typecheck/build PASS. El test usa un D1 stub para validar contrato/ramas de resultado; concurrencia y operación D1 real requieren el E2E Worker integrado en un checkpoint posterior. Migraciones solo locales; sin D1 remoto.
 
 ## UX-COHERENCE-ROUNDED-001 — verificación local y release 0.9.2 (2026-10-29)

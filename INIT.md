@@ -59,4 +59,4 @@ The authorized next Admin scale checkpoint is `/app/internal/organizations`: ser
 
 ## A Team Scope
 
-Keep the orchestrator, code reviewer, security reviewer, database reviewer, and TypeScript reviewer available. Activate only workflow skills relevant to the current project and checkpoint; retain installed profiles when inactive.
+Keep the orchestrator, harness optimizer, code reviewer, security reviewer, database reviewer, and TypeScript reviewer available. Activate only workflow skills relevant to the current project and checkpoint; retain installed profiles when inactive.

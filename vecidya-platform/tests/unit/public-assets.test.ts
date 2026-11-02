@@ -7,9 +7,9 @@ test("public assets register the approved catalog replacements", () => {
   assert.equal(publicAssets.catalog.diagnostic.low, "/assets/catalog/diagnostic/presencia-por-fortalecer-mal.png");
   assert.equal(publicAssets.catalog.diagnostic.developing, "/assets/catalog/diagnostic/presencia-en-desarrollo-regular.png");
   assert.equal(publicAssets.catalog.diagnostic.solid, "/assets/catalog/diagnostic/presencia-solida-bien.png");
-  assert.equal(publicAssets.catalog.plans.cuadra, "/assets/catalog/plans/plan-cuadra.png");
-  assert.equal(publicAssets.catalog.plans.barrio, "/assets/catalog/plans/plan-barrio.png");
-  assert.equal(publicAssets.catalog.plans.ciudad, "/assets/catalog/plans/plan-ciudad.png");
+  assert.equal(publicAssets.catalog.plans.cuadra, "/assets/catalog/plans/plan-cuadra.webp");
+  assert.equal(publicAssets.catalog.plans.barrio, "/assets/catalog/plans/plan-barrio.webp");
+  assert.equal(publicAssets.catalog.plans.ciudad, "/assets/catalog/plans/plan-ciudad.webp");
   assert.equal(publicAssets.catalog.addons.whatsapp, "/assets/catalog/features/communication/whatsapp-01.png");
   assert.equal(publicAssets.catalog.addons.sms, "/assets/catalog/features/communication/sms-01.png");
   assert.equal(publicAssets.catalog.addons.telefonia, "/assets/catalog/features/communication/llamadas-01.png");
