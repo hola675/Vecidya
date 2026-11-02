@@ -16,6 +16,7 @@ import "./styles/vecidya-polish.css";
 import "./styles/home-premium.css";
 import "./styles/addons-premium.css";
 import "./styles/premium-foundation.css";
+import "./styles/workspace-premium.css";
 import "./styles/learn-premium.css";
 import "./styles/neighborhood-premium.css";
 

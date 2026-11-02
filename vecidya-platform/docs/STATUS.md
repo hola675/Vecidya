@@ -10,9 +10,9 @@ El hero y la composición de Inicio se actualizaron en `feat/app-mini-ux-premium
 
 React #418 sigue como deuda independiente de App/Admin y permanece abierta sin certificación global. PR #225 quedó integrada en `main@a457e7e4`: reprodujo `/app/internal` por diferencia U+0020/U+00A0 en el formato locale de fecha en Chromium `America/New_York`, aplicó formato determinista Bogotá a las rutas internas identificadas y añadió E2E focal que compara SSR/hidratación y abre `/app/internal/integrations` con metadata sintética. Unitarias focales 2/2, E2E React #418, typecheck, build, diff-check y CI (1814/1814 unitarias) PASS. La D1 efímera se elimina; no se llama a proveedores. Otras rutas internas y estados autenticados requieren certificación; React #418 no se declara resuelto. Evidencia en `TESTING.md` → React #418. Inicio no comparte esos componentes fuera de estilos `.public-home`.
 
-## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — pendiente de validación
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal completada (2026-11-02)
 
-PR #226 permanece en borrador y no se integra: typecheck/build/diff-check PASS, pero `test:e2e:app-dashboard-redesign` falla al abrir el drawer móvil de Admin, donde el foco permanece en `BODY` en vez de moverse al primer enlace. El CI del PR no ejecutó esta aserción. Capturas y cobertura parcial se describen en `TESTING.md`; completar gestión de foco y revalidar antes de reconsiderar el merge. Sin deploy.
+PR #226 corrige el foco inicial del drawer móvil de Admin al quitar la transición de `visibility`, que mantenía temporalmente oculto el primer enlace; contiene el elemento `.sr-only` de la tabla Servicios dentro de su scroller, y permite desplazar la barra lateral de Admin en escritorio para alcanzar «Cerrar sesión» con viewport bajo. E2E local, typecheck/build y diff-check PASS; capturas de App, Admin y MiniWeb a cinco viewports y Servicios móvil/escritorio registradas en `TESTING.md`. El CI no ejecuta este E2E. La revisión no equivale a auditoría WCAG/axe, lector de pantalla ni zoom 200 %. React #418 global permanece abierto. PR pendiente de integración; sin deploy.
 
 ## UX-PREMIUM-02J — Vico y escenas en 10 páginas públicas (2026-10-31)
 
@@ -1061,3 +1061,8 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | TEST-001, TEST-002 | **Reabiertas** como `TEST-D1-NAME`: la afirmación «runner estabilizado» ya no se sostiene con el D1 actual |
 | `7B.2-DELIVERY` | Reemplazada por `INVITE-001`, que añade el bloqueo de verificación de email |
 | Piloto: «no hay deuda de datos» | Sustituida por `PILOT-*` |
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — checkpoint local (2026-11-02)
+
+Se aplicó una capa visual acotada a App (`/app`), Admin (`/app/internal`) y al editor/preview de MiniWeb V2, siguiendo la guía premium y respetando la identidad configurable del sitio comercial. Incluye superficies, navegación, tarjetas/tablas, controles y adaptación responsive; no cambia contratos, rutas, datos ni permisos. La revisión arquitectónica encontró que la transición CSS de `visibility` ocultaba brevemente el primer enlace del drawer Admin; cambiar el estado visual a `opacity`/`pointer-events`, conservando `inert`/`aria-hidden`, permitió el foco síncrono del hook compartido. También se posicionó el scroller de Servicios para contener su etiqueta `.sr-only`. E2E local repetido y captura con Worker/D1 aislados PASS a cinco viewports; typecheck/build/diff-check PASS. D1 sintética eliminada y ausencia verificada. Evidencia, límites de accesibilidad y deuda React #418 en `TESTING.md`. Sin deploy.
+
+React #418 continúa independiente y sin resolver: no se reprodujo ni identificó causa en este checkpoint.
