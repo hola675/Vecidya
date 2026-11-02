@@ -162,7 +162,7 @@ try {
     await noHorizontalOverflow(activePage, width + "px listado");
     assert.deepEqual(pageErrors, [], width + "px: errores JavaScript.");
     if ([320, 390, 768, 1366, 1920].includes(width)) {
-      await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled" });
+      await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled", caret: "initial" });
     }
     results.viewports.push({ width, listing: "pass", guides: listingHrefs.length, pathways: publicPaths.length });
 
@@ -322,7 +322,7 @@ try {
       assert(await activePage.getByRole("heading", { name: "Otras guías de Aprende Vecidya" }).isVisible(), "Omitir repaso mueve el foco visual a otras guías.");
       await noHorizontalOverflow(activePage, width + "px artículo");
       assert.deepEqual(pageErrors, [], width + "px artículo: error JavaScript.");
-      await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled" });
+      await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled", caret: "initial" });
       check("Artículo, TOC, fuentes, imágenes, CTA y relacionados a " + width + "px");
     }
     await activePage.close();
