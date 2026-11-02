@@ -1,8 +1,9 @@
-# 2026-11-02 — React #418 — entorno local de reproducción
+# 2026-11-02 — React #418 — corrección focal integrada, deuda global abierta
 
 - Se añadió un E2E que aplica migraciones en D1 efímera, crea fixtures sintéticas de App/Admin e integración metadata local, y verifica eliminación al cerrar.
 - Se reprodujo React #418 en `/app/internal` por una diferencia locale de fecha entre SSR y Chromium `America/New_York`; se centralizó el formato determinista de fecha/hora en las rutas internas identificadas. El caso focal pasa; la certificación App/Admin sigue abierta.
-- Sin cambio de producto, D1 remota, integración con proveedor, merge ni deploy.
+- PR #225 integrada en `main@a457e7e4`; unitarias focales 2/2, E2E React #418 y CI (1814/1814 unitarias, typecheck/build/regresión) PASS. La corrección se limita al escenario/rutas identificadas; App/Admin continúa como deuda por certificar.
+- Sin D1 remota, integración con proveedor ni deploy.
 
 ## 2026-11-02 — APRENDE-ARTICLE-ART-01 — ilustraciones propias para las guías
 
@@ -13,7 +14,7 @@
 
 - Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.
 - Se actualizaron las ilustraciones de apoyo de Aprende: 30 diagramas SVG y el atlas SVG se sustituyeron por escenas WebP temáticas con texto alternativo ligado al tema de cada guía.
-- La navegación, CTA, textos y lógica se conservan. PR #222 permanece en borrador; sin merge ni deploy.
+- La navegación, CTA, textos y lógica se conservan. PR #222 integrada en `main@e92c10e9`; sin deploy.
 
 ## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
 
