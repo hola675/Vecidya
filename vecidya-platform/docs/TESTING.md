@@ -32,7 +32,7 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 **Reproducción baseline RAN sobre `origin/main@e92c10e9`:** `/app/internal` generó React #418. SSR mostraba `1/11/2026, 10:21 p. m.` y Chromium `1/11/2026, 10:21 p. m.` (U+00A0). La ruta afectada usaba `toLocaleString("es-CO")`. Se centralizó el formato fijo UTC−5 de Bogotá en `app/lib/platform-date-format.ts` y se aplicó a las fechas de las rutas internas identificadas. **RAN tras el cambio:** `pnpm run test:e2e:react-418` PASS; SSR e hidratación muestran `1 nov 2026, 10:21 p. m.`, sin error React #418; la página de integraciones muestra el ID sintético y la D1 se elimina. Unitarias focales 2/2, typecheck, build y diff-check PASS; CI sobre el head integrado: 1814/1814 unitarias y typecheck/build/regresión PASS. PR #225 se integró en `main@a457e7e4`. Esto verifica el escenario y las rutas actualizadas, no certifica App/Admin completo; la deuda sigue abierta hasta validar las demás rutas/estados protegidos.
 
-## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — PR #226 (2026-11-02)
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — PR #226 integrada en `main@14542442` (2026-11-02)
 
 **Causa y corrección del drawer:** el primer enlace Admin tenía `visibility:hidden` durante la transición de apertura. El hook compartido enfoca el enlace sincrónicamente al activar la navegación, pero el CSS lo mantenía oculto hasta el final de la transición de 180 ms. Se retiró la transición de `visibility` y se conservó la animación con `transform`/`opacity`; `pointer-events` y los estados React `inert`/`aria-hidden` mantienen el cierre no interactivo. El test volvió a confirmar que el foco cae en el primer enlace y que el drawer abre, navega y cierra. No se modificó el hook compartido ni rutas o contratos.
 
@@ -43,6 +43,8 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 **Validación RAN:** tras los fixes de foco, scroller y sidebar, `pnpm run test:e2e:app-dashboard-redesign` PASS en una ejecución sin capturas y otra con capturas, contra Worker/D1 local aislados. Se recorren `/app`, borrador MiniWeb V2 y `/app/internal`, anchos 320/390/768/980/1366 px para navegación/overflow y capturas en 320/390/768/1366/1920 px. Admin Servicios se comprueba móvil y escritorio; fixture D1 eliminada y ausencia verificada. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build conserva avisos locales conocidos de secretos opcionales, imports dinámicos y sourcemap CSS. El CI del PR no ejecuta este runner; la evidencia es local.
 
 Capturas finales: `C:\Users\Admin\.codex\evidence\app-admin-visual-01-final\` (`vecidya-internal-dashboard-{320,390,768,1366,1920}.png`, `vecidya-admin-services-mobile.png`, `vecidya-admin-services-desktop.png`, junto a App/MiniWeb/Admin). Inspección visual manual de 320 px, Servicios móvil y Admin 1366 px confirma el drawer en estado cerrado en la captura estática, tabla contenida y composición desktop. El estado abierto/navegación/cierre y el acceso al pie del sidebar a 1366×768 se validan en el runner. Estas comprobaciones no equivalen a axe/WCAG, NVDA/lector de pantalla, zoom 200 % ni certificación funcional de todas las superficies. React #418 global permanece abierto; no se atribuye resolución a este cambio. Sin D1 remota ni deploy.
+
+Integración verificada: PR #226 se fusionó el 2026-11-02 mediante merge commit `145424424c70297d36d9b4b0d696cd869bb750e1`; `origin/main` apunta a `14542442`. Sin deploy ni D1 remota.
 
 ## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
 

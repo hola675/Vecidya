@@ -12,7 +12,7 @@ React #418 sigue como deuda independiente de App/Admin y permanece abierta sin c
 
 ## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal completada (2026-11-02)
 
-PR #226 corrige el foco inicial del drawer móvil de Admin al quitar la transición de `visibility`, que mantenía temporalmente oculto el primer enlace; contiene el elemento `.sr-only` de la tabla Servicios dentro de su scroller, y permite desplazar la barra lateral de Admin en escritorio para alcanzar «Cerrar sesión» con viewport bajo. E2E local, typecheck/build y diff-check PASS; capturas de App, Admin y MiniWeb a cinco viewports y Servicios móvil/escritorio registradas en `TESTING.md`. El CI no ejecuta este E2E. La revisión no equivale a auditoría WCAG/axe, lector de pantalla ni zoom 200 %. React #418 global permanece abierto. PR pendiente de integración; sin deploy.
+PR #226 integrada en `main@14542442` (2026-11-02). Corrige el foco inicial del drawer móvil de Admin al quitar la transición de `visibility`, que mantenía temporalmente oculto el primer enlace; contiene el elemento `.sr-only` de la tabla Servicios dentro de su scroller y permite desplazar la barra lateral de Admin en escritorio para alcanzar «Cerrar sesión» con viewport bajo. E2E local, typecheck/build y diff-check PASS; capturas de App, Admin y MiniWeb a cinco viewports y Servicios móvil/escritorio registradas en `TESTING.md`. El CI no ejecuta este E2E. La revisión no equivale a auditoría WCAG/axe, lector de pantalla ni zoom 200 %. React #418 global permanece abierto. Sin deploy.
 
 ## UX-PREMIUM-02J — Vico y escenas en 10 páginas públicas (2026-10-31)
 
@@ -1061,7 +1061,7 @@ Prioridad: **A** alta, **M** media, **B** baja. Cada fila cita evidencia; `hipó
 | TEST-001, TEST-002 | **Reabiertas** como `TEST-D1-NAME`: la afirmación «runner estabilizado» ya no se sostiene con el D1 actual |
 | `7B.2-DELIVERY` | Reemplazada por `INVITE-001`, que añade el bloqueo de verificación de email |
 | Piloto: «no hay deuda de datos» | Sustituida por `PILOT-*` |
-## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — checkpoint local (2026-11-02)
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — integrada en `main@14542442` (2026-11-02)
 
 Se aplicó una capa visual acotada a App (`/app`), Admin (`/app/internal`) y al editor/preview de MiniWeb V2, siguiendo la guía premium y respetando la identidad configurable del sitio comercial. Incluye superficies, navegación, tarjetas/tablas, controles y adaptación responsive; no cambia contratos, rutas, datos ni permisos. La revisión arquitectónica encontró que la transición CSS de `visibility` ocultaba brevemente el primer enlace del drawer Admin; cambiar el estado visual a `opacity`/`pointer-events`, conservando `inert`/`aria-hidden`, permitió el foco síncrono del hook compartido. También se posicionó el scroller de Servicios para contener su etiqueta `.sr-only`. E2E local repetido y captura con Worker/D1 aislados PASS a cinco viewports; typecheck/build/diff-check PASS. D1 sintética eliminada y ausencia verificada. Evidencia, límites de accesibilidad y deuda React #418 en `TESTING.md`. Sin deploy.
 

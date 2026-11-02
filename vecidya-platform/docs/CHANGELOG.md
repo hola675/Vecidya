@@ -5,7 +5,7 @@
 - Revisión arquitectónica identificó que la transición CSS `visibility` ocultaba temporalmente el primer enlace del drawer Admin cuando el hook intentaba enfocarlo. Se mantuvo el hook compartido y se cambió la transición visual a `transform`/`opacity` con `pointer-events`; E2E confirma foco inicial, navegación y cierre.
 - El scroller de la tabla de Servicios ahora contiene el elemento `.sr-only` que causaba overflow del documento en móvil; la tabla mantiene scroll horizontal propio.
 - La barra lateral de Admin permite desplazamiento vertical a 1366×768 para que también se pueda alcanzar «Cerrar sesión»; el E2E lo comprueba desplazando hasta el botón.
-- E2E Worker/D1 local y capturas de App/Admin/MiniWeb en cinco viewports PASS; typecheck, build y diff-check PASS. D1 sintética eliminada y ausencia verificada. Evidencia y límites en `TESTING.md`.
+- E2E Worker/D1 local y capturas de App/Admin/MiniWeb en cinco viewports PASS; typecheck, build y diff-check PASS. D1 sintética eliminada y ausencia verificada. PR #226 integrada en `main@14542442`; sin deploy. Evidencia y límites en `TESTING.md`.
 - No cambian rutas, lógica, contratos, permisos ni datos. La deuda global React #418 y la certificación integral de accesibilidad permanecen abiertas. Sin deploy.
 
 - Se añadió un E2E que aplica migraciones en D1 efímera, crea fixtures sintéticas de App/Admin e integración metadata local, y verifica eliminación al cerrar.
