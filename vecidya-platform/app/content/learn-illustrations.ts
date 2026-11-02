@@ -1,0 +1,62 @@
+type LearnGuideIllustration = {
+  image: string;
+  imageAlt: string;
+};
+
+const learnGuideIllustrationAlts: Record<string, string> = {
+  "como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo": "Una regla común y responsabilidades por sede coordinan el trabajo sin mezclar accesos.",
+  "quien-puede-ver-cambiar-y-publicar-en-tu-empresa": "Un proceso común conecta tareas y mantiene separados los datos y permisos de cada área.",
+  "como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones": "Una matriz compara herramientas según su utilidad, encaje y esfuerzo de adopción.",
+  "como-comparar-resultados-de-sedes-sin-mezclar-las-cifras": "Dos sedes comparan resultados con una definición y un periodo comunes.",
+  "el-que-mucho-abarca-poco-aprieta-prioridades-digitales": "Un indicador ordena prioridades, revisión y decisión antes de sumar más herramientas.",
+  "domina-la-tecnologia-sin-que-te-domine": "Una tarea prioritaria, un límite de notificaciones y una revisión ayudan a usar la tecnología con intención.",
+  "correo-profesional-dominio-registros-mx-txt": "El dominio dirige el correo y se relaciona con registros DNS de autenticación MX, SPF, DKIM y DMARC.",
+  "como-preparar-presupuesto-para-herramientas-digitales": "Un presupuesto reúne costos de herramientas, uso y preparación antes de decidir.",
+  "como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa": "Una compra pasa por solicitud, comparación, aprobación y registro del proveedor.",
+  "que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio": "Un plan de continuidad conecta la falla, una alternativa, el respaldo y la recuperación.",
+  "como-usar-inteligencia-artificial-en-una-empresa-con-supervision": "Reglas, datos permitidos y revisión delimitan el uso de inteligencia artificial.",
+  "como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa": "Una medición relaciona la necesidad inicial, un indicador, su revisión y una decisión.",
+  "como-organizar-tareas-y-responsables-en-tu-equipo": "Cada tarea tiene un responsable, una fecha y un resultado comprobable.",
+  "como-controlar-inventario-sin-perder-productos-ni-datos": "Entradas, registros, existencias y salidas mantienen los datos del inventario actualizados.",
+  "como-capacitar-al-equipo-en-herramientas-digitales": "Una guía conecta explicación, práctica, consulta y comprobación de una herramienta.",
+  "cuando-necesita-tu-empresa-un-sistema-erp": "Un ERP integra datos y procesos de distintas áreas en un sistema coordinado.",
+  "como-empezar-proyecto-digital-sin-detener-negocio": "Un proyecto pequeño pasa por piloto, prueba, revisión y ampliación gradual.",
+  "como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo": "Un cambio de proveedor organiza dominio, DNS, web, correo y respaldo antes de migrar.",
+  "que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo": "Una consulta conserva su contexto y siguiente paso, con una lista simple o un CRM según la necesidad.",
+  "como-probar-un-asistente-de-ia-con-supervision-humana": "Una tarea y su fuente pasan por un borrador de IA, revisión humana y aprobación.",
+  "que-puede-hacer-una-inteligencia-artificial-por-un-negocio": "La inteligencia artificial transforma una instrucción en un borrador que debe revisarse.",
+  "publicidad-digital-como-preparar-una-primera-campana": "Una campaña conecta el objetivo, la audiencia, el presupuesto y la revisión de resultados.",
+  "como-mantener-actualizada-y-confiable-tu-presencia-digital": "Una lista ayuda a revisar y actualizar la información publicada en distintos canales.",
+  "antes-de-hacer-publicidad-organiza-tu-presencia-digital": "La información, los canales y la publicación se verifican antes de anunciarse.",
+  "como-probar-y-supervisar-automatizaciones-sin-perder-datos": "Un evento activa una regla y una acción que se revisan antes de continuar.",
+  "automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio": "Una tarea repetida fluye por una regla sencilla y conserva una salida para excepciones.",
+  "como-elegir-y-cambiar-proveedor-de-dominio-y-hosting": "Una comparación ayuda a elegir un proveedor de dominio y hosting con control de acceso y continuidad.",
+  "dns-https-y-correo-como-se-conecta-tu-dominio": "Dominio, DNS, conexión HTTPS y correo muestran las partes que se conectan en una web.",
+  "dominio-hosting-sitio-web-como-funcionan": "Dominio, hosting y sitio web aparecen como componentes distintos de una presencia en línea.",
+  "https-certificados-tls-que-protegen-y-que-no": "El navegador establece una conexión HTTPS protegida por un certificado TLS hacia el servidor.",
+  "analitica-web-que-medir-en-tu-negocio": "Visitas, acciones y resultados se relacionan para orientar una medición web.",
+  "conectar-herramientas-digitales-sin-complicar-tu-negocio": "Herramientas digitales conectan necesidades, datos y procesos mediante integraciones que pueden comprobarse.",
+  "perfil-empresa-google-completar-y-mantener-actualizado": "Un perfil de empresa reúne información, horario y datos que deben revisarse.",
+  "organizar-consultas-mensajes-llamadas-formularios": "Mensajes, llamadas y formularios llegan a un mismo flujo de seguimiento.",
+  "preparar-respuestas-publicaciones-ia-sin-perder-control": "Una fuente y un borrador de IA pasan por revisión antes de responder o publicar.",
+  "como-empezar-a-digitalizar-un-negocio-desde-cero": "Varios negocios locales representan el punto de partida para ordenar una presencia digital.",
+  "que-necesita-un-negocio-para-usar-internet-y-herramientas": "Un router, un equipo de trabajo y una conexión de respaldo representan la base digital.",
+  "correo-para-mi-negocio-como-usarlo-sin-perder-mensajes": "Un flujo de correo organiza mensajes y comunicaciones con acceso protegido.",
+  "como-proteger-cuentas-contrasenas-estafas-negocio": "Una cuenta protegida combina contraseña, verificación y alerta ante mensajes sospechosos.",
+  "como-hacer-copias-de-seguridad-de-tu-negocio": "Una copia de seguridad permite exportar y recuperar información para mantener la continuidad.",
+  "hojas-de-calculo-para-organizar-un-negocio-pequeno": "Una hoja de cálculo organiza registros en filas y columnas para resumir información.",
+  "redes-sociales-o-pagina-web-que-necesita-tu-negocio": "Una comparación conecta sitio web, perfil de empresa y redes sociales con objetivos distintos.",
+  "como-explicar-lo-que-vendes-para-que-te-entiendan": "Una presencia coherente ayuda a explicar con claridad qué ofrece un negocio.",
+  "como-responder-la-primera-consulta-de-un-cliente": "Una consulta pasa por entender la necesidad, responder y acordar un siguiente paso.",
+  "fotos-y-publicaciones-utiles-sin-ser-disenador": "Una fuente se convierte en borrador, se revisa y luego se publica en los canales elegidos.",
+  "como-vender-por-internet-sin-perder-el-control-pedidos-pagos": "Una página presenta una oferta, sus detalles y la acción para iniciar un pedido en línea.",
+  "datos-de-clientes-que-puedes-pedir-y-como-protegerlos": "El acceso y el registro ayudan a limitar quién puede consultar datos de clientes.",
+  "como-pedir-resenas-reales-y-responder-criticas": "Una fuente y una revisión guían la publicación de opiniones auténticas.",
+};
+
+export const learnGuideIllustrations: Record<string, LearnGuideIllustration> = Object.fromEntries(
+  Object.entries(learnGuideIllustrationAlts).map(([slug, imageAlt]) => [
+    slug,
+    { image: `/assets/selected/illustrations/learn-guides/${slug}.webp`, imageAlt },
+  ]),
+);

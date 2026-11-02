@@ -1,3 +1,9 @@
+## APRENDE-ARTICLE-ART-01 — ilustraciones por guía (2026-11-02)
+
+`BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` — PASS con D1 local migrada hasta `0037`. Se extendió `aprende-public-qa-check.mjs` para comprobar en las 48 respuestas SSR que cada ruta publica su WebP y alt contextual. El recorrido del catálogo/artículo captura el estado visual completo en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; además verifica que el `<img>` de artículo coincide con su recurso/alt asignados, controles de progreso/índice por teclado, fuentes seguras, ausencia de overflow y cero eventos `pageerror`. `prefers-reduced-motion` se valida en la portada de Aprende; la portada del artículo no añade animación. El servidor Vite mostró errores no bloqueantes de `Failed to fetch manifest patches` durante la navegación cliente; no se declara libre de errores de consola ni se atribuyen esos mensajes al código de ilustraciones.
+
+Capturas locales posteriores: `test-results/aprende-public-qa/aprende-listado-{320,390,768,1366,1920}.png` y `aprende-articulo-{320,390,768,1366,1920}.png`. Unitarias focales de contenido, catálogo, currículo, límites de publicación y gestión **53/53 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Build conserva los avisos locales conocidos de secretos opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS. No se ejecutaron axe, lector de pantalla ni zoom real al 200 %; esto no certifica WCAG. Sin D1 remota ni deploy.
+
 ## UX-PREMIUM-02J — Vico, escenas y diagramas públicos (2026-10-31)
 
 **RAN local, UX-PREMIUM-02J:** `node tests/e2e/public-vico-scenes-check.mjs` — PASS en las 10 rutas × 320/390/768/1366/1920 px. Revisa los 20 assets de las parejas, carga y alt, alpha 0 en las cuatro esquinas, ausencia de overflow, `console.error`/`pageerror` y movimiento reducido. Capturas full-page usan `caret: "initial"` para que ocultar el cursor no modifique el HTML durante hidratación. Capturas: 50 anteriores desde `HEAD 2ffb1afb` en `.playwright-mcp/vico-scenes-before/` y 50 posteriores en `.playwright-mcp/vico-scenes-after/`. Revisión visual humana de Inicio, Vecindario, Aprende, Contacto, Licencias y Complementos confirma que Vico ampliado se mantiene visible sin tapar texto/CTA; en Aprende queda una sola escena temática junto a Vico.
@@ -6,7 +12,7 @@
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check` — PASS. El build conserva avisos conocidos de secretos opcionales ausentes en el entorno local, imports dinámicos inefectivos y sourcemap CSS; no impidieron el build. Intento de `node tests/e2e/learn-experience-check.mjs` — no PASS: falla en 1366×900 porque busca «En esta guía» sin acotar el índice y el rótulo existe también en otro control; contiene además aserciones de texto/condiciones editoriales antiguas. No se usa como certificación de UX-PREMIUM-02J. La ruta de contenido y assets está cubierta por las pruebas unitarias y `public-vico-scenes-check.mjs`.
 
-No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. React #418 sigue como deuda separada de App/Admin, sin causa reproducida ni resolución.
+No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. React #418 sigue como deuda global separada de App/Admin; PR #225 corrigió el escenario reproducido y las fechas de las rutas internas identificadas, pero faltan las demás rutas/estados protegidos.
 
 
 ## UX-PREMIUM-FOUNDATION-01 — base de diseño transversal (2026-10-30; local)
@@ -19,6 +25,16 @@ No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. Rea
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
 
 # Pruebas
+
+## React #418 — entorno local de reproducción (2026-11-02)
+
+`pnpm run test:e2e:react-418` crea una D1 aislada y efímera, aplica las migraciones locales y genera fixtures sintéticas: usuario autenticado, organización, membresía, acceso `platform_admin`, una entrada de auditoría cerca de medianoche UTC y metadata `local-test-fixture`. Inicia el Worker con secretos de prueba aleatorios, abre App/Admin en Playwright con zona `America/New_York`, compara el texto SSR con el hidratado, comprueba el listado de integraciones y elimina la D1 al terminar. No llama a proveedores ni usa D1 remota.
+
+**Reproducción baseline RAN sobre `origin/main@e92c10e9`:** `/app/internal` generó React #418. SSR mostraba `1/11/2026, 10:21 p. m.` y Chromium `1/11/2026, 10:21 p. m.` (U+00A0). La ruta afectada usaba `toLocaleString("es-CO")`. Se centralizó el formato fijo UTC−5 de Bogotá en `app/lib/platform-date-format.ts` y se aplicó a las fechas de las rutas internas identificadas. **RAN tras el cambio:** `pnpm run test:e2e:react-418` PASS; SSR e hidratación muestran `1 nov 2026, 10:21 p. m.`, sin error React #418; la página de integraciones muestra el ID sintético y la D1 se elimina. Unitarias focales 2/2, typecheck, build y diff-check PASS; CI sobre el head integrado: 1814/1814 unitarias y typecheck/build/regresión PASS. PR #225 se integró en `main@a457e7e4`. Esto verifica el escenario y las rutas actualizadas, no certifica App/Admin completo; la deuda sigue abierta hasta validar las demás rutas/estados protegidos.
+
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — PR #226 (2026-11-02)
+
+`pnpm run typecheck`, `pnpm run build` y `git diff --check` — PASS local en el checkpoint `feat/app-mini-app-admin-visual-01` (`83039baf`). `pnpm run test:e2e:app-dashboard-redesign` — FAIL en Admin móvil al abrir drawer: `aria-expanded=true`, drawer visible, pero `document.activeElement` es `BODY` en vez del primer enlace. No llegó a completar la comprobación de Admin Services. CI de PR #226 pasa checks públicos, pero no ejecuta este runner ni valida el foco. Por ello el checkpoint sigue borrador/no integrado y App/Admin/MiniWeb no están certificados por esta evidencia. Capturas locales parciales en `C:\Users\Admin\.codex\evidence\app-admin-visual-01` (26 imágenes; App/MiniWeb y dashboard Admin, cinco anchos; antes Admin parcial).
 
 ## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
 

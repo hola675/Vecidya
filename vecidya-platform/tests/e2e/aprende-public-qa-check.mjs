@@ -115,10 +115,12 @@ try {
     const response = await get("/aprende/" + article.slug);
     assert.equal(response.status, 200, "Guía pública inaccesible: " + article.slug);
     siteCanonical(response.body, article.slug);
+    assert(response.body.includes(`src="${article.image}"`), "Guía sin su ilustración específica: " + article.slug);
+    assert(response.body.includes(article.imageAlt), "Guía sin texto alternativo contextual: " + article.slug);
     noDraftLinks(response.body, "Detalle " + article.slug);
     results.checkedPublishedSlugs.push(article.slug);
   }
-  check("HTTP: 48 artículos aprobados responden 200; no quedan borradores");
+  check("HTTP: 48 artículos y sus ilustraciones/alt contextuales responden; no quedan borradores");
 
   for (const { width, height } of [
     { width: 320, height: 720 },
@@ -160,7 +162,7 @@ try {
     await noHorizontalOverflow(activePage, width + "px listado");
     assert.deepEqual(pageErrors, [], width + "px: errores JavaScript.");
     if ([320, 390, 768, 1366, 1920].includes(width)) {
-      await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled" });
+      await activePage.screenshot({ path: join(output, "aprende-listado-" + width + ".png"), fullPage: true, animations: "disabled", caret: "initial" });
     }
     results.viewports.push({ width, listing: "pass", guides: listingHrefs.length, pathways: publicPaths.length });
 
@@ -290,6 +292,8 @@ try {
       for (const href of toc) assert.equal(await activePage.locator(`[id="${href.slice(1)}"]`).count(), 1, "TOC con ancla rota: " + href);
       const image = activePage.locator(".learn-article-image");
       assert((await image.getAttribute("alt"))?.trim(), "Falta alt descriptivo.");
+      assert.equal(await image.getAttribute("src"), sample.image, "La guía debe mostrar su ilustración propia.");
+      assert.equal(await image.getAttribute("alt"), sample.imageAlt, "El alt debe identificar lo representado por la ilustración.");
       assert(await image.evaluate(async (node) => { await node.decode().catch(() => {}); return node.naturalWidth > 0; }), "Imagen de artículo sin cargar.");
       const relatedHrefs = await activePage.locator(".learn-related-card").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")));
       assertAllVisibleLinksPublished(relatedHrefs, "relacionados");
@@ -318,7 +322,7 @@ try {
       assert(await activePage.getByRole("heading", { name: "Otras guías de Aprende Vecidya" }).isVisible(), "Omitir repaso mueve el foco visual a otras guías.");
       await noHorizontalOverflow(activePage, width + "px artículo");
       assert.deepEqual(pageErrors, [], width + "px artículo: error JavaScript.");
-      await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled" });
+      await activePage.screenshot({ path: join(output, "aprende-articulo-" + width + ".png"), fullPage: true, animations: "disabled", caret: "initial" });
       check("Artículo, TOC, fuentes, imágenes, CTA y relacionados a " + width + "px");
     }
     await activePage.close();

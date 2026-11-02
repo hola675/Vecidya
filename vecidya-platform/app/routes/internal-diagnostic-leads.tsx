@@ -3,6 +3,7 @@ import { useLoaderData, Link } from "react-router";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
 import { AdminShell } from "../components/admin-shell";
+import { formatPlatformDate } from "../lib/platform-date-format";
 import type { Route } from "./+types/internal-diagnostic-leads";
 
 export function links() { return [{ rel: "stylesheet", href: diagnosticAdminStyles }]; }
@@ -120,7 +121,7 @@ export default function InternalDiagnosticLeads() {
           <tbody>{leads.map((lead) => <tr key={lead.id}>
             <td><strong>{lead.fullName}</strong><span className="admin-table__meta">{lead.email}</span></td>
             <td>{lead.businessName || "No indicado"}</td>
-            <td>{new Date(lead.createdAt).toLocaleDateString("es-CO")}</td>
+            <td>{formatPlatformDate(lead.createdAt)}</td>
             <td>{lead.verified ? "Sí" : "Pendiente"}</td>
             <td>{lead.commercialOptIn ? "Autorizado" : "No autorizado"}</td>
             <td>{lead.researchOptIn ? "Autorizado" : "No autorizado"}</td>
