@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { getLearnArticle, learnArticles, learnCategories } from "../../app/content/learn.ts";
+import { learnGuideIllustrations } from "../../app/content/learn-illustrations.ts";
 import type { LearnBlock } from "../../app/content/learn.ts";
 
 const baselineLearnSlugs = [
@@ -29,6 +30,19 @@ const integrationsSlug = "conectar-herramientas-digitales-sin-complicar-tu-negoc
 const googleProfileSlug = "perfil-empresa-google-completar-y-mantener-actualizado";
 const inquiriesSlug = "organizar-consultas-mensajes-llamadas-formularios";
 const aiDraftsSlug = "preparar-respuestas-publicaciones-ia-sin-perder-control";
+
+test("each Learn guide receives a distinct article-specific illustration and meaningful alt text", () => {
+  assert.equal(learnArticles.length, 48);
+  assert.equal(Object.keys(learnGuideIllustrations).length, learnArticles.length);
+  assert.equal(new Set(learnArticles.map(({ image }) => image)).size, learnArticles.length);
+
+  for (const article of learnArticles) {
+    assert.equal(article.image, `/assets/selected/illustrations/learn-guides/${article.slug}.webp`);
+    assert.equal(learnGuideIllustrations[article.slug]?.image, article.image);
+    assert.ok(article.imageAlt.trim().split(/\s+/u).length >= 10, `Texto alternativo sin contexto: ${article.slug}`);
+    assert.doesNotMatch(article.imageAlt, /persona|avatar|ejemplo/i, `Alt no describe el arte temático: ${article.slug}`);
+  }
+});
 
 test("CRM article exposes practical typed editorial blocks and respects commercial boundaries", () => {
   const crmArticle = getLearnArticle(crmSlug);
@@ -141,9 +155,9 @@ test("technology article explains domains, DNS, hosting, HTTPS and practical own
   assert.equal(article.slug, domainSlug);
   assert.equal(article.category, "Tecnología explicada");
   assert.equal(article.title, "Dominio, hosting y sitio web: qué es cada cosa y cómo funcionan juntos");
-  assert.equal(article.image, "/assets/selected/illustrations/services-scene.webp");
+  assert.equal(article.image, `/assets/selected/illustrations/learn-guides/${domainSlug}.webp`);
   assert.ok(article.relatedSlugs?.includes("dns-https-y-correo-como-se-conecta-tu-dominio"));
-  assert.match(article.imageAlt, /persona.*navegador.*DNS.*servidor.*página/i);
+  assert.match(article.imageAlt, /dominio.*hosting.*sitio web/i);
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);
   const blockTypes = new Set(blocks.map((block) => block.type));
@@ -268,7 +282,7 @@ test("pre-ad guide is a focused readiness gate and links to specialized guides",
   assert.ok(article);
   assert.equal(article.category, "Negocios digitales");
   assert.equal(article.title, "Antes de hacer publicidad, organiza tu presencia digital");
-  assert.equal(article.image, "/assets/selected/illustrations/home-scene.webp");
+  assert.equal(article.image, `/assets/selected/illustrations/learn-guides/${presenceSlug}.webp`);
   assert.equal(article.cta.to, "/diagnostico");
 
   const blocks = article.sections.flatMap((section) => section.blocks ?? []);

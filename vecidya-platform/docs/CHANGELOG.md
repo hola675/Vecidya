@@ -1,3 +1,8 @@
+## 2026-11-02 — APRENDE-ARTICLE-ART-01 — ilustraciones propias para las guías
+
+- Se preparan 48 WebP transparentes, uno por artículo de Aprende, ligados al contenido de cada guía y con texto alternativo específico. La imagen de portada y su metadata social reutilizan el alt contextual.
+- Se afina la portada para mostrar el arte sobre la superficie existente sin fondo opaco ni sombra rectangular. No cambian contenido, rutas, CTA ni acceso. Validación local: E2E de catálogo/artículos y cinco viewports, unitarias focales, typecheck, build y diff-check PASS. Sin merge ni deploy.
+
 ## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
 
 - Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.
