@@ -1,3 +1,4 @@
+import { BUSINESS_CATEGORIES, type BusinessCategory } from "../content/business-categories";
 import { useEffect, useRef, useState } from "react";
 import { Form, Link, useActionData, useLoaderData, useNavigation } from "react-router";
 
@@ -360,7 +361,13 @@ export default function BusinessProfilePage() {
               <legend>Identidad del negocio</legend>
               <div className="form-grid">
                 <label>Nombre visible<input defaultValue={value(profile?.displayName)} name="displayName" onChange={(event) => { if (suggestsSlug && !slugTouchedRef.current && slugInputRef.current) slugInputRef.current.value = slugifyBusinessName(event.currentTarget.value); }} required maxLength={120} /></label>
-                <label>Categoría<input defaultValue={value(profile?.category)} name="category" maxLength={100} /></label>
+                <label>Categoría
+                  <select defaultValue={profile?.category ?? ""} name="category">
+                    <option value="">Selecciona una categoría</option>
+                    {profile?.category && !BUSINESS_CATEGORIES.includes(profile.category as BusinessCategory) ? <option value={profile.category}>Categoría anterior: {profile.category} (revisar)</option> : null}
+                    {BUSINESS_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+                  </select>
+                </label>
                 <label className="form-grid__full">Enlace público<input defaultValue={value(profile?.slug)} name="slug" onChange={(event) => { slugTouchedRef.current = event.currentTarget.value.trim() !== ""; }} ref={slugInputRef} required maxLength={businessProfileSlugMaxLength} pattern="[a-z0-9]+(-[a-z0-9]+)*" spellCheck={false} /></label>
                 <p className="form-grid__full form-help">Este enlace identifica tu negocio en Vecindario y permanece estable después del primer guardado.</p>
               </div>

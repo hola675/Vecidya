@@ -1,3 +1,4 @@
+import { BUSINESS_CATEGORIES, canonicalBusinessCategory } from "../../app/content/business-categories";
 import { and, asc, eq, getTableColumns, isNull, ne, or, sql } from "drizzle-orm";
 
 import type { Database } from "../client.server";
@@ -129,7 +130,7 @@ function toNeighborhoodProfile(profile: BusinessProfileInput, snapshot: ReturnTy
   return {
     displayName: miniwebProfile.displayName,
     shortDescription: miniwebProfile.shortDescription,
-    category: miniwebProfile.category,
+    category: canonicalBusinessCategory(miniwebProfile.category),
     city: miniwebProfile.city,
     country: miniwebProfile.country,
     serviceArea: miniwebProfile.serviceArea,
@@ -172,7 +173,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
       slug: profile.slug,
       displayName: profile.displayName,
       shortDescription: profile.shortDescription,
-      category: profile.category,
+      category: canonicalBusinessCategory(profile.category),
       city: profile.city,
       country: profile.country,
       logoUrl: publishedLogo ? `/media/business/${encodeURIComponent(profile.slug)}/${encodeURIComponent(publishedLogo)}` : null,
@@ -189,7 +190,7 @@ export async function listPublishedBusinessProfiles(database: Database, filters:
 export async function getPublishedBusinessProfileFilterOptions(database: Database) {
   const profiles = await listPublishedBusinessProfiles(database);
   return {
-    categories: [...new Set(profiles.map(({ category }) => category).filter((value): value is string => Boolean(value)))].sort(),
+    categories: [...BUSINESS_CATEGORIES],
     cities: [...new Set(profiles.map(({ city }) => city).filter((value): value is string => Boolean(value)))].sort(),
     serviceAreas: [...new Set(profiles.map(({ serviceArea }) => serviceArea).filter((value): value is string => Boolean(value)))].sort(),
     serviceModes: [...new Set(profiles.map(({ serviceMode }) => serviceMode).filter((value): value is string => Boolean(value)))].sort(),

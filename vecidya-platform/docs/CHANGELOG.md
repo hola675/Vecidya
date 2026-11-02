@@ -1,3 +1,9 @@
+# 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
+
+- El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
+- El renderer añade fotos y metadata por sitio, el sitemap incorpora sitios publicados, Vecindario usa 13 categorías canónicas con alias de lectura, el texto comercial elimina detalles internos y tres portadas de planes se exportan en WebP conservando PNG originales.
+- 26 pruebas unitarias focales, Worker/D1/R2 locales, typecheck, build y diff-check PASS. Sin nueva migración, D1 remota, deploy ni HTTP pública. La revisión visual completa, accesibilidad y R2 remoto siguen pendientes.
+
 # 2026-11-02 — React #418 — corrección focal integrada, deuda global abierta
 
 ## 2026-11-02 — UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal de PR #226

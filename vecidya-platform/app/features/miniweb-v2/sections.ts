@@ -85,6 +85,12 @@ export function validateMiniWebV2Document(value: unknown, options: { publishable
   if (!isRecord(value) || value.schemaVersion !== MINIWEB_V2_SCHEMA_VERSION || !Array.isArray(value.sections))
     return { valid: false, errors: ["Invalid document envelope"] };
   const errors: string[] = [];
+  // Solo las publicaciones necesitan una portada visible y con título. Los borradores
+  // incompletos continúan siendo válidos para no interrumpir la edición progresiva.
+  if (options.publishable) {
+    const heroes = value.sections.filter((candidate: unknown) => isRecord(candidate) && candidate.type === "hero" && candidate.visible === true);
+    if (heroes.length !== 1) errors.push("La publicación necesita exactamente una portada visible.");
+  }
   const ids = new Set<string>(); const orders = new Set<number>();
   for (const section of value.sections) {
     const result = validateMiniWebV2Section(section);
@@ -92,7 +98,7 @@ export function validateMiniWebV2Document(value: unknown, options: { publishable
     if (ids.has(result.value.id)) errors.push("Duplicate section id");
     if (orders.has(result.value.order)) errors.push("Duplicate section order");
     ids.add(result.value.id); orders.add(result.value.order);
-    if (options.publishable && result.value.visible && result.value.type === "hero" && !result.value.content.title.trim()) errors.push("Visible hero requires a title");
+    if (options.publishable && result.value.visible && result.value.type === "hero" && !result.value.content.title.trim()) errors.push("La portada visible necesita un título.");
     if (options.publishable && result.value.visible && result.value.type === "hours" && !validateV2HoursSection(result.value.content, { requireTimezone: true }).valid) errors.push("Visible hours section is incomplete");
   }
   return errors.length ? { valid: false, errors } : { valid: true, value: value as unknown as MiniWebV2Document };

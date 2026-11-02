@@ -6,7 +6,6 @@
  * No publicar nombres ni tarifas internas de proveedores tecnológicos.
  */
 
-import { formatProviderResaleUsd, PROVIDER_BASELINE_USD_CENTS, PROVIDER_TARGET_MARGIN_PERCENT } from "./provider-price-policy";
 
 export type CommercialKind = "license" | "addon" | "service";
 
@@ -171,7 +170,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Una nueva consulta entra por WhatsApp y queda asociada a su seguimiento comercial."],
     dependencies: "Requiere Barrio o Ciudad, cuenta/canal admisible y aprobación del proveedor del canal.",
     decision: "No exige Ciudad si solo añades WhatsApp al proceso estándar de Barrio.",
-    price: "Desde USD 15/mes + consumo", externalCosts: `Referencia fija de proveedor: USD 10/mes por subcuenta; el piso teórico es USD ${formatProviderResaleUsd(PROVIDER_BASELINE_USD_CENTS.whatsappBusinessMonthly)} antes de otros costes directos. La propuesta desde USD 15 solo alcanza el margen bruto objetivo del ${PROVIDER_TARGET_MARGIN_PERCENT} % si el coste directo total no supera USD 12/mes; de lo contrario se cotiza con los costes reales. Los mensajes (incluidos los que puedan ser facturables desde octubre de 2026), comisiones y consumos adicionales se calculan aparte para mantener ese margen. Se confirma factura, autorización de reventa y disponibilidad antes de activar.`,
+    price: "Desde USD 15/mes + consumo", externalCosts: "Pueden aplicarse cargos de mensajes, comisiones y consumos de la plataforma externa. Se confirmarán por escrito antes de la activación.",
     contactInterest: "complemento-whatsapp-business", catalogPath: "/addons", detailPath: addon("whatsapp-business"),
   },
   {
@@ -187,7 +186,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Se prepara un recordatorio de cita por un canal autorizado y con consumo medido."],
     dependencies: "Requiere Barrio o Ciudad; disponibilidad geográfica, número y requisitos normativos del canal.",
     decision: "El complemento no exige Ciudad por sí solo; depende del proceso que necesite coordinar.",
-    price: `Cotización según uso (margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %)`, externalCosts: `El proveedor no exige una cuota genérica de USD 9 por activar el sistema telefónico: se pagan números, llamadas, segmentos SMS/MMS, registros y tasas reales según país y uso, con un precio que mantenga al menos ${PROVIDER_TARGET_MARGIN_PERCENT} % de margen bruto sobre todos los costes directos verificados.`,
+    price: "Cotización según uso", externalCosts: "Números, minutos, mensajes y tasas regulatorias dependen del país y del consumo; no se consideran incluidos en el precio del complemento.",
     contactInterest: "complemento-telephony-sms", catalogPath: "/addons", detailPath: addon("telephony-sms"),
   },
   {
@@ -202,7 +201,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Después de una atención real, se solicita voluntariamente una reseña mediante un canal permitido."],
     dependencies: "Normalmente Barrio o Ciudad para automatizar el seguimiento; revisión de canales y políticas de reseñas.",
     decision: "La reputación no convierte automáticamente un proceso principal en multiproceso.",
-    price: `Gestión estándar incluida; extras con margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: `La gestión y solicitud de reseñas estándar pertenece al CRM. Solo se factura consumo opcional real de mensajes o IA con un precio que mantenga al menos ${PROVIDER_TARGET_MARGIN_PERCENT} % de margen bruto sobre los costes directos; no hay cargo mensual de USD 12 inventado.`,
+    price: "Gestión estándar incluida; extras según uso", externalCosts: "Las solicitudes estándar forman parte del CRM compatible. Los consumos opcionales de mensajería o IA se detallan y cotizan antes de activarse.",
     contactInterest: "complemento-reputation-reviews", catalogPath: "/addons", detailPath: addon("reputation-reviews"),
   },
   {
@@ -218,7 +217,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Se avisa a los contactos autorizados de un cambio de horario o una novedad."],
     dependencies: "Requiere Barrio o Ciudad y consentimiento, canales y proveedores habilitados.",
     decision: "Contratar campañas no exige Ciudad cuando siguen un único proceso comercial.",
-    price: `Envíos reales con margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: `La configuración estándar de campañas pertenece al CRM. Se cobran únicamente cargos reales de email, SMS, WhatsApp u otros canales con un precio que mantenga al menos ${PROVIDER_TARGET_MARGIN_PERCENT} % de margen bruto sobre los costes directos; servicios profesionales especiales solo mediante propuesta.`,
+    price: "Consumos según canal", externalCosts: "La configuración estándar compatible forma parte del CRM; los cargos de envío de correo, SMS, WhatsApp u otros proveedores se informan aparte.",
     contactInterest: "complemento-campaigns-diffusion", catalogPath: "/addons", detailPath: addon("campaigns-diffusion"),
   },
   {
@@ -233,7 +232,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["El asistente aclara una pregunta frecuente y deja el siguiente paso para revisión humana cuando lo necesita."],
     dependencies: "Requiere Barrio o Ciudad, canal compatible y configuración de proveedor/uso de IA.",
     decision: "Una IA para un proceso sencillo puede acompañar Barrio; la coordinación multiproceso puede justificar Ciudad.",
-    price: `Plan de IA compartido o consumo con margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: `Se cobra según uso o plan IA de la localización: Growth (referencia proveedor USD 50/mes → piso USD ${formatProviderResaleUsd(PROVIDER_BASELINE_USD_CENTS.aiGrowthSharedMonthly)}), Unlimited (USD 97 → piso USD ${formatProviderResaleUsd(PROVIDER_BASELINE_USD_CENTS.aiUnlimitedSharedMonthly)}), antes de otros costes directos y sujetos a condiciones reales. Es UNA suscripción IA compartida por localización para funciones compatibles; no se duplica por voz y conversación.`,
+    price: "Plan de IA compartido o consumo", externalCosts: "La IA puede facturarse por consumo o por plan compartido según la propuesta. Las funciones compatibles de voz y conversación no duplican una misma suscripción de IA.",
     contactInterest: "complemento-conversational-ai", catalogPath: "/addons", detailPath: addon("conversational-ai"),
   },
   {
@@ -249,7 +248,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Un agente solicita el motivo de la llamada y remite una consulta al responsable correspondiente."],
     dependencies: "Requiere Barrio o Ciudad, canal telefónico compatible y costes de voz/IA activados.",
     decision: "La IA de Voz no requiere Ciudad por sí misma; el número de procesos coordinados determina la licencia.",
-    price: `Plan de IA compartido o consumo con margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: `La IA se factura por consumo o por el MISMO plan IA compartido de la localización usado para conversación y reseñas: no cobrar otra segunda suscripción. La telefonía mantiene cargos separados con precio calculado para un margen bruto mínimo del ${PROVIDER_TARGET_MARGIN_PERCENT} % sobre sus costes directos.`,
+    price: "Plan de IA compartido o consumo", externalCosts: "La suscripción de IA compartida, cuando corresponda, no se cobra dos veces por usar voz y conversación. Telefonía y consumo adicional se cotizan aparte.",
     contactInterest: "complemento-voice-ai", catalogPath: "/addons", detailPath: addon("voice-ai"),
   },
   {
@@ -264,7 +263,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Sincronizar una herramienta admitida con el CRM cuando la licencia permite esa operación."],
     dependencies: "La compatibilidad depende del destino: si modifica contactos, oportunidades o automatizaciones del CRM exige Barrio o Ciudad; si solo usa Vecidya, se evalúa con Cuadra caso por caso.",
     decision: "Una conexión estándar no requiere Ciudad; la necesidad de varios procesos coordinados sí puede justificarlo.",
-    price: `Coste externo aplicable con margen bruto objetivo ${PROVIDER_TARGET_MARGIN_PERCENT} %`, externalCosts: `Las integraciones estándar incluidas en la licencia no llevan cuota extra. Solo si una conexión externa genera un cargo real de app, API o ejecución, se cotiza para mantener al menos ${PROVIDER_TARGET_MARGIN_PERCENT} % de margen bruto sobre los costes directos. Desarrollo a medida se cotiza como servicio.`,
+    price: "Cargos externos según conexión", externalCosts: "Las integraciones incluidas en la licencia no tienen cuota adicional. Aplicaciones, APIs o ejecuciones externas, si las hubiera, y desarrollos a medida requieren cotización previa.",
     contactInterest: "complemento-connections-integrations", catalogPath: "/addons", detailPath: addon("connections-integrations"),
   },
 ];
