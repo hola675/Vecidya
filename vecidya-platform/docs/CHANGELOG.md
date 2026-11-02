@@ -4,6 +4,11 @@
 - Se reprodujo React #418 en `/app/internal` por una diferencia locale de fecha entre SSR y Chromium `America/New_York`; se centralizó el formato determinista de fecha/hora en las rutas internas identificadas. El caso focal pasa; la certificación App/Admin sigue abierta.
 - Sin cambio de producto, D1 remota, integración con proveedor, merge ni deploy.
 
+## 2026-11-02 — APRENDE-ARTICLE-ART-01 — ilustraciones propias para las guías
+
+- Se preparan 48 WebP transparentes, uno por artículo de Aprende, ligados al contenido de cada guía y con texto alternativo específico. La imagen de portada y su metadata social reutilizan el alt contextual.
+- Se afina la portada para mostrar el arte sobre la superficie existente sin fondo opaco ni sombra rectangular. No cambian contenido, rutas, CTA ni acceso. E2E de catálogo/artículos y cinco viewports, unitarias focales, typecheck, build y diff-check PASS. PR #223 integrada en `main@0685775e`; sin deploy.
+
 ## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
 
 - Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.

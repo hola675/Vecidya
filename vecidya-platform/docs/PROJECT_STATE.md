@@ -1,6 +1,10 @@
+## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
+
+Las 48 guías públicas de Aprende usan una ilustración WebP individual ligada a su slug y texto alternativo específico. Se conserva el contenido editorial y los controles de la plantilla; la imagen y Open Graph usan el alt contextual. Los assets tienen transparencia y no representan personas. `aprende-public-qa-check.mjs` valida las 48 rutas e imágenes; la inspección visual y las capturas cubren cinco anchos. Unitarias 53/53, typecheck/build/diff-check PASS. PR #223 integrada en `main@0685775e`; no hay cambios de datos o rutas, migraciones, D1 remota, deploy ni HTTP pública fechada. No es certificación WCAG.
+
 ## UX-PREMIUM-02J — Vico y escenas transparentes para 10 páginas (2026-10-31)
 
-El checkpoint local de PR #222 asocia las 10 variantes WebP de Vico a Inicio, Vecindario, Aprende, Diagnóstico, Licencias, Servicios, Complementos, Sobre nosotros, Contacto y Únete; Vico se amplió en las escenas de apoyo. Se generaron 10 WebP transparentes y se preservó el hero aprobado de Inicio. Los 30 diagramas SVG educativos y el atlas de Aprende se sustituyeron por WebP temáticos con alt por guía. No cambia la lógica, el contenido, las rutas ni los CTAs. E2E en 10 rutas × cinco viewports, capturas full-page antes/después 50 + 50, typecheck/build/diff-check: PASS. Axe, lector de pantalla y zoom 200 % pendientes; sin merge, D1 remota, deploy ni HTTP pública.
+PR #222 integra en `main@e92c10e9` las 10 variantes WebP de Vico para Inicio, Vecindario, Aprende, Diagnóstico, Licencias, Servicios, Complementos, Sobre nosotros, Contacto y Únete; también integra escenas WebP transparentes y reemplazos de diagramas SVG educativos con alt por guía. Se preservó el hero aprobado de Inicio y no cambia la lógica, el contenido, las rutas ni los CTAs. E2E en 10 rutas × cinco viewports, capturas full-page antes/después 50 + 50, typecheck/build/diff-check: PASS. Axe, lector de pantalla y zoom 200 % pendientes. Sin D1 remota, deploy ni HTTP pública.
 
 ## UX-PREMIUM-02I — refinamiento visual de Aprende (2026-10-30)
 
