@@ -2,6 +2,7 @@ import { Form, Link, useLoaderData } from "react-router";
 
 import { listPlatformAuditLogPage } from "../../db/queries/platform-governance.server";
 import { platformAuditActionLabels } from "../lib/platform-audit-labels";
+import { formatPlatformDateTime } from "../lib/platform-date-format";
 import { createDatabase } from "../../db/client.server";
 import { AdminShell } from "../components/admin-shell";
 import { Badge, Icon } from "../components/ui";
@@ -12,10 +13,6 @@ import type { Route } from "./+types/internal-audit";
 
 type AuditActionFilter = "all" | string;
 const auditPageSize = 50;
-
-function formatTimestamp(date: Date) {
-  return new Date(date).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
-}
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Auditoría | Vecidya" }];
@@ -80,7 +77,7 @@ export default function InternalAudit() {
               <table className="admin-table admin-audit-table">
                 <thead><tr><th>Fecha</th><th>Acción</th><th>Organización / perfil</th><th>Actor</th><th>Cambio</th></tr></thead>
                 <tbody>{activity.map((entry) => <tr key={entry.id}>
-                  <td><time dateTime={entry.createdAt.toISOString()}>{formatTimestamp(entry.createdAt)}</time></td>
+                  <td><time dateTime={entry.createdAt.toISOString()}>{formatPlatformDateTime(entry.createdAt)}</time></td>
                   <td><strong>{platformAuditActionLabels[entry.action] ?? entry.action}</strong><span className="admin-table__meta">{entry.action}</span></td>
                   <td><strong>{entry.organizationName ?? "Organización no disponible"}</strong><span className="admin-table__meta">{entry.businessProfileDisplayName ?? `${entry.entityType}: ${entry.entityId}`}{entry.businessProfileSlug ? <> · <Link to={`/app/internal/businesses/${entry.entityId}`}>Ver perfil</Link></> : null}</span></td>
                   <td>{entry.actorName ?? entry.actorEmail ?? "Actor desconocido"}{entry.actorName && entry.actorEmail ? <span className="admin-table__meta">{entry.actorEmail}</span> : null}</td>

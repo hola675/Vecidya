@@ -1,3 +1,9 @@
+# 2026-11-02 — React #418 — entorno local de reproducción
+
+- Se añadió un E2E que aplica migraciones en D1 efímera, crea fixtures sintéticas de App/Admin e integración metadata local, y verifica eliminación al cerrar.
+- Se reprodujo React #418 en `/app/internal` por una diferencia locale de fecha entre SSR y Chromium `America/New_York`; se centralizó el formato determinista de fecha/hora en las rutas internas identificadas. El caso focal pasa; la certificación App/Admin sigue abierta.
+- Sin cambio de producto, D1 remota, integración con proveedor, merge ni deploy.
+
 ## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
 
 - Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.

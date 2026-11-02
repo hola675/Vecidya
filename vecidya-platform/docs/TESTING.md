@@ -20,6 +20,12 @@ node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tes
 
 # Pruebas
 
+## React #418 — entorno local de reproducción (2026-11-02)
+
+`pnpm run test:e2e:react-418` crea una D1 aislada y efímera, aplica las migraciones locales y genera fixtures sintéticas: usuario autenticado, organización, membresía, acceso `platform_admin`, una entrada de auditoría cerca de medianoche UTC y metadata `local-test-fixture`. Inicia el Worker con secretos de prueba aleatorios, abre App/Admin en Playwright con zona `America/New_York`, compara el texto SSR con el hidratado, comprueba el listado de integraciones y elimina la D1 al terminar. No llama a proveedores ni usa D1 remota.
+
+**Reproducción baseline RAN sobre `origin/main@e92c10e9`:** `/app/internal` generó React #418. SSR mostraba `1/11/2026, 10:21 p. m.` y Chromium `1/11/2026, 10:21 p. m.` (U+00A0). La ruta afectada usaba `toLocaleString("es-CO")`. Se centralizó el formato fijo UTC−5 de Bogotá en `app/lib/platform-date-format.ts` y se aplicó a las fechas de las rutas internas que renderizaban fecha/hora locale. **RAN tras el cambio:** `pnpm run test:e2e:react-418` PASS; SSR e hidratación muestran `1 nov 2026, 10:21 p. m.`, sin error React #418; la página de integraciones muestra el ID sintético y la D1 se elimina. Pruebas unitarias, typecheck/build/diff-check se registran al cierre del checkpoint. Esto verifica el escenario y las rutas actualizadas, no certifica App/Admin completo; la deuda sigue abierta hasta validar las demás rutas/estados protegidos.
+
 ## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
 
 **RAN en Worker local:** `BASE_URL=http://localhost:5173 node tests/e2e/services-catalog-layout-check.mjs` — **PASS**. En 1366/1024/768/390/320 px verifica siete ofertas, ancho de fila consistente, los siete atajos con destino existente, los 14 CTA de detalle/consulta y cero overflow horizontal. `BASE_URL=http://localhost:5173 node tests/e2e/web-commercial-contact-check.mjs` — **PASS** en 1366/390 px; confirma las siete familias y el contexto de consulta, además de las rutas Contacto y Únete.

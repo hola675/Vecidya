@@ -21,6 +21,7 @@
     "test:e2e:aprende-public": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/aprende-public-qa-check.mjs",
     "test:e2e:cookie-consent": "node tests/e2e/cookie-consent-check.mjs",
     "test:e2e:app-dashboard-redesign": "node tests/e2e/app-dashboard-redesign-check.mjs",
+    "test:e2e:react-418": "node tests/e2e/react-418-hydration-check.mjs",
     "test:e2e:miniweb-v2-conversion": "node tests/e2e/miniweb-v2-conversion-check.mjs",
     "test:e2e:platform-admin-global": "node tests/e2e/platform-admin-global-certification-check.mjs",
     "test:aprende-bundle": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/learn-client-bundle-privacy-check.mjs",
