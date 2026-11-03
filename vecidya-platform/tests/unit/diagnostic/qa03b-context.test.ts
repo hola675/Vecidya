@@ -82,8 +82,9 @@ test("QA-03B: pausa conserva historia y retira evidencia de operación actual", 
   for (const id of ["q2_regularity", "q2_demand_trend", "q2_b2b_pipeline", "q2_process_systemization", "q2_reputation_flow"]) assert.equal(paused.activeAnswers[id], undefined, id);
 });
 test("QA-03B: remoto, citas y lugar no fabrican ecommerce ni dos actividades", () => {
-  for (const modes of [["remote_service"], ["remote_service", "other"]]) assert.equal(resolve({ ...base, q2_delivery: modes }, BANK).context.archetype.status, "unresolved");
-  const single = resolve({ ...base, q2_delivery: ["physical_location", "appointments", "remote_service", "other"] }, BANK).context;
+  for (const modes of [["remote_service"]]) assert.equal(resolve({ ...base, q2_delivery: modes }, BANK).context.archetype.status, "unresolved");
+  assert.equal(resolve({ ...base, q2_delivery: ["remote_service", "other"] }, BANK).activeAnswers.q2_delivery, undefined, "other es exclusivo");
+  const single = resolve({ ...base, q2_delivery: ["physical_location", "appointments", "remote_service"] }, BANK).context;
   assert.equal(single.archetype.status === "resolved" && single.archetype.value, "appointments"); assert.deepEqual(single.archetypeComponents, ["appointments"]);
   const hybrid = resolve({ ...base, q2_delivery: ["retail", "online_checkout"] }, BANK).context;
   assert.equal(hybrid.archetype.status === "resolved" && hybrid.archetype.value, "hybrid"); assert.deepEqual(hybrid.archetypeComponents, ["ecommerce", "retail"]);
