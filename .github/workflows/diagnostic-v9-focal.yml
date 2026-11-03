@@ -1,0 +1,92 @@
+name: Diagnostic V9 focused verification
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+    paths:
+      - .github/workflows/diagnostic-v9-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
+      - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
+      - vecidya-platform/app/features/diagnostic/v9/graph-evaluation.ts
+  push:
+    branches:
+      - feat/diagnostic-v9-lex-graph-p1b
+    paths:
+      - .github/workflows/diagnostic-v9-focal.yml
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+      - vecidya-platform/tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
+      - vecidya-platform/app/features/diagnostic/qa03b/v9-context-semantics.ts
+      - vecidya-platform/app/features/diagnostic/v9/question-selection.ts
+      - vecidya-platform/app/features/diagnostic/v9/graph-evaluation.ts
+permissions:
+  contents: read
+jobs:
+  focal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+      - name: Enable Corepack and install locked dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack pnpm install --frozen-lockfile
+      - name: Select only C03 C05 C07 C08 contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          tests=(
+            tests/unit/diagnostic/qa03b-v9-c03-c05-c07-c08-focal.test.ts
+            tests/unit/diagnostic/qa03b-v9-context-semantics.test.ts
+            tests/unit/diagnostic/qa03b-v9-p1c-contract.test.ts
+            tests/unit/diagnostic/qa03b-v9-full-bank-graph.test.ts
+          )
+          for file in "${tests[@]}"; do
+            test -f "$file" || { echo "Missing focal test: $file" >&2; exit 1; }
+          done
+          printf '%s\n' "${tests[@]}" > /tmp/v9-focused-tests.txt
+          printf 'Selected %s focal files\n' "${#tests[@]}"
+      - name: Run only focused tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t tests < /tmp/v9-focused-tests.txt
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test "${tests[@]}" 2>&1 | tee /tmp/v9-focal-test.log
+          {
+            echo "## Diagnostic V9 — focal verification"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Event: \`${GITHUB_EVENT_NAME}\`"
+            echo "- Scope: C03 / C05 / C07 / C08 and F03 full-bank graph (four selected files)"
+            echo ""
+            echo "### Node test summary"
+            grep -E "^(#|ℹ) (tests|pass|fail|cancelled|skipped|duration_ms) " /tmp/v9-focal-test.log || true
+            echo ""
+            echo "Only focal contract checks; not a full adaptive journey or V9 certification."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish summary on failure
+        if: failure()
+        shell: bash
+        run: |
+          {
+            echo "## Diagnostic V9 — focal verification failed"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Event: \`${GITHUB_EVENT_NAME}\`"
+            echo "- Scope: C03 / C05 / C07 / C08"
+            echo "- Review the failed step logs; this commit is not certified."
+          } >> "$GITHUB_STEP_SUMMARY"

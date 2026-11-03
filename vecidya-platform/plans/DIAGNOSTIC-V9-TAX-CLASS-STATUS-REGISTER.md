@@ -1,0 +1,201 @@
+# Diagnostic V9 — estado consolidado TAX-CLASS CLASS-01…05
+
+**Versión:** 0.6.0  
+**Fecha:** 2026-11-01  
+**Estado:** F00-F01 DONE · F02 DONE_WITH_FALLBACK · F03-F04 DONE_WITH_EVIDENCE · F05+ PLAN_ONLY  
+**Rama:** `feat/diagnostic-v9-lex-graph-p1b`
+
+## 1. Resumen ejecutivo
+
+| Clase | Alcance | Estado actual |
+|---|---|---|
+| CLASS-01 | inventario literal de values y ocho selectores | PARCIAL / NO CERTIFICADA |
+| CLASS-02 | puente oldValue→atributos, persistencia, replay, ownership y consumers | PARCIAL / NO CERTIFICADA |
+| CLASS-03 | reglas/fallbacks dental, food, agency, real estate | PARCIAL / NO CERTIFICADA |
+| CLASS-04 | C01–C10, híbridos, unknown, cambio de sector, replay | PARCIAL / NO CERTIFICADA |
+| CLASS-05 | aprobación humana, implementación aislada, pruebas autorizadas | A–H APPROVED / F00-F01 DONE / F02 FALLBACK / F03-F04 DONE / F05+ PLAN_ONLY |
+
+Ninguna clase está certificada bajo el SHA actual porque la fase vigente continúa siendo PLAN_ONLY.
+
+## 2. CLASS-01
+
+Fuente principal: `DIAGNOSTIC-V9-CLASS01-CLOSURE-REGISTER.md`  
+Blob `cc1179b793f3149e910d2de6fab0ca6f40386c11`.
+
+Documentado:
+- V2=15, V3=16, V4=20 valores esperados/inspeccionados;
+- ocho selectores;
+- semántica distinta de `other` y `unknown`;
+- trazabilidad focal de consumidores;
+- aceptación A01–A10 definida.
+
+Bloqueos:
+- censo completo de consumidores;
+- diff final por versión;
+- restore/migración;
+- pruebas A01–A10 autorizadas.
+
+## 3. CLASS-02
+
+Fuente principal: `DIAGNOSTIC-V9-CLASS02-CLOSURE-REGISTER.md`  
+Blob `26f2c08c9cd9c77d66092a210973afcf39901f98`.
+
+Documentado:
+- fuentes/bridges de atributos;
+- bancos y entrypoints;
+- APIs runs/events/state/finalize/result;
+- banco fijado del replay;
+- cinco versiones persistidas;
+- ledger, seq, snapshots;
+- SQL V9 `0038..0043`;
+- identidad, ownership, claim y organización;
+- cobertura SQLite existente.
+
+Bloqueos:
+- ejecución focal;
+- AUTH gaps exactos;
+- migraciones desplegadas;
+- política claim/V9 disabled.
+
+## 4. CLASS-03
+
+Fuente principal: `DIAGNOSTIC-V9-CLASS03-CLOSURE-REGISTER.md`  
+Blob `f1e15f761d58e037acbbb1f54d3b94828eeb2260`.
+
+Documentado:
+- dental: specialty/fallback;
+- food: specialty/fallback;
+- marketing agency: specialty/fallback;
+- tests source existentes;
+- real estate: fallback genérico vigente.
+
+Bloqueo clave:
+`q2_real_estate_inquiry_entry` permanece pending y no debe sustituir `q2_professional_intake_flow` sin decisión de dimensión, evidence V3, `referral_only`, deduplicación y replay.
+
+## 5. CLASS-04
+
+Fuente principal: `DIAGNOSTIC-V9-CLASS04-CLOSURE-REGISTER.md`  
+Blob `7f9f80d0637263c3e2d577b905c105a4ea59fbf7`.
+
+Documentado:
+- C01–C10;
+- corpus de 30 personas authored;
+- unknown/N-A/unanswered;
+- cambio de sector y limpieza stale;
+- replay/classification/D1;
+- `archetype hybrid` alcanzable por multi-delivery;
+- sector `unknown` aceptado estáticamente.
+
+Bloqueos:
+- C01/C04/C06 resultado end-to-end;
+- C09 hybrid replay/finalization;
+- test explícito sector unknown;
+- businessModel hybrid no demostrado desde banco 77;
+- restore/versionado entre bancos;
+- ejecución focal.
+
+## 6. CLASS-05
+
+Fuentes:
+- `DIAGNOSTIC-V9-CLASS05-HUMAN-APPROVAL-HANDOFF.md` — blob `87097824b5a160efb9fb69e77277f47710e4e49d`;
+- `DIAGNOSTIC-V9-CLASS05-APPROVAL-MATRIX.md` — blob `4a664f6feafd0bffafd74fc9acaa250f8c673353`;
+- `DIAGNOSTIC-V9-CLASS05-CLOSURE-REGISTER.md` — blob `903fced4ed7831b2651d9a3df3b024226179c44f`.
+
+Preparado:
+- decisiones A–H;
+- propuesta/alternativa/riesgo/fallback;
+- gates H1–H5;
+- stop conditions;
+- condición READY_FOR_AGENT;
+- orden recomendado de revisión humana.
+
+Estado:
+- A/D/F/G = APPROVED;
+- B/C/E/H = APPROVED_WITH_FALLBACK;
+- W1/F00 = DONE_WITH_EVIDENCE;
+- W2/F01 = DONE_WITH_EVIDENCE;
+- W3/F02 = DONE_WITH_FALLBACK;
+- W4/F03 = DONE_WITH_EVIDENCE;
+- W5/F04 = DONE_WITH_EVIDENCE;
+- PLAN_ONLY sigue vigente para F05+;
+- no hay autorización de merge a main, deploy ni producción.
+
+Bloqueos transversales priorizados:
+- binding de calibración v2/v4 = RESUELTO EN F04;
+- correlación de observaciones = RESUELTA EN F04 para registry/overlap groups actuales;
+- ledger D1 anónimo vs borrador local-only;
+- hard cap 24 vs política 24+5 = RESUELTO EN F03;
+- colisión de migraciones main/V9 = RESUELTA en W1; V9 0038–0043;
+- restore/versionado entre bancos;
+- pruebas CLASS-01…04 sin PASS actual.
+
+## 7. Invariantes globales
+
+1. V8 permanece operativo hasta corte autorizado.
+2. No activar banco 82/90 por conteo.
+3. No migrar `pending` a evidence V3 por analogía.
+4. Unknown ≠ other ≠ unanswered ≠ N/A.
+5. Sector/nicho no constituye evidencia de madurez digital.
+6. Diferente questionId no demuestra independencia de observación.
+7. Replay debe usar banco/versiones fijadas.
+8. No afirmar PASS sin comando, log y SHA exacto.
+9. GHL no participa en scoring/identidad/resultados.
+10. Aprende/servicios son opcionales y posteriores al diagnóstico.
+11. No borrar V8/legacy/migraciones históricas antes de gates F08/F09.
+12. Merge/deploy requieren autorización separada.
+
+## 8. Consolidación ejecutiva disponible
+
+Ya existen dos artefactos adicionales:
+
+- `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`: recomendación consolidada A–H, sin aprobación implícita.
+- `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md`: waves W0–W10, con F00 como primer scope recomendado si se levanta PLAN_ONLY parcialmente.
+
+`DIAGNOSTIC-V9-READY-FOR-AGENT.md` está actualizado tras F04; el siguiente gate es F05 y permanece `PLAN_ONLY`.
+
+## 9. Ruta de salida de PLAN_ONLY
+
+El siguiente cambio de estado no debe ocurrir por inferencia.
+
+Para pasar de documentación a ejecución se necesita instrucción explícita del responsable que:
+
+- apruebe o difiera A–H con fallback;
+- identifique fases/tareas F00–F10 habilitadas;
+- indique alcance de archivos/cambios;
+- autorice comandos focales;
+- especifique si PLAN_ONLY se levanta parcial o totalmente.
+
+Hasta esa instrucción, el trabajo permitido sigue siendo lectura y documentación.
+
+## 10. Estado global
+
+**TAX-CLASS CLASS-01…05: F00–F01 DONE / F02 FALLBACK / F03–F04 DONE_WITH_EVIDENCE / CLASES 01–04 AÚN NO CERTIFICADAS / F05+ NO AUTORIZADO.**
+
+La deuda principal ya no es descubrir cómo funciona el código, sino cerrar decisiones humanas, ejecutar aceptación focal autorizada y asociar resultados al SHA final.
+
+## W1/F00 2026-11-01
+
+main quedó ancestro de la rama V9 mediante `5a798b5ab36858d12b95752130cc67bf15492f32`; PR #162 mergeable, draft; 43/43 pruebas focales PASS; W2+ no autorizado.
+
+## W2/F01 2026-11-01
+
+Frontera de autonomía documentada en `DIAGNOSTIC-V9-W2-F01-AUTONOMY-BOUNDARY.md`. La allowlist estática detectó dos omisiones del inventario durante sus primeras corridas y finalmente pasó **3/3** en `7f598dcc83756e7a764200ed86cb7aa74f71525d`. No se modificó runtime, banco ni scoring.
+
+## W3/F02 2026-11-01
+
+Manifest V9-owned de 77 preguntas creado sin imports QA03B/QBV2. Se preservan 18 KEEP y 59 rewrite_pending; las 13 extensiones 82/90 permanecen fuera y pending. Gate focal: 29/29 PASS en SHA `92271d398400647dfa9c62097964f5a20f5d0a77`.
+
+## W4/F03 2026-11-01
+
+Core 24+5 implementado con schema de sesión 10, consentimiento auditado y hard cap 29. Gate de budget/session/replay: 31/31 PASS. Gate graph/context: 31/31 PASS. El primer intento detectó una pérdida de canonicalidad de classification replay, corregida fail-closed antes del cierre.
+
+## Changelog
+
+- **0.6.0 / 2026-11-01:** W5/F04 cerrado con evidencia 32/32; P0 calibration/correlation resueltos técnicamente; F05+ PLAN_ONLY.
+- **0.5.0 / 2026-11-01:** W4/F03 cerrado con evidencia; F04+ PLAN_ONLY.
+- **0.4.0 / 2026-11-01:** W3/F02 cerrado con fallback; canonical 77 v1 y 29/29 PASS; F03+ PLAN_ONLY.
+- **0.3.0 / 2026-11-01:** W2/F01 cerrado con evidencia; storage final deferred, registry objetivo fijado y dependencias legacy congeladas; F02+ PLAN_ONLY.
+- **0.2.0 / 2026-11-01:** A–H aprobadas; W1/F00 ejecutado; migraciones V9 0038–0043; W2+ PLAN_ONLY.
+- **0.1.2 / 2026-11-01:** se incorporan la hoja ejecutiva A–H, el scope condicional W0–W10 y el READY_FOR_AGENT actualizado; no cambia el estado de ejecución.
+- **0.1.1 / 2026-11-01:** CLASS-05 queda documentalmente lista para revisión humana; A–H tienen paquetes propios, sin aprobación ni ejecución; se registran bloqueos transversales P0.
+- **0.1.0 / 2026-10-31:** consolidación global CLASS-01…05, invariantes y gate de salida de PLAN_ONLY.

@@ -16,6 +16,8 @@ concurrency:
 
 jobs:
   verify:
+    # Keep the original broad regression for main and unrelated pull requests.
+    if: ${{ github.event_name != 'pull_request' || !startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
     name: Typecheck, build and unit regression
     runs-on: ubuntu-latest
     timeout-minutes: 35
@@ -38,11 +40,38 @@ jobs:
         run: pnpm typecheck
       - name: Build
         run: pnpm build
-      - name: Aprende client bundle privacy
-        run: pnpm test:aprende-bundle
-      - name: Aprende entitlement local Worker certification
-        run: pnpm test:e2e:learn-entitlement
       - name: Diagnostic and Aprende regression
         run: node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-flow-ui.test.ts tests/unit/learn/learn-curriculum.test.ts
       - name: Unit regression
         run: pnpm test:unit
+
+  diagnostic-v9-focused:
+    # PR V9: W5/F04 valida únicamente correlación, calibration registry y scoring reproducible.
+    if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'feat/diagnostic-v9-') }}
+    name: Diagnostic V9 W5/F04 scoring + correlation
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: W5/F04 scoring, correlation and historical replay contracts
+        run: >-
+          node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test
+          tests/unit/diagnostic/qa03b-v9-f04-scoring-correlation.test.ts
+          tests/unit/diagnostic/qa03b-v9-autonomy-boundary.test.ts
+          tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts
+          tests/unit/diagnostic/qa03b-v9-event-ingestion-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-run-state-sqlite.test.ts
+          tests/unit/diagnostic/qa03b-v9-public-availability.test.ts

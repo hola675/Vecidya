@@ -1,0 +1,291 @@
+import { selectV9Questions, type V9SelectionResult } from "./question-selection";
+
+/**
+ * Standalone V9 rule contract. This module deliberately imports no QBV2/V8
+ * domain code. Legacy candidate rules can be read at the migration boundary
+ * because their JSON operators are structurally compatible.
+ */
+export type V9AnswerRef = { readonly question: string };
+export type V9Rule =
+  | { readonly op: "answered"; readonly ref: V9AnswerRef }
+  | { readonly op: "eq" | "notEq"; readonly ref: V9AnswerRef; readonly value: string }
+  | { readonly op: "in" | "multiIntersects"; readonly ref: V9AnswerRef; readonly values: readonly string[] }
+  | { readonly op: "multiExcluding"; readonly ref: V9AnswerRef; readonly exclude: readonly string[] }
+  | { readonly op: "contextResolvedEquals"; readonly field: string; readonly value: string }
+  | { readonly op: "contextResolvedIn"; readonly field: string; readonly values: readonly string[] }
+  | { readonly op: "contextUnresolved"; readonly field: string }
+  | { readonly op: "archetypeIncludes"; readonly value: string }
+  | { readonly op: "and" | "or"; readonly rules: readonly V9Rule[] }
+  | { readonly op: "not"; readonly rule: V9Rule };
+
+export type V9RuleStatus = "eligible" | "ineligible" | "pending";
+export type V9ResolvedField = { readonly status: "resolved"; readonly value: string } | { readonly status: "unresolved" };
+export type V9GraphFacts = {
+  readonly answers: Readonly<Record<string, string | readonly string[] | undefined>>;
+  readonly context?: {
+    readonly fields: Readonly<Record<string, V9ResolvedField | undefined>>;
+    /** Explicitly resolved components; never inferred from the archetype name. */
+    readonly archetypeComponents?: readonly string[];
+  };
+};
+export type V9RuleTrace = {
+  readonly status: V9RuleStatus;
+  readonly op: V9Rule["op"];
+  readonly dependency?: string;
+  readonly children?: readonly V9RuleTrace[];
+};
+
+const andStatus = (statuses: readonly V9RuleStatus[]): V9RuleStatus =>
+  statuses.includes("ineligible") ? "ineligible" : statuses.includes("pending") ? "pending" : "eligible";
+const orStatus = (statuses: readonly V9RuleStatus[]): V9RuleStatus =>
+  statuses.includes("eligible") ? "eligible" : statuses.includes("pending") ? "pending" : "ineligible";
+const invert = (status: V9RuleStatus): V9RuleStatus =>
+  status === "pending" ? "pending" : status === "eligible" ? "ineligible" : "eligible";
+
+function evaluate(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
+  if (rule.op === "and" || rule.op === "or") {
+    const children = rule.rules.map((child) => evaluate(child, facts));
+    return {
+      op: rule.op,
+      status: rule.op === "and" ? andStatus(children.map((child) => child.status)) : orStatus(children.map((child) => child.status)),
+      children,
+    };
+  }
+  if (rule.op === "not") {
+    const child = evaluate(rule.rule, facts);
+    return { op: "not", status: invert(child.status), children: [child] };
+  }
+  if (rule.op === "archetypeIncludes") {
+    const components = facts.context?.archetypeComponents;
+    return { op: rule.op, status: components ? (components.includes(rule.value) ? "eligible" : "ineligible") : "pending", dependency: "context:archetype" };
+  }
+  if (rule.op === "contextResolvedEquals" || rule.op === "contextResolvedIn" || rule.op === "contextUnresolved") {
+    const field = facts.context?.fields[rule.field];
+    if (!field) return { op: rule.op, status: "pending", dependency: `context:${rule.field}` };
+    if (rule.op === "contextUnresolved") {
+      return { op: rule.op, status: field.status === "unresolved" ? "eligible" : "ineligible" };
+    }
+    if (field.status === "unresolved") return { op: rule.op, status: "ineligible" };
+    const pass = rule.op === "contextResolvedEquals" ? field.value === rule.value : rule.values.includes(field.value);
+    return { op: rule.op, status: pass ? "eligible" : "ineligible" };
+  }
+  const answer = facts.answers[rule.ref.question];
+  if (answer === undefined) {
+    return { op: rule.op, status: "pending", dependency: `answer:${rule.ref.question}` };
+  }
+  const values = typeof answer === "string" ? [answer] : answer;
+  // An empty multi-choice response is not an answer; it is still pending.
+  if (values.length === 0) return { op: rule.op, status: "pending", dependency: `answer:${rule.ref.question}` };
+  if (rule.op === "answered") return { op: rule.op, status: "eligible" };
+  // Neutral selections, including in multi-choice arrays, must not assert a
+  // negative comparison or establish specialist eligibility.
+  if (values.some((value) => value === "unknown" || value === "not_applicable")) {
+    return { op: rule.op, status: "ineligible" };
+  }
+
+  let pass: boolean;
+  switch (rule.op) {
+    case "eq": pass = typeof answer === "string" && answer === rule.value; break;
+    case "notEq": pass = typeof answer === "string" && answer !== rule.value; break;
+    case "in": pass = typeof answer === "string" && rule.values.includes(answer); break;
+    case "multiExcluding": pass = values.length > 0 && !rule.exclude.some((item) => values.includes(item)); break;
+    case "multiIntersects": pass = rule.values.some((item) => values.includes(item)); break;
+  }
+  return { op: rule.op, status: pass ? "eligible" : "ineligible" };
+}
+
+export function evaluateV9Rule(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
+  return evaluate(rule, facts);
+}
+
+export type V9GraphQuestion = {
+  readonly id: string;
+  readonly appliesWhen?: V9Rule;
+  /** Material-only rules are evaluated exclusively when explicitly requested. */
+  readonly materialAppliesWhen?: V9Rule;
+};
+export type V9GraphQuestionResult = {
+  readonly id: string;
+  readonly status: V9RuleStatus;
+  readonly source: "base" | "material" | "unconditional" | "material_not_requested";
+  readonly trace?: V9RuleTrace;
+};
+
+export function evaluateV9Question(
+  question: V9GraphQuestion,
+  facts: V9GraphFacts,
+  materialEvidenceRequested = false,
+): V9GraphQuestionResult {
+  if (!question.appliesWhen && !question.materialAppliesWhen) {
+    return { id: question.id, status: "eligible", source: "unconditional" };
+  }
+  if (!question.appliesWhen && !materialEvidenceRequested) {
+    return { id: question.id, status: "ineligible", source: "material_not_requested" };
+  }
+  const base = question.appliesWhen && evaluate(question.appliesWhen, facts);
+  const material = materialEvidenceRequested && question.materialAppliesWhen
+    ? evaluate(question.materialAppliesWhen, facts)
+    : undefined;
+  const status = base && material ? orStatus([base.status, material.status]) : (base ?? material)!.status;
+  return { id: question.id, status, source: base && base.status === "eligible" ? "base" : material ? "material" : "base", trace: base && material ? { op: "or", status, children: [base, material] } : (base ?? material)! };
+}
+
+
+/**
+ * F03 structural audit: dependencies declared in question rules are inspected
+ * before graph activation. External prerequisites must be named explicitly.
+ * The ordered IDs respect declared input order where no dependency constrains it.
+ */
+function collectV9AnswerDependencies(rule: V9Rule, into: Set<string>): void {
+  if (rule.op === "and" || rule.op === "or") {
+    for (const child of rule.rules) collectV9AnswerDependencies(child, into);
+  } else if (rule.op === "not") {
+    collectV9AnswerDependencies(rule.rule, into);
+  } else if ("ref" in rule) {
+    into.add(rule.ref.question);
+  }
+}
+
+export type V9GraphAudit = {
+  readonly orderedIds: readonly string[];
+  readonly missingDependencies: readonly { readonly questionId: string; readonly dependencyId: string }[];
+  readonly cycles: readonly (readonly string[])[];
+};
+
+export function inspectV9Graph(
+  questions: readonly V9GraphQuestion[],
+  externalQuestionIds: readonly string[] = [],
+): V9GraphAudit {
+  const byId = new Map<string, V9GraphQuestion>();
+  for (const question of questions) {
+    if (!question.id.trim()) throw new Error("V9 graph question id cannot be empty");
+    if (byId.has(question.id)) throw new Error(`V9 graph has duplicate id: ${question.id}`);
+    byId.set(question.id, question);
+  }
+  const external = new Set(externalQuestionIds);
+  const dependencies = new Map<string, readonly string[]>();
+  const missingDependencies: { questionId: string; dependencyId: string }[] = [];
+  for (const question of questions) {
+    const refs = new Set<string>();
+    if (question.appliesWhen) collectV9AnswerDependencies(question.appliesWhen, refs);
+    if (question.materialAppliesWhen) collectV9AnswerDependencies(question.materialAppliesWhen, refs);
+    dependencies.set(question.id, [...refs].filter((id) => byId.has(id)));
+    for (const ref of refs) {
+      if (!byId.has(ref) && !external.has(ref)) {
+        missingDependencies.push({ questionId: question.id, dependencyId: ref });
+      }
+    }
+  }
+
+  const visited = new Set<string>();
+  const visiting = new Set<string>();
+  const path: string[] = [];
+  const orderedIds: string[] = [];
+  const cycles: string[][] = [];
+  const visit = (id: string): void => {
+    if (visiting.has(id)) {
+      const index = path.indexOf(id);
+      cycles.push([...path.slice(index), id]);
+      return;
+    }
+    if (visited.has(id)) return;
+    visiting.add(id);
+    path.push(id);
+    for (const ref of dependencies.get(id) ?? []) visit(ref);
+    path.pop();
+    visiting.delete(id);
+    visited.add(id);
+    orderedIds.push(id);
+  };
+  for (const question of questions) visit(question.id);
+  return { orderedIds, missingDependencies, cycles };
+}
+
+export function orderV9GraphQuestions(
+  questions: readonly V9GraphQuestion[],
+  externalQuestionIds: readonly string[] = [],
+): readonly V9GraphQuestion[] {
+  const audit = inspectV9Graph(questions, externalQuestionIds);
+  if (audit.missingDependencies.length || audit.cycles.length) {
+    throw new Error(`V9 invalid graph: missing=${JSON.stringify(audit.missingDependencies)}, cycles=${JSON.stringify(audit.cycles)}`);
+  }
+  const byId = new Map(questions.map((question) => [question.id, question]));
+  return audit.orderedIds.map((id) => byId.get(id)!);
+}
+
+export type V9GraphPlan = {
+  readonly evaluations: readonly V9GraphQuestionResult[];
+  readonly selection: V9SelectionResult;
+};
+
+/** Graph candidates must already be ordered by a reviewed dependency/priority plan. */
+export function planV9GraphQuestions(
+  questions: readonly V9GraphQuestion[],
+  facts: V9GraphFacts,
+  presentedQuestionIds: readonly string[],
+  options: { readonly extendedInterviewConsented?: boolean; readonly materialEvidenceRequested?: boolean } = {},
+): V9GraphPlan {
+  const evaluations = questions.map((question) => evaluateV9Question(question, facts, options.materialEvidenceRequested === true));
+  const selection = selectV9Questions(
+    evaluations.map((item) => ({ id: item.id, eligible: item.status === "eligible", pending: item.status === "pending" })),
+    presentedQuestionIds,
+    options.extendedInterviewConsented === true,
+  );
+  return { evaluations, selection };
+}
+
+/**
+ * Safe entrypoint for graph-owned planning. Validates references and cycles,
+ * then topologically orders questions before eligibility and budget selection.
+ * Callers may name truly external prerequisites explicitly, but not silently.
+ */
+export function planV9AuditedGraphQuestions(
+  questions: readonly V9GraphQuestion[],
+  facts: V9GraphFacts,
+  presentedQuestionIds: readonly string[],
+  options: {
+    readonly extendedInterviewConsented?: boolean;
+    readonly materialEvidenceRequested?: boolean;
+    readonly externalQuestionIds?: readonly string[];
+  } = {},
+): V9GraphPlan {
+  const ordered = orderV9GraphQuestions(questions, options.externalQuestionIds ?? []);
+  return planV9GraphQuestions(ordered, facts, presentedQuestionIds, options);
+}
+
+export type V9NextQuestionDecision = {
+  readonly nextQuestionId: string | null;
+  readonly reason: "ready" | "budget_exhausted" | "awaiting_dependencies" | "no_eligible_questions";
+  readonly remainingBudgetBeforeAsk: number;
+  readonly pendingQuestionIds: readonly string[];
+};
+
+/**
+ * Session-facing single-step decision. Only one question is proposed at a
+ * time; the next decision must be recomputed after each recorded answer.
+ * The returned budget counts every previously presented unique question.
+ */
+export function decideV9NextQuestion(
+  questions: readonly V9GraphQuestion[],
+  facts: V9GraphFacts,
+  presentedQuestionIds: readonly string[],
+  options: {
+    readonly extendedInterviewConsented?: boolean;
+    readonly materialEvidenceRequested?: boolean;
+    readonly externalQuestionIds?: readonly string[];
+  } = {},
+): V9NextQuestionDecision {
+  const plan = planV9AuditedGraphQuestions(questions, facts, presentedQuestionIds, options);
+  const nextQuestionId = plan.selection.selectedIds[0] ?? null;
+  const pendingQuestionIds = plan.evaluations
+    .filter((question) => question.status === "pending" && !presentedQuestionIds.includes(question.id))
+    .map((question) => question.id);
+  const reason = nextQuestionId
+    ? "ready"
+    : plan.selection.remainingBeforeSelection === 0
+      ? "budget_exhausted"
+      : pendingQuestionIds.length > 0
+        ? "awaiting_dependencies"
+        : "no_eligible_questions";
+  return { nextQuestionId, reason, remainingBudgetBeforeAsk: plan.selection.remainingBeforeSelection, pendingQuestionIds };
+}

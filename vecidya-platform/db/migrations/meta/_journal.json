@@ -267,6 +267,48 @@
       "when": 1793328943130,
       "tag": "0037_miniweb-v2-conversion-provenance",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "6",
+      "when": 1793329003130,
+      "tag": "0038_diagnostic_v9_audit",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "6",
+      "when": 1793329063130,
+      "tag": "0039_diagnostic_v9_identity_ownership",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "6",
+      "when": 1793329123130,
+      "tag": "0040_diagnostic_v9_claim_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "6",
+      "when": 1793329183130,
+      "tag": "0041_diagnostic_v9_owner_assignment_guards",
+      "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "6",
+      "when": 1793329243130,
+      "tag": "0042_diagnostic_v9_identity_claim_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "6",
+      "when": 1793329303130,
+      "tag": "0043_diagnostic_v9_result_finalization_guards",
+      "breakpoints": true
     }
   ]
 }
