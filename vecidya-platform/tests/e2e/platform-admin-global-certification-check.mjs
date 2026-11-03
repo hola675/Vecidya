@@ -416,14 +416,18 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
   throw new Error(`${error instanceof Error ? error.message : String(error)}\nCausa: ${error instanceof Error ? String(error.cause ?? "") : ""}\nWorker exit: ${worker?.exitCode ?? "activo"}\nSalida Worker local:\n${worker?.output ?? "(no iniciado)"}`, { cause: error });
 } finally {
   let workerShutdownError = null;
+  let exited = worker && worker.exitCode === null ? once(worker, "exit").then(([code, signal]) => ({ code, signal })) : null;
+  const waitForExit = () => {
+    if (!exited) return Promise.resolve({ code: worker?.exitCode ?? null, signal: null });
+    let timer;
+    return Promise.race([exited, new Promise((resolveWait) => { timer = setTimeout(() => resolveWait(null), 5000); })]).finally(() => clearTimeout(timer));
+  };
   if (worker && worker.exitCode === null) {
-    const exited = once(worker, "exit").then(([code, signal]) => ({ code, signal }));
-    const waitForExit = () => {
-      let timer;
-      return Promise.race([exited, new Promise((resolveWait) => { timer = setTimeout(() => resolveWait(null), 5000); })]).finally(() => clearTimeout(timer));
-    };
     if (process.platform === "win32") worker.kill("SIGINT");
-    else process.kill(-worker.pid, "SIGINT");
+    else {
+      try { process.kill(-worker.pid, "SIGINT"); }
+      catch (error) { if (error?.code !== "ESRCH") throw error; }
+    }
     let result = await waitForExit();
     if (!result) {
       forceStopWorkerTree(worker);
@@ -432,8 +436,17 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
     }
     if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y terminación forzada.";
   }
-  const workerPort = await workerPortState(portNumber);
-  if (!workerPort.closed) workerShutdownError = `No se pudo confirmar que el puerto del Worker local esté cerrado (${workerPort.reason}).`;
+  let workerPort = await workerPortState(portNumber);
+  if (!workerPort.closed) {
+    if (worker) forceStopWorkerTree(worker);
+    if (worker?.exitCode === null) {
+      exited ??= once(worker, "exit").then(([code, signal]) => ({ code, signal }));
+      await waitForExit();
+    }
+    workerShutdownError = `Se forzó el cierre del árbol de Wrangler porque el puerto seguía activo o incierto (${workerPort.reason}).`;
+    workerPort = await workerPortState(portNumber);
+    if (!workerPort.closed) workerShutdownError += ` El puerto no cerró (${workerPort.reason}).`;
+  }
   try {
     if (workerShutdownError) throw new Error(`${workerShutdownError} La D1 aislada se conserva en ${persistenceName}.`);
     rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
