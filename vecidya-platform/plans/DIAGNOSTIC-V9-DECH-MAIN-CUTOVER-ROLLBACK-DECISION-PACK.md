@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-H: reconciliación main→V9, corte y rollback
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama auditada:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -298,5 +298,7 @@ Estado Git actual:
 - migraciones 0030–0035 colisionan nominalmente con migraciones distintas de main.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** revalidación Git actual, overlap de archivos, colisión de migraciones 0030–0035 y estrategia futura de integración/corte.
