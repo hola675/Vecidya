@@ -251,14 +251,16 @@ Decisiones vigentes:
 - E10: analítica anónima únicamente agregada, no reconstructiva;
 - E-Q1-B: D1 puede usar tablas separadas para informes identificados, aisladas de la analítica anónima agregada.
 
-#### W6.1 / F07-L1 — borrador local — READY_FOR_SCOPED_AUTHORIZATION
+#### W6.1 / F07-L1 — borrador local — READY_AFTER_W1R
 - reutilizar `CandidateSessionV9Prototype` como fuente de verdad;
-- envelope local mínimo versionado;
-- TTL 7 días;
+- envelope local mínimo versionado, sin duplicar timestamp de autoridad;
+- TTL = `session.updatedAt + 7 días`; leer no renueva TTL;
+- store de borrador acepta solo `in_progress` y `completing`, nunca `completed`;
 - parser V9 fail-closed;
 - concurrencia/revision controlada;
-- almacenamiento no disponible => continuar sin prometer recuperación;
-- cero escrituras D1;
+- almacenamiento no disponible => continuar en memoria sin prometer recuperación;
+- `diagnostic-v9.tsx` deja de crear identidad anónima y run D1 para iniciar el flujo anónimo;
+- cero escrituras D1 durante borrador;
 - no tocar scoring, banco, calibración ni migraciones.
 
 Pruebas focales previstas:
@@ -276,6 +278,7 @@ Pruebas focales previstas:
 - adaptar replay V9 autoritativo existente;
 - validar identidad de motor/banco/replay/scoring;
 - reconstruir transcript y ruta;
+- rechazar sesiones con `now - session.updatedAt > 7 días`; el TTL Worker heredado de 14 días no gobierna este flujo;
 - procesar sin ledger anónimo duradero;
 - resultado reproducible;
 - cero raw answers en analítica.
@@ -359,8 +362,10 @@ Archivo propuesto `app/features/diagnostic/v9/local-draft.ts`:
 - `DiagnosticV9LocalDraftEnvelope`;
 - `parseDiagnosticV9LocalDraft(raw, now)`;
 - `buildDiagnosticV9LocalDraftEnvelope(session)`;
-- validación de `expiresAt` sin renovar TTL durante lectura;
-- delegar validación del estado a `parseCandidateSessionV9Prototype`.
+- no usar `expiresAt` como segunda fuente de verdad; derivar expiración de `session.updatedAt + DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS`;
+- si se conserva un campo derivado por ergonomía, validarlo contra ese cálculo y nunca confiar en él aislado;
+- delegar validación estructural a `parseCandidateSessionV9Prototype`;
+- rechazar `status === "completed"` en el store de borrador de 7 días.
 
 Archivo propuesto `app/features/diagnostic/v9/local-draft.client.ts`:
 - `DiagnosticV9StorageLike`;
@@ -388,7 +393,7 @@ No crear un segundo modelo de answers/queue/interactionCount.
 
 #### Integración UI permitida
 
-`app/routes/diagnostic-v9-run.tsx` puede modificarse solo para introducir una frontera de sesión local y eliminar, dentro del flujo anónimo L1, los POST/GET de persistencia de cada respuesta.
+`app/routes/diagnostic-v9.tsx` y `app/routes/diagnostic-v9-run.tsx` forman conjuntamente la frontera L1. La ruta de inicio debe dejar de crear identidad anónima y `run` D1 para comenzar una entrevista anónima; la ruta de ejecución debe eliminar los POST/GET de persistencia de cada respuesta en el flujo local.
 
 Durante L1:
 - el flujo local puede llegar hasta `readyToFinalize`;
@@ -401,7 +406,8 @@ Durante L1:
 
 - `app/features/diagnostic/v9/local-draft.ts` — nuevo;
 - `app/features/diagnostic/v9/local-draft.client.ts` — nuevo;
-- `app/routes/diagnostic-v9-run.tsx` — cambio mínimo de frontera local, solo si es necesario para demostrar L1;
+- `app/routes/diagnostic-v9.tsx` — cambio mínimo para iniciar una sesión local sin `anonymous-identity` ni POST `/api/diagnostic/v9/runs`;
+- `app/routes/diagnostic-v9-run.tsx` — cambio mínimo de frontera local;
 - `tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — nuevo;
 - opcional `tests/unit/diagnostic/diagnostic-v9-local-session.test.ts` únicamente si la integración UI/controlador requiere separar lógica testeable.
 
@@ -410,7 +416,7 @@ Cualquier archivo adicional requiere reevaluación de scope antes de editar.
 #### Archivos/áreas prohibidos en L1
 
 - `db/migrations/**`;
-- endpoints `api-diagnostic-v9-*` salvo lectura de contexto, sin edición;
+- endpoints `api-diagnostic-v9-*` salvo lectura de contexto, sin edición; L1 elimina su uso en el camino anónimo pero no los borra;
 - scoring/calibration/correlation;
 - banco canónico y planner;
 - Worker replay/finalization;
@@ -424,7 +430,7 @@ Cualquier archivo adicional requiere reevaluación de scope antes de editar.
 
 LOCAL-11…LOCAL-25:
 - creación/restauración;
-- TTL antes/después de 7 días;
+- TTL derivado de `updatedAt` antes/después de 7 días;
 - JSON corrupto;
 - versión/motor/banco/replay incompatible;
 - transcript manipulado;
@@ -432,7 +438,9 @@ LOCAL-11…LOCAL-25:
 - conflicto de revisión/cross-tab;
 - clear;
 - lectura no renueva TTL;
-- escritura válida sí actualiza expiración;
+- escritura válida actualiza `updatedAt` y por derivación la expiración;
+- estado `completed` no puede persistirse en draft store;
+- ruta de inicio anónima no crea identidad/run D1;
 - consentimiento de extensión preservado;
 - límite 24+5 preservado;
 - cero llamadas de persistencia D1 en el camino local probado.
@@ -597,7 +605,7 @@ El test existente `qa03b-worker-replay-v9.test.ts` ya cubre:
 
 #### Problemas a corregir/aislar en L2
 
-1. `QA03B_V9_WORKER_TTL_MS` actual = 14 días. El replay transitorio de finalización no debe heredar por conveniencia la política de retención local L1 ni convertirse en retención servidor.
+1. `QA03B_V9_WORKER_TTL_MS` actual = 14 días. Para el flujo transitorio F07-L2, el servidor debe aplicar explícitamente un máximo de 7 días desde `session.updatedAt`; el valor heredado de 14 días no es válido como gate de este flujo ni implica retención servidor.
 2. El módulo está bajo `qa03b/` y conserva naming legacy; L2 no debe duplicar scoring ni moverlo de forma masiva. Se recomienda un adapter V9-owned pequeño que encapsule el contrato transitorio.
 3. El test actual mezcla replay puro con repositorios D1/finalization histórica. L2 necesita pruebas focales nuevas que demuestren explícitamente **cero persistencia** en el camino transitorio.
 4. L2 no crea todavía el comprobante criptográfico ni guarda informes; eso pertenece a L3/L4.
@@ -674,6 +682,7 @@ Editar `worker-replay-v9.server.ts` requiere justificación explícita de por qu
 
 REPLAY-21…REPLAY-32:
 - sesión finalizable válida → core válido;
+- sesión con `updatedAt` >7 días → `expired`;
 - pregunta/evento fuera de ruta → rechazo;
 - edit válido conserva contador;
 - rechazo extensión finaliza sin extra;
