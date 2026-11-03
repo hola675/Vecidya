@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.9.0  
+**Versión:** 1.0.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -18,6 +18,19 @@ Este documento:
 - no autoriza staging/producción.
 
 Fuente de decisión: `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`.
+
+## 1A. Jerarquía documental canónica
+
+Para resolver contradicciones históricas, prevalece este orden:
+1. código/HEAD y estado Git actual;
+2. `DIAGNOSTIC-V9-CURRENT-STATUS.md` para estado operativo;
+3. `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md` para decisiones humanas;
+4. este documento para secuencia y scopes;
+5. reportes Wn por SHA/run para evidencia histórica;
+6. backlog F00–F10 para tareas;
+7. paquetes DEC y Master Plan como análisis/histórico cuando contradigan status posterior.
+
+A–H están ratificadas según la hoja humana. `PLAN_ONLY` controla autorización de runtime, no el estado de las decisiones.
 
 ## 2. Principio de ejecución
 
@@ -44,45 +57,33 @@ STOP:
 
 ---
 
-### W1 — F00: reconciliación Git y migraciones
+### W1 — F00: reconciliación Git y migraciones — DONE_WITH_EVIDENCE HISTÓRICO
 
-#### W1.1 — revalidación
-- reconsultar `main`, PR #162 y HEAD;
-- actualizar ahead/behind/merge-base;
-- revalidar archivos overlap;
-- verificar si main añadió nuevas migraciones.
+W1/F00 fue ejecutado el 2026-11-01 con main ancestro, migraciones V9 renumeradas a 0038–0043 y 43/43 pruebas focales PASS. Esa evidencia permanece válida para el SHA ejecutado.
 
-#### W1.2 — historia de migraciones
-Antes de tocar Git:
-- comprobar migraciones 0030+ aplicadas en entornos autorizados;
-- clasificar cada migración V9: `NOT_APPLIED | APPLIED_DEV | APPLIED_STAGING | APPLIED_PROD | UNKNOWN`.
+### W1R — revalidación Git obligatoria antes de nuevo runtime
 
-#### W1.3 — integración main→V9
-Solo con DEC-H aprobada:
-- worktree aislado;
-- backup/ref;
-- merge main hacia rama V9;
-- resolución semántica;
-- no force-push.
+El cierre histórico de W1 no congela `main`. En la revisión 2026-11-03 la rama volvió a estar diverged respecto a `main`; ahead/behind debe reconsultarse inmediatamente antes de ejecutar.
 
-Pruebas focales:
-- rutas tocadas;
-- Learn/MiniWeb solo si hubo conflicto;
-- migration journal;
-- archivos diagnósticos afectados.
+W1R debe, antes de F07-L1:
+- reconsultar `main`, PR #162, HEAD, ahead/behind y merge-base;
+- revisar commits nuevos de main y overlap con archivos/dependencias del próximo lote;
+- verificar nuevas migraciones/journal;
+- si existe overlap material, reconciliar main→V9 en lote Git separado, con backup/ref y pruebas focales;
+- no mezclar sincronización Git con implementación F07-L1.
 
-Gate:
-- main ancestro;
-- cero pérdida de producto adyacente;
-- migraciones con secuencia única y trazabilidad.
+Gate W1R:
+- base actual conocida y registrada;
+- ningún cambio concurrente material desconocido en scope L1/L2;
+- secuencia de migraciones trazable;
+- si se integra main, cero pérdida de productos adyacentes y main vuelve a ser ancestro.
 
 STOP:
-- migración V9 aplicada con ordinal que requiere renumeración;
-- cambios concurrentes materiales;
-- conflicto fuera del scope.
+- conflicto transversal fuera del scope;
+- migración aplicada que exija reconciliación forward-compatible;
+- cambios en contratos V9 que invaliden D21/D23.
 
 ---
-
 ### W2 — F01: frontera autónoma V9 — DONE_WITH_EVIDENCE
 
 Objetivo:
