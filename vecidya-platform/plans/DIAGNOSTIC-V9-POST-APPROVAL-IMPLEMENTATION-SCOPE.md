@@ -1,7 +1,7 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.5.0  
-**Fecha:** 2026-11-01  
+**Versión:** 0.6.0  
+**Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
@@ -233,43 +233,114 @@ Gate alcanzado:
 
 ---
 
-### W6 — F07: sesión, privacidad e identidad
+### W6 — F07: sesión, privacidad e identidad — DEC-E RATIFICADO / IMPLEMENTACIÓN PENDIENTE
 
-Aplicar DEC-E antes de publicar informe identificado.
+DEC-E queda ratificado a nivel de producto/arquitectura, sin levantar PLAN_ONLY.
 
-#### W6.1 — borrador
-- local-only;
+Decisiones vigentes:
+- E1: borrador anónimo exclusivamente local;
+- E2: TTL del borrador incompleto = 7 días desde último guardado válido;
+- E3: replay/procesamiento autoritativo transitorio, sin ledger individual anónimo persistente en D1;
+- E4: comprobante verificable; el guardado identificado verifica el resultado original y no recalcula scoring;
+- E5: resultado anónimo finalizado local con TTL = 24 horas;
+- E6: propiedad personal; vínculo organizativo voluntario sin acceso automático de otros miembros;
+- E7: informe identificado mientras exista la cuenta, con eliminación voluntaria;
+- E8: backups con expiración máxima objetivo de 30 días, pendiente de certificación operativa;
+- E9: reclamación por posesión del paquete; primera reclamación autenticada válida, atómica e idempotente;
+- E10: analítica anónima únicamente agregada, no reconstructiva;
+- E-Q1-B: D1 puede usar tablas separadas para informes identificados, aisladas de la analítica anónima agregada.
+
+#### W6.1 / F07-L1 — borrador local — READY_FOR_SCOPED_AUTHORIZATION
+- reutilizar `CandidateSessionV9Prototype` como fuente de verdad;
+- envelope local mínimo versionado;
 - TTL 7 días;
-- estado mínimo;
-- texto libre según consentimiento;
-- no backup servidor.
+- parser V9 fail-closed;
+- concurrencia/revision controlada;
+- almacenamiento no disponible => continuar sin prometer recuperación;
+- cero escrituras D1;
+- no tocar scoring, banco, calibración ni migraciones.
 
-#### W6.2 — procesamiento/finalización
-Implementar arquitectura aprobada para finalización anónima sin ledger D1 reconstructivo.
+Pruebas focales previstas:
+- LOCAL-11…LOCAL-25;
+- restauración;
+- expiración;
+- corrupción/tampering;
+- storage unavailable;
+- conflicto cross-tab;
+- consentimiento 24+5;
+- clear;
+- cero persistencia D1.
 
-#### W6.3 — resultado identificado
-- store aprobado separado según DEC-E;
-- claim;
-- owner personal;
-- org link voluntario;
-- historial;
-- retención/borrado.
+#### W6.2 / F07-L2 — replay transitorio
+- adaptar replay V9 autoritativo existente;
+- validar identidad de motor/banco/replay/scoring;
+- reconstruir transcript y ruta;
+- procesar sin ledger anónimo duradero;
+- resultado reproducible;
+- cero raw answers en analítica.
 
 Pruebas focales:
-- TTL;
-- local storage unavailable;
-- borrador corrupto;
-- claim único;
-- claim concurrente;
-- cross-user;
-- cross-org;
-- no marketing/GHL;
-- resumen anónimo permanece disponible cuando login falla.
+- REPLAY-21…REPLAY-32.
 
-Gate:
+#### W6.3 / F07-L3 — finalización y comprobante
+- finalización autoritativa;
+- resultado canónico verificable;
+- TTL local 24 h;
+- integridad criptográfica;
+- rotación/custodia de claves;
+- no confundir integridad con identidad/propiedad.
+
+Pruebas focales:
+- FIN-21…;
+- TOKEN-21…;
+- PRIV de no persistencia.
+
+#### W6.4 / F07-L4 — informe identificado
+- tablas D1 separadas según E-Q1-B;
+- owner personal obtenido de sesión autenticada;
+- save idempotente y transaccional;
+- primera reclamación por posesión;
+- no recalcular resultado;
+- org link voluntario sin lectura automática.
+
+Pruebas focales:
+- SAVE-21…;
+- AUTH-23…;
+- concurrencia y cross-user.
+
+#### W6.5 / F07-L5 — retención y eliminación
+- eliminación de datos activos y dependencias;
+- cierre de cuenta;
+- backups ≤30 días, sujeto a prueba real;
+- restauración no debe resucitar datos eliminados;
+- inventario/limpieza de datos anónimos históricos del prototipo;
+- política de analítica agregada pendiente de plazo operativo.
+
+Pruebas focales:
+- RET-21…;
+- PRIV-26….
+
+#### W6.6 / F07-L6 — integración focal
+Recorrido a certificar:
+`anónimo → borrador local → 24+5 → replay transitorio → resumen → login opcional → claim/save → consulta → eliminación`.
+
+Gate W6:
 - cero acceso cruzado;
-- cero respuestas crudas en analytics D1;
-- claim no recalcula.
+- cero ledger anónimo reconstructivo en D1;
+- cero respuestas crudas en analytics;
+- claim no recalcula;
+- resultado identificado conserva identidad/versiones;
+- fallos de red y concurrencia no duplican;
+- DEC-E sigue separado de GHL;
+- pruebas focales registradas sobre SHA exacto.
+
+Condiciones operativas pendientes que NO reabren DEC-E:
+- demostrar purga/restauración de backups dentro de 30 días;
+- concretar algoritmo, custodia y rotación de claves;
+- implementar claim atómico;
+- fijar plazo de retención de analítica agregada;
+- inventariar datos históricos del prototipo;
+- cerrar textos finales de privacidad/consentimiento.
 
 ---
 
@@ -385,21 +456,28 @@ Producción no se infiere de CI/staging.
 | A–H sin aprobación | W0 |
 | CLASS-01…04 sin PASS actual | W3–W8 |
 
-## 5. Scope mínimo recomendado para el primer levantamiento de PLAN_ONLY
+## 5. Scope mínimo recomendado para el próximo levantamiento de PLAN_ONLY
 
-Si A–H son aprobadas, **no** levantar PLAN_ONLY para todo V9 de una vez.
+W1–W5 ya tienen evidencia histórica de cierre según este plan. El siguiente permiso recomendado es **W6/F07-L1 solamente**.
 
-Primer permiso recomendado:
-- W1/F00 solamente;
-- lectura y cambios Git/migración necesarios para reconciliar main;
-- pruebas focales de archivos afectados;
-- sin F02–F10;
+Primer permiso futuro recomendado:
+- F07-L1 / borrador anónimo local;
+- archivos mínimos de sesión/store/UI necesarios;
+- pruebas focales LOCAL únicamente;
+- cero cambios D1;
+- cero migraciones;
+- cero scoring/bank/calibration;
+- cero finalización/claim/informes;
+- cero GHL;
 - sin deploy.
 
-Segundo permiso:
-- W2/F01.
+STOP inmediato si:
+- el cambio exige tocar scoring o banco;
+- aparece dependencia no censada de D1 para el recorrido anónimo;
+- el parser V9 no puede preservar identidad/versiones;
+- el scope crece hacia L2–L6 sin autorización independiente.
 
-Después avanzar wave por wave.
+Después avanzar L2→L6 con autorización explícita por lote.
 
 ## 6. Regla de pruebas focalizadas
 
@@ -415,18 +493,45 @@ No usar “todos los tests” como rutina de cierre de cada commit.
 
 ## 7. READY_FOR_AGENT
 
-Este documento no cambia el estado actual:
+Estado actual:
 
-**NOT_READY / PLAN_ONLY**
+**NOT_READY_FOR_EXECUTION / PLAN_ONLY**
 
-READY_FOR_AGENT solo puede declararse cuando:
-- A–H tengan decisión humana;
-- scope inicial esté autorizado;
-- PLAN_ONLY se levante explícitamente para ese scope;
-- HEAD se revalide inmediatamente antes de ejecutar.
+DEC-E ya está ratificado y F07-L1 está preparado para autorización acotada, pero no se ha levantado PLAN_ONLY.
+
+READY_FOR_AGENT para F07-L1 solo puede declararse cuando:
+- el responsable autorice explícitamente F07-L1;
+- HEAD se revalide inmediatamente antes de ejecutar;
+- el scope permanezca dentro de los archivos/contratos de L1;
+- se definan los comandos focales contra el checkout real;
+- no se incluyan L2–L6, migraciones ni deploy por inferencia.
+
+## 8. Estado general para terminar V9
+
+| Wave | Estado | Falta principal |
+|---|---|---|
+| W1/F00 | cerrado históricamente | revalidar SHA cuando vuelva a tocarse |
+| W2/F01 | DONE_WITH_EVIDENCE | nada de producto en este gate |
+| W3/F02 | DONE_WITH_FALLBACK | completar rewrites/editorial pendientes dentro de fases posteriores |
+| W4/F03 | DONE_WITH_EVIDENCE | integración final en F08 |
+| W5/F04 | DONE_WITH_EVIDENCE | integración final en F08 |
+| W6/F07 | diseño cerrado; implementación pendiente | L1→L6 + certificación privacidad/identidad |
+| W7/F05-F06 | pendiente | resumen, informe, prioridades, recomendaciones, Aprende/Servicios/GHL opcional |
+| W8/F08 | pendiente | certificación integrada ES/EN, seguridad, accesibilidad, routing, errores y concurrencia |
+| W9/F09 | pendiente | cutover V8→V9 + rollback |
+| W10/F10 | pendiente | staging, piloto, aceptación, producción y postdeploy |
+
+Camino restante de terminación:
+1. autorizar e implementar F07-L1;
+2. implementar/certificar F07-L2…L6;
+3. completar W7/F05-F06;
+4. certificar W8/F08;
+5. ejecutar W9/F09;
+6. staging/piloto/producción en W10/F10.
 
 ## Changelog
 
+- **0.6.0 / 2026-11-03:** DEC-E ratificado; W6 desglosado en F07-L1…L6; F07-L1 preparado para autorización acotada; actualizado el camino restante W6→W10 sin levantar PLAN_ONLY.
 - **0.5.0 / 2026-11-01:** W5/F04 cerrado con evidencia focal 32/32; F05+ permanece no autorizado.
 - **0.4.0 / 2026-11-01:** W4/F03 cerrado con evidencia; W5/F04 es el siguiente scope no autorizado.
 - **0.3.0 / 2026-11-01:** W3/F02 cerrado con fallback; W4/F03 pasa a ser el próximo scope no autorizado.
