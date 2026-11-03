@@ -1,6 +1,19 @@
 # DIAGNOSTIC V9 — MASTER FINALIZATION PLAN
-Versión: 1.0.0 | Fecha: 2026-10-29 | Estado: PLAN / NO CERTIFICADO
+Versión: 1.70.1 | Fecha: 2026-11-03 | Estado: HISTORICAL_DESIGN_RECORD · NO OPERATIVO · PLAN_ONLY RUNTIME
 Repositorio: hola675/Vecidya | Rama única: feat/diagnostic-v9-lex-graph-p1b | PR maestro: #162 | Base: main
+
+## -1. Vigencia y autoridad
+
+Este Master Plan se **congela como registro histórico de diseño y auditoría**. Contiene checkpoints y estados que fueron correctos en su fecha, pero no debe usarse como tablero operativo.
+
+Para estado vigente prevalecen:
+1. `DIAGNOSTIC-V9-CURRENT-STATUS.md`;
+2. `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`;
+3. `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md`;
+4. `DIAGNOSTIC-V9-F00-F10-EXECUTION-BACKLOG.md`;
+5. reportes Wn por SHA/run.
+
+Los P0, decisiones abiertas, conteos Git y próximos pasos dentro de este archivo son históricos salvo que una fuente canónica vigente los reafirme explícitamente.
 
 ## 0. Contrato de ejecución para el agente
 Objetivo: sustituir de extremo a extremo el motor V8/QBV2 por Diagnóstico V9 autónomo, con banco, grafo, selección, validación, scoring, informe, recomendaciones, identidad, persistencia, vinculación y seguimiento. No confundir documentos, tests escritos, CI y producción.
@@ -3349,3 +3362,7 @@ Los workflows de GitHub consultados con éxito corresponden a SHAs históricos d
 ### Changelog adicional
 
 - **1.70.0 / 2026-10-31:** ejecución focal real 13/13 PASS, helper aislado de correlación segura, protección multidimensional, documentación `STATUS`/`TESTING` y P0 de integración pendiente.
+
+
+### Changelog de vigencia
+- **1.70.1 / 2026-11-03:** Master Plan congelado como registro histórico; fuentes operativas canónicas declaradas tras revisión punta-a-punta.
