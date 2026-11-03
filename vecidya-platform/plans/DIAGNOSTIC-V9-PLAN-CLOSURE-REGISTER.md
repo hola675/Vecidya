@@ -1,6 +1,12 @@
 # Diagnóstico V9 — Registro de cierre del plan de implementación
-Versión: 0.2.0 | Fecha: 2026-10-31 | Estado: PLAN_ONLY / PENDIENTE DE APROBACIÓN
+Versión: 0.3.0 | Fecha: 2026-11-03 | Estado: HISTÓRICO · SUPERSEDED_FOR_STATUS · PLAN_ONLY RUNTIME
 Repositorio: hola675/Vecidya | PR: #162 | Rama: feat/diagnostic-v9-lex-graph-p1b
+
+## 0. Nota de vigencia
+
+Este archivo se conserva como **registro histórico de cierre de planificación al 2026-10-31**. Ya no es fuente operativa de estado. Para status actual prevalecen, en este orden: `DIAGNOSTIC-V9-CURRENT-STATUS.md`, `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`, `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md` y los reportes Wn por SHA.
+
+Las secciones que hablan de decisiones A–H “pendientes”, P0 de scorer/autonomía, 24+5 sin resolver o aprobación humana faltante describen el momento histórico y están **supersedidas** por W1–W5 y la hoja A–H v0.3.0. No deben usarse para reabrir decisiones ni bloquear tareas ya cerradas con evidencia.
 
 ## 1. Propósito y fuentes
 Convertir el plan maestro F00–F10 en un paquete ejecutable, sin confundir avances parciales, decisiones propuestas y certificación final.
@@ -16,7 +22,7 @@ Prevalece el contrato PLAN_ONLY: este registro NO autoriza implementación, merg
 - Referencia de entrevista 24+5 condicionada a pertinencia/consentimiento; no forzar preguntas para obtener puntuaciones.
 Estas reglas documentadas NO equivalen a aprobación editorial completa.
 
-## 3. Decisiones pendientes para el responsable
+## 3. Decisiones pendientes para el responsable — HISTÓRICO 2026-10-31
 | ID | Decisión necesaria | Propuesta predeterminada para revisión | Cierre requerido |
 | --- | --- | --- | --- |
 | DEC-01 | Confirmar etiquetas y aplicabilidad de ocho dimensiones | Mantener ocho IDs, revisar nombres públicos y casos de no aplicabilidad | Aprobación funcional |
@@ -32,7 +38,7 @@ Estas reglas documentadas NO equivalen a aprobación editorial completa.
 | DEC-11 | Migración histórica V8 | Mantener datos; adaptador opcional aislado solo si existe caso de uso aprobado | Política de compatibilidad |
 | DEC-12 | Corte y rollback | Staging, piloto, E2E, aprobación expresa; no borrar migraciones históricas | Checklist de lanzamiento |
 
-## 4. Bloqueos técnicos que deben figurar en el plan
+## 4. Bloqueos técnicos históricos — consultar CURRENT-STATUS para vigencia
 - P0-SCORER: correlador candidate-only no conectado a v9-candidate-scoring.ts. Dos preguntas sobre un mismo hecho pueden contar doble si solo se deduplica por observationId. Exigir prueba de duplicado, evento independiente, contradicción, correlación incompleta y calibración.
 - AUTONOMÍA: scorer/planner V9 aún importan QBV2; definir sustitutos y orden de retirada sin tocar V8 antes del corte.
 - BANCO: siete generales candidatas directas condicionadas y una de apoyo siguen sin evidenceV3 activada; cinco ADD previas tampoco certificadas.
@@ -91,7 +97,7 @@ Consolidar DEC-01–DEC-12 contra las decisiones aprobadas en secciones posterio
 - D-V9-029–032 borrador exclusivamente local, consentimiento global reversible para texto libre con exclusiones individuales y avisos contextuales.
 - D-V9-033 es SOLO arquitectura simple (borrador local + D1 agregado anónimo). La propuesta homónima anterior de repreguntar textos no persistidos fue retirada y NO está aprobada.
 
-### Lista reducida de decisiones realmente abiertas
+### Lista histórica de decisiones que estaban abiertas al 2026-10-31
 A. Taxonomía final de ocho dimensiones, etiquetas y criterios de aplicabilidad tras auditoría 8×10.
 B. Calibración, umbrales de puntuación, confianza y condiciones de score global; sin imponer puntuación donde no hay evidencia.
 C. Matriz editorial completa y aceptación de preguntas/opciones del catálogo 90.
@@ -100,10 +106,11 @@ E. Contrato detallado de informe identificado, retención, acceso y seguimiento.
 F. Algoritmos de priorización, presupuesto adaptativo y fallbacks, respetando políticas ya aprobadas.
 G. Contratos técnicos y aceptación de Aprende/servicios y separación de GHL.
 H. Estrategia de reconciliación main→V9, sustitución V8, certificación y rollback.
-Ninguna de A–H se considera aprobada por este registro.
+Esta frase es histórica. A–H fueron aprobadas posteriormente y su estado vigente está en la hoja ejecutiva A–H.
 
-## 10. Siguiente paquete documental: backlog atómico
-Preparar matriz F00–F10 con: ID, prerequisito, ruta/contrato, cambio permitido, prueba focal, evidencia y condición de parada. En PLAN_ONLY solo documentar tareas; no ejecutarlas.
+## 10. Siguiente paquete documental — HISTÓRICO / COMPLETADO
+La matriz F00–F10 fue creada y posteriormente refinada. Consultar el backlog vigente y CURRENT-STATUS; esta acción histórica está completada.
 
 ## Changelog adicional
+- 0.3.0 / 2026-11-03: documento marcado HISTÓRICO/SUPERSEDED_FOR_STATUS; referencias A–H y P0 antiguas no reabren decisiones; fuentes operativas vigentes declaradas.
 - 0.2.0 / 2026-10-31: reconciliación de DEC-01–12 con aprobaciones D-V9-001–033; reduce consultas pendientes y evita reabrir decisiones cerradas. Sin runtime ni CI.
