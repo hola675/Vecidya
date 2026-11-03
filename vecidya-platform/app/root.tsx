@@ -50,11 +50,29 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  const notFound = isRouteErrorResponse(error) && error.status === 404;
-  const message = notFound ? "Página no encontrada" : "Error inesperado";
+  const responseStatus = isRouteErrorResponse(error) ? error.status : null;
+  const notFound = responseStatus === 404;
+  const forbidden = responseStatus === 403;
+  const unauthenticated = responseStatus === 401;
+  const message = notFound ? "Página no encontrada" : forbidden ? "Acceso restringido" : unauthenticated ? "Inicia sesión para continuar" : "Error inesperado";
 
   if (notFound) {
     return <PublicLayout><section className="public-page public-error-page"><p className="eyebrow">ERROR 404</p><h1>{message}</h1><p>La dirección que buscas no existe o ya no está disponible.</p><div className="public-actions"><Link className="button button--primary" to="/">Volver al inicio</Link><Link className="button button--secondary" to="/vecindario">Explorar el Vecindario</Link></div></section></PublicLayout>;
+  }
+
+  if (forbidden || unauthenticated) {
+    return (
+      <main className="foundation-shell">
+        <section className="foundation-card" role="alert">
+          <p className="eyebrow">VECIDYA</p>
+          <h1>{message}</h1>
+          <p>{forbidden ? "Tu cuenta no tiene permiso para acceder a esta página." : "Accede con tu cuenta Vecidya para continuar."}</p>
+          <div className="public-actions">
+            <Link className="button button--primary" to={forbidden ? "/app" : "/login"}>{forbidden ? "Volver a Mi Vecidya" : "Iniciar sesión"}</Link>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   return (

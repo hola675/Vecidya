@@ -1,3 +1,8 @@
+# 2026-11-03 — FIX-APP-ADMIN-FORBIDDEN-UX — respuesta legible para 401/403
+
+- La pantalla de error raíz distingue acceso restringido (403) e inicio de sesión (401), ofrece el retorno correspondiente y no altera las guards ni revela errores internos. El E2E añade la comprobación visible del caso 403 y actualiza los campos de licencia que requiere el formulario vigente.
+- Worker/D1 E2E con migraciones locales `0000–0037`, typecheck y build PASS; D1 efímera eliminada. La suite unitaria global se interrumpió antes del resumen. No requiere migración nueva, no usa base remota y no se desplegó. Detalle en `TESTING.md`.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.

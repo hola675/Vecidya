@@ -24,6 +24,14 @@ No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. Rea
 
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
 
+# FIX-APP-ADMIN-FORBIDDEN-UX — 2026-11-03
+
+`pnpm run typecheck`, `pnpm run build` y `pnpm run test:e2e:platform-admin-global`: PASS. El E2E aplica migraciones `0000–0037` en D1 aislada, inicia Wrangler local y valida matriz `platform_admin/staff/owner/member`, ciclo de estado y licencias, directorio público, capacitación, MiniWeb, invitaciones concurrentes y auditoría. Añade comprobación HTML del 403 denegado. La D1 aislada se elimina y se verifica ausente. Para alinear fixtures con el contrato vigente, se añadió el titular y `currentLicenseId` del formulario de licencia, se actualizó la versión del snapshot MiniWeb a 4 y se admiten redirects 302/303.
+
+`pnpm run test:unit` se interrumpió antes de finalizar; los casos visibles pasaron, incluidos recorridos extensos de Diagnóstico, pero no hay resultado global PASS. Node imprime avisos deprecados de `module.register`. El build mantiene avisos locales conocidos: secrets opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS. Hubo intentos iniciales del E2E detenidos por `EADDRNOTAVAIL` con otras validaciones pesadas en ejecución; el intento aislado posterior completó PASS.
+
+El assert de autorización comprueba el HTML presentado por una lectura que responde 403: mensaje «Acceso restringido» y explicación sin información interna. No se añadió migración: no cambió schema ni contrato de persistencia. Sin D1 remota ni deploy.
+
 # Pruebas
 
 ## React #418 — entorno local de reproducción (2026-11-02)

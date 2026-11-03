@@ -1,3 +1,7 @@
+# FIX-APP-ADMIN-FORBIDDEN-UX — corrección local (2026-11-03)
+
+Las rutas protegidas que devuelven HTTP 403 ya presentan «Acceso restringido» y un retorno a Mi Vecidya; HTTP 401 ofrece acceso a iniciar sesión. La guarda y el status HTTP no cambian. `pnpm run test:e2e:platform-admin-global` PASS sobre Worker/D1 local: matriz de acceso, ciclo de organizaciones y licencias, capacitación, MiniWeb y auditoría; aplicó las migraciones `0000–0037` y eliminó la D1 efímera. Typecheck y build PASS. No requiere migración nueva, D1 remota ni deploy. La suite unitaria global fue interrumpida antes del resumen y no se declara PASS. Evidencia y límites en `TESTING.md`.
+
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 
 Se amplía el editor con formularios guiados para S01–S12, guardas de cambios sin guardar, publicación validada, referencias de imagen y render de medios asociados a una publicación activa. También se unifican 13 categorías con alias de lectura, metadata/sitemap V2, copy público y tres portadas de planes WebP. Rama `feat/app-mini-ux-impl-03`, base `origin/main@dbbf67c`. No hay migración de esquema, escritura remota, deploy ni HTTP pública fechada.

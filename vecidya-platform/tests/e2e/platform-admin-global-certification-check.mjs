@@ -215,6 +215,8 @@ INSERT INTO platform_owner_invitation (id,organization_id,email,token_digest,sta
   const ownerRead = await intendedOwner.request(`/app/internal/organizations/${stateOrg}`);
   const memberRead = await targetMember.request(`/app/internal/organizations/${stateOrg}`);
   if (staffRead.status !== 200 || staffWrite.status !== 403 || ownerRead.status !== 403 || memberRead.status !== 403) throw new Error(`La matriz platform_admin/staff/owner/member no coincide: staff=${staffRead.status}/${staffWrite.status}, owner=${ownerRead.status}, member=${memberRead.status}.`);
+  const ownerDeniedHtml = await ownerRead.text();
+  if (!ownerDeniedHtml.includes("Acceso restringido") || !ownerDeniedHtml.includes("Tu cuenta no tiene permiso para acceder a esta página.")) throw new Error("La pantalla de una ruta Admin denegada no explica el 403 al usuario sin revelar detalles internos.");
   const suspendedOrganizationApi = await targetMember.jsonGet(`/api/organizations/${stateOrg}/training`);
   if (activeOrganization.status !== 200 || suspendedOrganizationApi.status !== 403) throw new Error(`La API cliente debe rechazar una organización suspendida; set-active=${activeOrganization.status}, GET=${suspendedOrganizationApi.status}.`);
   const reactivate = await admin.request(`/app/internal/organizations/${stateOrg}`, { intent: "activate" });
@@ -226,11 +228,11 @@ INSERT INTO platform_owner_invitation (id,organization_id,email,token_digest,sta
   const licensesPage = await admin.request("/app/internal/licenses");
   const licensesHtml = await licensesPage.text();
   if (licensesPage.status !== 200 || !licensesHtml.includes("Un cliente puede tener uno o varios negocios") || !licensesHtml.includes('aria-label="Buscar cliente o negocio"') || !licensesHtml.includes("Asignar licencia a este negocio")) throw new Error(`La pantalla de licencias no explica la relación cliente/negocio o no presenta una acción clara: HTTP=${licensesPage.status}.`);
-  const assignedLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "assign", planCode: "cuadra", initialStatus: "pending" });
-  const assignedLicenseState = query(`SELECT l.status,l.plan_code,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.assign') AS audit_count FROM organization_license l WHERE l.organization_id=${sqlLiteral(stateOrg)} ORDER BY l.created_at DESC LIMIT 1;`)[0];
+  const assignedLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, ownerUserId: memberIdentity.user.id, intent: "assign", planCode: "cuadra", initialStatus: "pending" });
+  const assignedLicenseState = query(`SELECT l.id,l.status,l.plan_code,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.assign') AS audit_count FROM organization_license l WHERE l.organization_id=${sqlLiteral(stateOrg)} ORDER BY l.created_at DESC LIMIT 1;`)[0];
   if (![302, 303].includes(assignedLicense.status) || assignedLicenseState?.status !== "pending" || assignedLicenseState.plan_code !== "cuadra" || Number(assignedLicenseState.audit_count) !== 1) throw new Error(`La pantalla no asignó una licencia pendiente auditada: HTTP=${assignedLicense.status}, state=${JSON.stringify(assignedLicenseState)}.`);
   await workerReady(baseUrl);
-  const activateLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, intent: "reactivate" });
+  const activateLicense = await admin.request("/app/internal/licenses", { organizationId: stateOrg, currentLicenseId: assignedLicenseState.id, intent: "reactivate" });
   const activeLicenseState = query(`SELECT status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(stateOrg)} AND a.action='organization_license.active') AS audit_count FROM organization_license WHERE organization_id=${sqlLiteral(stateOrg)} ORDER BY created_at DESC LIMIT 1;`)[0];
   if (![302, 303].includes(activateLicense.status) || activeLicenseState?.status !== "active" || Number(activeLicenseState.audit_count) !== 1) throw new Error(`La activación de licencia no quedó auditada: HTTP=${activateLicense.status}, state=${JSON.stringify(activeLicenseState)}.`);
 
@@ -348,10 +350,10 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
   const publishedMiniWeb = await admin.request(miniwebPath, { intent: "publish", draftRevision: String(miniwebDraftRevision) });
   const staffMiniWeb = await staff.request(miniwebPath, { intent: "save", configuration: JSON.stringify(configuration) });
   const miniwebState = query(`SELECT snapshot_json,snapshot_schema_version FROM business_profile_publication WHERE organization_id=${sqlLiteral(orgId)};`)[0];
-  const publishedSnapshot = miniwebState?.snapshot_schema_version === 3 && miniwebState.snapshot_json ? JSON.parse(miniwebState.snapshot_json) : null;
+  const publishedSnapshot = miniwebState?.snapshot_schema_version === 4 && miniwebState.snapshot_json ? JSON.parse(miniwebState.snapshot_json) : null;
   const miniwebAudit = query(`SELECT action FROM platform_audit_log WHERE organization_id=${sqlLiteral(orgId)} AND action IN ('organization.miniweb.save','organization.miniweb.publish') ORDER BY created_at,rowid;`);
   await workerReady(baseUrl);
-  if (savedMiniWeb.status !== 303 || publishedMiniWeb.status !== 303 || staffMiniWeb.status !== 403 || publishedSnapshot?.configuration?.templateKey !== configuration.templateKey || miniwebAudit.length !== 2 || miniwebAudit[0].action !== "organization.miniweb.save" || miniwebAudit[1].action !== "organization.miniweb.publish") throw new Error(`MiniWeb no pasó autorización/publicación/auditoría: save=${savedMiniWeb.status}, publish=${publishedMiniWeb.status}, staff=${staffMiniWeb.status}, snapshot=${publishedSnapshot?.configuration?.templateKey ?? "ausente"}, audit=${miniwebAudit.map(({ action }) => action).join(",")}.`);
+  if (![302, 303].includes(savedMiniWeb.status) || ![302, 303].includes(publishedMiniWeb.status) || staffMiniWeb.status !== 403 || publishedSnapshot?.configuration?.templateKey !== configuration.templateKey || miniwebAudit.length !== 2 || miniwebAudit[0].action !== "organization.miniweb.save" || miniwebAudit[1].action !== "organization.miniweb.publish") throw new Error(`MiniWeb no pasó autorización/publicación/auditoría: save=${savedMiniWeb.status}, publish=${publishedMiniWeb.status}, staff=${staffMiniWeb.status}, snapshot=${publishedSnapshot?.configuration?.templateKey ?? "ausente"}, audit=${miniwebAudit.map(({ action }) => action).join(",")}.`);
 
   query(`UPDATE member SET role='admin' WHERE organization_id=${sqlLiteral(orgId)} AND user_id=${sqlLiteral(memberIdentity.user.id)};`);
   await workerReady(baseUrl);
