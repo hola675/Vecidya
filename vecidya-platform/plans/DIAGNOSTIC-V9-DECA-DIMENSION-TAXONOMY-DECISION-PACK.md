@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-A: paquete de decisión de taxonomía y aplicabilidad 8×10
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -216,5 +216,7 @@ Sin DEC-A aprobado:
 - no declarar banco 90 canónico.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-A con nombres públicos, fronteras, familias de aplicabilidad, overlaps, matriz 8×10 y cinco tensiones para aprobación humana.
