@@ -86,6 +86,15 @@ export class DiagnosticV9LocalDraftStore {
       }
       try {
         this.storage.setItem(this.key, JSON.stringify(envelope));
+        const verified = this.readResult(session.updatedAt);
+        if (verified.status === "found" && (
+          verified.envelope.session.sessionId !== session.sessionId ||
+          verified.envelope.session.revision > session.revision ||
+          (verified.envelope.session.revision === session.revision &&
+            JSON.stringify(verified.envelope.session) !== JSON.stringify(session))
+        )) {
+          return { status: "conflict", latest: verified.envelope };
+        }
         return { status: "written", persistence: "local", envelope };
       } catch {
         this.memoryUnavailable = true;

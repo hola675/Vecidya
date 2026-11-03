@@ -113,6 +113,36 @@ test("revision writes are idempotent and a stale cross-tab revision cannot overw
   if (conflict.status === "conflict") assert.equal(conflict.latest.session.revision, advanced.session.revision);
 });
 
+test("optimistic fallback verifies storage after writing and reports a concurrent same-revision winner", async () => {
+  const base = createSession();
+  const id = currentCandidateQuestionIdV9(base)!;
+  const question = bank.get(id)!;
+  const options = question.options.filter((option) => option.kind !== "unknown" && option.kind !== "not_applicable");
+  const firstValue = question.type === "multi" ? [options[0].value] : options[0].value;
+  const secondValue = question.type === "multi" ? [options[1].value] : options[1].value;
+  const first = submitCandidateAnswerV9Prototype(base, id, firstValue, base.writerId, NOW + 1);
+  const second = submitCandidateAnswerV9Prototype(base, id, secondValue, "tab-b", NOW + 1);
+  assert.equal(first.ok, true);
+  assert.equal(second.ok, true);
+  if (!first.ok || !second.ok) return;
+
+  class RacingStorage extends MemoryStorage {
+    private writes = 0;
+    override setItem(key: string, value: string) {
+      super.setItem(key, value);
+      this.writes += 1;
+      if (this.writes > 1 && key === "vecidya.diagnostic.v9.local-draft.1") {
+        super.setItem(key, JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(second.session)));
+      }
+    }
+  }
+  const storage = new RacingStorage();
+  storage.setItem("vecidya.diagnostic.v9.local-draft.1", JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(base)));
+  const result = await new DiagnosticV9LocalDraftStore(storage).write(first.session);
+  assert.equal(result.status, "conflict");
+  if (result.status === "conflict") assert.equal(result.latest.session.writerId, "tab-b");
+});
+
 test("clear removes only the local draft key and completed sessions are rejected", async () => {
   const storage = new MemoryStorage();
   storage.setItem("other-product", "preserve");
