@@ -1,8 +1,8 @@
 # Diagnostic V9 — Hoja ejecutiva de decisión humana A–H
 
-**Versión:** 0.2.0  
-**Fecha:** 2026-11-01  
-**Estado:** APROBADA POR RESPONSABLE · FALLBACKS VIGENTES · W2+ PLAN_ONLY  
+**Versión:** 0.3.0  
+**Fecha:** 2026-11-03  
+**Estado:** APROBADA POR RESPONSABLE · FALLBACKS VIGENTES · W1–W5 HISTÓRICO CERRADO · RUNTIME RESTANTE PLAN_ONLY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Propósito
@@ -16,6 +16,12 @@ Estados posibles tras revisión humana:
 - `APPROVED_WITH_FALLBACK`
 - `DEFERRED`
 - `REJECTED`
+
+## 1A. Autoridad de estado
+
+Esta hoja es la **fuente canónica de estado humano para DEC-A…H**. Los paquetes DEC-A/B/C/D/F/G/H conservan su análisis técnico, pero sus frases históricas “READY_FOR_HUMAN_REVIEW”, “NO APROBADO” u “OPEN” no prevalecen sobre esta hoja. DEC-E además fue refinado y ratificado en su paquete v0.2.1 del 2026-11-03.
+
+Aprobación de una decisión ≠ autorización de implementación. El runtime pendiente sigue bajo `PLAN_ONLY` salvo levantamiento explícito y acotado por lote.
 
 ## 2. Resumen recomendado
 
@@ -276,26 +282,31 @@ La recomendación consolidada es:
 
 Esto **no levanta PLAN_ONLY automáticamente**.
 
-## 13. Condiciones obligatorias antes de W2+
+## 13. Estado actual de condiciones técnicas
 
-Incluso si el responsable aprueba el paquete completo, deben permanecer como gates previos:
+Los gates que esta hoja exigía antes de W2+ fueron resueltos parcialmente durante W2–W5 y ya no deben presentarse como bloqueos humanos abiertos:
 
-1. binding `scoring_version → calibration`;
-2. correlation contract;
-3. arquitectura anónima local-only / resultado identificado;
-4. 24+5 state machine;
-5. historia real de migraciones;
-6. restore/versioning;
-7. plan focal de pruebas.
+- binding `scoring_version → calibration`: resuelto en F04 con registry explícito;
+- correlation contract: resuelto en F04 con fail-closed;
+- 24+5 state machine: resuelto en F03;
+- restore/versioning del core: resuelto en F03/F04;
+- plan focal de pruebas: aplicado en W1–W5.
 
-## 14. Qué autorizar después, no ahora
+Condiciones vigentes antes de continuar runtime:
+1. **W1R Git revalidation**: la rama volvió a divergir de `main`; revalidar/sincronizar antes de nuevos cambios runtime;
+2. F07-L1 local-only debe incluir la ruta de inicio que hoy crea identidad/run D1;
+3. F07-L2 debe aplicar TTL máximo de 7 días a la sesión recibida;
+4. F07-L3 necesita ADR criptográfico de attestation;
+5. F05/F06 deben definir el contrato definitivo de resultado/informe antes de F07-L4/L5/L6.
 
-Tras aprobación humana del paquete:
-- actualizar matriz A–H con estados reales;
-- convertir bloqueos en tareas F00–F10;
-- proponer un **scope de implementación por fases**;
-- pedir/registrar levantamiento explícito y parcial de PLAN_ONLY;
-- empezar por gates estructurales, no por UI ni deploy.
+Estas son condiciones técnicas de ejecución y **no reabren A–H**.
+
+## 14. Estado de autorización actual
+
+- W1–W5: ejecución histórica registrada con evidencia por SHA/run.
+- W1R y todo runtime posterior: `PLAN_ONLY`.
+- Ninguna autorización previa se encadena automáticamente a un lote nuevo.
+- El siguiente runtime elegible, después de W1R, es F07-L1 bajo scope explícito.
 
 ## 15. Registro histórico de la frase de aprobación
 
@@ -303,9 +314,10 @@ Si el responsable desea aceptar exactamente este paquete, la instrucción inequ�
 
 > Apruebo las recomendaciones A–H de la hoja ejecutiva, incluyendo sus fallbacks y condiciones. PLAN_ONLY sigue vigente hasta que se proponga y apruebe el alcance de implementación.
 
-Esta frase es solo una plantilla; este documento no presume dicha aprobación.
+La frase se conserva como registro histórico del mecanismo de autorización; la aprobación A–H ya fue registrada en la sección 11.
 
 ## Changelog
 
+- **0.3.0 / 2026-11-03:** hoja declarada fuente canónica de estado A–H; condiciones históricas W2+ reconciliadas con W1–W5; añadido W1R y secuencia técnica vigente sin reabrir decisiones.
 - **0.2.0 / 2026-11-01:** aprobación humana A–H registrada; W1/F00 autorizado y ejecutado; W2+ permanece PLAN_ONLY.
 - **0.1.0 / 2026-11-01:** consolidación ejecutiva A–H con disposición recomendada, fallbacks y condiciones P0.
