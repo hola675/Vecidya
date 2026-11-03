@@ -1,3 +1,7 @@
+## DIAGNOSTIC-V9 — estado de implementación local al 2026-11-03
+
+F07-L1 ya inicia y reanuda `CandidateSessionV9Prototype` en localStorage, con expiración derivada de `updatedAt + 7 días`, protección por `revision` y continuidad en memoria si el navegador bloquea storage. Las rutas V9 de inicio/entrevista dejaron de llamar a identity/run/event APIs D1 y permiten revisar/editar las respuestas localmente. El gate público V9 permanece; entrevistas pueden quedar en `readyToFinalize`, todavía sin finalización ni resultado. Prueba focal 9/9 y build PASS; typecheck global falla en módulos de scoring/calibración no modificados. Sin migraciones, D1 remota, deploy ni publicación. Siguiente lote: replay transitorio F07-L2 según handoff; V9 continúa parcial.
+
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
 Las 48 guías públicas de Aprende usan una ilustración WebP individual ligada a su slug y texto alternativo específico. Se conserva el contenido editorial y los controles de la plantilla; la imagen y Open Graph usan el alt contextual. Los assets tienen transparencia y no representan personas. `aprende-public-qa-check.mjs` valida las 48 rutas e imágenes; la inspección visual y las capturas cubren cinco anchos. Unitarias 53/53, typecheck/build/diff-check PASS. PR #223 integrada en `main@0685775e`; no hay cambios de datos o rutas, migraciones, D1 remota, deploy ni HTTP pública fechada. No es certificación WCAG.

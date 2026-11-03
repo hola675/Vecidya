@@ -1,11 +1,24 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.1.0  
-**Fecha:** 2026-11-03  
-**Estado:** HANDOFF_READY · W1R DONE · F07-L1 NEXT · NO RUNTIME IMPLEMENTADO  
+**Versión:** 1.2.0
+**Fecha:** 2026-11-03
+**Estado:** F07-L1 DONE_WITH_EVIDENCE · F07-L2 NEXT · RUNTIME PARCIAL
 **Repositorio:** `hola675/Vecidya`  
-**PR:** #162 (open, draft)  
-**Rama:** `feat/diagnostic-v9-lex-graph-p1b`
+**Base:** `origin/main@9c159a32abdf01a341e9a97e5c1c1ac99191cf54`
+**Rama:** `feat/diagnostic-v9-f07-l1`
+
+## 0. Checkpoint actual — F07-L1
+
+- **Estado:** `DONE_WITH_EVIDENCE` para los gates focales L1; el flujo queda limitado a `readyToFinalize`, sin finalización.
+- **SHA inicial:** `9c159a32abdf01a341e9a97e5c1c1ac99191cf54`.
+- **Archivos runtime:** `app/features/diagnostic/v9/local-draft.ts`, `local-draft.client.ts`, `app/routes/diagnostic-v9.tsx` y `diagnostic-v9-run.tsx`; prueba `tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts`.
+- **Prueba focal RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — PASS 9/9, exit 0; un reintento después de corregir incompatibilidad inicial de Node strip-only.
+- **Build RAN:** `pnpm run build` — PASS, exit 0 (confirmar en SHA de cierre del lote).
+- **Typecheck RAN:** `pnpm run typecheck` — FAIL (exit 2) por errores en `qa03b/v9-candidate-scoring.ts`, `v9-finalization.server.ts`, `v9/graph-evaluation.ts`, `v9/scoring-calibration-registry.ts` y `v9/scoring-evidence-registry.ts`; ninguno de los diagnósticos corresponde a archivos editados en L1.
+- **Git:** diff check pendiente al cierre del lote; cero migraciones, cero endpoints modificados, el flujo de borrador no hace solicitudes D1 y cero deploy.
+- **Implementación:** local draft versionado; TTL se deriva de `updatedAt + 7 días`; lectura no escribe; escrituras válidas avanzan revisión; exact retry idempotente; conflicto preserva revisión más nueva; `navigator.locks` con fallback; memoria continúa si storage falla; inicio sin identity/run y UI con reanudación/edición local.
+- **Sigue:** F07-L2 replay transitorio con TTL de servidor 7 días, solo después del commit L1 y su evidencia.
+- **Riesgos/STOP:** typecheck global sigue fallando en scoring legacy/V9 no tocado; el flujo todavía no finaliza ni genera resultado y debe permanecer bajo el gate V9 existente.
 
 ## 1. Regla de autoridad
 
@@ -93,9 +106,9 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 
 ## 9. Handoff
 
-El responsable solicitó fusionar el plan/base a `main` para que **otro agente** continúe la implementación. Este agente no implementó F07.
+El plan/base se fusionó a `main@9c159a32`. F07-L1 ya se implementó en la rama indicada en la sección 0 y su prueba focal pasó 9/9.
 
-Próximo scope: **F07-L1** según plan canónico, con pruebas focalizadas y sin saltar a L2 por inferencia.
+Próximo scope: **F07-L2** replay transitorio, autorizado por el handoff de implementación de este checkpoint. Debe continuar en orden, reutilizar `worker-replay-v9.server.ts` sin duplicar scoring y aplicar TTL servidor de 7 días.
 
 ## 10. Qué significa “terminado”
 
@@ -103,6 +116,7 @@ V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + 
 
 ## Changelog
 
+- **1.2.0 / 2026-11-03:** F07-L1 local draft implementado; prueba focal 9/9 PASS; build PASS; typecheck global falla en módulos no modificados; handoff autoriza continuar F07-L2.
 - **1.1.0 / 2026-11-03:** W1R cerrado: main reconciliado en merge commit `9240bf29...`, behind 0 y PR mergeable; handoff preparado para F07-L1 por otro agente.
 - **1.0.2 / 2026-11-03:** el snapshot Git queda explícitamente marcado como referencia temporal, evitando tratar un SHA documental autorreferente como HEAD operativo.
 - **1.0.1 / 2026-11-03:** snapshot Git final de consolidación actualizado a HEAD `10c3e404...`, ahead 761 / behind 15.

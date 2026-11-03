@@ -1,3 +1,9 @@
+## 2026-11-03 — Diagnostic V9 F07-L1 local draft (candidato local)
+
+- El inicio V9 crea el `CandidateSessionV9Prototype` en el navegador y las rutas dejaron de crear identity/run o guardar respuestas en D1 durante el borrador anónimo. Store local versionado con TTL de siete días derivado de `updatedAt`, revisión/idempotencia, manejo de conflictos y fallback en memoria con aviso.
+- Se puede reanudar y editar localmente; el recorrido se detiene en `readyToFinalize`. La finalización queda pendiente de F07-L2/L3. Los endpoints legacy/prototipo permanecen.
+- Focal 9/9 y build PASS; typecheck falla en cinco módulos de scoring/calibración no modificados. Sin migraciones, D1 remota, deploy o publicación.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.

@@ -1,3 +1,11 @@
+## DIAGNOSTIC-V9 — F07-L1 local draft (2026-11-03)
+
+**RAN focal** desde `vecidya-platform/`: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — **9/9 PASS**, exit 0. Cubre envelope/sesión canónica, TTL antes/después de 7 días y lectura no renovable, escritura con `updatedAt` nuevo, JSON/versiones/transcript inválidos, storage unavailable con memoria, reintento idempotente, conflicto de revisión, clear sin tocar otra clave, completed rechazado, extensión 24+5 y ausencia de llamadas a identity/run/event API en ambas rutas.
+
+`pnpm run build` — PASS, exit 0. `pnpm run typecheck` — FAIL, exit 2 por incompatibilidades existentes en `qa03b/v9-candidate-scoring.ts`, `qa03b/v9-finalization.server.ts`, `v9/graph-evaluation.ts`, `v9/scoring-calibration-registry.ts` y `v9/scoring-evidence-registry.ts`; ningún diagnóstico apunta a archivos modificados por F07-L1. Typecheck no se declara PASS. Una primera ejecución focal falló porque Node strip-only no admite propiedades TS de parámetro; se corrigió en el store y la siguiente ejecución pasó.
+
+El control de rutas es unitario/estático; no se ejecutó browser E2E de la entrevista en este lote. Cero migraciones, cero nuevas escrituras D1 en el flujo, cero cambios a endpoints y cero deploy. El flujo anónimo sigue detrás del gate de disponibilidad V9; finalización/resultados son posteriores.
+
 ## APRENDE-ARTICLE-ART-01 — ilustraciones por guía (2026-11-02)
 
 `BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` — PASS con D1 local migrada hasta `0037`. Se extendió `aprende-public-qa-check.mjs` para comprobar en las 48 respuestas SSR que cada ruta publica su WebP y alt contextual. El recorrido del catálogo/artículo captura el estado visual completo en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; además verifica que el `<img>` de artículo coincide con su recurso/alt asignados, controles de progreso/índice por teclado, fuentes seguras, ausencia de overflow y cero eventos `pageerror`. `prefers-reduced-motion` se valida en la portada de Aprende; la portada del artículo no añade animación. El servidor Vite mostró errores no bloqueantes de `Failed to fetch manifest patches` durante la navegación cliente; no se declara libre de errores de consola ni se atribuyen esos mensajes al código de ilustraciones.
