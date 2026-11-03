@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-B: calibración, score, confianza y binding de versión
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -277,5 +277,7 @@ No cerrar B antes de A/C/D.
 Bloqueo principal: reproducibilidad de calibración v2/v4 no está ligada de forma explícita a la identidad del run/result en las rutas autoritativas inspeccionadas.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-B; contribuciones, confianza, cobertura, overall y bloqueo P0 de binding v2/v4.
