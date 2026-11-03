@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-D: correlación, procedencia e independencia de observaciones
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -258,5 +258,7 @@ DEC-D puede pasar a APPROVED si se confirma:
 Hasta entonces, los 8 probes generales y cualquier nueva evidence potencialmente solapada permanecen pending.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-D; riesgo P0, prototipo existente, modelo de dos capas, opción B y matriz D01–D10.
