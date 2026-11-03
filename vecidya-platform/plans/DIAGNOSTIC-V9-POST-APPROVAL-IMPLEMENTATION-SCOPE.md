@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 1.0.0  
+**Versión:** 1.1.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -909,11 +909,11 @@ No usar “todos los tests” como rutina de cierre de cada commit.
 
 Estado actual:
 
-**NOT_READY_FOR_RUNTIME / PLAN_ONLY · W1R REQUIRED**
+**READY_FOR_F07-L1_HANDOFF · W1R DONE · NO RUNTIME IMPLEMENTADO**
 
 Para declarar READY_FOR_AGENT de F07-L1 deben cumplirse todos:
-- W1R cerrado sobre HEAD/main actuales;
-- autorización humana explícita de F07-L1;
+- W1R ya cerrado en `9240bf29f50fa7e72406c72b9bb39fc2252282de`;
+- el siguiente agente debe trabajar únicamente F07-L1;
 - scope dentro del allowlist D21 corregido;
 - comandos focales revalidados en checkout;
 - ningún cambio material del parser/session contract;
@@ -946,6 +946,7 @@ Regla de pruebas:
 La deuda editorial F02 no se oculta: producción inicial solo puede usar baseline 77 si esa condición permanece explícita en el release gate; promover rewrites/82/90 exige sus propios gates/versiones.
 ## Changelog
 
+- **1.1.0 / 2026-11-03:** W1R cerrado con main ancestro/behind 0; documento listo para handoff a F07-L1.
 - **1.0.0 / 2026-11-03:** revisión punta-a-punta: W1R obligatorio, jerarquía documental, L1 incluye start route y TTL derivado de updatedAt, draft prohíbe completed, L2 TTL servidor 7d, secuencia F07-L1→L3→F05/F06→L4-L6, ADR attestation, gates de pruebas y deuda editorial explícita.
 - **0.9.0 / 2026-11-03:** W6-D23 añadido: paquete condicionado F07-L2 con adapter transitorio, alcance, pruebas REPLAY, zero-D1 gate, rollback y STOP; PLAN_ONLY continúa.
 - **0.8.0 / 2026-11-03:** W6-D22 añadido: snapshot Git/PR, divergencia main...rama, revalidación obligatoria, scope congelado, evidencia y contrato de autorización explícita para F07-L1; sigue PLAN_ONLY.
