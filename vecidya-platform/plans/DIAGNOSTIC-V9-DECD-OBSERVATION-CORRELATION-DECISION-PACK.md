@@ -2,8 +2,12 @@
 
 **Versión:** 0.1.0  
 **Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · READY_FOR_HUMAN_REVIEW · NO APROBADO  
+**Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
+
+## Nota de autoridad documental
+
+El estado de decisión de este paquete es histórico y queda **supersedido para status** por `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md`. Las propuestas, riesgos y criterios técnicos de este archivo siguen siendo referencia; cualquier frase interna “NO APROBADO”, “READY_FOR_HUMAN_REVIEW” u “OPEN” describe el momento de redacción original y **no reabre** la decisión humana ya registrada. PLAN_ONLY sigue vigente para runtime.
 
 ## 1. Objetivo
 
