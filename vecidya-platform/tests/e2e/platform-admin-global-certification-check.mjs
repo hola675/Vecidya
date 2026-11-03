@@ -1,5 +1,5 @@
 import { spawn, spawnSync } from "node:child_process";
-import { createServer } from "node:net";
+import { createConnection, createServer } from "node:net";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -19,6 +19,42 @@ function runWrangler(args, timeout = 600_000) {
   const result = spawnSync(process.execPath, [wranglerCli, ...args], { cwd: projectDirectory, encoding: "utf8", timeout, maxBuffer: 8 * 1024 * 1024 });
   if (result.status !== 0) throw new Error(`Wrangler terminó con ${result.status}. ${result.stdout}\n${result.stderr}`);
   return result.stdout;
+}
+
+async function portClosed(portNumber) {
+  const deadline = Date.now() + 5000;
+  while (Date.now() < deadline) {
+    const listening = await new Promise((resolveListening) => {
+      const socket = createConnection({ host: "127.0.0.1", port: portNumber });
+      let settled = false;
+      const finish = (isListening) => {
+        if (settled) return;
+        settled = true;
+        socket.destroy();
+        resolveListening(isListening);
+      };
+      socket.setTimeout(1000, () => finish(false));
+      socket.once("connect", () => finish(true));
+      socket.once("error", () => finish(false));
+    });
+    if (!listening) return true;
+    await new Promise((resolveWait) => setTimeout(resolveWait, 250));
+  }
+  return false;
+}
+
+function forceStopWorkerTree(child) {
+  if (process.platform === "win32") {
+    const result = spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
+    return result.status === 0 || child.exitCode !== null;
+  }
+  try {
+    process.kill(-child.pid, "SIGKILL");
+    return true;
+  } catch (error) {
+    if (error?.code === "ESRCH") return true;
+    throw error;
+  }
 }
 
 function sqlLiteral(value) { return `'${String(value).replaceAll("'", "''")}'`; }
@@ -125,7 +161,7 @@ try {
   query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${sqlLiteral(bootstrapUserId)},'Cert bootstrap',${sqlLiteral(`bootstrap-${suffix}@vecidya.test`)},1,${now},${now});
 INSERT INTO organization (id,name,slug,created_at) VALUES (${sqlLiteral(bootstrapOrgId)},'Cert bootstrap','bootstrap-${suffix}',${now});
 INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(bootstrapInvitationId)},${sqlLiteral(bootstrapOrgId)},${sqlLiteral(adminEmail)},'admin','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
-  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"] });
+  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
   worker.output = ""; worker.stdout.on("data", (chunk) => { worker.output += chunk.toString(); }); worker.stderr.on("data", (chunk) => { worker.output += chunk.toString(); });
   const readyBy = Date.now() + 60_000;
   while (Date.now() < readyBy) { try { if ((await fetch(`${baseUrl}/api/auth/ok`)).status === 200) break; } catch {} await new Promise((resolveWait) => setTimeout(resolveWait, 200)); }
@@ -384,19 +420,22 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
       let timer;
       return Promise.race([exited, new Promise((resolveWait) => { timer = setTimeout(() => resolveWait(null), 5000); })]).finally(() => clearTimeout(timer));
     };
-    worker.kill("SIGINT");
+    if (process.platform === "win32") worker.kill("SIGINT");
+    else process.kill(-worker.pid, "SIGINT");
     let result = await waitForExit();
     if (!result) {
-      worker.kill("SIGKILL");
+      forceStopWorkerTree(worker);
       result = await waitForExit();
+      workerShutdownError = "El Worker local requirió terminación forzada; no se considera una limpieza PASS.";
     }
-    if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y SIGKILL.";
-    else if (result.signal === "SIGKILL") workerShutdownError = "El Worker local requirió SIGKILL; no se considera una limpieza PASS.";
+    if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y terminación forzada.";
   }
+  const workerPortIsClosed = await portClosed(portNumber);
+  if (!workerPortIsClosed) workerShutdownError = "El puerto del Worker local sigue aceptando conexiones.";
   try {
+    if (workerShutdownError) throw new Error(`${workerShutdownError} La D1 aislada se conserva en ${persistenceName}.`);
     rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
     if (existsSync(persistence)) throw new Error(`La D1 aislada sigue presente: ${persistenceName}`);
-    if (workerShutdownError) throw new Error(workerShutdownError);
     console.log("PASS: D1 aislada eliminada y ausencia verificada.");
   } catch (error) {
     throw new Error(`No se pudo verificar la limpieza de ${persistenceName}: ${String(error)}`, { cause: error });
