@@ -2,7 +2,7 @@
 
 En `feat/diagnostic-v9-f07-l1`, desde `origin/main@9c159a32`, el flujo V9 gated inicia y conserva `CandidateSessionV9Prototype` solo en localStorage, TTL derivado de `updatedAt + 7 días`; reanudar/editar no cambia los contratos del parser. Si storage falla, continúa en memoria y avisa que el progreso no se recupera al cerrar. `/diagnostico/v9` y su ruta de entrevista no llaman identity/run/event D1; los endpoints existentes quedan intactos. El borrador llega a `completing/readyToFinalize`; no finaliza ni genera resultado.
 
-**RAN focal:** 9/9 PASS; `pnpm run build` PASS. `pnpm run typecheck` FAIL en cinco módulos preexistentes de scoring/calibración (ninguno tocado por este lote). Sin migraciones, escrituras D1 del borrador, cambios de scoring ni deploy. Próximo: F07-L2 según handoff explícito; no se considera V9 reemplazo completo ni publicado.
+**RAN focal:** L1 10/10 y L2 5/5 PASS; `pnpm run build` PASS. `pnpm run typecheck` FAIL en cinco módulos de scoring/calibración no modificados. L2 delega al replay/scorer canónico en memoria, fuerza la versión pública actual y rechaza sesiones con más de 7 días; no añade endpoint ni escritura D1. Sin migraciones, cambios de scorer/calibration ni deploy. Próximo: F07-L3-ADR; no se considera V9 reemplazo completo ni publicado.
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

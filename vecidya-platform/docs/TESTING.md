@@ -1,10 +1,16 @@
 ## DIAGNOSTIC-V9 — F07-L1 local draft (2026-11-03)
 
-**RAN focal** desde `vecidya-platform/`: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — **9/9 PASS**, exit 0. Cubre envelope/sesión canónica, TTL antes/después de 7 días y lectura no renovable, escritura con `updatedAt` nuevo, JSON/versiones/transcript inválidos, storage unavailable con memoria, reintento idempotente, conflicto de revisión, clear sin tocar otra clave, completed rechazado, extensión 24+5 y ausencia de llamadas a identity/run/event API en ambas rutas.
+**RAN focal** desde `vecidya-platform/`: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — **10/10 PASS**, exit 0. Cubre envelope/sesión canónica, TTL antes/después de 7 días y lectura no renovable, escritura con `updatedAt` nuevo, JSON/versiones/transcript inválidos, storage unavailable con memoria, reintento idempotente, conflicto de revisión incluso al verificar fallback optimista, clear sin tocar otra clave, completed rechazado, extensión 24+5 y ausencia de llamadas a identity/run/event API en ambas rutas.
 
 `pnpm run build` — PASS, exit 0. `pnpm run typecheck` — FAIL, exit 2 por incompatibilidades existentes en `qa03b/v9-candidate-scoring.ts`, `qa03b/v9-finalization.server.ts`, `v9/graph-evaluation.ts`, `v9/scoring-calibration-registry.ts` y `v9/scoring-evidence-registry.ts`; ningún diagnóstico apunta a archivos modificados por F07-L1. Typecheck no se declara PASS. Una primera ejecución focal falló porque Node strip-only no admite propiedades TS de parámetro; se corrigió en el store y la siguiente ejecución pasó.
 
 El control de rutas es unitario/estático; no se ejecutó browser E2E de la entrevista en este lote. Cero migraciones, cero nuevas escrituras D1 en el flujo, cero cambios a endpoints y cero deploy. El flujo anónimo sigue detrás del gate de disponibilidad V9; finalización/resultados son posteriores.
+
+## DIAGNOSTIC-V9 — F07-L2 transient replay (2026-11-03)
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts` — **5/5 PASS**, exit 0. Comprueba replay válido del core autoritativo, expiración tras 7 días, tampering, scoring desconocido fail-closed, hard cap 29, independencia de D1 y fallos sin respuestas crudas. El adapter delega en `worker-replay-v9.server.ts`, fija la versión pública de scoring actual y no persiste resultado, sesión ni analytics. No se añadió endpoint Worker en L2.
+
+`pnpm run build` — PASS, exit 0. `pnpm run typecheck` — FAIL, exit 2 con los mismos errores en cinco módulos preexistentes de scoring/calibración descritos en la sección F07-L1; ninguno señala el adapter ni sus tests. No se ejecutó suite general, D1 remota ni deploy.
 
 ## APRENDE-ARTICLE-ART-01 — ilustraciones por guía (2026-11-02)
 
