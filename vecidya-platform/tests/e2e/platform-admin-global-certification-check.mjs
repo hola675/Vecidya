@@ -1,7 +1,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { createServer } from "node:net";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { once } from "node:events";
@@ -10,9 +10,10 @@ import { assertLocalBaseUrl } from "./test-safety.mjs";
 
 const projectDirectory = resolve(new URL("../..", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\"));
 const wranglerCli = resolve(projectDirectory, "node_modules/wrangler/bin/wrangler.js");
+mkdirSync(resolve(projectDirectory, ".wrangler"), { recursive: true });
 const persistenceName = `.wrangler/platform-admin-global-cert-${process.pid}-${Date.now()}`;
 const persistence = resolve(projectDirectory, persistenceName);
-if (!existsSync(resolve(projectDirectory, ".wrangler")) || !existsSync(wranglerCli)) throw new Error("Falta Wrangler local o su carpeta de persistencia aislada.");
+if (!existsSync(wranglerCli)) throw new Error("Falta Wrangler local para ejecutar la certificación.");
 
 function runWrangler(args, timeout = 600_000) {
   const result = spawnSync(process.execPath, [wranglerCli, ...args], { cwd: projectDirectory, encoding: "utf8", timeout, maxBuffer: 8 * 1024 * 1024 });
@@ -376,10 +377,26 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
   await new Promise((resolveWait) => setTimeout(resolveWait, 300));
   throw new Error(`${error instanceof Error ? error.message : String(error)}\nCausa: ${error instanceof Error ? String(error.cause ?? "") : ""}\nWorker exit: ${worker?.exitCode ?? "activo"}\nSalida Worker local:\n${worker?.output ?? "(no iniciado)"}`, { cause: error });
 } finally {
-  if (worker && worker.exitCode === null) { const exited = once(worker, "exit"); worker.kill("SIGINT"); await Promise.race([exited, new Promise((resolveWait) => setTimeout(resolveWait, 5000))]); }
+  let workerShutdownError = null;
+  if (worker && worker.exitCode === null) {
+    const exited = once(worker, "exit").then(([code, signal]) => ({ code, signal }));
+    const waitForExit = () => {
+      let timer;
+      return Promise.race([exited, new Promise((resolveWait) => { timer = setTimeout(() => resolveWait(null), 5000); })]).finally(() => clearTimeout(timer));
+    };
+    worker.kill("SIGINT");
+    let result = await waitForExit();
+    if (!result) {
+      worker.kill("SIGKILL");
+      result = await waitForExit();
+    }
+    if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y SIGKILL.";
+    else if (result.signal === "SIGKILL") workerShutdownError = "El Worker local requirió SIGKILL; no se considera una limpieza PASS.";
+  }
   try {
     rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
     if (existsSync(persistence)) throw new Error(`La D1 aislada sigue presente: ${persistenceName}`);
+    if (workerShutdownError) throw new Error(workerShutdownError);
     console.log("PASS: D1 aislada eliminada y ausencia verificada.");
   } catch (error) {
     throw new Error(`No se pudo verificar la limpieza de ${persistenceName}: ${String(error)}`, { cause: error });
