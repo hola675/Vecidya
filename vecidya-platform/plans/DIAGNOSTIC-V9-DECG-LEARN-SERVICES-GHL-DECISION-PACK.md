@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-G: Aprende, servicios Vecidya y frontera GHL
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -329,5 +329,7 @@ DEC-G puede pasar a APPROVED cuando se confirme:
 No se localizó integración Aprende V9 activa en el censo focal; el core/finalización V9 inspeccionados no incorporan catálogo comercial, lo cual mantiene una separación compatible con la dirección aprobada.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-G; capas diagnóstico→acción→Aprende→servicios→GHL, neutralidad y fallback.
