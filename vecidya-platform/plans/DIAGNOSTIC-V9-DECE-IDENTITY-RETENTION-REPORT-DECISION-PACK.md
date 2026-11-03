@@ -1,8 +1,8 @@
 # Diagnostic V9 — DEC-E: informe, identidad, retención y frontera de persistencia
 
-**Versión:** 0.1.0  
-**Fecha:** 2026-11-01  
-**Estado:** PLAN_ONLY · READY_FOR_HUMAN_REVIEW · NO APROBADO  
+**Versión:** 0.2.0  
+**Fecha:** 2026-11-03  
+**Estado:** PLAN_ONLY · DEC-E RATIFICADO · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Objetivo
@@ -336,28 +336,44 @@ CLASS-02 ya trazó estas primitives, pero faltan tests focales.
 | E13 | replay histórico | versiones preservadas |
 | E14 | GHL no disponible | evaluación/informe funciona igual |
 
-## 15. Decisión humana requerida
+## 15. Decisiones humanas ratificadas
 
-DEC-E puede pasar a APPROVED cuando se confirme:
+Registro 2026-11-03:
+- E3 replay: **APPROVED** — procesamiento/replay autoritativo transitorio sin ledger individual anónimo persistente;
+- E4 comprobante: **APPROVED** — resultado verificable; guardar no recalcula;
+- E5 TTL resultado anónimo final: **APPROVED = 24 horas**;
+- E6 propiedad: **APPROVED = personal**; organización no obtiene lectura automática;
+- E8 backups: **APPROVED = máximo objetivo 30 días**, condicionado a certificación operativa;
+- E9 reclamación: **APPROVED = possession**; primera reclamación autenticada válida, atómica e idempotente;
+- observaciones humanas: **ninguna**.
 
-1. separación E-D1..E-D4;
-2. resumen anónimo vs informe autenticado;
-3. claim sin recalculación;
-4. ownership personal vs organización;
-5. política de visibilidad organizativa;
-6. retenciones por categoría final;
-7. opción A/B/C para procesamiento anónimo;
-8. interpretación E-Q1 de D1;
-9. borrado/privacy;
-10. no GHL.
+Se mantienen además:
+- borrador local-only;
+- TTL borrador 7 días;
+- retención identificada mientras exista cuenta con eliminación voluntaria;
+- analítica anónima agregada y no reconstructiva;
+- E-Q1-B: tablas D1 separadas para resultados identificados.
+
+Estas decisiones no levantan PLAN_ONLY ni autorizan código, migraciones, CI, PR o deploy.
 
 ## 16. Estado
 
-**DEC-E = READY_FOR_HUMAN_REVIEW / NO APROBADO.**
+**DEC-E = RATIFICADO A NIVEL DE PRODUCTO/ARQUITECTURA · PLAN_ONLY.**
 
-Bloqueo principal:
-el prototipo actual persiste runs/eventos individuales anónimos en D1 durante la entrevista, mientras la política posterior aprobada exige borrador anónimo local y analítica D1 no reconstructiva. Debe reconciliarse antes de F07/F08.
+Ya no son preguntas abiertas E3, E4, E5, E6, E8, E9 ni E-Q1-B.
+
+Condiciones de implementación/verificación todavía pendientes:
+- algoritmo/custodia/rotación de claves para el comprobante;
+- claim atómico e idempotente;
+- prueba real de expiración/restauración de backups ≤30 días;
+- plazo operativo de analítica agregada;
+- inventario y tratamiento de datos anónimos históricos del prototipo;
+- cierre de cuenta y restauración sin resurrección;
+- textos finales de privacidad/consentimiento.
+
+El siguiente scope elegible para autorización independiente es F07-L1. No se autoriza automáticamente L2–L6.
 
 ## Changelog
 
+- **0.2.0 / 2026-11-03:** DEC-E ratificado: E3 replay transitorio, E4 comprobante sin recalcular, E5 TTL 24 h, E6 propiedad personal, E8 backups 30 d condicionados, E9 possession; E-Q1-B preservado; PLAN_ONLY sigue vigente.
 - **0.1.0 / 2026-11-01:** paquete DEC-E; cuatro dominios de datos, tensión ledger anónimo/D029-D033, opciones de arquitectura y pregunta explícita sobre alcance de D1.
