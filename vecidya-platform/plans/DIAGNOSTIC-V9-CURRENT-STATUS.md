@@ -24,13 +24,14 @@
 
 ## 0A. Checkpoint actual — F07-L2
 
-- **Estado:** implementación focal `DONE_WITH_EVIDENCE`; commit del lote pendiente.
+- **Estado:** `DONE_WITH_EVIDENCE`.
+- **SHA del commit L2:** `8dcaad032a39c46adfd69e40fba315867a8501cd`.
 - **Archivos:** `app/features/diagnostic/v9/transient-replay.server.ts`; `tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts`.
 - **Prueba RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts` — PASS 5/5, exit 0.
 - **Contrato:** exige versión pública actual de scoring, TTL servidor de 7 días desde `updatedAt`, sesión `completing` con queue vacía, replay autoritativo, resultado sólo en memoria y errores estables sin detalles ni raw answers.
 - **D1/deploy:** la función no recibe binding/env y no importa repositorios; cero escrituras D1, cero endpoint agregado, cero deploy.
 - **Build/typecheck:** build PASS exit 0; typecheck global FAIL exit 2 por los módulos no modificados listados arriba.
-- **Sigue:** cerrar diff/check, registrar commit SHA y continuar a F07-L3-ADR.
+- **Sigue:** F07-L3-ADR antes de código de attestation/finalización.
 
 ## 1. Regla de autoridad
 
