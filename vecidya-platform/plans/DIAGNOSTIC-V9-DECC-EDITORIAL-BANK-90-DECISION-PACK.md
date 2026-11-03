@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-C: paquete de decisión editorial del banco 77/82/90
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -289,5 +289,7 @@ DEC-C puede marcarse APPROVED solo si el responsable confirma explícitamente:
 DEC-C puede quedar lista para revisión humana antes de cerrar B/D, pero no puede habilitar scoring.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-C 77/82/90; 18 KEEP/59 REWRITE; cinco ADD; ocho probes; gates y propuesta conservadora de activación.
