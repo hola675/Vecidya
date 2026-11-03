@@ -1,12 +1,13 @@
 # Active Team (project scope)
 Roster-Mode: logical-v1
 Roster-Status: ACTIVE
-Roster-ID: b275afad27c06b29
-Generated: 2026-10-27T21:15:16Z
+Roster-ID: 5d9151611f462679
+Generated: 2026-11-02T20:13:47Z
 
 ## Active Agents
 - `code-reviewer`: Selected from INIT.md
 - `database-reviewer`: Selected from INIT.md
+- `harness-optimizer`: Selected from INIT.md
 - `orchestrator`: Selected from INIT.md
 - `security-reviewer`: Selected from INIT.md
 - `typescript-reviewer`: Selected from INIT.md
@@ -22,7 +23,6 @@ Generated: 2026-10-27T21:15:16Z
 - `e2e-runner`: Out of project scope (files retained)
 - `flutter-reviewer`: Out of project scope (files retained)
 - `go-reviewer`: Out of project scope (files retained)
-- `harness-optimizer`: Out of project scope (files retained)
 - `infra-reviewer`: Out of project scope (files retained)
 - `kotlin-reviewer`: Out of project scope (files retained)
 - `loop-operator`: Out of project scope (files retained)

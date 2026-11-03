@@ -95,9 +95,17 @@ export async function getPublishedMiniWebV2(database: Database, siteId: string, 
 
 /** Public lookup follows only the site's active publication pointer, never its draft. */
 export async function getPublicMiniWebV2BySiteId(database: Database, siteId: string) {
-  const [row] = await database.select({ siteId: miniWebV2Site.id, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
+  const [row] = await database.select({ siteId: miniWebV2Site.id, organizationId: miniWebV2Site.organizationId, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
     .from(miniWebV2Site).innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
     .where(and(eq(miniWebV2Site.id, siteId), eq(miniWebV2Publication.siteId, miniWebV2Site.id))).limit(1);
   return row ?? null;
 }
 
+
+/** Solo rutas con puntero a publicación activa. No filtra ningún borrador. */
+export async function listPublicMiniWebV2SiteIds(database: Database): Promise<string[]> {
+  const rows = await database.select({ id: miniWebV2Site.id }).from(miniWebV2Site)
+    .innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
+    .orderBy(miniWebV2Site.id);
+  return rows.map((row) => row.id);
+}

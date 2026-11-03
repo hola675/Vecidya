@@ -8,6 +8,7 @@ import { listPlatformBusinessProfiles } from "../../db/queries/platform-business
 import { listPlatformIntegrations } from "../../db/queries/platform-integrations.server";
 import { listPlatformAuditLog } from "../../db/queries/platform-governance.server";
 import { platformAuditActionLabels } from "../lib/platform-audit-labels";
+import { formatPlatformDateTime } from "../lib/platform-date-format";
 import { AdminShell } from "../components/admin-shell";
 import { Icon } from "../components/ui";
 import { ComparisonBars, JourneyGuide, MetricCard } from "../components/experience-system";
@@ -18,10 +19,6 @@ import type { Route } from "./+types/internal";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Administración de Vecidya | Vecidya" }];
-}
-
-function formatTimestamp(date: Date) {
-  return new Date(date).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" });
 }
 
 export async function loader({ context, request }: Route.LoaderArgs) {
@@ -179,7 +176,7 @@ export default function InternalHome() {
               {recentActivity.map((entry) => (
                 <li key={entry.id}>
                   <span>{platformAuditActionLabels[entry.action] ?? entry.action} · {entry.businessProfileDisplayName ?? `${entry.entityType}: ${entry.entityId}`}</span>
-                  <span className="admin-audit-list__meta">{entry.actorName ?? entry.actorEmail ?? "Actor desconocido"} · {formatTimestamp(entry.createdAt)}</span>
+                  <span className="admin-audit-list__meta">{entry.actorName ?? entry.actorEmail ?? "Actor desconocido"} · {formatPlatformDateTime(entry.createdAt)}</span>
                 </li>
               ))}
             </ul>

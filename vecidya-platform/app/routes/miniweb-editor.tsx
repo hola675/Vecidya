@@ -392,11 +392,12 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
         <header className="page-header miniweb-editor__header">
           <div>
             <p className="eyebrow">TU PRESENCIA DIGITAL</p>
-            <h1>Mi MiniWeb</h1>
+            <h1>Mi sitio web</h1>
             <p>Organiza las secciones que presentan tu negocio en Vecindario.</p>
           </div>
           <div className="miniweb-editor__header-actions">
             <Link className="button button--secondary" to="/app/business-profile">Editar Mi negocio</Link>
+            <Link className="button button--secondary" to="/app/miniweb-v2">Explorar nuevos diseños y editor visual</Link>
             {data.profileStatus === "published" && data.profile?.slug ? (
               <Link className="button button--secondary" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb pública</Link>
             ) : null}

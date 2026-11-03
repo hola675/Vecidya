@@ -70,6 +70,7 @@ export default [
   route("api/organizations/:organizationId/business-media", "routes/api-organization-business-media.ts"),
   route("api/organizations/:organizationId/business-media/:assetId", "routes/api-organization-business-media-asset.ts"),
   route("media/business/:slug/:assetId", "routes/api-public-business-media.ts"),
+  route("media/miniweb/:siteId/:assetId", "routes/api-public-miniweb-v2-media.ts"),
   route("api/platform/organizations/:organizationId/services", "routes/api-platform-services.ts"),
   route("api/platform/organizations/:organizationId/integrations", "routes/api-platform-integrations.ts"),
   route("api/platform/organizations/:organizationId/license", "routes/api-platform-licensing.ts"),

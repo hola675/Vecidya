@@ -98,9 +98,9 @@ export const publicAssets = {
       solid: `${catalogAssetBase}/diagnostic/presencia-solida-bien.png`,
     },
     plans: {
-      cuadra: `${catalogAssetBase}/plans/plan-cuadra.png`,
-      barrio: `${catalogAssetBase}/plans/plan-barrio.png`,
-      ciudad: `${catalogAssetBase}/plans/plan-ciudad.png`,
+      cuadra: `${catalogAssetBase}/plans/plan-cuadra.webp`,
+      barrio: `${catalogAssetBase}/plans/plan-barrio.webp`,
+      ciudad: `${catalogAssetBase}/plans/plan-ciudad.webp`,
     },
     addons: {
       whatsapp: `${catalogAssetBase}/features/communication/whatsapp-01.png`,

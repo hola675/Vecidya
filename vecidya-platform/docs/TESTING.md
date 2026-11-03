@@ -1,3 +1,9 @@
+## APRENDE-ARTICLE-ART-01 — ilustraciones por guía (2026-11-02)
+
+`BASE_URL=http://127.0.0.1:5175 pnpm run test:e2e:aprende-public` — PASS con D1 local migrada hasta `0037`. Se extendió `aprende-public-qa-check.mjs` para comprobar en las 48 respuestas SSR que cada ruta publica su WebP y alt contextual. El recorrido del catálogo/artículo captura el estado visual completo en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080; además verifica que el `<img>` de artículo coincide con su recurso/alt asignados, controles de progreso/índice por teclado, fuentes seguras, ausencia de overflow y cero eventos `pageerror`. `prefers-reduced-motion` se valida en la portada de Aprende; la portada del artículo no añade animación. El servidor Vite mostró errores no bloqueantes de `Failed to fetch manifest patches` durante la navegación cliente; no se declara libre de errores de consola ni se atribuyen esos mensajes al código de ilustraciones.
+
+Capturas locales posteriores: `test-results/aprende-public-qa/aprende-listado-{320,390,768,1366,1920}.png` y `aprende-articulo-{320,390,768,1366,1920}.png`. Unitarias focales de contenido, catálogo, currículo, límites de publicación y gestión **53/53 PASS**; `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. Build conserva los avisos locales conocidos de secretos opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS. No se ejecutaron axe, lector de pantalla ni zoom real al 200 %; esto no certifica WCAG. Sin D1 remota ni deploy.
+
 ## UX-PREMIUM-02J — Vico, escenas y diagramas públicos (2026-10-31)
 
 **RAN local, UX-PREMIUM-02J:** `node tests/e2e/public-vico-scenes-check.mjs` — PASS en las 10 rutas × 320/390/768/1366/1920 px. Revisa los 20 assets de las parejas, carga y alt, alpha 0 en las cuatro esquinas, ausencia de overflow, `console.error`/`pageerror` y movimiento reducido. Capturas full-page usan `caret: "initial"` para que ocultar el cursor no modifique el HTML durante hidratación. Capturas: 50 anteriores desde `HEAD 2ffb1afb` en `.playwright-mcp/vico-scenes-before/` y 50 posteriores en `.playwright-mcp/vico-scenes-after/`. Revisión visual humana de Inicio, Vecindario, Aprende, Contacto, Licencias y Complementos confirma que Vico ampliado se mantiene visible sin tapar texto/CTA; en Aprende queda una sola escena temática junto a Vico.
@@ -6,7 +12,7 @@
 
 `pnpm run typecheck`, `pnpm run build` y `git diff --check` — PASS. El build conserva avisos conocidos de secretos opcionales ausentes en el entorno local, imports dinámicos inefectivos y sourcemap CSS; no impidieron el build. Intento de `node tests/e2e/learn-experience-check.mjs` — no PASS: falla en 1366×900 porque busca «En esta guía» sin acotar el índice y el rótulo existe también en otro control; contiene además aserciones de texto/condiciones editoriales antiguas. No se usa como certificación de UX-PREMIUM-02J. La ruta de contenido y assets está cubierta por las pruebas unitarias y `public-vico-scenes-check.mjs`.
 
-No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. React #418 sigue como deuda separada de App/Admin, sin causa reproducida ni resolución.
+No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. React #418 sigue como deuda global separada de App/Admin; PR #225 corrigió el escenario reproducido y las fechas de las rutas internas identificadas, pero faltan las demás rutas/estados protegidos.
 
 
 ## UX-PREMIUM-FOUNDATION-01 — base de diseño transversal (2026-10-30; local)
@@ -19,6 +25,26 @@ No es certificación WCAG: quedan lector de pantalla, axe y zoom real 200 %. Rea
 node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/miniweb-v2-sections.test.ts — 2/2 PASS (2026-10-29). Cubre S01–S12, links inseguros, tipos desconocidos e identidad/orden duplicados. No sustituye validación integral ni pruebas de runtime.
 
 # Pruebas
+
+## React #418 — entorno local de reproducción (2026-11-02)
+
+`pnpm run test:e2e:react-418` crea una D1 aislada y efímera, aplica las migraciones locales y genera fixtures sintéticas: usuario autenticado, organización, membresía, acceso `platform_admin`, una entrada de auditoría cerca de medianoche UTC y metadata `local-test-fixture`. Inicia el Worker con secretos de prueba aleatorios, abre App/Admin en Playwright con zona `America/New_York`, compara el texto SSR con el hidratado, comprueba el listado de integraciones y elimina la D1 al terminar. No llama a proveedores ni usa D1 remota.
+
+**Reproducción baseline RAN sobre `origin/main@e92c10e9`:** `/app/internal` generó React #418. SSR mostraba `1/11/2026, 10:21 p. m.` y Chromium `1/11/2026, 10:21 p. m.` (U+00A0). La ruta afectada usaba `toLocaleString("es-CO")`. Se centralizó el formato fijo UTC−5 de Bogotá en `app/lib/platform-date-format.ts` y se aplicó a las fechas de las rutas internas identificadas. **RAN tras el cambio:** `pnpm run test:e2e:react-418` PASS; SSR e hidratación muestran `1 nov 2026, 10:21 p. m.`, sin error React #418; la página de integraciones muestra el ID sintético y la D1 se elimina. Unitarias focales 2/2, typecheck, build y diff-check PASS; CI sobre el head integrado: 1814/1814 unitarias y typecheck/build/regresión PASS. PR #225 se integró en `main@a457e7e4`. Esto verifica el escenario y las rutas actualizadas, no certifica App/Admin completo; la deuda sigue abierta hasta validar las demás rutas/estados protegidos.
+
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — PR #226 integrada en `main@14542442` (2026-11-02)
+
+**Causa y corrección del drawer:** el primer enlace Admin tenía `visibility:hidden` durante la transición de apertura. El hook compartido enfoca el enlace sincrónicamente al activar la navegación, pero el CSS lo mantenía oculto hasta el final de la transición de 180 ms. Se retiró la transición de `visibility` y se conservó la animación con `transform`/`opacity`; `pointer-events` y los estados React `inert`/`aria-hidden` mantienen el cierre no interactivo. El test volvió a confirmar que el foco cae en el primer enlace y que el drawer abre, navega y cierra. No se modificó el hook compartido ni rutas o contratos.
+
+**Overflow de Servicios:** se encontró un `<span class="sr-only">` posicionado absolutamente que, al no tener contenedor posicionado dentro del scroller, ampliaba el ancho del documento a 320 px. `.admin-service-table-wrap { position: relative; }` lo mantiene dentro del área desplazable; la tabla conserva scroll horizontal interno.
+
+**Hallazgo de revisión — sidebar escritorio:** con poca altura, la barra superaba el viewport y «Cerrar sesión» quedaba fuera de alcance porque no podía desplazarse. La regla efectiva de `.admin-sidebar` en `workspace-premium.css` ahora fija altura al viewport y `overflow-y:auto`. El E2E desplaza hasta el pie a 1366×768 y confirma que el botón queda visible.
+
+**Validación RAN:** tras los fixes de foco, scroller y sidebar, `pnpm run test:e2e:app-dashboard-redesign` PASS en una ejecución sin capturas y otra con capturas, contra Worker/D1 local aislados. Se recorren `/app`, borrador MiniWeb V2 y `/app/internal`, anchos 320/390/768/980/1366 px para navegación/overflow y capturas en 320/390/768/1366/1920 px. Admin Servicios se comprueba móvil y escritorio; fixture D1 eliminada y ausencia verificada. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. El build conserva avisos locales conocidos de secretos opcionales, imports dinámicos y sourcemap CSS. El CI del PR no ejecuta este runner; la evidencia es local.
+
+Capturas finales: `C:\Users\Admin\.codex\evidence\app-admin-visual-01-final\` (`vecidya-internal-dashboard-{320,390,768,1366,1920}.png`, `vecidya-admin-services-mobile.png`, `vecidya-admin-services-desktop.png`, junto a App/MiniWeb/Admin). Inspección visual manual de 320 px, Servicios móvil y Admin 1366 px confirma el drawer en estado cerrado en la captura estática, tabla contenida y composición desktop. El estado abierto/navegación/cierre y el acceso al pie del sidebar a 1366×768 se validan en el runner. Estas comprobaciones no equivalen a axe/WCAG, NVDA/lector de pantalla, zoom 200 % ni certificación funcional de todas las superficies. React #418 global permanece abierto; no se atribuye resolución a este cambio. Sin D1 remota ni deploy.
+
+Integración verificada: PR #226 se fusionó el 2026-11-02 mediante merge commit `145424424c70297d36d9b4b0d696cd869bb750e1`; `origin/main` apunta a `14542442`. Sin deploy ni D1 remota.
 
 ## UX-PREMIUM-02C — Servicios públicos (2026-10-30)
 
@@ -40,6 +66,14 @@ Playwright capturó la página completa antes/después en 320×720, 390×844, 76
 **RAN local:** `BASE_URL=http://127.0.0.1:5173 pnpm run test:e2e:aprende-public` — PASS. Confirma las 48 guías, nueve itinerarios, seis temas, contenido aprobado, rutas, metadata y búsqueda/filtros; captura full-page en 320×720, 390×844, 768×1024, 1366×768 y 1920×1080. Comprueba carga y alt de Vico Aprende, cero overflow, foco visible de teclado y `prefers-reduced-motion` para Vico, el mapa y las tarjetas. Una captura manual de consola Chromium a 1366 px en `/` y `/aprende` respondió 200 sin errores de consola ni `pageerror`; esto no resuelve ni certifica React #418 en App/Admin.
 
 Capturas comparables antes/después en `.playwright-mcp/aprende-{before,after}-{width}x{height}.png`; el baseline usa el commit de integración anterior al cambio visual. Typecheck, build y diff-check: PASS (ver `STATUS.md`). Sin D1 remota ni deploy. No se ejecutaron lector de pantalla, axe ni zoom real al 200 %; no equivale a certificación WCAG.
+
+## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
+
+## UX-IMPL-03 — editor guiado, publicación y medios V2 (candidato local, 2026-11-02)
+
+**RAN local:** unitarias focales — 26/26 PASS en validación de secciones/publicación, estado del editor, familias, conversión, horarios, medios, categorías y Vecindario. `pnpm run typecheck`, `pnpm run build` y `git diff --check` PASS. `pnpm exec node tests/e2e/miniweb-v2-conversion-check.mjs` PASS sobre Wrangler Worker con D1 y R2 locales efímeras; prueba rechazo de documento sin portada, referencias cross-tenant/video, publicación explícita, carga de bytes/MIME, metadata/canonical, sitemap, aislamiento entre borrador y publicación, y retiro por medio inactivo o sin referencia vigente. El arnés elimina el almacenamiento local al terminar.
+
+El build mantiene avisos locales de secretos opcionales ausentes, imports dinámicos ineficaces y sourcemap CSS; no se leyeron secretos y no impidieron compilar. No se verificó bucket R2 remoto, D1 remota, deploy, HTTP pública, sesión visual de formularios a cinco viewports ni accesibilidad integral (axe, lector, zoom 200 %). Esto no certifica WCAG ni publicación.
 
 ## MiniWeb V2 IMP-02 — publicación idempotente/conflictiva
 
@@ -2397,3 +2431,8 @@ La variante final sustituye las preliminares con una visualización fotorrealist
 ## UX-PREMIUM-PLATFORM-01 — consolidación de checkpoint (2026-10-30)
 
 Integración local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-platform-01`: fundación visual y cambios relacionados de baseline (#218), Inicio (#219), Servicios (#220) y Licencias (#221). Revisión visual final de Inicio: capturas full-page antes/después a 320×720, 390×844, 768×1024, 1366×768 y 1920×1080 en `.playwright-mcp/`; los cinco tamaños cargan sin overflow horizontal. Estados de teclado/foco y `prefers-reduced-motion` comprobados. E2E focalizados: navegación/accesibilidad pública PASS (1366/1024/960/768/390/360/320), Servicios PASS (1366/1024/768/390/320), contacto comercial PASS y Licencias PASS (1366/768/390/360). `pnpm run typecheck`, `pnpm run build` y `git diff --check`: PASS. Build mantiene avisos locales conocidos de secretos opcionales ausentes, imports dinámicos inefectivos y sourcemap CSS. PR originales siguen abiertos; no hubo merge, deploy ni cambios remotos. Esto no certifica App/Admin ni resuelve React #418.
+## UX-PREMIUM-APP-ADMIN-MINIWEB-01 — 2026-11-02
+
+**Intento RAN en Worker/D1 local:** `pnpm run test:e2e:app-dashboard-redesign` recorre `/app`, crea un borrador MiniWeb V2 de prueba y abre `/app/internal`. App y MiniWeb V2 verifican overflow y capturan viewport completo a 320/390/768/1366/1920 px. Admin verifica esos cinco anchos y produce capturas, pero el runner **falla** al abrir el menú a 390 px: `aria-expanded=true` y el drawer tiene `data-open=true`, pero `document.activeElement` permanece en `BODY`, no en el primer enlace. El hook de navegación es compartido; no se modificó para evitar mezclar este comportamiento con la deuda React #418. La fixture local se eliminó y su ausencia se verificó (`PASS: D1 aislada eliminada y ausencia verificada`).
+
+Las capturas posteriores se conservaron como evidencia local fuera del repositorio; las capturas previas solo cubren App y MiniWeb en los cinco tamaños y Admin parcialmente. Por ello no se declara una comparación visual completa antes/después para las tres superficies ni certificación de teclado, lector de pantalla, axe o zoom 200 %. El intento llegó al check de foco antes de completar Admin Servicios. `prefers-reduced-motion` se comprueba en la vista MiniWeb del runner, pero el fallo posterior impide declarar el recorrido integral PASS. `pnpm run typecheck` y `pnpm run build` PASS; `git diff --check` PASS después de limpiar el espacio final de estas entradas documentales.

@@ -311,6 +311,13 @@
 .learn-article-page .learn-article-image {
   max-width: 100%;
   height: auto;
+  align-self: start;
+  min-height: 0;
+  max-height: 28rem;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 .75rem 1rem rgb(18 48 84 / 12%));
 }
 .learn-related-card {
   min-width: 0;
@@ -727,7 +734,6 @@
 .addon-card__benefit strong {
   color: #163957;
 }
-
 
 /* SECTOR-UX-03 — selector buscable de categoría principal, compatible con formulario legacy. */
 .business-sector-picker { display: grid; gap: .7rem; min-width: 0; }

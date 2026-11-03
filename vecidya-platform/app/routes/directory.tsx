@@ -79,7 +79,7 @@ export default function DirectoryPage() {
 
           {categories.length ? (
             <nav aria-label="Categorías disponibles" className="directory-category-list">
-              {categories.slice(0, 8).map((category) => <Link key={category} to={categoryUrl(category)}>{category}</Link>)}
+              {categories.map((category) => <Link key={category} to={categoryUrl(category)}>{category}</Link>)}
             </nav>
           ) : null}
 

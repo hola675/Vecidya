@@ -4,6 +4,7 @@ import { createDatabase } from "../../db/client.server";
 import { correctOrganizationTrainingProgress, listOrganizationTraining, listOrganizationTrainingProgress, assignOrganizationTraining } from "../../db/queries/platform-training.server";
 import { listPlatformOrganizationOptions } from "../../db/queries/platform-organizations.server";
 import { learnArticles } from "../content/learn";
+import { formatPlatformDate } from "../lib/platform-date-format";
 import { AdminShell } from "../components/admin-shell";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin, requirePlatformAdminAction } from "../../server/platform-authorization.server";
@@ -83,7 +84,7 @@ export default function InternalOrganizationTraining() {
           </select></label>
           <button className="button button--primary" type="submit" disabled={courses.every((course) => assigned.has(course.slug))}>Asignar</button>
         </Form>
-        {assignments.length ? <ul className="admin-detail-list">{assignments.map((item) => <li key={item.id}><span>{courseTitle(item.trainingSlug)}<small>Asignada por {item.assignedByName} · {new Date(item.assignedAt).toLocaleDateString("es")}</small></span></li>)}</ul> : <p>No hay capacitaciones asignadas.</p>}
+        {assignments.length ? <ul className="admin-detail-list">{assignments.map((item) => <li key={item.id}><span>{courseTitle(item.trainingSlug)}<small>Asignada por {item.assignedByName} · {formatPlatformDate(item.assignedAt)}</small></span></li>)}</ul> : <p>No hay capacitaciones asignadas.</p>}
       </section>
       <section className="card admin-detail-card">
         <h2>Progreso declarado</h2>

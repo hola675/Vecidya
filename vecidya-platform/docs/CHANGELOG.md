@@ -1,8 +1,34 @@
+# 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
+
+- El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
+- El renderer añade fotos y metadata por sitio, el sitemap incorpora sitios publicados, Vecindario usa 13 categorías canónicas con alias de lectura, el texto comercial elimina detalles internos y tres portadas de planes se exportan en WebP conservando PNG originales.
+- 26 pruebas unitarias focales, Worker/D1/R2 locales, typecheck, build y diff-check PASS. Sin nueva migración, D1 remota, deploy ni HTTP pública. La revisión visual completa, accesibilidad y R2 remoto siguen pendientes.
+
+# 2026-11-02 — React #418 — corrección focal integrada, deuda global abierta
+
+## 2026-11-02 — UX-PREMIUM-APP-ADMIN-MINIWEB-01 — validación focal de PR #226
+
+- Revisión arquitectónica identificó que la transición CSS `visibility` ocultaba temporalmente el primer enlace del drawer Admin cuando el hook intentaba enfocarlo. Se mantuvo el hook compartido y se cambió la transición visual a `transform`/`opacity` con `pointer-events`; E2E confirma foco inicial, navegación y cierre.
+- El scroller de la tabla de Servicios ahora contiene el elemento `.sr-only` que causaba overflow del documento en móvil; la tabla mantiene scroll horizontal propio.
+- La barra lateral de Admin permite desplazamiento vertical a 1366×768 para que también se pueda alcanzar «Cerrar sesión»; el E2E lo comprueba desplazando hasta el botón.
+- E2E Worker/D1 local y capturas de App/Admin/MiniWeb en cinco viewports PASS; typecheck, build y diff-check PASS. D1 sintética eliminada y ausencia verificada. PR #226 integrada en `main@14542442`; sin deploy. Evidencia y límites en `TESTING.md`.
+- No cambian rutas, lógica, contratos, permisos ni datos. La deuda global React #418 y la certificación integral de accesibilidad permanecen abiertas. Sin deploy.
+
+- Se añadió un E2E que aplica migraciones en D1 efímera, crea fixtures sintéticas de App/Admin e integración metadata local, y verifica eliminación al cerrar.
+- Se reprodujo React #418 en `/app/internal` por una diferencia locale de fecha entre SSR y Chromium `America/New_York`; se centralizó el formato determinista de fecha/hora en las rutas internas identificadas. El caso focal pasa; la certificación App/Admin sigue abierta.
+- PR #225 integrada en `main@a457e7e4`; unitarias focales 2/2, E2E React #418 y CI (1814/1814 unitarias, typecheck/build/regresión) PASS. La corrección se limita al escenario/rutas identificadas; App/Admin continúa como deuda por certificar.
+- Sin D1 remota, integración con proveedor ni deploy.
+
+## 2026-11-02 — APRENDE-ARTICLE-ART-01 — ilustraciones propias para las guías
+
+- Se preparan 48 WebP transparentes, uno por artículo de Aprende, ligados al contenido de cada guía y con texto alternativo específico. La imagen de portada y su metadata social reutilizan el alt contextual.
+- Se afina la portada para mostrar el arte sobre la superficie existente sin fondo opaco ni sombra rectangular. No cambian contenido, rutas, CTA ni acceso. E2E de catálogo/artículos y cinco viewports, unitarias focales, typecheck, build y diff-check PASS. PR #223 integrada en `main@0685775e`; sin deploy.
+
 ## 2026-10-31 — UX-PREMIUM-02J — variantes Vico y escenas para 10 rutas
 
 - Se asignó la variante fuente de Vico a 10 páginas públicas y se generaron 10 escenas WebP transparentes; Inicio conserva su visualización aprobada.
 - Se actualizaron las ilustraciones de apoyo de Aprende: 30 diagramas SVG y el atlas SVG se sustituyeron por escenas WebP temáticas con texto alternativo ligado al tema de cada guía.
-- La navegación, CTA, textos y lógica se conservan. PR #222 permanece en borrador; sin merge ni deploy.
+- La navegación, CTA, textos y lógica se conservan. PR #222 integrada en `main@e92c10e9`; sin deploy.
 
 ## 2026-10-30 — UX-PREMIUM-02G — refinamiento visual de Licencias
 
@@ -2733,3 +2759,8 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - `/privacidad`, `/sobre-nosotros`, `/que-debes-saber` y la navegación pública están implementadas.
 - `7B.2` invitaciones sigue bloqueada por configuración externa de correo y demostración de delivery real.
 
+## 2026-11-02 — UX-PREMIUM-APP-ADMIN-MINIWEB-01 (local, sin publicar)
+
+- Se añade una capa visual premium para App, Admin y editor/preview MiniWeb V2 con estilos acotados y variantes por familia de MiniWeb.
+- La prueba local confirma navegación inicial y responsive de App/MiniWeb; falla en el foco del drawer Admin móvil. Validación final incompleta; ver `TESTING.md`.
+- Sin cambios funcionales, de esquema, D1 remota, merge ni despliegue. React #418 continúa independiente y sin resolver.

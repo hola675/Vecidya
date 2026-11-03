@@ -72,7 +72,7 @@ export default function Addons() {
             </div>
             <div className="addons-price-note">
               <strong>Costes de uso</strong>
-              <p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se muestran aparte del precio Vecidya y se cotizan con un margen bruto objetivo del 20 % sobre los costes directos verificados.</p>
+              <p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se informan por separado y se confirman antes de activar cualquier canal o consumo adicional.</p>
             </div>
           </div>
           <div className="addons-grid">

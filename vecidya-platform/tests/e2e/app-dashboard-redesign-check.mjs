@@ -84,9 +84,9 @@ async function assertNoOverflow(page, label) {
     document: document.documentElement.scrollWidth,
     offenders: [...document.body.querySelectorAll("*")].filter((element) => {
       const rect = element.getBoundingClientRect();
-      const intentionallyClippedDrawer = element.closest('.admin-sidebar[data-open="true"]');
+      const intentionallyClippedDrawer = element.closest('.admin-sidebar[data-open="false"], .app-sidebar[data-open="false"]');
       return !intentionallyClippedDrawer && rect.width > 0 && rect.height > 0 && (rect.left < -1 || rect.right > document.documentElement.clientWidth + 1);
-    }).filter((element) => getComputedStyle(element).visibility !== "hidden").slice(0, 4).map((element) => ({ tag: element.tagName, className: String(element.className), left: Math.round(element.getBoundingClientRect().left), right: Math.round(element.getBoundingClientRect().right) })),
+    }).filter((element) => getComputedStyle(element).visibility !== "hidden").slice(0, 4).map((element) => ({ tag: element.tagName, className: String(element.className), text: element.textContent?.trim().slice(0, 100), parent: (element.parentElement?.className ?? "").toString(), left: Math.round(element.getBoundingClientRect().left), right: Math.round(element.getBoundingClientRect().right) })),
   }));
   if (result.document > result.viewport + 1 || result.offenders.length) throw new Error(`${label} desborda horizontalmente: ${JSON.stringify(result)}`);
 }
@@ -111,7 +111,7 @@ try {
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
   query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${sqlLiteral(bootstrapUserId)},'Dashboard bootstrap',${sqlLiteral(`bootstrap-${suffix}@vecidya.test`)},1,${now},${now});
 INSERT INTO organization (id,name,slug,created_at) VALUES (${sqlLiteral(organizationId)},'Vecidya local demo',${sqlLiteral(`dashboard-redesign-${suffix}`)},${now});
-INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(invitationId)},${sqlLiteral(organizationId)},${sqlLiteral(email)},'admin','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
+INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(invitationId)},${sqlLiteral(organizationId)},${sqlLiteral(email)},'owner','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
 
   phase = "starting local Worker";
   worker = startWorker(baseUrl, port, secret);
@@ -123,10 +123,9 @@ INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_
   if (signup.status !== 200) throw new Error(`Signup local respondió ${signup.status}: ${(await signup.text()).slice(0, 250)}`);
   const identity = (await signup.json()).user;
   await stopWorker(worker);
-  const adminRowId = randomUUID();
   query(`UPDATE user SET email_verified=1 WHERE id=${sqlLiteral(identity.id)};
 INSERT INTO member (id,organization_id,user_id,role,created_at) SELECT ${sqlLiteral(randomUUID())},${sqlLiteral(organizationId)},${sqlLiteral(identity.id)},'admin',${now} WHERE NOT EXISTS (SELECT 1 FROM member WHERE organization_id=${sqlLiteral(organizationId)} AND user_id=${sqlLiteral(identity.id)});
-INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUES (${sqlLiteral(adminRowId)},${sqlLiteral(identity.id)},'platform_admin','active',${now},${now});`);
+`);
   worker = startWorker(baseUrl, port, secret);
   await waitForWorker(baseUrl, worker);
 
@@ -143,13 +142,15 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.getByLabel(/Contraseña/i).fill(password);
   await page.getByRole("button", { name: "Entrar" }).click();
   await page.waitForURL("**/app");
-  await page.getByLabel("Organización").selectOption(organizationId);
+  const organizationSwitcher = page.getByLabel("Organización");
+  if (await organizationSwitcher.count()) await organizationSwitcher.selectOption(organizationId);
   await page.getByRole("heading", { name: /Buenos días|Buenas tardes|Buenas noches/ }).waitFor();
   await page.getByRole("heading", { name: "Organización activa: Vecidya local demo" }).waitFor();
 
-  for (const width of [320, 390, 768, 980, 1366]) {
+  for (const width of [320, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     await assertNoOverflow(page, `${width}px /app`);
+    if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-app-dashboard-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) {
@@ -192,12 +193,40 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
   await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-app-dashboard-mobile.png"), fullPage: true });
 
+  phase = "MiniWeb V2 editor and preview";
+  query(`UPDATE member SET role='owner' WHERE organization_id=${sqlLiteral(organizationId)} AND user_id=${sqlLiteral(identity.id)};`);
+  const draftResponse = await page.evaluate(async (targetOrganizationId) => {
+    const response = await fetch(`/api/organizations/${encodeURIComponent(targetOrganizationId)}/miniweb-v2`, {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ operation: "create", familyKey: "services-studio", visualVariant: "premium" }),
+    });
+    return { status: response.status, body: await response.json() };
+  }, organizationId);
+  if (draftResponse.status !== 201 || typeof draftResponse.body.siteId !== "string") throw new Error(`La creación local del borrador MiniWeb V2 falló: ${JSON.stringify(draftResponse)}.`);
+  await page.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(draftResponse.body.siteId)}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: "Editor V2" }).waitFor();
+  await page.getByRole("region", { name: "Vista previa" }).locator(".miniweb-v2[data-family='services-studio'][data-variant='premium']").waitFor();
+  for (const width of [320, 390, 768, 1366, 1920]) {
+    await page.setViewportSize({ width, height: width < 500 ? 844 : width === 768 ? 1024 : 900 });
+    await assertNoOverflow(page, `${width}px /app/miniweb-v2`);
+    if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-miniweb-editor-${width}.png`), fullPage: true });
+  }
+  await page.getByLabel("Familia del próximo sitio").selectOption("catalog-store");
+  await page.getByLabel("Variante visual del próximo sitio").selectOption("pro");
+  if (await page.locator(".miniweb-v2").getAttribute("data-family") !== "services-studio" || await page.locator(".miniweb-v2").getAttribute("data-variant") !== "premium") throw new Error("Cambiar la familia/variante del próximo sitio alteró la vista previa del borrador actual.");
+  await page.keyboard.press("Tab");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const reducedMotion = await page.locator(".miniweb-v2").evaluate((element) => getComputedStyle(element).scrollBehavior);
+  if (reducedMotion === "smooth") throw new Error("MiniWeb V2 no respetó prefers-reduced-motion.");
+
   phase = "internal dashboard and mobile navigation";
+  query(`INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUES (${sqlLiteral(randomUUID())},${sqlLiteral(identity.id)},'platform_admin','active',${now},${now});`);
   await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Administración de Vecidya" }).waitFor();
-  for (const width of [320, 390, 768, 1366]) {
+  for (const width of [320, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     await assertNoOverflow(page, `${width}px /app/internal`);
+    if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-internal-dashboard-${width}.png`), fullPage: true });
   }
   await page.setViewportSize({ width: 1366, height: 900 });
   if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, "vecidya-internal-dashboard-desktop.png"), fullPage: true });
@@ -214,6 +243,9 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     await adminMenu.click();
     if (await adminMenu.getAttribute("aria-expanded") !== "true") throw new Error(`El menú interno no anunció estado abierto a ${width}px.`);
     if (width === 390) {
+      await page.waitForTimeout(100);
+      const adminFocusState = await page.evaluate(() => ({ active: { tag: document.activeElement?.tagName, id: document.activeElement?.id, className: String(document.activeElement?.className), text: document.activeElement?.textContent?.trim().slice(0, 80) }, first: document.querySelector("#admin-navigation a")?.textContent?.trim(), navExists: Boolean(document.querySelector("#admin-navigation")), navOpen: document.querySelector(".admin-sidebar")?.getAttribute("data-open"), navInert: document.querySelector(".admin-sidebar")?.hasAttribute("inert"), frameInert: document.querySelector(".admin-frame")?.hasAttribute("inert"), mobile: matchMedia("(max-width: 980px)").matches }));
+      if (!await page.locator("#admin-navigation a").first().evaluate((element) => element === document.activeElement)) throw new Error(`El drawer interno no trasladó el foco al primer enlace: ${JSON.stringify(adminFocusState)}`);
       const focusedNavigationItem = await page.evaluate(() => document.activeElement?.textContent?.trim());
       if (focusedNavigationItem !== "Resumen") throw new Error(`El menú interno no movió el foco a su primera opción: ${focusedNavigationItem ?? "sin foco"}.`);
       if (await page.getByRole("dialog", { name: "Navegación administrativa" }).getAttribute("aria-modal") !== "true") throw new Error("El menú interno abierto no se expuso como diálogo modal.");
@@ -234,13 +266,23 @@ INSERT INTO platform_member (id,user_id,role,status,created_at,updated_at) VALUE
     if (await page.locator('button[aria-controls="admin-navigation"]').getAttribute("aria-expanded") !== "false") throw new Error(`El menú interno no se cerró tras navegar a ${width}px.`);
     await page.goto(new URL("/app/internal", baseUrl).toString(), { waitUntil: "networkidle" });
   }
+  await page.setViewportSize({ width: 1366, height: 768 });
+  const adminSidebarScroll = await page.locator(".admin-sidebar").evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+    const signout = element.querySelector(".admin-sidebar__signout");
+    const bounds = signout?.getBoundingClientRect();
+    return { scrollHeight: element.scrollHeight, clientHeight: element.clientHeight, scrollTop: element.scrollTop, signoutVisible: Boolean(bounds && bounds.top >= 0 && bounds.bottom <= window.innerHeight) };
+  });
+  if (adminSidebarScroll.scrollHeight <= adminSidebarScroll.clientHeight || adminSidebarScroll.scrollTop === 0 || !adminSidebarScroll.signoutVisible) {
+    throw new Error(`La barra lateral de Admin no permite alcanzar "Cerrar sesión" con poca altura: ${JSON.stringify(adminSidebarScroll)}.`);
+  }
   phase = "internal services table and assignment controls";
   await page.goto(new URL(`/app/internal/services?organizationId=${organizationId}`, baseUrl).toString(), { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Servicios por organización" }).waitFor();
   const serviceRows = page.locator(".admin-service-table tbody tr");
   if (await serviceRows.count() !== 3) throw new Error(`Se esperaban tres servicios de catálogo para el espacio de prueba; se recibieron ${await serviceRows.count()}.`);
   if (await page.getByRole("region", { name: "Asignaciones de servicios" }).getAttribute("tabindex") !== "0") throw new Error("La tabla no permite acceder por teclado a su desplazamiento horizontal.");
-  for (const width of [320, 390, 768, 1366]) {
+  for (const width of [320, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
     const dimensions = await page.locator(".admin-service-table-wrap").evaluate((element) => ({
       wrapper: element.clientWidth,
