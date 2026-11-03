@@ -1,8 +1,8 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.0.2  
+**Versión:** 1.1.0  
 **Fecha:** 2026-11-03  
-**Estado:** PLAN_ONLY · FUENTE OPERATIVA CANÓNICA  
+**Estado:** HANDOFF_READY · W1R DONE · F07-L1 NEXT · NO RUNTIME IMPLEMENTADO  
 **Repositorio:** `hola675/Vecidya`  
 **PR:** #162 (open, draft)  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -45,9 +45,17 @@ Las decisiones no autorizan runtime automáticamente.
 
 Estos conteos son volátiles. Revalidar inmediatamente antes de ejecutar.
 
-## 5. Bloqueo actual
+## 5. Estado Git / W1R
 
-**W1R REQUIRED.** No iniciar runtime hasta revalidar/sincronizar Git y confirmar que los nuevos commits de main no cambian el próximo scope.
+**W1R = DONE_WITH_EVIDENCE.**
+
+- merge commit de reconciliación: `9240bf29f50fa7e72406c72b9bb39fc2252282de`;
+- `main` quedó como ancestro de la rama V9;
+- compare posterior: ahead 764 / behind 0;
+- PR #162 pasó a `mergeable=true`;
+- los cuatro overlaps se resolvieron semánticamente sin mezclar implementación F07.
+
+El siguiente scope de implementación es **F07-L1**.
 
 ## 6. Secuencia restante canónica
 
@@ -83,9 +91,11 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - prototipo D1 histórico requiere inventario/cleanup policy.
 - F08 debe cubrir idioma/aclaración UI, accesibilidad, seguridad, concurrencia, carga y errores.
 
-## 9. Autorización
+## 9. Handoff
 
-**PLAN_ONLY.** El siguiente trabajo ejecutable no está autorizado por esta consolidación documental.
+El responsable solicitó fusionar el plan/base a `main` para que **otro agente** continúe la implementación. Este agente no implementó F07.
+
+Próximo scope: **F07-L1** según plan canónico, con pruebas focalizadas y sin saltar a L2 por inferencia.
 
 ## 10. Qué significa “terminado”
 
@@ -93,6 +103,7 @@ V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + 
 
 ## Changelog
 
+- **1.1.0 / 2026-11-03:** W1R cerrado: main reconciliado en merge commit `9240bf29...`, behind 0 y PR mergeable; handoff preparado para F07-L1 por otro agente.
 - **1.0.2 / 2026-11-03:** el snapshot Git queda explícitamente marcado como referencia temporal, evitando tratar un SHA documental autorreferente como HEAD operativo.
 - **1.0.1 / 2026-11-03:** snapshot Git final de consolidación actualizado a HEAD `10c3e404...`, ahead 761 / behind 15.
 - **1.0.0 / 2026-11-03:** creado como fuente operativa canónica tras revisión punta-a-punta y cierre de contradicciones documentales.
