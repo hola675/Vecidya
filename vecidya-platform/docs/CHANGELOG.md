@@ -1,3 +1,8 @@
+# 2026-11-03 — Diagnostic V9 F07-L3-ADR (documentado, no implementado)
+
+- Se registra en `ARCHITECTURE.md` el formato de comprobante anónimo, canonicalización JCS, digest SHA-256, firma Ed25519, gestión/rotación/revocación de claves y expiración máxima de 24 horas.
+- Se reconcilia el estado operativo: F07-L1/L2 están en PR #231 draft, pendientes de integración; este checkpoint no implementa finalización, no añade migraciones y no despliega.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
