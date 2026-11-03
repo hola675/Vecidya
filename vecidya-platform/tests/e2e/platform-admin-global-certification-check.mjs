@@ -1,7 +1,7 @@
 import { spawn, spawnSync } from "node:child_process";
 import { createConnection, createServer } from "node:net";
 import { randomBytes, randomUUID, createHash } from "node:crypto";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { once } from "node:events";
@@ -20,6 +20,20 @@ function runWrangler(args, timeout = 600_000) {
   const result = spawnSync(process.execPath, [wranglerCli, ...args], { cwd: projectDirectory, encoding: "utf8", timeout, maxBuffer: 8 * 1024 * 1024 });
   if (result.status !== 0) throw new Error(`Wrangler terminó con ${result.status}. ${result.stdout}\n${result.stderr}`);
   return result.stdout;
+}
+
+function verifyWindowsJobObjectReapsOrphans() {
+  if (process.platform !== "win32") return;
+  const marker = join(tmpdir(), `vecidya-job-child-${randomUUID()}.txt`);
+  try {
+    const childArgs = ["-NoProfile", "-Command", `$child = Start-Process powershell.exe -ArgumentList '-NoProfile -Command Start-Sleep -Seconds 60' -PassThru; [IO.File]::WriteAllText('${marker.replaceAll("'", "''")}', [string]$child.Id)`];
+    const helper = resolve(new URL("./windows-job-runner.ps1", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\"));
+    const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", helper, "-Executable", resolve(process.env.SystemRoot, "System32/WindowsPowerShell/v1.0/powershell.exe"), "-ArgumentsBase64", Buffer.from(JSON.stringify(childArgs)).toString("base64"), "-WorkingDirectory", projectDirectory, "-ControlFile", `${marker}.stop`], { cwd: projectDirectory, encoding: "utf8", timeout: 15_000, windowsHide: true });
+    if (result.error || result.status !== 0 || !existsSync(marker)) throw new Error(`El fixture del Job Object no terminó correctamente: ${result.stderr || result.error?.message || result.status}`);
+    const childPid = Number(readFileSync(marker, "utf8"));
+    const check = powershell(`$ErrorActionPreference='Stop'; $p=Get-CimInstance Win32_Process -Filter 'ProcessId = ${childPid}' -ErrorAction Stop; if ($p) { [Console]::Out.Write('alive') } else { [Console]::Out.Write('gone') }`);
+    if (check !== "gone") throw new Error(`El Job Object dejó vivo el proceso hijo huérfano ${childPid}.`);
+  } finally { rmSync(marker, { force: true }); }
 }
 
 async function workerPortState(portNumber) {
@@ -52,7 +66,7 @@ function powershell(command) {
 }
 
 function windowsProcessCreationTime(pid, expectWrangler = false) {
-  const validation = expectWrangler ? "if ($process.Name -ne 'node.exe' -or $process.CommandLine -notmatch 'wrangler-dist[\\\\/]+cli\\.js') { throw 'El PID no corresponde al CLI de Wrangler.' }; " : "";
+  const validation = expectWrangler ? "if ($process.Name -ne 'powershell.exe' -or $process.CommandLine -notmatch 'windows-job-runner\\.ps1') { throw 'El PID no corresponde al supervisor del Job Object.' }; " : "";
   const output = powershell(`$ErrorActionPreference = 'Stop'; try { $process = Get-CimInstance Win32_Process -Filter 'ProcessId = ${Number(pid)}' -ErrorAction Stop; if ($null -eq $process) { throw 'No se encontró el proceso objetivo.' }; ${validation}[Console]::Out.Write($process.CreationDate.ToUniversalTime().ToFileTimeUtc()) } catch { [Console]::Error.WriteLine($_); exit 1 }`);
   if (!/^\d+$/.test(output)) throw new Error(`Windows devolvió una hora de creación inválida para el PID ${pid}.`);
   return output;
@@ -68,46 +82,13 @@ async function waitForWindowsProcessCreationTime(pid) {
   throw new Error(`No se pudo confirmar la identidad del proceso Wrangler: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
 }
 
-function windowsWorkerDescendants(child, workerStartedAt, workerExitedAt) {
-  if (!workerStartedAt) throw new Error("No se registró la hora de creación de Wrangler; no es seguro enumerar sus descendientes.");
-  const processCount = powershell("$ErrorActionPreference = 'Stop'; try { $processes = @(Get-CimInstance Win32_Process -ErrorAction Stop); if ($processes.Count -eq 0) { throw 'La consulta CIM no devolvió procesos.' }; [Console]::Out.Write($processes.Count) } catch { [Console]::Error.WriteLine($_); exit 1 }");
-  if (!/^\d+$/.test(processCount) || Number(processCount) < 1) throw new Error("La enumeración de procesos de Windows no devolvió una cantidad válida.");
-  const startedAtTicks = BigInt(workerStartedAt);
-  const endedAtTicks = workerExitedAt
-    ? BigInt(workerExitedAt) * 10_000n + 116_444_736_000_000_000n
-    : BigInt(Date.now()) * 10_000n + 116_444_736_000_000_000n;
-  const output = powershell(`$ErrorActionPreference = 'Stop'; try { $root = ${Number(child.pid)}; $rootTicks = [Int64]'${startedAtTicks}'; $start = [DateTime]::FromFileTimeUtc($rootTicks); $endTicks = [Int64]'${endedAtTicks}'; $end = [DateTime]::FromFileTimeUtc($endTicks); $all = @(Get-CimInstance Win32_Process -ErrorAction Stop | Select-Object ProcessId, ParentProcessId, CreationDate); $rootProcess = $all | Where-Object { [int]$_.ProcessId -eq $root } | Select-Object -First 1; if ($rootProcess -and ([DateTime]$rootProcess.CreationDate).ToFileTimeUtc() -ne $rootTicks) { throw 'El PID raíz fue reutilizado por otro proceso.' }; $found = [System.Collections.Generic.HashSet[int]]::new(); [void]$found.Add($root); $descendants = @{}; do { $added = $false; foreach ($item in $all) { if ($null -eq $item.CreationDate) { continue }; $processId = [int]$item.ProcessId; $parentId = [int]$item.ParentProcessId; $created = ([DateTime]$item.CreationDate).ToFileTimeUtc(); if ($created -lt $rootTicks -or $created -gt $endTicks) { continue }; if ($found.Contains($parentId) -and -not $found.Contains($processId)) { [void]$found.Add($processId); $descendants[$processId] = $created; $added = $true } } } while ($added); foreach ($processId in $descendants.Keys) { [Console]::Out.WriteLine(\"$processId|$($descendants[$processId])\") } } catch { [Console]::Error.WriteLine($_); exit 1 }`);
-  return output.split(/\r?\n/).filter(Boolean).map((line) => {
-    const match = /^(\d+)\|(\d+)$/.exec(line);
-    if (!match) throw new Error(`Windows devolvió un descendiente inválido de Wrangler: ${line}`);
-    return { pid: Number(match[1]), creationTime: match[2] };
-  });
-}
-
-function forceStopWorkerTree(child, workerStartedAt, workerExitedAt) {
+function forceStopWorkerTree(child, workerStartedAt) {
   if (process.platform === "win32") {
-    const descendants = windowsWorkerDescendants(child, workerStartedAt, workerExitedAt);
-    let stopped = true;
-    for (const descendant of descendants) {
-      if (windowsProcessCreationTime(descendant.pid) !== descendant.creationTime) continue;
-      const result = spawnSync("taskkill", ["/PID", String(descendant.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
-      if (result.error || (result.status !== 0 && !/no se encontr[oó] el proceso/i.test(`${result.stdout}\n${result.stderr}`))) stopped = false;
-    }
-    if (child.exitCode === null) {
-      if (windowsProcessCreationTime(child.pid, true) !== workerStartedAt) throw new Error("El PID raíz de Wrangler cambió de identidad antes de detenerlo.");
-      const result = spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
-      if (result.error || result.status !== 0) stopped = false;
-    }
-    if (windowsWorkerDescendants(child, workerStartedAt, workerExitedAt).length > 0) stopped = false;
-    return stopped;
-  }
-  try {
-    process.kill(-child.pid, "SIGKILL");
+    if (child.exitCode === null) terminateWindowsProcessByIdentity({ pid: child.pid, creationTime: workerStartedAt, isWrangler: true });
     return true;
-  } catch (error) {
-    if (error?.code === "ESRCH") return true;
-    throw error;
   }
+  try { process.kill(-child.pid, "SIGKILL"); return true; }
+  catch (error) { if (error?.code === "ESRCH") return true; throw error; }
 }
 
 function sqlLiteral(value) { return `'${String(value).replaceAll("'", "''")}'`; }
@@ -209,14 +190,19 @@ const staffEmail = `platform-staff-${randomUUID()}@vecidya.test`;
 let worker;
 let workerWindowsStartedAt = null;
 let workerExitedAt = null;
+const workerControlFile = `${persistence}.stop`;
 
 try {
+  verifyWindowsJobObjectReapsOrphans();
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
   query(`INSERT INTO platform_meta (key, value, updated_at) VALUES ('platform_name', 'Vecidya', ${now});`);
   query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${sqlLiteral(bootstrapUserId)},'Cert bootstrap',${sqlLiteral(`bootstrap-${suffix}@vecidya.test`)},1,${now},${now});
 INSERT INTO organization (id,name,slug,created_at) VALUES (${sqlLiteral(bootstrapOrgId)},'Cert bootstrap','bootstrap-${suffix}',${now});
 INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(bootstrapInvitationId)},${sqlLiteral(bootstrapOrgId)},${sqlLiteral(adminEmail)},'admin','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
-  worker = spawn(process.execPath, [wranglerDevCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
+  const workerArgs = [wranglerDevCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"];
+  worker = process.platform === "win32"
+    ? spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", resolve(new URL("./windows-job-runner.ps1", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\")), "-Executable", process.execPath, "-ArgumentsBase64", Buffer.from(JSON.stringify(workerArgs)).toString("base64"), "-WorkingDirectory", projectDirectory, "-ControlFile", workerControlFile], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], windowsHide: true })
+    : spawn(process.execPath, workerArgs, { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: true });
   worker.once("exit", () => { workerExitedAt = Date.now(); });
   if (process.platform === "win32") workerWindowsStartedAt = await waitForWindowsProcessCreationTime(worker.pid);
   worker.output = ""; worker.stdout.on("data", (chunk) => { worker.output += chunk.toString(); }); worker.stderr.on("data", (chunk) => { worker.output += chunk.toString(); });
@@ -478,29 +464,23 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
     return Promise.race([exited, new Promise((resolveWait) => { timer = setTimeout(() => resolveWait(null), 5000); })]).finally(() => clearTimeout(timer));
   };
   if (worker && worker.exitCode === null) {
-    if (process.platform === "win32") worker.kill("SIGINT");
+    if (process.platform === "win32") writeFileSync(workerControlFile, "SIGINT", "utf8");
     else {
       try { process.kill(-worker.pid, "SIGINT"); }
       catch (error) { if (error?.code !== "ESRCH") throw error; }
     }
     let result = await waitForExit();
+    if (result && process.platform === "win32" && !worker.output.includes("JOB_CHILD_EXIT:")) workerShutdownError = "El supervisor terminó sin confirmar la salida graceful de Wrangler.";
     if (!result) {
-      forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
+      forceStopWorkerTree(worker, workerWindowsStartedAt);
       result = await waitForExit();
-      workerShutdownError = "El Worker local requirió terminación forzada; no se considera una limpieza PASS.";
+      workerShutdownError ??= "El Worker local requirió terminación forzada; no se considera una limpieza PASS.";
     }
     if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y terminación forzada.";
   }
-  if (process.platform === "win32" && worker) {
-    const descendants = windowsWorkerDescendants(worker, workerWindowsStartedAt, workerExitedAt);
-    if (descendants.length > 0) {
-      workerShutdownError ??= "El proceso raíz de Wrangler terminó dejando descendientes; se forzó su cierre y no se considera una limpieza PASS.";
-      forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
-    }
-  }
   let workerPort = await workerPortState(portNumber);
   if (!workerPort.closed) {
-    if (worker) forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
+    if (worker) forceStopWorkerTree(worker, workerWindowsStartedAt);
     if (worker?.exitCode === null) {
       exited ??= once(worker, "exit").then(([code, signal]) => ({ code, signal }));
       await waitForExit();
@@ -512,6 +492,7 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
   try {
     if (workerShutdownError) throw new Error(`${workerShutdownError} La D1 aislada se conserva en ${persistenceName}.`);
     rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });
+    rmSync(workerControlFile, { force: true });
     if (existsSync(persistence)) throw new Error(`La D1 aislada sigue presente: ${persistenceName}`);
     console.log("PASS: D1 aislada eliminada y ausencia verificada.");
   } catch (error) {
