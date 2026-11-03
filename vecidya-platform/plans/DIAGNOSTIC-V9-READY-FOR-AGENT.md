@@ -1,81 +1,109 @@
-# Diagnóstico V9 — Paquete de preparación READY_FOR_AGENT
-Versión: 0.6.0 | 2026-11-01 | Estado: F00-F01 DONE / F02 DONE_WITH_FALLBACK / F03-F04 DONE_WITH_EVIDENCE / NOT_READY_FOR_F05
-Repositorio: hola675/Vecidya | PR maestro #162 | Rama feat/diagnostic-v9-lex-graph-p1b
+# Diagnóstico V9 — READY_FOR_AGENT
 
-## 1. Decisión de preparación
-**F00–F01 DONE_WITH_EVIDENCE; F02 DONE_WITH_FALLBACK; F03–F04 DONE_WITH_EVIDENCE; NO READY FOR F05.** El core 24+5 está implementado: 24 base, consentimiento explícito, hasta 5 críticos, hard cap 29 y replay autoritativo. El graph/context gate y budget/session/replay pasan 31/31 cada uno sobre el SHA de código F03.
+**Versión:** 1.0.0  
+**Fecha:** 2026-11-03  
+**Estado:** NOT_READY_FOR_RUNTIME · PLAN_ONLY · W1R REQUIRED  
+**Repositorio:** `hola675/Vecidya` · **PR:** #162 · **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
-Los bloqueos técnicos P0 de F04 quedaron resueltos: `scoring_version` liga explícitamente una calibración registrada, replay/finalization reproducen calibración histórica, correlación se aplica antes del scorer y conflictos/unmapped fallan cerrado. El gate focal del HEAD de código F04 pasó 32/32. F05+ permanece fuera de autorización.
+## 1. Estado canónico
 
-## 2. Índice de lectura obligatorio para el agente
-1. plans/DIAGNOSTIC-V9-MASTER-FINALIZATION-PLAN.md — fuente de alcance, políticas aprobadas, gates y estado PLAN_ONLY (leer secciones recientes antes de obedecer instrucciones históricas de ejecución).
-2. plans/DIAGNOSTIC-V9-PLAN-CLOSURE-REGISTER.md — reconciliación de decisiones y bloqueos DEC-A–H.
-3. plans/DIAGNOSTIC-V9-F00-F10-EXECUTION-BACKLOG.md — tareas, dependencias y STOP/rollback.
-4. plans/DIAGNOSTIC-V9-MAIN-SYNC-CONFLICT-MATRIX.md — riesgo de integración main→V9.
-5. plans/DIAGNOSTIC-V9-PRODUCT-DEFINITION-V1.md — recorrido E0–E5 y fronteras con Aprende/GHL.
-6. plans/DIAGNOSTIC-V9-EVALUATION-MODEL-V1.md — ocho dimensiones candidatas, no aprobadas como taxonomía definitiva.
-7. plans/DIAGNOSTIC-V9-EDITORIAL-LOTE-01.md — banco y evidencia editorial; revisar estado de propuestas.
-8. plans/DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md — disposición recomendada A–H; no equivale a aprobación.
-9. plans/DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md — waves W0–W10 y scope incremental condicional.
-10. docs/STATUS.md y docs/TESTING.md — evidencia CI por SHA, no garantía de HEAD actual.
+- A–H: ratificadas por el responsable; no reabrir.
+- W1/F00: DONE_WITH_EVIDENCE histórico; requiere W1R porque `main` volvió a avanzar.
+- W2/F01: DONE_WITH_EVIDENCE.
+- W3/F02: DONE_WITH_FALLBACK; baseline 77, 59 rewrites + 13 candidatos fuera del runtime.
+- W4/F03: DONE_WITH_EVIDENCE; 24+5.
+- W5/F04: DONE_WITH_EVIDENCE; scorer/correlation/calibration.
+- DEC-E: ratificado y refinado.
+- runtime restante: PLAN_ONLY.
 
-## 3. Matriz de aceptación del PLAN (antes de tocar código)
-| Gate | Condición comprobable | Estado 2026-11-01 | Evidencia requerida |
-| --- | --- | --- | --- |
-| PLAN-G01 | D-V9-001–033 conciliadas sin reabrir aprobaciones | DOCUMENTED | Registro v0.2.0 y secciones de aprobación del maestro |
-| PLAN-G02 | Taxonomía 8×10 aprobada, aplicabilidad y nombres definitivos | READY_FOR_HUMAN_REVIEW | DEC-A pack + hoja ejecutiva; falta aprobación |
-| PLAN-G03 | Banco de 90 candidatos revisado por pregunta/opción | READY_FOR_HUMAN_REVIEW | DEC-C pack; 77 baseline, 82/90 pending; falta aprobación |
-| PLAN-G04 | Scoring, calibración, confianza, abstención y correlación aprobados | READY_FOR_HUMAN_REVIEW | DEC-B + DEC-D packs; binding v2/v4 sigue P0 |
-| PLAN-G05 | Informe identificado, permisos, retención y seguimiento definidos | READY_FOR_HUMAN_REVIEW | DEC-E pack; local-only/D1/store final aún requieren decisión |
-| PLAN-G06 | Adaptadores Aprende/servicios y fallback especificados | READY_FOR_HUMAN_REVIEW | DEC-G pack; catálogos reales se verifican en implementación |
-| PLAN-G07 | Backlog F00–F10 con tareas, prerequisitos, pruebas y rollback | DOCUMENTED, REQUIRES_REVIEW | Backlog v0.1.0; revisar contra HEAD antes de ejecutar |
-| PLAN-G08 | Matriz C01–C10 y ES/EN con criterios de aceptación | DOCUMENTED / NOT_CERTIFIED | CLASS-04 + DEC-A/F; faltan pruebas autorizadas |
-| PLAN-G09 | Política de integración main, V8, migraciones y rollback aprobada | READY_FOR_HUMAN_REVIEW | DEC-H pack; colisión 0030–0035 y aprobación pendientes |
-| PLAN-G10 | Aprobación explícita del responsable para comenzar implementación | GRANTED_W1_F00_ONLY | W1/F00 ejecutado; W2+ requiere nueva autorización |
+## 2. Lectura obligatoria y autoridad
 
-## 4. Gates de implementación (después de autorización)
-| Gate | Tareas | Condición de salida |
-| --- | --- | --- |
-| IMPL-G00 | F00–F01 | **PASS focal**: main ancestro + frontera legacy congelada; storage final deferred y registry objetivo definido |
-| IMPL-G01 | F02 | Banco aprobado, ES/EN y evidencia versionada |
-| IMPL-G02 | F03 | **PASS CORE** — graph/context 31/31 + budget/session/replay 31/31; idioma/aclaración UI quedan F08 |
-| IMPL-G03 | F04 | **PASS CORE** — scorer V9-owned, 40 mappings, correlation fail-closed, v1-v4 registry, histórico v2 y v4 actual; 32/32 PASS |
-| IMPL-G04 | F05–F06 | Resumen/informe/recomendaciones justificadas, recursos publicados o fallback |
-| IMPL-G05 | F07 | Sesión, claim, organización, historial y privacidad sin acceso cruzado |
-| IMPL-G06 | F08 | UX accesible, seguridad, E2E y regresiones pertinentes |
-| IMPL-G07 | F09 | Conmutación y retirada legacy con rollback, datos históricos intactos |
-| IMPL-G08 | F10 | Staging, piloto, aceptación, despliegue autorizado y verificación |
+1. `DIAGNOSTIC-V9-CURRENT-STATUS.md` — estado operativo actual.
+2. `DIAGNOSTIC-V9-HUMAN-DECISION-SHEET-A-H.md` — decisiones humanas.
+3. `DIAGNOSTIC-V9-POST-APPROVAL-IMPLEMENTATION-SCOPE.md` — secuencia/scopes.
+4. `DIAGNOSTIC-V9-F00-F10-EXECUTION-BACKLOG.md` — tareas.
+5. reportes W1–W5 — evidencia histórica por SHA/run.
+6. paquetes DEC / Master Plan — análisis e historia; no prevalecen si contradicen los anteriores.
 
-## 5. Orden de arranque futuro y condiciones de parada
-- Comprobar rama, HEAD remoto, worktree limpio, PR y main; si cambió el HEAD desde el último checkpoint, reconciliar antes de escribir.
-- Ejecutar F00-01 primero y confirmar aprobación de DEC-H antes de F00-02. Nunca force-push.
-- Para cada tarea: documentar alcance → editar mínimo → ejecutar únicamente pruebas focalizadas del código modificado → registrar comando, exit code, log, SHA y riesgo → commit acotado.
-- No usar typecheck/build global como rutina; solo si gate de integración lo exige y el responsable lo aprueba. No confundir tests escritos con PASS.
-- Si una tarea requiere decisión editorial no aprobada, dejarla HOLD y continuar solo con tareas documentales independientes.
-- Detener ante: conflicto con cambios concurrentes; modificación fuera de ámbito; acceso cruzado; pérdida de datos; evidencia duplicada; score sin suficiente evidencia; fallo de rollback; CI sin trazabilidad.
-- No borrar migraciones D1 ya aplicadas ni pruebas V8. GHL no condiciona el diagnóstico.
+## 3. Gate previo a cualquier runtime
 
-## 6. Evidencia histórica que no debe exagerarse
-La documentación registra 13/13 PASS del archivo focal del banco90/correlador para commit 231fba058803, GitHub Actions run 41200765557. No es un PASS del HEAD posterior ni de E2E, identidad, staging o producción.
-El correlador V9 ya está conectado al scorer autónomo antes de agregación; el P0 de doble conteo queda cerrado para los mappings/overlap groups registrados en F04. Nuevos mappings solapados deberán declarar metadata antes de scoring.
-PR #162 permanece draft; tras W1 GitHub lo reportó mergeable. Revalidar antes de cada nuevo scope.
+### W1R
+- revalidar HEAD/main/PR/ahead/behind/merge-base;
+- revisar overlap con el próximo scope;
+- revisar migration journal;
+- si hay overlap material, reconciliar main→V9 en lote Git separado;
+- registrar SHA y evidencia.
 
-## 7. Formato obligatorio del reporte de cada tarea futura
-- ID / gate / fecha / HEAD inicial / HEAD final.
-- Fuentes verificadas, decisión aprobada y archivos afectados.
-- Cambios precisos, alcance excluido, razón.
-- Comando de prueba focal, resultado, exit code y log asociado a SHA.
-- Riesgos, rollback y pendientes.
-- Estado: DONE_WITH_EVIDENCE / BLOCKED / HOLD / NEEDS_REVIEW. Nunca DONE por inspección documental solamente.
+Sin W1R cerrado no se declara READY para F07-L1.
 
-## 8. Próximo paso de planificación
-El siguiente gate requiere nueva autorización: **F05**. No modificar resumen/informe/recomendaciones ni superficies posteriores hasta mensaje explícito. Los 59 rewrites y 13 ADD siguen fuera del runtime canónico.
+## 4. Siguiente lote runtime elegible
+
+Después de W1R: **F07-L1 solamente**.
+
+Scope:
+- `app/features/diagnostic/v9/local-draft.ts`;
+- `app/features/diagnostic/v9/local-draft.client.ts`;
+- `app/routes/diagnostic-v9.tsx` para iniciar local-only sin identity/run D1;
+- `app/routes/diagnostic-v9-run.tsx` para entrevista local;
+- tests LOCAL focales.
+
+Invariantes:
+- TTL derivado de `session.updatedAt + 7d`;
+- lectura no renueva;
+- draft solo `in_progress`/`completing`; `completed` inválido;
+- cero D1 anónimo durante borrador;
+- sin scoring/bank/migrations/finalization/claim/GHL/deploy.
+
+## 5. Secuencia posterior
+
+`W1R → L1 → L2 → L3-ADR → L3 → F05-01 → F06 → F05-02 → L4 → L5 → L6 → F08 → F09 → F10`
+
+Detalles:
+- L2: replay transitorio, servidor rechaza sesiones >7d.
+- L3: attestation verificable + resultado local 24h; requiere ADR criptográfico.
+- F05/F06: resumen, prioridades, Aprende/Servicios e informe definitivo.
+- L4: save/claim/owner después del contrato del informe.
+- L5: eliminación/retención/backups.
+- L6: flujo integrado.
+
+## 6. Evidencia requerida por lote
+
+- SHA inicial/final;
+- archivos modificados dentro del allowlist;
+- comando focal y exit code;
+- PASS/FAIL/reintentos;
+- confirmación de exclusiones;
+- rollback;
+- volver a PLAN_ONLY al cerrar el lote.
+
+Typecheck/build:
+- no como rutina de cada microcambio;
+- typecheck al cerrar wave runtime;
+- typecheck + build en cierre integrado L6/W6;
+- typecheck + build + E2E/regresión delimitada en F08.
+
+## 7. STOP
+
+Detener ante:
+- cambio concurrente material;
+- scope fuera de allowlist;
+- necesidad de migración no autorizada;
+- acceso cruzado o pérdida de datos;
+- score sin evidencia suficiente;
+- persistencia individual anónima en L1/L2;
+- imposibilidad de rollback;
+- intento de saltar dependencia F05/F06 antes de L4.
+
+## 8. READY
+
+**Ahora: NOT_READY_FOR_RUNTIME.**
+
+READY_FOR_AGENT de F07-L1 solo después de:
+1. W1R PASS;
+2. autorización explícita de F07-L1;
+3. revalidación del session/parser contract;
+4. comandos focales confirmados en checkout.
 
 ## Changelog
-- 0.6.0 / 2026-11-01: W5/F04 cerrado; scorer autónomo y calibration/correlation reproducibles 32/32; F05+ no autorizado.
-- 0.5.0 / 2026-11-01: W4/F03 cerrado; 24+5/replay y graph 31/31 cada uno; W5/F04 no autorizado.
-- 0.4.0 / 2026-11-01: W3/F02 cerrado con fallback; canonical manifest 77, 29/29 PASS; W4/F03 no autorizado.
-- 0.3.0 / 2026-11-01: W2/F01 cerrado; frontera legacy allowlisted 3/3 PASS; storage final deferred y registry objetivo fijado; F02+ PLAN_ONLY.
-- 0.2.0 / 2026-11-01: A–H aprobadas; W1/F00 ejecutado con main ancestro, migraciones V9 0038–0043 y 43/43 pruebas focales PASS; W2+ sigue PLAN_ONLY.
-- 0.1.1 / 2026-11-01: A–H ya están READY_FOR_HUMAN_REVIEW; se añaden hoja ejecutiva, scope post-aprobación y estados actualizados de gates sin levantar PLAN_ONLY.
-- 0.1.0 / 2026-10-31: índice, matrices de aceptación, protocolo de arranque, stop conditions y reporte por tarea. Sin cambios de runtime.
+
+- **1.0.0 / 2026-11-03:** documento reescrito contra el plan canónico; elimina estados A–H obsoletos, añade W1R, scope L1 corregido y secuencia L1→L3→F05/F06→L4-L6.
