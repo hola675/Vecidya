@@ -10,10 +10,11 @@ import { assertLocalBaseUrl } from "./test-safety.mjs";
 
 const projectDirectory = resolve(new URL("../..", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\"));
 const wranglerCli = resolve(projectDirectory, "node_modules/wrangler/bin/wrangler.js");
+const wranglerDevCli = resolve(projectDirectory, "node_modules/wrangler/wrangler-dist/cli.js");
 mkdirSync(resolve(projectDirectory, ".wrangler"), { recursive: true });
 const persistenceName = `.wrangler/platform-admin-global-cert-${process.pid}-${Date.now()}`;
 const persistence = resolve(projectDirectory, persistenceName);
-if (!existsSync(wranglerCli)) throw new Error("Falta Wrangler local para ejecutar la certificación.");
+if (!existsSync(wranglerCli) || !existsSync(wranglerDevCli)) throw new Error("Falta Wrangler local para ejecutar la certificación.");
 
 function runWrangler(args, timeout = 600_000) {
   const result = spawnSync(process.execPath, [wranglerCli, ...args], { cwd: projectDirectory, encoding: "utf8", timeout, maxBuffer: 8 * 1024 * 1024 });
@@ -21,26 +22,27 @@ function runWrangler(args, timeout = 600_000) {
   return result.stdout;
 }
 
-async function portClosed(portNumber) {
+async function workerPortState(portNumber) {
   const deadline = Date.now() + 5000;
   while (Date.now() < deadline) {
-    const listening = await new Promise((resolveListening) => {
+    const state = await new Promise((resolveState) => {
       const socket = createConnection({ host: "127.0.0.1", port: portNumber });
       let settled = false;
-      const finish = (isListening) => {
+      const finish = (nextState) => {
         if (settled) return;
         settled = true;
         socket.destroy();
-        resolveListening(isListening);
+        resolveState(nextState);
       };
-      socket.setTimeout(1000, () => finish(false));
-      socket.once("connect", () => finish(true));
-      socket.once("error", () => finish(false));
+      socket.setTimeout(1000, () => finish("unknown: timeout al comprobar el puerto"));
+      socket.once("connect", () => finish("listening"));
+      socket.once("error", (error) => finish(error.code === "ECONNREFUSED" ? "closed" : `unknown: ${error.code ?? error.message}`));
     });
-    if (!listening) return true;
+    if (state === "closed") return { closed: true };
+    if (state !== "listening") return { closed: false, reason: state };
     await new Promise((resolveWait) => setTimeout(resolveWait, 250));
   }
-  return false;
+  return { closed: false, reason: "el puerto continúa escuchando" };
 }
 
 function forceStopWorkerTree(child) {
@@ -161,7 +163,7 @@ try {
   query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${sqlLiteral(bootstrapUserId)},'Cert bootstrap',${sqlLiteral(`bootstrap-${suffix}@vecidya.test`)},1,${now},${now});
 INSERT INTO organization (id,name,slug,created_at) VALUES (${sqlLiteral(bootstrapOrgId)},'Cert bootstrap','bootstrap-${suffix}',${now});
 INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(bootstrapInvitationId)},${sqlLiteral(bootstrapOrgId)},${sqlLiteral(adminEmail)},'admin','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
-  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
+  worker = spawn(process.execPath, [wranglerDevCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
   worker.output = ""; worker.stdout.on("data", (chunk) => { worker.output += chunk.toString(); }); worker.stderr.on("data", (chunk) => { worker.output += chunk.toString(); });
   const readyBy = Date.now() + 60_000;
   while (Date.now() < readyBy) { try { if ((await fetch(`${baseUrl}/api/auth/ok`)).status === 200) break; } catch {} await new Promise((resolveWait) => setTimeout(resolveWait, 200)); }
@@ -430,8 +432,8 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
     }
     if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y terminación forzada.";
   }
-  const workerPortIsClosed = await portClosed(portNumber);
-  if (!workerPortIsClosed) workerShutdownError = "El puerto del Worker local sigue aceptando conexiones.";
+  const workerPort = await workerPortState(portNumber);
+  if (!workerPort.closed) workerShutdownError = `No se pudo confirmar que el puerto del Worker local esté cerrado (${workerPort.reason}).`;
   try {
     if (workerShutdownError) throw new Error(`${workerShutdownError} La D1 aislada se conserva en ${persistenceName}.`);
     rmSync(persistence, { recursive: true, force: true, maxRetries: 5, retryDelay: 250 });

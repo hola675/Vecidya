@@ -1,7 +1,7 @@
 # 2026-11-03 — FIX-APP-ADMIN-FORBIDDEN-UX — respuesta legible para 401/403
 
 - La pantalla de error raíz distingue acceso restringido (403) e inicio de sesión (401), ofrece el retorno correspondiente y no altera las guards ni revela errores internos. El E2E añade la comprobación visible del caso 403 y actualiza los campos de licencia que requiere el formulario vigente.
-- El runner Worker/D1 crea su carpeta `.wrangler` si falta, supervisa el árbol de procesos y comprueba el cierre del puerto antes de borrar la D1. E2E con migraciones locales `0000–0037`, typecheck y build PASS; CI completo pasó en `a323e784` antes del ajuste final del runner, que volvió a pasar localmente. No requiere migración nueva, no usa base remota y no se desplegó. Detalle en `TESTING.md`.
+- El runner Worker/D1 crea `.wrangler` si falta, ejecuta el CLI supervisado directamente, detiene el árbol de procesos y solo acepta `ECONNREFUSED` como puerto cerrado antes de borrar la D1. E2E con migraciones `0000–0037`, typecheck y build PASS; CI completo pasó en `a323e784` antes del endurecimiento final del runner, validado localmente después. No requiere migración nueva, no usa base remota ni se desplegó. Detalle en `TESTING.md`.
 
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
