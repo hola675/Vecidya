@@ -45,10 +45,61 @@ async function workerPortState(portNumber) {
   return { closed: false, reason: "el puerto continúa escuchando" };
 }
 
-function forceStopWorkerTree(child) {
+function powershell(command) {
+  const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command", command], { encoding: "utf8", timeout: 10_000, windowsHide: true });
+  if (result.error || result.status !== 0) throw new Error(`PowerShell de limpieza terminó con ${result.status}: ${result.stderr || result.error?.message || "sin detalle"}`);
+  return result.stdout.trim();
+}
+
+function windowsProcessCreationTime(pid, expectWrangler = false) {
+  const validation = expectWrangler ? "if ($process.Name -ne 'node.exe' -or $process.CommandLine -notmatch 'wrangler-dist[\\\\/]+cli\\.js') { throw 'El PID no corresponde al CLI de Wrangler.' }; " : "";
+  const output = powershell(`$ErrorActionPreference = 'Stop'; try { $process = Get-CimInstance Win32_Process -Filter 'ProcessId = ${Number(pid)}' -ErrorAction Stop; if ($null -eq $process) { throw 'No se encontró el proceso objetivo.' }; ${validation}[Console]::Out.Write($process.CreationDate.ToUniversalTime().ToFileTimeUtc()) } catch { [Console]::Error.WriteLine($_); exit 1 }`);
+  if (!/^\d+$/.test(output)) throw new Error(`Windows devolvió una hora de creación inválida para el PID ${pid}.`);
+  return output;
+}
+
+async function waitForWindowsProcessCreationTime(pid) {
+  let lastError;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    try { return windowsProcessCreationTime(pid, true); }
+    catch (error) { lastError = error; }
+    await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+  }
+  throw new Error(`No se pudo confirmar la identidad del proceso Wrangler: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
+}
+
+function windowsWorkerDescendants(child, workerStartedAt, workerExitedAt) {
+  if (!workerStartedAt) throw new Error("No se registró la hora de creación de Wrangler; no es seguro enumerar sus descendientes.");
+  const processCount = powershell("$ErrorActionPreference = 'Stop'; try { $processes = @(Get-CimInstance Win32_Process -ErrorAction Stop); if ($processes.Count -eq 0) { throw 'La consulta CIM no devolvió procesos.' }; [Console]::Out.Write($processes.Count) } catch { [Console]::Error.WriteLine($_); exit 1 }");
+  if (!/^\d+$/.test(processCount) || Number(processCount) < 1) throw new Error("La enumeración de procesos de Windows no devolvió una cantidad válida.");
+  const startedAtTicks = BigInt(workerStartedAt);
+  const endedAtTicks = workerExitedAt
+    ? BigInt(workerExitedAt) * 10_000n + 116_444_736_000_000_000n
+    : BigInt(Date.now()) * 10_000n + 116_444_736_000_000_000n;
+  const output = powershell(`$ErrorActionPreference = 'Stop'; try { $root = ${Number(child.pid)}; $rootTicks = [Int64]'${startedAtTicks}'; $start = [DateTime]::FromFileTimeUtc($rootTicks); $endTicks = [Int64]'${endedAtTicks}'; $end = [DateTime]::FromFileTimeUtc($endTicks); $all = @(Get-CimInstance Win32_Process -ErrorAction Stop | Select-Object ProcessId, ParentProcessId, CreationDate); $rootProcess = $all | Where-Object { [int]$_.ProcessId -eq $root } | Select-Object -First 1; if ($rootProcess -and ([DateTime]$rootProcess.CreationDate).ToFileTimeUtc() -ne $rootTicks) { throw 'El PID raíz fue reutilizado por otro proceso.' }; $found = [System.Collections.Generic.HashSet[int]]::new(); [void]$found.Add($root); $descendants = @{}; do { $added = $false; foreach ($item in $all) { if ($null -eq $item.CreationDate) { continue }; $processId = [int]$item.ProcessId; $parentId = [int]$item.ParentProcessId; $created = ([DateTime]$item.CreationDate).ToFileTimeUtc(); if ($created -lt $rootTicks -or $created -gt $endTicks) { continue }; if ($found.Contains($parentId) -and -not $found.Contains($processId)) { [void]$found.Add($processId); $descendants[$processId] = $created; $added = $true } } } while ($added); foreach ($processId in $descendants.Keys) { [Console]::Out.WriteLine(\"$processId|$($descendants[$processId])\") } } catch { [Console]::Error.WriteLine($_); exit 1 }`);
+  return output.split(/\r?\n/).filter(Boolean).map((line) => {
+    const match = /^(\d+)\|(\d+)$/.exec(line);
+    if (!match) throw new Error(`Windows devolvió un descendiente inválido de Wrangler: ${line}`);
+    return { pid: Number(match[1]), creationTime: match[2] };
+  });
+}
+
+function forceStopWorkerTree(child, workerStartedAt, workerExitedAt) {
   if (process.platform === "win32") {
-    const result = spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
-    return result.status === 0 || child.exitCode !== null;
+    const descendants = windowsWorkerDescendants(child, workerStartedAt, workerExitedAt);
+    let stopped = true;
+    for (const descendant of descendants) {
+      if (windowsProcessCreationTime(descendant.pid) !== descendant.creationTime) continue;
+      const result = spawnSync("taskkill", ["/PID", String(descendant.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
+      if (result.error || (result.status !== 0 && !/no se encontr[oó] el proceso/i.test(`${result.stdout}\n${result.stderr}`))) stopped = false;
+    }
+    if (child.exitCode === null) {
+      if (windowsProcessCreationTime(child.pid, true) !== workerStartedAt) throw new Error("El PID raíz de Wrangler cambió de identidad antes de detenerlo.");
+      const result = spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { encoding: "utf8", timeout: 5000, windowsHide: true });
+      if (result.error || result.status !== 0) stopped = false;
+    }
+    if (windowsWorkerDescendants(child, workerStartedAt, workerExitedAt).length > 0) stopped = false;
+    return stopped;
   }
   try {
     process.kill(-child.pid, "SIGKILL");
@@ -156,6 +207,8 @@ const adminEmail = `platform-admin-${randomUUID()}@vecidya.test`;
 const resendEmail = `resend-owner-${randomUUID()}@vecidya.test`;
 const staffEmail = `platform-staff-${randomUUID()}@vecidya.test`;
 let worker;
+let workerWindowsStartedAt = null;
+let workerExitedAt = null;
 
 try {
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
@@ -164,6 +217,8 @@ try {
 INSERT INTO organization (id,name,slug,created_at) VALUES (${sqlLiteral(bootstrapOrgId)},'Cert bootstrap','bootstrap-${suffix}',${now});
 INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${sqlLiteral(bootstrapInvitationId)},${sqlLiteral(bootstrapOrgId)},${sqlLiteral(adminEmail)},'admin','pending',${now + 3_600_000},${now},${sqlLiteral(bootstrapUserId)});`);
   worker = spawn(process.execPath, [wranglerDevCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", String(portNumber), "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${baseUrl}`, "--var", `BETTER_AUTH_URL:${baseUrl}`, "--show-interactive-dev-session=false", "--log-level", "info"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"], detached: process.platform !== "win32" });
+  worker.once("exit", () => { workerExitedAt = Date.now(); });
+  if (process.platform === "win32") workerWindowsStartedAt = await waitForWindowsProcessCreationTime(worker.pid);
   worker.output = ""; worker.stdout.on("data", (chunk) => { worker.output += chunk.toString(); }); worker.stderr.on("data", (chunk) => { worker.output += chunk.toString(); });
   const readyBy = Date.now() + 60_000;
   while (Date.now() < readyBy) { try { if ((await fetch(`${baseUrl}/api/auth/ok`)).status === 200) break; } catch {} await new Promise((resolveWait) => setTimeout(resolveWait, 200)); }
@@ -430,15 +485,22 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
     }
     let result = await waitForExit();
     if (!result) {
-      forceStopWorkerTree(worker);
+      forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
       result = await waitForExit();
       workerShutdownError = "El Worker local requirió terminación forzada; no se considera una limpieza PASS.";
     }
     if (!result) workerShutdownError = "El Worker local siguió activo después de SIGINT y terminación forzada.";
   }
+  if (process.platform === "win32" && worker) {
+    const descendants = windowsWorkerDescendants(worker, workerWindowsStartedAt, workerExitedAt);
+    if (descendants.length > 0) {
+      workerShutdownError ??= "El proceso raíz de Wrangler terminó dejando descendientes; se forzó su cierre y no se considera una limpieza PASS.";
+      forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
+    }
+  }
   let workerPort = await workerPortState(portNumber);
   if (!workerPort.closed) {
-    if (worker) forceStopWorkerTree(worker);
+    if (worker) forceStopWorkerTree(worker, workerWindowsStartedAt, workerExitedAt);
     if (worker?.exitCode === null) {
       exited ??= once(worker, "exit").then(([code, signal]) => ({ code, signal }));
       await waitForExit();
