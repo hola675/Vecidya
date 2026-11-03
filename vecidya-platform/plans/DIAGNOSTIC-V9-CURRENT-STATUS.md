@@ -1,6 +1,6 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.0.0  
+**Versión:** 1.0.1  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · FUENTE OPERATIVA CANÓNICA  
 **Repositorio:** `hola675/Vecidya`  
@@ -37,8 +37,9 @@ Las decisiones no autorizan runtime automáticamente.
 ## 4. Estado Git observado antes de esta consolidación
 
 - PR #162: open, draft.
+- HEAD de consolidación: `10c3e40488ae9718fe7cfcf2b66aa6eb64f8f2a7`.
 - branch vs main: diverged.
-- snapshot observado: ahead 738 / behind 15.
+- snapshot final de consolidación: ahead 761 / behind 15.
 - merge-base observado: `e92c10e9ebcbb87768661eb383f16564340e63cf`.
 - GitHub reportó `mergeable=false` en ese snapshot.
 
@@ -92,4 +93,5 @@ V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + 
 
 ## Changelog
 
+- **1.0.1 / 2026-11-03:** snapshot Git final de consolidación actualizado a HEAD `10c3e404...`, ahead 761 / behind 15.
 - **1.0.0 / 2026-11-03:** creado como fuente operativa canónica tras revisión punta-a-punta y cierre de contradicciones documentales.
