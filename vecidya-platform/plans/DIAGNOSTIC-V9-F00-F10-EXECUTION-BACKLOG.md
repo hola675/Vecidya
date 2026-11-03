@@ -1,6 +1,6 @@
 # Diagnóstico V9 — Backlog ejecutable canónico F00–F10
 
-**Versión:** 1.0.0  
+**Versión:** 1.1.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · W1–W5 EVIDENCIA HISTÓRICA · W1R + RUNTIME RESTANTE PENDIENTE  
 **Repositorio:** `hola675/Vecidya`  
@@ -43,8 +43,8 @@ Estos PASS pertenecen a sus SHA/run registrados; no certifican el HEAD actual ni
 
 | ID | Prerrequisito | Entregable | Superficie | Evidencia / gate | STOP / rollback |
 |---|---|---|---|---|---|
-| W1R-01 | autorización Git acotada | revalidar `main`, HEAD, PR, ahead/behind, merge-base, nuevas migraciones y overlap | Git + migration journal | snapshot actual + matriz overlap | no mezclar runtime; detener ante conflicto transversal |
-| W1R-02 | W1R-01 y overlap material | reconciliar main→V9 de forma controlada | worktree/ref/archivos compartidos | main ancestro si hubo merge + pruebas focales afectadas | no force-push; rollback a ref previa |
+| W1R-01 | — | **DONE_WITH_EVIDENCE** — main/HEAD/PR/overlap revalidados | Git + migration journal | merge `9240bf29...`; behind 0 | cerrado |
+| W1R-02 | W1R-01 | **DONE_WITH_EVIDENCE** — main→V9 reconciliado | merge semántico de 4 overlaps | main ancestro; PR mergeable | cerrado |
 | F07-L1 | W1R cerrado + autorización L1 | borrador anónimo local 7d; inicio sin identity/run D1 | `local-draft*`, `diagnostic-v9.tsx`, `diagnostic-v9-run.tsx`, tests | LOCAL-11… + cero D1 + draft solo in_progress/completing | no migraciones/scoring/finalize; revert commit L1 |
 | F07-L2 | L1 DONE + autorización L2 | replay autoritativo transitorio, zero-D1 | `transient-replay.server.ts` + tests; endpoint solo si autorizado | REPLAY-21…; sesión >7d expira; no raw logs | no attestation/claim; revert L2 |
 | F07-L3-ADR | L2 listo | contrato criptográfico de attestation | ADR/plan | version/id, canonical serialization, digest, algoritmo, key id, rotación, 24h, skew | no código firmado antes del ADR |
@@ -94,9 +94,10 @@ Esta dependencia sustituye la secuencia antigua que intentaba cerrar todo F07 an
 
 ## 9. Estado de autorización
 
-**PLAN_ONLY.** Próximo trabajo de runtime no debe comenzar hasta cerrar W1R y recibir autorización explícita del lote correspondiente.
+**HANDOFF_READY.** W1R está cerrado; el siguiente trabajo es F07-L1 por el agente de implementación, sin encadenar L2.
 
 ## Changelog
 
+- **1.1.0 / 2026-11-03:** W1R-01/02 cerrados con merge `9240bf29...`; backlog listo para F07-L1 handoff.
 - **1.0.0 / 2026-11-03:** backlog reescrito como fuente canónica; W1R, L1–L6, dependencia F05/F06, TTL 7d/24h, attestation ADR, pruebas y release gates reconciliados.
 - **0.5.0 / 2026-11-01:** último backlog histórico previo al cierre de huecos.
