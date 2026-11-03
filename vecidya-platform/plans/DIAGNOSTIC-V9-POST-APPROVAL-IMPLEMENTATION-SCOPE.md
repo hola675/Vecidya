@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.7.0  
+**Versión:** 0.8.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -481,6 +481,90 @@ STOP:
 
 ---
 
+### W6-D22 — preflight final y contrato de autorización F07-L1
+
+**Estado:** PLAN_ONLY · PREFLIGHT CERRADO · EJECUCIÓN NO AUTORIZADA.
+
+Snapshot Git verificado el 2026-11-03:
+- PR maestro: **#162**;
+- PR: abierto, draft, no merged;
+- base: `main`;
+- rama: `feat/diagnostic-v9-lex-graph-p1b`;
+- HEAD observado: `ea14c3c91da20256e6a4245c09d7f555a007afe0`;
+- merge-base observado: `e92c10e9ebcbb87768661eb383f16564340e63cf`;
+- comparación `main...rama`: **diverged**;
+- ahead: **736** commits;
+- behind: **15** commits;
+- GitHub reporta `mergeable=false` en este snapshot.
+
+Interpretación:
+- el estado diverged/behind debe revalidarse justo antes de ejecutar L1;
+- `mergeable=false` no se usa por sí solo para afirmar conflicto semántico en F07-L1;
+- si `main` cambió archivos permitidos o dependencias directas de L1, STOP y reevaluación;
+- no integrar `main` ni resolver conflictos como efecto lateral de autorizar F07-L1.
+
+#### Scope congelado que puede autorizarse
+
+La autorización de F07-L1 solo cubre:
+1. `app/features/diagnostic/v9/local-draft.ts`;
+2. `app/features/diagnostic/v9/local-draft.client.ts`;
+3. cambio mínimo en `app/routes/diagnostic-v9-run.tsx` si es necesario para demostrar el flujo local;
+4. `tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts`;
+5. opcional `tests/unit/diagnostic/diagnostic-v9-local-session.test.ts` si la separación de lógica lo exige.
+
+Queda fuera:
+- L2–L6;
+- migraciones/D1;
+- endpoints de run/finalization/claim;
+- scoring/bank/calibration;
+- auth/org/GHL;
+- cutover, CI general, staging o deploy.
+
+#### Revalidación obligatoria inmediatamente antes del primer cambio
+
+1. leer HEAD actual de la rama;
+2. comparar `main...rama`;
+3. verificar que los archivos permitidos no recibieron cambios concurrentes inesperados;
+4. comprobar `package.json` y loader TS de tests;
+5. comprobar que `CandidateSessionV9Prototype` y `parseCandidateSessionV9Prototype` mantienen el contrato esperado;
+6. registrar SHA inicial del lote.
+
+Si cualquiera de esos contratos cambió materialmente respecto a D21, no se empieza implementación: se vuelve a PLAN_ONLY para ajustar el scope.
+
+#### Evidencia mínima exigida al cierre
+
+Registrar:
+- SHA inicial;
+- archivos modificados;
+- diff limitado al allowlist;
+- comando(s) focal(es);
+- exit code;
+- número de pruebas PASS/FAIL;
+- cualquier reintento;
+- SHA final del lote;
+- confirmación explícita de cero migraciones, cero D1 y cero deploy.
+
+No reutilizar como evidencia los PASS históricos de W1–W5 para afirmar que L1 pasó.
+
+#### Texto de autorización suficiente
+
+Para levantar PLAN_ONLY únicamente en este lote, una autorización humana debe ser inequívoca, por ejemplo:
+
+`AUTORIZO F07-L1 únicamente. Implementa el borrador local según W6-D21/D22, ejecuta pruebas focalizadas y no avances a F07-L2 ni a migraciones/deploy.`
+
+Una respuesta genérica como `continúa`, `sigue` o `next` **no levanta PLAN_ONLY**.
+
+#### Estado posterior esperado
+
+Si L1 obtiene autorización y PASS:
+- marcar `F07-L1 = DONE_WITH_EVIDENCE`;
+- registrar SHA/comandos/resultados;
+- volver a `PLAN_ONLY`;
+- preparar preflight separado de F07-L2;
+- no asumir autorización encadenada.
+
+---
+
 ### W7 — F05/F06: resultado, prioridades y enriquecimiento
 
 #### F05
@@ -668,6 +752,7 @@ Camino restante de terminación:
 
 ## Changelog
 
+- **0.8.0 / 2026-11-03:** W6-D22 añadido: snapshot Git/PR, divergencia main...rama, revalidación obligatoria, scope congelado, evidencia y contrato de autorización explícita para F07-L1; sigue PLAN_ONLY.
 - **0.7.0 / 2026-11-03:** W6-D21 añadido: paquete ejecutable condicionado F07-L1 con funciones, allowlist/denylist de archivos, comando de test focal, gate y rollback; PLAN_ONLY sigue vigente.
 - **0.6.0 / 2026-11-03:** DEC-E ratificado; W6 desglosado en F07-L1…L6; F07-L1 preparado para autorización acotada; actualizado el camino restante W6→W10 sin levantar PLAN_ONLY.
 - **0.5.0 / 2026-11-01:** W5/F04 cerrado con evidencia focal 32/32; F05+ permanece no autorizado.
