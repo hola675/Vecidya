@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.8.0  
+**Versión:** 0.9.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -565,6 +565,177 @@ Si L1 obtiene autorización y PASS:
 
 ---
 
+### W6-D23 — paquete ejecutable condicionado de F07-L2
+
+**Estado:** PLAN_ONLY · DISEÑO CERRADO · EJECUCIÓN NO AUTORIZADA.
+
+Objetivo: preparar el replay/procesamiento autoritativo transitorio que recibirá una sesión V9 completa/finalizable desde el navegador, la reconstruirá con contratos canónicos y producirá el core diagnóstico sin crear un ledger individual anónimo persistente.
+
+#### Hallazgos verificados del runtime actual
+
+`worker-replay-v9.server.ts` ya:
+- valida envelope exacto;
+- exige identidad de motor, banco, answer schema, session schema, session key y replay version;
+- resuelve explícitamente `scoringVersion`;
+- rechaza sesiones expiradas/incompletas;
+- usa `parseCandidateSessionV9Prototype`;
+- reconstruye eventos autoritativamente;
+- compara answers, IDs respondidos, transcript y contador;
+- valida límite absoluto 24+5;
+- calcula scoring y overall con registry/calibration explícitos;
+- devuelve un `core` versionado.
+
+El test existente `qa03b-worker-replay-v9.test.ts` ya cubre:
+- replay autoritativo;
+- scoring histórico explícito;
+- versión desconocida fail-closed;
+- envelopes V8/híbridos rechazados;
+- tampering de transcript/contador/answers;
+- expiración;
+- sesión incompleta.
+
+#### Problemas a corregir/aislar en L2
+
+1. `QA03B_V9_WORKER_TTL_MS` actual = 14 días. El replay transitorio de finalización no debe heredar por conveniencia la política de retención local L1 ni convertirse en retención servidor.
+2. El módulo está bajo `qa03b/` y conserva naming legacy; L2 no debe duplicar scoring ni moverlo de forma masiva. Se recomienda un adapter V9-owned pequeño que encapsule el contrato transitorio.
+3. El test actual mezcla replay puro con repositorios D1/finalization histórica. L2 necesita pruebas focales nuevas que demuestren explícitamente **cero persistencia** en el camino transitorio.
+4. L2 no crea todavía el comprobante criptográfico ni guarda informes; eso pertenece a L3/L4.
+
+#### Contrato propuesto a crear
+
+Archivo propuesto:
+`app/features/diagnostic/v9/transient-replay.server.ts`
+
+Responsabilidades:
+- definir `TransientReplayRequestV9`;
+- construir/validar el envelope desde identidades V9 canónicas;
+- delegar en `replayQa03bSessionV9Core` o una extracción mínima equivalente;
+- mapear errores internos a fallos transitorios estables;
+- no recibir ni depender de `runId`, owner, organization o claim;
+- no escribir D1;
+- no escribir logs con respuestas/transcript;
+- devolver únicamente core + identidades/versiones necesarias para L3.
+
+No crear un segundo scorer ni una segunda lógica de route replay.
+
+#### Endpoint futuro permitido dentro de L2
+
+Ruta propuesta:
+`app/routes/api-diagnostic-v9-finalize-anonymous.ts`
+
+En L2, si se autoriza junto al adapter, solo puede:
+- aceptar POST same-origin;
+- content-type JSON;
+- límite estricto de payload;
+- rate limit;
+- validar body con contrato exacto;
+- invocar transient replay;
+- devolver core transitorio/error;
+- no crear run;
+- no crear identity;
+- no escribir events/snapshots/results;
+- no emitir todavía attestation persistible si eso exige decisiones L3.
+
+Si se prefiere separar endpoint de adapter, el endpoint puede diferirse a L3. Esa elección se fija en la autorización del lote, no por inferencia.
+
+#### Archivos permitidos en una futura autorización L2
+
+Mínimo:
+- `app/features/diagnostic/v9/transient-replay.server.ts` — nuevo;
+- `tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts` — nuevo.
+
+Opcionales, solo si el scope autorizado los incluye:
+- `app/routes/api-diagnostic-v9-finalize-anonymous.ts` — nuevo;
+- prueba focal de la ruta.
+
+Lectura/reutilización permitida sin edición:
+- `qa03b/worker-replay-v9.server.ts`;
+- `qa03b/v9-session-prototype.ts`;
+- scoring/calibration/correlation registries;
+- route-budget.
+
+Editar `worker-replay-v9.server.ts` requiere justificación explícita de por qué el adapter no puede aislar el cambio.
+
+#### Archivos/áreas prohibidos en L2
+
+- `db/migrations/**`;
+- `v9-event-ingestion.server.ts`;
+- `v9-audit-repository.ts`;
+- `v9-identity-repository.ts`;
+- claim/org/auth persistence;
+- informe identificado;
+- comprobante/token firmado de L3;
+- GHL/Aprende/Servicios;
+- cutover/deploy;
+- refactors amplios de naming QA03B.
+
+#### Pruebas focales L2
+
+REPLAY-21…REPLAY-32:
+- sesión finalizable válida → core válido;
+- pregunta/evento fuera de ruta → rechazo;
+- edit válido conserva contador;
+- rechazo extensión finaliza sin extra;
+- aceptación extensión nunca supera 29;
+- scoringVersion desconocida → fail-closed;
+- evidencia insuficiente legítima no se convierte automáticamente en error;
+- transcript/answers/contador manipulados → rechazo;
+- misma sesión + mismas versiones → resultado semánticamente equivalente;
+- cero escrituras D1;
+- replay funciona aunque D1 no esté disponible;
+- errores no incluyen raw answers/transcript.
+
+Pruebas adicionales de frontera HTTP si endpoint entra en L2:
+- método/origin/content-type;
+- tamaño máximo;
+- payload con claves extra;
+- rate limit;
+- respuesta sin cache sensible.
+
+#### Comando focal previsto
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts`
+
+Si se modifica el replay existente por necesidad, añadir explícitamente:
+`tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts`
+
+No ejecutar la suite general por rutina.
+
+#### Gate de cierre F07-L2
+
+L2 solo puede marcarse PASS si:
+- el core se reconstruye autoritativamente desde una sesión V9 válida;
+- no confía en score/result aportado por cliente;
+- no crea ledger/run/identity anónimo persistente;
+- no depende de D1 para completar el replay;
+- versiones desconocidas o híbridas fallan cerrado;
+- 24+5 permanece intacto;
+- scoring/calibration no se duplican;
+- logs/errores no exponen respuestas;
+- pruebas focales pasan sobre SHA registrado.
+
+#### Rollback L2
+
+- revertir únicamente commits L2;
+- sin migraciones ni limpieza D1;
+- L1 local permanece intacto;
+- el endpoint, si se añadió, se retira junto al adapter;
+- no modificar ni borrar el replay histórico existente para efectuar rollback.
+
+#### STOP
+
+Detener y volver a PLAN_ONLY si:
+- se requiere persistencia individual anónima para hacer replay;
+- se necesita una migración;
+- el adapter exige cambiar scoring/calibration;
+- el scope deriva hacia attestation/claim/informe;
+- aparece dependencia de D1 no contemplada;
+- el cambio requiere refactor amplio de QA03B/V8.
+
+La autorización de L1 no autoriza L2. L2 requiere una autorización independiente después de que L1 esté DONE_WITH_EVIDENCE.
+
+---
+
 ### W7 — F05/F06: resultado, prioridades y enriquecimiento
 
 #### F05
@@ -752,6 +923,7 @@ Camino restante de terminación:
 
 ## Changelog
 
+- **0.9.0 / 2026-11-03:** W6-D23 añadido: paquete condicionado F07-L2 con adapter transitorio, alcance, pruebas REPLAY, zero-D1 gate, rollback y STOP; PLAN_ONLY continúa.
 - **0.8.0 / 2026-11-03:** W6-D22 añadido: snapshot Git/PR, divergencia main...rama, revalidación obligatoria, scope congelado, evidencia y contrato de autorización explícita para F07-L1; sigue PLAN_ONLY.
 - **0.7.0 / 2026-11-03:** W6-D21 añadido: paquete ejecutable condicionado F07-L1 con funciones, allowlist/denylist de archivos, comando de test focal, gate y rollback; PLAN_ONLY sigue vigente.
 - **0.6.0 / 2026-11-03:** DEC-E ratificado; W6 desglosado en F07-L1…L6; F07-L1 preparado para autorización acotada; actualizado el camino restante W6→W10 sin levantar PLAN_ONLY.
