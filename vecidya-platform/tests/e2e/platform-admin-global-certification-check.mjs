@@ -29,7 +29,7 @@ function verifyWindowsJobObjectReapsOrphans() {
     const childArgs = ["-NoProfile", "-Command", `$child = Start-Process powershell.exe -ArgumentList '-NoProfile -Command Start-Sleep -Seconds 60' -PassThru; [IO.File]::WriteAllText('${marker.replaceAll("'", "''")}', [string]$child.Id)`];
     const helper = resolve(new URL("./windows-job-runner.ps1", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\"));
     const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", helper, "-Executable", resolve(process.env.SystemRoot, "System32/WindowsPowerShell/v1.0/powershell.exe"), "-ArgumentsBase64", Buffer.from(JSON.stringify(childArgs)).toString("base64"), "-WorkingDirectory", projectDirectory, "-ControlFile", `${marker}.stop`], { cwd: projectDirectory, encoding: "utf8", timeout: 15_000, windowsHide: true });
-    if (result.error || result.status !== 0 || !existsSync(marker)) throw new Error(`El fixture del Job Object no terminó correctamente: ${result.stderr || result.error?.message || result.status}`);
+    if (result.error || result.status !== 0 || !existsSync(marker) || !result.stdout.includes("JOB_CHILD_EXIT:descendants-forced:")) throw new Error(`El fixture no clasificó el cierre con hijo huérfano como forzado: ${result.stdout} ${result.stderr || result.error?.message || result.status}`);
     const childPid = Number(readFileSync(marker, "utf8"));
     const check = powershell(`$ErrorActionPreference='Stop'; $p=Get-CimInstance Win32_Process -Filter 'ProcessId = ${childPid}' -ErrorAction Stop; if ($p) { [Console]::Out.Write('alive') } else { [Console]::Out.Write('gone') }`);
     if (check !== "gone") throw new Error(`El Job Object dejó vivo el proceso hijo huérfano ${childPid}.`);
@@ -470,7 +470,7 @@ INSERT INTO business_profile (id,organization_id,display_name,slug,short_descrip
       catch (error) { if (error?.code !== "ESRCH") throw error; }
     }
     let result = await waitForExit();
-    if (result && process.platform === "win32" && !worker.output.includes("JOB_CHILD_EXIT:")) workerShutdownError = "El supervisor terminó sin confirmar la salida graceful de Wrangler.";
+    if (result && process.platform === "win32" && !worker.output.includes("JOB_CHILD_EXIT:graceful:")) workerShutdownError = "El supervisor terminó sin confirmar la salida graceful de Wrangler.";
     if (!result) {
       forceStopWorkerTree(worker, workerWindowsStartedAt);
       result = await waitForExit();
