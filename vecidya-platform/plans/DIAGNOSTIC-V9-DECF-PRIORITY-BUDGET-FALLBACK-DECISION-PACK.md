@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-F: priorización, presupuesto adaptativo y fallbacks
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-11-01  
 **Estado:** PLAN_ONLY · RATIFICADO VÍA HOJA A–H · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -313,5 +313,7 @@ Bloqueos principales:
 - ranking actual no materializa explícitamente los cuatro factores de D-V9-006.
 
 ## Changelog
+
+- **0.1.1 / 2026-11-03:** estado de decisión reconciliado con hoja humana A–H; el contenido técnico permanece como referencia histórica y PLAN_ONLY sigue vigente.
 
 - **0.1.0 / 2026-11-01:** paquete DEC-F; ranking actual, política multicriterio, evidencia crítica, 24+5 y brechas de implementación.
