@@ -6,6 +6,7 @@
 **Repositorio:** `hola675/Vecidya`  
 **Base:** `origin/main@9c159a32abdf01a341e9a97e5c1c1ac99191cf54`
 **Rama:** `feat/diagnostic-v9-f07-l1`
+**PR:** #231 (draft, open; not merged)
 
 ## 0. Checkpoint actual — F07-L1
 
@@ -16,7 +17,7 @@
 - **Prueba focal RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — PASS 10/10, exit 0; dos reintentos tras corregir Node strip-only y el fixture 24+5.
 - **Build RAN:** `pnpm run build` — PASS, exit 0.
 - **Typecheck RAN:** `pnpm run typecheck` — FAIL (exit 2) por errores en `qa03b/v9-candidate-scoring.ts`, `v9-finalization.server.ts`, `v9/graph-evaluation.ts`, `v9/scoring-calibration-registry.ts` y `v9/scoring-evidence-registry.ts`; ninguno de los diagnósticos corresponde a archivos editados en L1.
-- **Git:** commit L1 `66218b7ed8f27be9bb247475ca8e192a42f193f1`; diff check del lote completo pendiente; cero migraciones, cero endpoints modificados, el flujo de borrador no hace solicitudes D1 y cero deploy.
+- **Git:** commits L1 `66218b7ed8f27be9bb247475ca8e192a42f193f1` y `1a9e590b2e31c0959dc4d83532c5c5c9db06aae7`; `git diff --check` PASS; cero migraciones, cero endpoints modificados, el flujo de borrador no hace solicitudes D1 y cero deploy.
 - **Implementación:** local draft versionado; TTL se deriva de `updatedAt + 7 días`; lectura no escribe; escrituras válidas avanzan revisión; exact retry idempotente; conflicto preserva revisión más nueva; `navigator.locks` con fallback; memoria continúa si storage falla; inicio sin identity/run y UI con reanudación/edición local.
 - **F07-L2:** `DONE_WITH_EVIDENCE`; adapter `transient-replay.server.ts` delega el replay/scoring al Worker canónico en memoria, fija la versión de scoring pública actual, rechaza >7 días e incomplete/tampering, no retorna sesión persistida ni score del cliente. Focal `diagnostic-v9-transient-replay.test.ts` — PASS 5/5, exit 0. Sin binding D1, escrituras ni logs raw.
 - **Sigue:** F07-L3-ADR antes de cualquier código de attestation/finalización.
@@ -24,7 +25,7 @@
 
 ## 0A. Checkpoint actual — F07-L2
 
-- **Estado:** `DONE_WITH_EVIDENCE`.
+- **Estado:** `DONE_WITH_EVIDENCE`; PR #231 open, draft, mergeable; sin merge.
 - **SHA del commit L2:** `8dcaad032a39c46adfd69e40fba315867a8501cd`.
 - **Archivos:** `app/features/diagnostic/v9/transient-replay.server.ts`; `tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts`.
 - **Prueba RAN:** `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test ./tests/unit/diagnostic/diagnostic-v9-transient-replay.test.ts` — PASS 5/5, exit 0.
