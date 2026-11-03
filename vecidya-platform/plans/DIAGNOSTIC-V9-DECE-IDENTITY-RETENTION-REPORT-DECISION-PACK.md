@@ -1,6 +1,6 @@
 # Diagnostic V9 — DEC-E: informe, identidad, retención y frontera de persistencia
 
-**Versión:** 0.2.0  
+**Versión:** 0.2.1  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · DEC-E RATIFICADO · IMPLEMENTACIÓN NO AUTORIZADA  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -113,11 +113,11 @@ Backend:
 Finalidad:
 - validar eventos/routing/scoring/replay.
 
-**Decisión abierta:** determinar si puede ser:
-- stateless/transitorio sin persistencia individual durante fase anónima; o
-- otra forma autorizada de procesamiento que no contradiga local-only.
-
-No reutilizar la tabla de analítica como ledger individual por conveniencia.
+**Decisión ratificada (E3):**
+- procesamiento/replay autoritativo transitorio;
+- sin persistencia individual anónima duradera;
+- sin reutilizar analítica D1 como ledger;
+- el transcript cliente se valida/reconstruye con contratos canónicos y falla cerrado en incompatibilidad.
 
 ### E-D3 — Resultado/informe identificado
 Finalidad:
@@ -134,7 +134,7 @@ Requiere:
 - control de acceso;
 - versionado/replay.
 
-**Store final no aprobado todavía.**
+**Store aprobado conceptualmente (E-Q1-B):** tablas D1 separadas para informes identificados, aisladas de la analítica anónima agregada. La migración concreta permanece pendiente y no está autorizada bajo PLAN_ONLY.
 
 ### E-D4 — Analítica anónima agregada
 Finalidad:
@@ -186,7 +186,7 @@ No necesita exponer:
 - IDs/versiones técnicas.
 
 ### Informe autenticado
-Puede incluir, tras aprobación:
+Puede incluir:
 - dimensiones aplicables;
 - evidence trace redactada;
 - score/level cuando DEC-B lo permita;
@@ -224,82 +224,63 @@ Vinculación:
 - no transfiere propiedad por sí sola;
 - no habilita a otros miembros a leer automáticamente el informe salvo política futura explícita.
 
-La política exacta de visibilidad organizativa debe aprobarse antes de compartir informes entre miembros.
+**Decisión ratificada (E6):** el informe es de propiedad personal. La vinculación organizativa es voluntaria y no concede acceso automático a otros miembros. Cualquier política futura de compartición requerirá una decisión separada.
 
-## 10. Retención — decisiones separadas
+## 10. Retención — decisiones ratificadas y condiciones operativas
 
-### Ya aprobada
-Borrador anónimo incompleto:
-- 7 días local.
+### Ratificado
+- borrador anónimo incompleto: 7 días local desde el último guardado válido;
+- resultado anónimo finalizado: 24 horas local;
+- informe identificado: mientras exista la cuenta, con eliminación voluntaria;
+- backups: máximo objetivo de 30 días, condicionado a certificación operativa;
+- analítica anónima: únicamente agregada y no reconstructiva.
 
-### No aprobada
-- resultado anónimo final;
-- resultado identificado;
-- event ledger;
-- snapshots;
-- claims completados;
-- feedback;
-- analítica agregada;
-- logs/telemetría.
+### Pendiente operativo, sin reabrir DEC-E
+- plazo concreto de retención para agregados analíticos;
+- retención mínima de metadatos técnicos de claims;
+- política concreta de logs/telemetría;
+- mecanismo de purga y restauración que no reactive datos eliminados;
+- tratamiento de datos históricos del prototipo anterior.
 
-**Propuesta:** no reutilizar “7 días” para resultados finales.
-
-Cada categoría necesita:
+Cada categoría debe conservar:
 - propósito;
 - mínimo necesario;
 - plazo;
 - borrado;
-- legal/privacy review;
-- backup semantics.
+- controles de acceso;
+- semantics de backup/restauración.
 
-## 11. Opciones para resolver el ledger anónimo actual
+## 11. Arquitectura ratificada para resolver el ledger anónimo
 
-### Opción A — local-only estricto antes de finalización
-- entrevista anónima se mantiene local;
-- backend procesa sin persistir ledger individual duradero;
-- al finalizar se genera resumen;
-- solo tras login/claim se persiste el resultado/historial aprobado.
+La decisión ya no está abierta.
 
-**Ventaja:** máxima alineación D029/D033.  
-**Riesgo:** exige rediseñar replay/autorización actuales.
+Arquitectura aprobada:
+- entrevista anónima y borrador incompleto permanecen locales;
+- el backend realiza replay/procesamiento autoritativo de forma transitoria;
+- no se crea un ledger individual anónimo persistente en D1;
+- al finalizar se genera un resultado verificable y un resumen útil;
+- el resultado anónimo finalizado permanece local hasta 24 horas;
+- solo tras autenticación y reclamación válida por posesión se persiste el informe identificado;
+- guardar el informe verifica el resultado original y no recalcula scoring;
+- GHL permanece fuera de este flujo salvo integración posterior, opcional y consentida.
 
-### Opción B — ledger servidor temporal explícitamente autorizado
-- permitir ledger individual temporal para integridad/replay;
-- definirlo como procesamiento, no backup;
-- TTL corto y borrado;
-- sin reutilización analítica.
+Esta arquitectura corresponde a la intención de A/C documentada previamente, pero queda registrada por sus propiedades operativas y no como una opción abierta.
 
-**Riesgo:** cambia/precisa la política D029 y podría contradecir la lectura estricta “sin respaldo servidor”.
+## 12. D1: interpretación ratificada
 
-Requiere aprobación humana explícita; no asumirla.
+### E-Q1-B — APPROVED
 
-### Opción C — persistir solo al completar
-- borrador local durante entrevista;
-- al finalizar, enviar transcript/estado firmado para validación y persistencia del resultado según identidad/política.
+“D1 exclusivamente analítica” aplica a la ruta/tablas de analítica anónima: esa analítica no puede almacenar respuestas crudas, IDs persistentes ni historiales reconstruibles.
 
-**Ventaja:** reduce persistencia incompleta.  
-**Riesgo:** integridad/replay debe validarse sin confiar en transcript cliente.
+Se permiten tablas D1 separadas para informes identificados bajo la política DEC-E aprobada, con:
+- owner personal;
+- acceso autorizado;
+- reclamación por posesión;
+- retención/borrado;
+- aislamiento respecto a analítica;
+- versionado e integridad.
 
-### Propuesta DEC-E
-**Preferencia documental: A o C**, no B por defecto, porque A/C respetan mejor la intención de simplificar y no guardar borradores anónimos en servidor.
-
-No seleccionar arquitectura técnica hasta revisar seguridad/integridad.
-
-## 12. D1: aclaración necesaria
-
-D-V9-033 dice “D1 exclusivamente analítica anónima agregada”, pero D-V9-005 deja persistencia de informes finales por aprobar.
-
-Se necesita una decisión explícita:
-
-### E-Q1
-¿“D1 exclusivamente analítica” significa:
-- **Q1-A:** toda la base D1 del producto, por lo que informes identificados deben vivir en otro store; o
-- **Q1-B:** las tablas/ruta de analítica anónima, permitiendo tablas separadas D1 para resultados identificados bajo política aprobada?
-
-**No inferir Q1-B por conveniencia técnica.**
-
-Hasta resolver E-Q1:
-- no certificar el schema actual `diagnostic_v9_*` como arquitectura final.
+Esto no certifica el schema actual ni autoriza migraciones. La implementación final debe ser aditiva y mantener intactos los guards históricos hasta que exista una migración específica autorizada.
 
 ## 13. Seguridad/acceso
 
@@ -375,5 +356,6 @@ El siguiente scope elegible para autorización independiente es F07-L1. No se au
 
 ## Changelog
 
+- **0.2.1 / 2026-11-03:** consolidación interna de E-D2/E-D3, E6, retención, arquitectura anónima y E-Q1-B para eliminar contradicciones con la ratificación; PLAN_ONLY permanece vigente.
 - **0.2.0 / 2026-11-03:** DEC-E ratificado: E3 replay transitorio, E4 comprobante sin recalcular, E5 TTL 24 h, E6 propiedad personal, E8 backups 30 d condicionados, E9 possession; E-Q1-B preservado; PLAN_ONLY sigue vigente.
 - **0.1.0 / 2026-11-01:** paquete DEC-E; cuatro dominios de datos, tensión ledger anónimo/D029-D033, opciones de arquitectura y pregunta explícita sobre alcance de D1.
