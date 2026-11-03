@@ -1,8 +1,8 @@
 # Diagnóstico V9 — READY_FOR_AGENT
 
-**Versión:** 1.0.0  
+**Versión:** 1.1.0  
 **Fecha:** 2026-11-03  
-**Estado:** NOT_READY_FOR_RUNTIME · PLAN_ONLY · W1R REQUIRED  
+**Estado:** READY_FOR_F07-L1_HANDOFF · W1R DONE · NO RUNTIME IMPLEMENTADO  
 **Repositorio:** `hola675/Vecidya` · **PR:** #162 · **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
 
 ## 1. Estado canónico
@@ -25,16 +25,15 @@
 5. reportes W1–W5 — evidencia histórica por SHA/run.
 6. paquetes DEC / Master Plan — análisis e historia; no prevalecen si contradicen los anteriores.
 
-## 3. Gate previo a cualquier runtime
+## 3. Gate Git previo — CERRADO
 
-### W1R
-- revalidar HEAD/main/PR/ahead/behind/merge-base;
-- revisar overlap con el próximo scope;
-- revisar migration journal;
-- si hay overlap material, reconciliar main→V9 en lote Git separado;
-- registrar SHA y evidencia.
+**W1R = DONE_WITH_EVIDENCE** en merge commit `9240bf29f50fa7e72406c72b9bb39fc2252282de`.
 
-Sin W1R cerrado no se declara READY para F07-L1.
+Postcondiciones verificadas:
+- branch vs main: ahead 764 / behind 0;
+- main ancestro;
+- PR #162 mergeable;
+- reconciliación separada del runtime.
 
 ## 4. Siguiente lote runtime elegible
 
@@ -96,14 +95,16 @@ Detener ante:
 
 ## 8. READY
 
-**Ahora: NOT_READY_FOR_RUNTIME.**
+**Ahora: READY_FOR_F07-L1_HANDOFF.**
 
-READY_FOR_AGENT de F07-L1 solo después de:
-1. W1R PASS;
-2. autorización explícita de F07-L1;
-3. revalidación del session/parser contract;
-4. comandos focales confirmados en checkout.
+El siguiente agente debe:
+1. partir de `main` ya fusionado o del SHA final que resulte del PR #162;
+2. revalidar el session/parser contract;
+3. implementar **solo F07-L1**;
+4. ejecutar pruebas LOCAL focalizadas;
+5. no avanzar a L2, migraciones o deploy por inferencia.
 
 ## Changelog
 
+- **1.1.0 / 2026-11-03:** W1R cerrado y handoff preparado para F07-L1; implementación queda para otro agente.
 - **1.0.0 / 2026-11-03:** documento reescrito contra el plan canónico; elimina estados A–H obsoletos, añade W1R, scope L1 corregido y secuencia L1→L3→F05/F06→L4-L6.
