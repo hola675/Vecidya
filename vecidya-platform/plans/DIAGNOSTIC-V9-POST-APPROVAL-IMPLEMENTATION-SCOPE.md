@@ -1,6 +1,6 @@
 # Diagnostic V9 — alcance condicional de implementación post-aprobación
 
-**Versión:** 0.6.0  
+**Versión:** 0.7.0  
 **Fecha:** 2026-11-03  
 **Estado:** PLAN_ONLY · CONDICIONAL · NO AUTORIZA CÓDIGO/PR/CI/DEPLOY  
 **Rama:** `feat/diagnostic-v9-lex-graph-p1b`
@@ -344,6 +344,143 @@ Condiciones operativas pendientes que NO reabren DEC-E:
 
 ---
 
+### W6-D21 — paquete ejecutable condicionado de F07-L1
+
+**Estado:** READY_FOR_SCOPED_AUTHORIZATION · PLAN_ONLY · NO IMPLEMENTADO.
+
+Objetivo: preparar un único lote que cambie el borrador anónimo de persistencia remota a persistencia local, sin avanzar a replay transitorio/finalización/informe.
+
+#### Funciones/contratos a crear
+
+Archivo propuesto `app/features/diagnostic/v9/local-draft.ts`:
+- `DIAGNOSTIC_V9_LOCAL_DRAFT_STORAGE_VERSION = 1`;
+- `DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS = 7 * 24 * 60 * 60 * 1000`;
+- `DiagnosticV9LocalDraftEnvelope`;
+- `parseDiagnosticV9LocalDraft(raw, now)`;
+- `buildDiagnosticV9LocalDraftEnvelope(session)`;
+- validación de `expiresAt` sin renovar TTL durante lectura;
+- delegar validación del estado a `parseCandidateSessionV9Prototype`.
+
+Archivo propuesto `app/features/diagnostic/v9/local-draft.client.ts`:
+- `DiagnosticV9StorageLike`;
+- `DiagnosticV9LocalDraftStore`;
+- `readResult(now)` con estados explícitos `found | empty | expired | invalid | unavailable`;
+- `write(session)` con `revision`, `sessionId` y repetición exacta;
+- `clear()`;
+- `navigator.locks` cuando exista;
+- fallback optimista sin overwrite silencioso.
+
+#### Contratos existentes a reutilizar sin duplicar
+
+- `CandidateSessionV9Prototype`;
+- `createCandidateSessionV9Prototype`;
+- `parseCandidateSessionV9Prototype`;
+- `currentCandidateQuestionIdV9`;
+- `submitCandidateAnswerV9Prototype`;
+- `submitClassificationV9Prototype`;
+- `editCandidateAnswerV9Prototype`;
+- `editClassificationV9Prototype`;
+- `submitExtensionConsentV9Prototype`;
+- límites y estados de `route-budget`.
+
+No crear un segundo modelo de answers/queue/interactionCount.
+
+#### Integración UI permitida
+
+`app/routes/diagnostic-v9-run.tsx` puede modificarse solo para introducir una frontera de sesión local y eliminar, dentro del flujo anónimo L1, los POST/GET de persistencia de cada respuesta.
+
+Durante L1:
+- el flujo local puede llegar hasta `readyToFinalize`;
+- la finalización transitoria pertenece a L2/L3 y no se implementa por inferencia;
+- el nuevo flujo no debe publicarse como reemplazo completo si todavía no puede finalizar;
+- si hace falta, conservarlo detrás del gate V9 existente o de una frontera interna no pública hasta L2/L3;
+- corregir el copy que hoy afirma que las respuestas “se guardan en Vecidya” para que no contradiga DEC-E cuando el flujo local se active.
+
+#### Archivos permitidos
+
+- `app/features/diagnostic/v9/local-draft.ts` — nuevo;
+- `app/features/diagnostic/v9/local-draft.client.ts` — nuevo;
+- `app/routes/diagnostic-v9-run.tsx` — cambio mínimo de frontera local, solo si es necesario para demostrar L1;
+- `tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts` — nuevo;
+- opcional `tests/unit/diagnostic/diagnostic-v9-local-session.test.ts` únicamente si la integración UI/controlador requiere separar lógica testeable.
+
+Cualquier archivo adicional requiere reevaluación de scope antes de editar.
+
+#### Archivos/áreas prohibidos en L1
+
+- `db/migrations/**`;
+- endpoints `api-diagnostic-v9-*` salvo lectura de contexto, sin edición;
+- scoring/calibration/correlation;
+- banco canónico y planner;
+- Worker replay/finalization;
+- auth/claim/organizations;
+- GHL;
+- Aprende/Servicios;
+- V8/legacy cleanup;
+- configuración de deploy/Workers.
+
+#### Pruebas focales obligatorias
+
+LOCAL-11…LOCAL-25:
+- creación/restauración;
+- TTL antes/después de 7 días;
+- JSON corrupto;
+- versión/motor/banco/replay incompatible;
+- transcript manipulado;
+- localStorage unavailable;
+- conflicto de revisión/cross-tab;
+- clear;
+- lectura no renueva TTL;
+- escritura válida sí actualiza expiración;
+- consentimiento de extensión preservado;
+- límite 24+5 preservado;
+- cero llamadas de persistencia D1 en el camino local probado.
+
+Comando focal previsto, revalidado contra `package.json`:
+
+`node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/diagnostic-v9-local-draft.test.ts`
+
+Si existe el segundo archivo focal autorizado, ejecutarlo de forma explícita en el mismo comando o en una segunda invocación focal. No ejecutar `pnpm test:unit` general para cerrar L1.
+
+Typecheck/build solo se amplían si el cambio de la ruta TSX los hace necesarios para demostrar compilación, registrando esa ampliación como verificación del scope tocado y no como suite general de regresión.
+
+#### Rollback L1
+
+Rollback de código:
+1. revertir únicamente el/los commits de F07-L1;
+2. no hay migración que revertir;
+3. no hay datos D1 nuevos que limpiar;
+4. la ruta remota actual permanece como baseline hasta el cutover posterior;
+5. no borrar claves legacy ajenas al contrato V9.
+
+Rollback de datos locales:
+- el store V9 solo puede eliminar su propia clave;
+- nunca migrar/eliminar automáticamente claves de otro contrato;
+- un payload incompatible se descarta/aisla según el contrato L1 sin reinterpretarlo.
+
+#### Gate de cierre F07-L1
+
+L1 solo se declara PASS si:
+- el borrador anónimo probado es local-only;
+- TTL = 7 días desde último guardado válido;
+- lectura no prolonga retención;
+- parser/replay V9 fail-closed conserva identidades;
+- conflicto no sobrescribe revisión más nueva;
+- almacenamiento bloqueado no rompe la sesión en memoria;
+- no hay escritura individual D1 durante la fase de borrador probada;
+- scoring/banco/calibración no cambiaron;
+- pruebas focales pasan sobre SHA registrado;
+- no se afirma finalización completa: L2/L3 siguen pendientes.
+
+STOP:
+- cualquier necesidad de migración;
+- necesidad de modificar scoring/bank;
+- dependencia obligatoria de run D1 para continuar el borrador;
+- scope adicional no previsto;
+- fallo que solo pueda “arreglarse” ampliando hacia L2–L6 sin autorización.
+
+---
+
 ### W7 — F05/F06: resultado, prioridades y enriquecimiento
 
 #### F05
@@ -531,6 +668,7 @@ Camino restante de terminación:
 
 ## Changelog
 
+- **0.7.0 / 2026-11-03:** W6-D21 añadido: paquete ejecutable condicionado F07-L1 con funciones, allowlist/denylist de archivos, comando de test focal, gate y rollback; PLAN_ONLY sigue vigente.
 - **0.6.0 / 2026-11-03:** DEC-E ratificado; W6 desglosado en F07-L1…L6; F07-L1 preparado para autorización acotada; actualizado el camino restante W6→W10 sin levantar PLAN_ONLY.
 - **0.5.0 / 2026-11-01:** W5/F04 cerrado con evidencia focal 32/32; F05+ permanece no autorizado.
 - **0.4.0 / 2026-11-01:** W4/F03 cerrado con evidencia; W5/F04 es el siguiente scope no autorizado.
