@@ -746,6 +746,29 @@ La autorización de L1 no autoriza L2. L2 requiere una autorización independien
 
 ---
 
+### Secuencia canónica restante — corrige dependencia W6/W7
+
+La numeración de waves se conserva por trazabilidad, pero la dependencia ejecutable desde este punto es:
+
+1. **W1R** — revalidación/sincronización Git;
+2. **F07-L1** — borrador anónimo local;
+3. **F07-L2** — replay transitorio;
+4. **F07-L3** — finalización + attestation verificable;
+5. **F05-01** — resumen anónimo sobre el resultado canónico;
+6. **F06-01/F06-02** — prioridades, acciones, Aprende/Servicios; GHL sigue opcional/separado;
+7. **F05-02** — contrato definitivo del informe identificado;
+8. **F07-L4** — save/claim/owner sobre un contrato de informe ya definido;
+9. **F07-L5** — retención, eliminación, cierre de cuenta y backup semantics;
+10. **F07-L6** — recorrido integrado E2E;
+11. **F08** — certificación integrada;
+12. **F09** — cutover V8→V9;
+13. **F10** — staging, piloto, aceptación, producción y postdeploy.
+
+**Regla de dependencia:** F07-L4/L5/L6 no pueden cerrarse antes de F05/F06 porque no debe persistirse como definitivo un informe cuyo contrato de producto aún no está cerrado.
+
+**F07-L3 ADR técnico obligatorio antes de implementar:** definir attestation version/id, canonical serialization, digest, algoritmo, key id, custodia/rotación, issuedAt/expiresAt (24 h), clock skew y verificación de claves retiradas. Esto concreta E4 y no reabre DEC-E.
+
+---
 ### W7 — F05/F06: resultado, prioridades y enriquecimiento
 
 #### F05
@@ -858,29 +881,18 @@ Producción no se infiere de CI/staging.
 | A–H sin aprobación | W0 |
 | CLASS-01…04 sin PASS actual | W3–W8 |
 
-## 5. Scope mínimo recomendado para el próximo levantamiento de PLAN_ONLY
+## 5. Próximo scope y autorización
 
-W1–W5 ya tienen evidencia histórica de cierre según este plan. El siguiente permiso recomendado es **W6/F07-L1 solamente**.
+Antes de cualquier runtime nuevo se ejecuta **W1R** como gate Git separado. W1R no autoriza cambios de producto.
 
-Primer permiso futuro recomendado:
-- F07-L1 / borrador anónimo local;
-- archivos mínimos de sesión/store/UI necesarios;
-- pruebas focales LOCAL únicamente;
-- cero cambios D1;
-- cero migraciones;
-- cero scoring/bank/calibration;
-- cero finalización/claim/informes;
-- cero GHL;
-- sin deploy.
+Después de W1R, el primer scope runtime elegible es **F07-L1 solamente**, con:
+- `local-draft.ts` y `local-draft.client.ts`;
+- `diagnostic-v9.tsx` para eliminar creación previa de identidad/run D1 en anónimo;
+- `diagnostic-v9-run.tsx` para sesión local;
+- tests LOCAL focales;
+- cero migraciones, scoring, finalization, claim, GHL o deploy.
 
-STOP inmediato si:
-- el cambio exige tocar scoring o banco;
-- aparece dependencia no censada de D1 para el recorrido anónimo;
-- el parser V9 no puede preservar identidad/versiones;
-- el scope crece hacia L2–L6 sin autorización independiente.
-
-Después avanzar L2→L6 con autorización explícita por lote.
-
+Cada lote posterior requiere autorización independiente según la secuencia canónica anterior.
 ## 6. Regla de pruebas focalizadas
 
 El comando exacto NO se fija en este documento porque debe verificarse contra los scripts disponibles en el checkout del SHA de ejecución.
@@ -897,42 +909,44 @@ No usar “todos los tests” como rutina de cierre de cada commit.
 
 Estado actual:
 
-**NOT_READY_FOR_EXECUTION / PLAN_ONLY**
+**NOT_READY_FOR_RUNTIME / PLAN_ONLY · W1R REQUIRED**
 
-DEC-E ya está ratificado y F07-L1 está preparado para autorización acotada, pero no se ha levantado PLAN_ONLY.
-
-READY_FOR_AGENT para F07-L1 solo puede declararse cuando:
-- el responsable autorice explícitamente F07-L1;
-- HEAD se revalide inmediatamente antes de ejecutar;
-- el scope permanezca dentro de los archivos/contratos de L1;
-- se definan los comandos focales contra el checkout real;
-- no se incluyan L2–L6, migraciones ni deploy por inferencia.
-
+Para declarar READY_FOR_AGENT de F07-L1 deben cumplirse todos:
+- W1R cerrado sobre HEAD/main actuales;
+- autorización humana explícita de F07-L1;
+- scope dentro del allowlist D21 corregido;
+- comandos focales revalidados en checkout;
+- ningún cambio material del parser/session contract;
+- no incluir L2+, migraciones ni deploy por inferencia.
 ## 8. Estado general para terminar V9
 
-| Wave | Estado | Falta principal |
+| Bloque | Estado | Falta principal |
 |---|---|---|
-| W1/F00 | cerrado históricamente | revalidar SHA cuando vuelva a tocarse |
-| W2/F01 | DONE_WITH_EVIDENCE | nada de producto en este gate |
-| W3/F02 | DONE_WITH_FALLBACK | completar rewrites/editorial pendientes dentro de fases posteriores |
-| W4/F03 | DONE_WITH_EVIDENCE | integración final en F08 |
-| W5/F04 | DONE_WITH_EVIDENCE | integración final en F08 |
-| W6/F07 | diseño cerrado; implementación pendiente | L1→L6 + certificación privacidad/identidad |
-| W7/F05-F06 | pendiente | resumen, informe, prioridades, recomendaciones, Aprende/Servicios/GHL opcional |
-| W8/F08 | pendiente | certificación integrada ES/EN, seguridad, accesibilidad, routing, errores y concurrencia |
-| W9/F09 | pendiente | cutover V8→V9 + rollback |
-| W10/F10 | pendiente | staging, piloto, aceptación, producción y postdeploy |
+| W0 / A–H | RATIFICADO | no reabrir decisiones |
+| W1/F00 | DONE histórico | W1R por nueva divergencia con main |
+| W2/F01 | DONE_WITH_EVIDENCE | revalidación solo si dependencias cambian |
+| W3/F02 | DONE_WITH_FALLBACK | baseline 77 vigente; 59 rewrites + 13 candidatos siguen deuda explícita |
+| W4/F03 | DONE_WITH_EVIDENCE | integración final F08 |
+| W5/F04 | DONE_WITH_EVIDENCE | integración final F08 |
+| F07-L1 | diseño corregido | W1R + autorización + implementación |
+| F07-L2 | diseño corregido | TTL servidor 7d + implementación |
+| F07-L3 | diseño | ADR attestation + implementación |
+| F05/F06 | pendiente | resumen, prioridades, recomendaciones e informe definitivo |
+| F07-L4/L5/L6 | pendiente | save/claim, privacidad/retención, E2E después de F05/F06 |
+| F08 | pendiente | certificación integral + typecheck/build |
+| F09 | pendiente | cutover + rollback |
+| F10 | pendiente | staging→piloto→aceptación→producción |
 
-Camino restante de terminación:
-1. autorizar e implementar F07-L1;
-2. implementar/certificar F07-L2…L6;
-3. completar W7/F05-F06;
-4. certificar W8/F08;
-5. ejecutar W9/F09;
-6. staging/piloto/producción en W10/F10.
+Regla de pruebas:
+- por lote: tests focales;
+- al cerrar una wave de runtime: typecheck del scope integrado;
+- cierre W6/F07 integrado: tests focales acumulados + typecheck + build;
+- F08: matriz integrada/regresión delimitada + typecheck + build + seguridad/accesibilidad/concurrencia.
 
+La deuda editorial F02 no se oculta: producción inicial solo puede usar baseline 77 si esa condición permanece explícita en el release gate; promover rewrites/82/90 exige sus propios gates/versiones.
 ## Changelog
 
+- **1.0.0 / 2026-11-03:** revisión punta-a-punta: W1R obligatorio, jerarquía documental, L1 incluye start route y TTL derivado de updatedAt, draft prohíbe completed, L2 TTL servidor 7d, secuencia F07-L1→L3→F05/F06→L4-L6, ADR attestation, gates de pruebas y deuda editorial explícita.
 - **0.9.0 / 2026-11-03:** W6-D23 añadido: paquete condicionado F07-L2 con adapter transitorio, alcance, pruebas REPLAY, zero-D1 gate, rollback y STOP; PLAN_ONLY continúa.
 - **0.8.0 / 2026-11-03:** W6-D22 añadido: snapshot Git/PR, divergencia main...rama, revalidación obligatoria, scope congelado, evidencia y contrato de autorización explícita para F07-L1; sigue PLAN_ONLY.
 - **0.7.0 / 2026-11-03:** W6-D21 añadido: paquete ejecutable condicionado F07-L1 con funciones, allowlist/denylist de archivos, comando de test focal, gate y rollback; PLAN_ONLY sigue vigente.
