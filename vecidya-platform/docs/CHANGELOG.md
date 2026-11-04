@@ -1,13 +1,13 @@
-## 2026-11-03 — Diagnostic V9 F07-L1 local draft (candidato local)
+# 2026-11-04 — Diagnóstico V9 — corrección de tipos y regresiones de baseline (local)
 
-- El inicio V9 crea el `CandidateSessionV9Prototype` en el navegador y las rutas dejaron de crear identity/run o guardar respuestas en D1 durante el borrador anónimo. Store local versionado con TTL de siete días derivado de `updatedAt`, revisión/idempotencia, manejo de conflictos y fallback en memoria con aviso.
-- Se puede reanudar y editar localmente; el recorrido se detiene en `readyToFinalize`. La finalización queda pendiente de F07-L2/L3. Los endpoints legacy/prototipo permanecen.
-- Focal L1 10/10 y build PASS; typecheck falla en cinco módulos de scoring/calibración no modificados. Sin migraciones, D1 remota, deploy o publicación.
+- Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
+- Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
+- Typecheck, build, diff-check, 64 pruebas focales combinadas (26 de correlación/replay/banco y 38 de sectores/clasificación) y la aserción R8-C del puente histórico pasan localmente. La suite amplia identificó ese puente histórico como una excepción ausente en su allowlist; se autorizó solo `v9-historical-overall-compat.ts` para overall histórico. La suite completa de CI del head combinado está pendiente; PR #231/#232 siguen pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
 
-## 2026-11-03 — Diagnostic V9 F07-L2 transient replay (candidato local)
+# 2026-11-04 — Diagnóstico V9 — F07-L1/L2 (actualización sobre main)
 
-- Se añadió adapter que reconstruye/valida la sesión finalizable mediante el replay Worker existente y la versión pública de scoring; rechaza >7 días, sesión incompleta, tampering y versiones no registradas. Retorna solo core autoritativo y timestamp; no persiste sesiones/resultados/analytics, no registra raw answers y no requiere D1.
-- Prueba focal 5/5 y build PASS; typecheck continúa FAIL en módulos no modificados. Sin endpoint, migraciones, deploy o publicación.
+- PR #231 mantiene el borrador anónimo en `CandidateSessionV9Prototype` local con TTL derivado de siete días, manejo de revisión/concurrencia y fallback en memoria; L2 delega a replay/scorer canónico sin persistir resultado ni respuestas.
+- El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. Se reconcilió typecheck contra el arreglo ya integrado en #233; CI del nuevo head pendiente. Sin migraciones, endpoint, D1 remota, deploy o publicación.
 
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 

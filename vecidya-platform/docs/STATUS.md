@@ -1,8 +1,10 @@
-# DIAGNOSTIC-V9 — F07-L1 local draft (candidato local, 2026-11-03)
+# Diagnóstico V9 — correcciones locales de baseline, 2026-11-04
 
-En `feat/diagnostic-v9-f07-l1`, desde `origin/main@9c159a32`, el flujo V9 gated inicia y conserva `CandidateSessionV9Prototype` solo en localStorage, TTL derivado de `updatedAt + 7 días`; reanudar/editar no cambia los contratos del parser. Si storage falla, continúa en memoria y avisa que el progreso no se recupera al cerrar. `/diagnostico/v9` y su ruta de entrevista no llaman identity/run/event D1; los endpoints existentes quedan intactos. El borrador llega a `completing/readyToFinalize`; no finaliza ni genera resultado.
+El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibración y fronteras entre scoring V9 y Candidate V3; typecheck y build pasan localmente. La suite amplia encontró además cuatro fallos reproducibles en `origin/main@9c159a32`: dos expectativas desactualizadas del máximo de 29 interacciones y un filtro de Vecindario que confundía sectores con «Otras actividades». Las expectativas y el filtro ya están corregidos; sus pruebas focales pasan 38/38. La regresión completa dejó también una aserción R8-C desactualizada que no reconocía el puente histórico de overall V9, ahora explícitamente permitido solo para esa ruta histórica. PR #233 quedó integrada en `main@64b3ccd2`; su CI pasó (2079/2079 unitarias). V9 no está certificado ni publicado; F05+ y la certificación integral siguen pendientes. Sin migraciones remotas ni deploy.
 
-**RAN focal:** L1 10/10 y L2 5/5 PASS; `pnpm run build` PASS. `pnpm run typecheck` FAIL en cinco módulos de scoring/calibración no modificados. L2 delega al replay/scorer canónico en memoria, fuerza la versión pública actual y rechaza sesiones con más de 7 días; no añade endpoint ni escritura D1. Sin migraciones, cambios de scorer/calibration ni deploy. Próximo: F07-L3-ADR; no se considera V9 reemplazo completo ni publicado.
+# Diagnóstico V9 — F07-L1/L2 (candidato local, 2026-11-04)
+
+PR #231 se actualizó sobre el nuevo `main`. La entrevista anónima crea y guarda `CandidateSessionV9Prototype` solo en localStorage, con TTL derivado de `updatedAt + 7 días`, revisión/idempotencia y fallback en memoria; L2 reutiliza replay/scorer en memoria y rechaza sesiones expiradas. La entrada y la entrevista no llaman identity/run/event D1; el flujo termina en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. CI de la cabeza actualizada pendiente. Sin endpoints, migraciones, persistencia individual D1 ni deploy.
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

@@ -12,6 +12,11 @@ import { replayDiagnosticAuditEventsV9 } from "./v9-audit-replay.server";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import { buildCandidateRecommendationsAndSolutionsV3 } from "./qbv2-candidate-recommendations";
 import { resolveV9ScoringCalibration } from "../v9/scoring-calibration-registry";
+import type { V9Calibration } from "../v9/scoring-contract";
+
+type CandidateRecommendationCalibration = NonNullable<
+  Parameters<typeof buildCandidateRecommendationsAndSolutionsV3>[0]["calibration"]
+>;
 
 export type V9FinalizationOwner = {
   workspaceId: string;
@@ -80,6 +85,43 @@ function sameCanonicalJson(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonicalJsonValue(left)) === JSON.stringify(canonicalJsonValue(right));
 }
 
+function toCandidateCalibrationV3(calibration: V9Calibration): CandidateRecommendationCalibration {
+  const numericContribution = (
+    state: "strong" | "established" | "partial" | "weak" | "dependency" | "missing",
+  ): number => {
+    const value = calibration.capabilityContribution[state];
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new Error("v9_calibration_contract_mismatch");
+    }
+    return value;
+  };
+  if (calibration.capabilityContribution.constraint !== null ||
+      calibration.capabilityContribution.uncertainty !== null ||
+      calibration.capabilityContribution.not_applicable !== null) {
+    throw new Error("v9_calibration_contract_mismatch");
+  }
+  return {
+    identity: calibration.identity,
+    version: calibration.version,
+    capabilityContribution: {
+      strong: numericContribution("strong"),
+      established: numericContribution("established"),
+      partial: numericContribution("partial"),
+      weak: numericContribution("weak"),
+      dependency: numericContribution("dependency"),
+      missing: numericContribution("missing"),
+      constraint: null,
+      uncertainty: null,
+      not_applicable: null,
+    },
+    scoring: calibration.scoring,
+    dimensionConfidence: calibration.dimensionConfidence,
+    severity: calibration.severity,
+    overall: calibration.overall,
+    scoreRanges: calibration.scoreRanges,
+  };
+}
+
 /**
  * Completes an owned V9 run from the append-only D1 event stream.
  * No score, evidence, or recommendation is accepted from the browser.
@@ -135,7 +177,7 @@ export async function finalizeOwnedDiagnosticRunV9(
   const outcome = buildCandidateRecommendationsAndSolutionsV3({
     answers: replay.session.answers,
     bank: QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
-    calibration: scoringProfile.calibration,
+    calibration: toCandidateCalibrationV3(scoringProfile.calibration),
     strictCorrelation: true,
   });
   if (!sameCanonicalJson(outcome.scoring.dimensions, replay.core.dimensions)) {
