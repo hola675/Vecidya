@@ -76,7 +76,13 @@ test("R8-C-CERT: the candidate stays private and inactive — no overall, calibr
   const files = (readdirSync(appRoot, { recursive: true }) as string[]).map((f) => f.replaceAll("\\", "/")).filter((f) => /\.tsx?$/.test(f));
   for (const module of ["qbv2-candidate-calibration", "qbv2-candidate-overall"]) {
     const importers = files.filter((file) => readFileSync(new URL(file, appRoot), "utf8").includes(module));
-    assert.ok(importers.length > 0 && importers.every((file) => (/(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) || file === "features/diagnostic/qa03b/v9-candidate-scoring.ts" || file === "features/diagnostic/qa03b/v9-historical-overall-compat.ts")), `${module}: ${importers.join(", ")}`);
+    const candidateImporter = (file: string) =>
+      /(^|\/)qbv2-candidate-[a-z-]+\.ts$/.test(file) ||
+      file === "features/diagnostic/qa03b/v9-candidate-scoring.ts";
+    const historicalOverallBridge = (file: string) =>
+      module === "qbv2-candidate-overall" &&
+      file === "features/diagnostic/qa03b/v9-historical-overall-compat.ts";
+    assert.ok(importers.length > 0 && importers.every((file) => candidateImporter(file) || historicalOverallBridge(file)), `${module}: ${importers.join(", ")}`);
   }
 });
 

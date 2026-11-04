@@ -7,11 +7,26 @@ import {
   type ClassificationDraftV9,
 } from "../components/diagnostic-flow/qa03b-v9-classification-step";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "../features/diagnostic/qa03b/specialty-branches-wave1";
-import { QA03B_V9_CLASSIFICATION_INTERACTION_ID, type ClassificationSelectionV9 } from "../features/diagnostic/qa03b/v9-classification-bundle";
 import {
-  isV9PublicRuntimeAvailable,
-  type V9PublicRuntimeConfig,
-} from "../features/diagnostic/qa03b/v9-public-availability.server";
+  QA03B_V9_CLASSIFICATION_INTERACTION_ID,
+  type ClassificationSelectionV9,
+} from "../features/diagnostic/qa03b/v9-classification-bundle";
+import {
+  createCandidateSessionV9Prototype,
+  currentCandidateQuestionIdV9,
+  editCandidateAnswerV9Prototype,
+  editClassificationV9Prototype,
+  submitCandidateAnswerV9Prototype,
+  submitClassificationV9Prototype,
+  submitExtensionConsentV9Prototype,
+  type CandidateSessionV9Prototype,
+} from "../features/diagnostic/qa03b/v9-session-prototype";
+import {
+  createBrowserDiagnosticV9LocalDraftStore,
+  type DiagnosticV9LocalDraftStore,
+} from "../features/diagnostic/v9/local-draft.client";
+import { V9_ABSOLUTE_INTERACTION_LIMIT } from "../features/diagnostic/v9/route-budget";
+import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 
 import type { Route } from "./+types/diagnostic-v9-run";
@@ -31,191 +46,142 @@ export function loader({ context, params }: Route.LoaderArgs) {
   };
 }
 
-type RunState = {
-  ok: true;
-  runId: string;
-  status: "active" | "completed";
-  lastSeq: number;
-  nextQuestionId: string | null;
-  readyToFinalize: boolean;
-  interactionCount: number;
-  answers: Record<string, string | string[]>;
-  terminalReason: string | null;
-  extensionConsent: "not_offered" | "pending" | "accepted" | "rejected" | "withdrawn";
-  extensionInteractionsRemaining: number;
-};
-
-type CompletedResult = {
-  status: "completed";
-  resultVersion: number;
-  score: unknown;
-  evidence: unknown;
-  recommendations: unknown;
-};
-
 const questionById = new Map(QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2.map((item) => [item.id, item] as const));
-
-function recommendationItems(value: unknown): readonly { title: string; whatToImprove: string; expectedOutcome: string }[] {
-  if (!value || typeof value !== "object" || !("items" in value) || !Array.isArray(value.items)) return [];
-  return value.items.filter((item): item is { title: string; whatToImprove: string; expectedOutcome: string } =>
-    typeof item === "object" && item !== null &&
-    typeof item.title === "string" &&
-    typeof item.whatToImprove === "string" &&
-    typeof item.expectedOutcome === "string",
-  ).slice(0, 3);
-}
-
-
-async function readError(response: Response): Promise<string> {
-  try {
-    const data = await response.json() as { error?: unknown };
-    if (typeof data.error === "string") return data.error;
-  } catch {
-    // The server may have returned a gateway or non-JSON error.
-  }
-  return "La solicitud no pudo completarse. Inténtalo de nuevo.";
-}
 
 export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
   const { enabled, runId } = loaderData;
-  const [state, setState] = useState<RunState | null>(null);
+  const store = useMemo<DiagnosticV9LocalDraftStore | null>(
+    () => typeof window === "undefined" ? null : createBrowserDiagnosticV9LocalDraftStore(),
+    [],
+  );
+  const [session, setSession] = useState<CandidateSessionV9Prototype | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [storageMode, setStorageMode] = useState<"local" | "memory">("local");
   const [draft, setDraft] = useState<ClassificationDraftV9>({});
   const [single, setSingle] = useState("");
   const [multiple, setMultiple] = useState<string[]>([]);
-  const [result, setResult] = useState<CompletedResult | null>(null);
+  const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
-  const refresh = useCallback(async (signal?: AbortSignal) => {
-    const response = await fetch(`/api/diagnostic/v9/runs/${encodeURIComponent(runId)}`, {
-      cache: "no-store", credentials: "same-origin", signal,
-    });
-    if (!response.ok) throw new Error(await readError(response));
-    const next = await response.json() as RunState;
-    if (!next.ok || next.runId !== runId) throw new Error("El servidor devolvió un diagnóstico diferente.");
-    setState(next);
-    return next;
-  }, [runId]);
+  const restore = useCallback(() => {
+    if (!store) return;
+    setStorageMode(store.persistenceMode);
+    const result = store.readResult(Date.now());
+    if (result.status === "found" && result.envelope.session.sessionId === runId) {
+      setSession(result.envelope.session);
+      return;
+    }
+    setSession(null);
+    if (result.status === "expired") setError("El borrador local expiró después de 7 días. Puedes iniciar un diagnóstico nuevo.");
+    else if (result.status === "invalid") setError("El borrador local no es compatible o se modificó. Inicia un diagnóstico nuevo.");
+    else if (result.status === "unavailable") {
+      setStorageMode("memory");
+      setError("El almacenamiento local no está disponible. El recorrido puede continuar en memoria, pero no podrá recuperarse al cerrar esta página.");
+    } else setError("No encontramos este borrador en el almacenamiento local. Inicia un diagnóstico nuevo.");
+  }, [runId, store]);
 
   useEffect(() => {
     if (!enabled) return;
-    const controller = new AbortController();
-    setLoading(true);
-    void refresh(controller.signal).then(() => {
-      setError(null);
-    }).catch((cause: unknown) => {
-      if (controller.signal.aborted) return;
-      setError(cause instanceof Error ? cause.message : "No pudimos recuperar tu diagnóstico.");
-    }).finally(() => {
-      if (!controller.signal.aborted) setLoading(false);
-    });
-    return () => controller.abort();
-  }, [enabled, refresh]);
+    restore();
+    setLoading(false);
+  }, [enabled, restore]);
+
+  useEffect(() => {
+    if (!store) return;
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== "vecidya.diagnostic.v9.local-draft.1") return;
+      if (!event.newValue) {
+        void store.clear();
+        setError("El borrador se eliminó en otra pestaña.");
+        setSession(null);
+        return;
+      }
+      const result = store.readResult(Date.now());
+      if (result.status === "found" && result.envelope.session.sessionId === runId) {
+        setSession((current) => {
+          if (current && result.envelope.session.revision > current.revision) {
+            setError("Este borrador cambió en otra pestaña; mostramos la revisión más reciente.");
+            return result.envelope.session;
+          }
+          return current;
+        });
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [runId, store]);
 
   useEffect(() => {
     setSingle("");
     setMultiple([]);
     setDraft({});
-  }, [state?.nextQuestionId]);
+  }, [session?.queue[0]]);
 
-  useEffect(() => {
-    if (!enabled || state?.status !== "completed" || result) return;
-    const controller = new AbortController();
-    void fetch(`/api/diagnostic/v9/runs/${encodeURIComponent(runId)}/result`, {
-      cache: "no-store",
-      credentials: "same-origin",
-      signal: controller.signal,
-    }).then(async (response) => {
-      if (!response.ok) throw new Error(await readError(response));
-      const saved = await response.json() as { ok?: boolean } & CompletedResult;
-      if (!saved.ok || saved.status !== "completed") throw new Error("El resultado guardado no es válido.");
-      if (!controller.signal.aborted) setResult(saved);
-    }).catch((cause: unknown) => {
-      if (!controller.signal.aborted) {
-        setError(cause instanceof Error ? cause.message : "No pudimos mostrar el resultado guardado.");
-      }
-    });
-    return () => controller.abort();
-  }, [enabled, state?.status, result, runId]);
+  const questionId = session ? editingQuestionId ?? currentCandidateQuestionIdV9(session) : null;
+  const question = questionId ? questionById.get(questionId) : undefined;
 
-  const question = useMemo(
-    () => state?.nextQuestionId ? questionById.get(state.nextQuestionId) : undefined,
-    [state?.nextQuestionId],
-  );
-
-  async function sendEvent(kind: "answer" | "classification" | "extension_consent", payload: unknown) {
-    if (!state || busy || state.status !== "active") return;
-    if (kind !== "extension_consent" && !state.nextQuestionId) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/diagnostic/v9/runs/${encodeURIComponent(runId)}/events`, {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventId: crypto.randomUUID(),
-          expectedSeq: state.lastSeq,
-          kind,
-          payload,
-          occurredAt: new Date().toISOString(),
-        }),
-      });
-      if (!response.ok) throw new Error(await readError(response));
-      await refresh();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "No pudimos guardar la respuesta.");
-    } finally {
-      setBusy(false);
+  async function save(next: CandidateSessionV9Prototype) {
+    if (!store) return;
+    const result = await store.write(next);
+    if (result.status === "conflict") {
+      setSession(result.latest.session);
+      setError("Otra pestaña guardó una revisión más reciente. Se restauró esa revisión; vuelve a intentarlo.");
+      return;
     }
-  }
-
-  function submitExtensionConsent(decision: "accepted" | "rejected" | "withdrawn") {
-    void sendEvent("extension_consent", { decision });
-  }
-
-  async function finalize() {
-    if (!state || busy || !state.readyToFinalize) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const response = await fetch(`/api/diagnostic/v9/runs/${encodeURIComponent(runId)}/finalize`, {
-        method: "POST", credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-      });
-      if (!response.ok) throw new Error(await readError(response));
-      const completed = await response.json() as { ok?: boolean } & CompletedResult;
-      if (!completed.ok || completed.status !== "completed") throw new Error("El resultado del diagnóstico no es válido.");
-      setResult(completed);
-      await refresh();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "No pudimos finalizar el diagnóstico.");
-    } finally {
-      setBusy(false);
+    if (result.status === "invalid" || result.status === "unavailable") {
+      setSession(next);
+      setStorageMode("memory");
+      setError("El almacenamiento local no está disponible. El recorrido continúa en memoria y no podrá recuperarse al cerrar esta página.");
+      return;
     }
+    setSession(result.envelope.session);
+    setStorageMode(result.persistence);
+    setError(result.persistence === "memory"
+      ? "El almacenamiento local no está disponible. El recorrido continúa en memoria y no podrá recuperarse al cerrar esta página."
+      : null);
   }
 
-  function submitClassification(selection: ClassificationSelectionV9) {
-    const classification = {
-      kind: QA03B_V9_CLASSIFICATION_INTERACTION_ID,
-      sector: selection.sector,
-      ...(selection.niche === undefined ? {} : { niche: selection.niche }),
-      sectorQuestionId: "q2_sector",
-      ...(selection.niche === undefined ? {} : { nicheQuestionId: `q2_niche_${selection.sector}` }),
-    };
-    void sendEvent("classification", { classification, mode: "answer" });
-  }
-
-  function submitAnswer() {
-    if (!question) return;
+  function sendAnswer() {
+    if (!session || !question || busy) return;
+    setBusy(true);
     const value = question.type === "multi" ? multiple : single;
-    void sendEvent("answer", {
-      questionId: question.id,
-      value,
-      mode: "answer",
-    });
+    const next = editingQuestionId
+      ? editCandidateAnswerV9Prototype(session, editingQuestionId, value, session.writerId, Math.max(Date.now(), session.updatedAt + 1))
+      : submitCandidateAnswerV9Prototype(session, question.id, value, session.writerId, Math.max(Date.now(), session.updatedAt + 1));
+    if (!next.ok) {
+      setError("No pudimos validar esta respuesta. Vuelve a intentarlo.");
+      setBusy(false);
+      return;
+    }
+    void save(next.session).finally(() => { setBusy(false); setEditingQuestionId(null); });
+  }
+
+  function sendClassification(selection: ClassificationSelectionV9) {
+    if (!session || busy) return;
+    setBusy(true);
+    // The prototype accepts the domain selection and rebuilds the canonical transcript entry.
+    const next = editingQuestionId
+      ? editClassificationV9Prototype(session, selection, session.writerId, Math.max(Date.now(), session.updatedAt + 1))
+      : submitClassificationV9Prototype(session, selection, session.writerId, Math.max(Date.now(), session.updatedAt + 1));
+    if (!next.ok) {
+      setError("No pudimos validar la clasificación. Vuelve a intentarlo.");
+      setBusy(false);
+      return;
+    }
+    void save(next.session).finally(() => { setBusy(false); setEditingQuestionId(null); });
+  }
+
+  function sendConsent(decision: "accepted" | "rejected") {
+    if (!session || busy) return;
+    setBusy(true);
+    const next = submitExtensionConsentV9Prototype(session, decision, session.writerId, Math.max(Date.now(), session.updatedAt + 1));
+    if (!next.ok) {
+      setError("No pudimos guardar tu decisión de extensión.");
+      setBusy(false);
+      return;
+    }
+    void save(next.session).finally(() => setBusy(false));
   }
 
   return (
@@ -225,86 +191,69 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
           <div className="df-screen__header">
             <p className="df-screen__eyebrow">Vecidya · Diagnóstico V9</p>
             <h1 className="df-screen__title" id="v9-run-heading">Tu diagnóstico digital</h1>
-            <p className="df-screen__lead">Tus respuestas se guardan en Vecidya y puedes recuperar este recorrido desde el mismo navegador o tu cuenta.</p>
+            <p className="df-screen__lead">Tus respuestas se conservan localmente en este navegador. Una escritura válida extiende el plazo; leer el borrador no lo renueva.</p>
           </div>
           {!enabled ? (
             <p role="status">V9 todavía no está habilitado. <Link to="/diagnostico">Usar el diagnóstico disponible</Link>.</p>
           ) : loading ? (
-            <p role="status">Recuperando el historial…</p>
-          ) : !state ? (
-            <p role="alert">{error ?? "No se pudo recuperar el diagnóstico."} <Link to="/diagnostico/v9">Volver al inicio</Link>.</p>
+            <p role="status">Recuperando el borrador local…</p>
+          ) : !session ? (
+            <p role="alert">{error ?? "No se pudo recuperar el borrador."} <Link to="/diagnostico/v9">Volver al inicio</Link></p>
           ) : (
             <>
-              <p role="status">Interacciones completadas: {state.interactionCount} · Eventos guardados: {state.lastSeq}</p>
+              <p role="status">Interacciones completadas: {session.interactionCount} de {V9_ABSOLUTE_INTERACTION_LIMIT}</p>
+              {storageMode === "memory" ? <p role="status" className="df-screen__note">El progreso se mantiene solo mientras esta página siga abierta; no podrá recuperarse al volver.</p> : null}
               {error ? <p role="alert" className="df-screen__note">{error}</p> : null}
-              {state.extensionConsent === "accepted" && state.interactionCount >= 24 && state.status === "active" ? (
-                <div className="df-screen__note">
-                  <p>Extensión opcional: quedan hasta {state.extensionInteractionsRemaining} interacciones.</p>
-                  <button className="button" type="button" disabled={busy}
-                    onClick={() => submitExtensionConsent("withdrawn")}>Finalizar ahora</button>
-                </div>
+              {session.answeredQuestionIds.length ? (
+                <details>
+                  <summary>Revisar respuestas guardadas</summary>
+                  <ul>
+                    {session.answeredQuestionIds.map((id) => (
+                      <li key={id}>
+                        <code>{id}</code>{" "}
+                        <button type="button" className="button" disabled={busy} onClick={() => {
+                          setEditingQuestionId(id.startsWith("q2_niche_") ? "q2_sector" : id);
+                          if (id === "q2_sector" || id.startsWith("q2_niche_")) {
+                            setDraft({ sector: String(session.answers.q2_sector ?? ""), niche: String(session.answers[id] ?? "") });
+                          } else {
+                            const answer = session.answers[id];
+                            if (Array.isArray(answer)) setMultiple([...answer]);
+                            else setSingle(typeof answer === "string" ? answer : "");
+                          }
+                        }}>Editar</button>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
               ) : null}
-              {state.status === "completed" ? (
-                <div className="df-screen__note">
-                  <h2>Diagnóstico completado</h2>
-                  <p>El resultado está guardado y asociado a tu identidad.</p>
-                  {result ? (
-                    <>
-                      <p>Versión del resultado: {result.resultVersion}</p>
-                      <h3>Prioridades recomendadas</h3>
-                      {recommendationItems(result.recommendations).length ? (
-                        <ol className="v9-recommendations">
-                          {recommendationItems(result.recommendations).map((item, index) => (
-                            <li key={index}>
-                              <strong>{item.title}</strong>
-                              <p>{item.whatToImprove}</p>
-                              <p>{item.expectedOutcome}</p>
-                            </li>
-                          ))}
-                        </ol>
-                      ) : <p>El resultado está guardado. Puedes revisarlo en tu historial personal.</p>}
-                    </>
-                  ) : null}
-                  <p><Link to="/app/diagnosticos">Consultar mis diagnósticos</Link> o <Link to="/login?redirectTo=%2Fapp%2Fdiagnosticos">iniciar sesión para recuperar tu historial</Link>.</p>
-                </div>
-              ) : state.extensionConsent === "pending" ? (
+              {session.extensionConsent === "pending" ? (
                 <div className="df-screen__note">
                   <h2>¿Quieres responder hasta 5 preguntas más?</h2>
-                  <p>Ya completaste 24 interacciones. Solo proponemos esta extensión porque queda evidencia crítica que puede cambiar una conclusión del diagnóstico.</p>
-                  <p>El consentimiento no cuenta como interacción y puedes finalizar sin continuar.</p>
+                  <p>Ya completaste 24 interacciones. La extensión solo se ofrece cuando queda evidencia crítica. El consentimiento no cuenta como interacción.</p>
                   <div className="df-actions">
-                    <button className="button button--primary" type="button" disabled={busy}
-                      onClick={() => submitExtensionConsent("accepted")}>
-                      {busy ? "Guardando…" : "Sí, continuar"}
-                    </button>
-                    <button className="button" type="button" disabled={busy}
-                      onClick={() => submitExtensionConsent("rejected")}>
-                      Finalizar sin preguntas extra
-                    </button>
+                    <button className="button button--primary" type="button" disabled={busy} onClick={() => sendConsent("accepted")}>Sí, continuar</button>
+                    <button className="button" type="button" disabled={busy} onClick={() => sendConsent("rejected")}>Finalizar sin preguntas extra</button>
                   </div>
                 </div>
-              ) : state.readyToFinalize ? (
-                <div>
-                  <h2>Ya tenemos información para tu diagnóstico</h2>
-                  <p>Hemos terminado el recorrido. Puedes generar el resultado a partir de tus respuestas verificadas.</p>
-                  <button className="button button--primary" type="button" disabled={busy} onClick={() => void finalize()}>
-                    {busy ? "Preparando resultado…" : "Finalizar y ver resultado"}
-                  </button>
+              ) : session.status === "completing" && !editingQuestionId ? (
+                <div className="df-screen__note">
+                  <h2>Respuestas listas para finalizar</h2>
+                  <p>El borrador está guardado en este navegador. La finalización y el resultado se habilitarán en una fase posterior; tus respuestas no se han enviado al servidor.</p>
                 </div>
-              ) : state.nextQuestionId === "q2_sector" ? (
+              ) : questionId === "q2_sector" || questionId?.startsWith("q2_niche_") ? (
                 <Qa03bV9ClassificationStep
                   value={draft}
-                  progress={{ stage: "context", stageIndex: 0, answered: state.interactionCount }}
+                  progress={{ stage: "context", stageIndex: 0, answered: session.interactionCount }}
                   error={error}
                   reviewing={false}
                   canGoBack={false}
-                  entityType={typeof state.answers.q2_entity === "string" ? state.answers.q2_entity : "business"}
+                  entityType={typeof session.answers.q2_entity === "string" ? session.answers.q2_entity : "business"}
                   onChange={setDraft}
-                  onSubmit={submitClassification}
+                  onSubmit={sendClassification}
                   onBack={() => {}}
                 />
               ) : question ? (
-                <form onSubmit={(event) => { event.preventDefault(); submitAnswer(); }}>
+                <form onSubmit={(event) => { event.preventDefault(); sendAnswer(); }}>
                   <fieldset disabled={busy}>
                     <legend><h2>{question.prompt}</h2></legend>
                     {question.hint ? <p>{question.hint}</p> : null}
@@ -339,12 +288,18 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
                   </fieldset>
                   <button type="submit" className="button button--primary"
                     disabled={busy || (question.type === "multi" ? multiple.length === 0 : !single)}>
-                    {busy ? "Guardando…" : "Guardar y continuar"}
+                    {busy ? "Guardando en este navegador…" : editingQuestionId ? "Guardar cambio" : "Guardar y continuar"}
                   </button>
                 </form>
               ) : (
                 <p role="alert">No encontramos una pregunta válida para este punto del recorrido.</p>
               )}
+              <button className="button" type="button" disabled={busy} onClick={() => {
+                void store?.clear();
+                setSession(null);
+                setEditingQuestionId(null);
+                setError("Borrador local eliminado.");
+              }}>Eliminar borrador</button>
             </>
           )}
         </section>

@@ -1,4 +1,5 @@
 import { canonicalBusinessCategory } from "../../content/business-categories";
+import { getBusinessSectorByLabel } from "../../content/business-sectors";
 import type { MiniWebModuleType } from "./registry";
 
 export type NeighborhoodOfferingKind = "service" | "product";
@@ -40,10 +41,17 @@ function normalizeSearchText(value: string) {
 
 export function matchesNeighborhoodFilters(profile: NeighborhoodProfile, filters: NeighborhoodFilters) {
   if (filters.category) {
-    const profileCategory = canonicalBusinessCategory(profile.category);
-    const filterCategory = canonicalBusinessCategory(filters.category);
-    const bothUnclassified = profileCategory === "Otras actividades" && filterCategory === "Otras actividades";
-    if (profileCategory !== filterCategory || (bothUnclassified && normalizeSearchText(profile.category ?? "") !== normalizeSearchText(filters.category))) return false;
+    const profileSector = getBusinessSectorByLabel(profile.category ?? "");
+    const filterSector = getBusinessSectorByLabel(filters.category);
+    const profileCategory = profileSector && profileSector.id !== "other"
+      ? `sector:${profileSector.id}`
+      : `legacy:${canonicalBusinessCategory(profile.category)}`;
+    const filterCategory = filterSector && filterSector.id !== "other"
+      ? `sector:${filterSector.id}`
+      : `legacy:${canonicalBusinessCategory(filters.category)}`;
+    if (profileCategory !== filterCategory) return false;
+    const bothUnclassified = profileCategory === "legacy:Otras actividades" && filterCategory === "legacy:Otras actividades";
+    if (bothUnclassified && normalizeSearchText(profile.category ?? "") !== normalizeSearchText(filters.category)) return false;
   }
   if (filters.city && profile.city !== filters.city) return false;
   if (filters.serviceArea && profile.serviceArea !== filters.serviceArea) return false;

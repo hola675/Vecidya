@@ -8,14 +8,17 @@ import { selectV9Questions, type V9SelectionResult } from "./question-selection"
 export type V9AnswerRef = { readonly question: string };
 export type V9Rule =
   | { readonly op: "answered"; readonly ref: V9AnswerRef }
-  | { readonly op: "eq" | "notEq"; readonly ref: V9AnswerRef; readonly value: string }
-  | { readonly op: "in" | "multiIntersects"; readonly ref: V9AnswerRef; readonly values: readonly string[] }
+  | { readonly op: "eq"; readonly ref: V9AnswerRef; readonly value: string }
+  | { readonly op: "notEq"; readonly ref: V9AnswerRef; readonly value: string }
+  | { readonly op: "in"; readonly ref: V9AnswerRef; readonly values: readonly string[] }
+  | { readonly op: "multiIntersects"; readonly ref: V9AnswerRef; readonly values: readonly string[] }
   | { readonly op: "multiExcluding"; readonly ref: V9AnswerRef; readonly exclude: readonly string[] }
   | { readonly op: "contextResolvedEquals"; readonly field: string; readonly value: string }
   | { readonly op: "contextResolvedIn"; readonly field: string; readonly values: readonly string[] }
   | { readonly op: "contextUnresolved"; readonly field: string }
   | { readonly op: "archetypeIncludes"; readonly value: string }
-  | { readonly op: "and" | "or"; readonly rules: readonly V9Rule[] }
+  | { readonly op: "and"; readonly rules: readonly V9Rule[] }
+  | { readonly op: "or"; readonly rules: readonly V9Rule[] }
   | { readonly op: "not"; readonly rule: V9Rule };
 
 export type V9RuleStatus = "eligible" | "ineligible" | "pending";
@@ -69,7 +72,6 @@ function evaluate(rule: V9Rule, facts: V9GraphFacts): V9RuleTrace {
     const pass = rule.op === "contextResolvedEquals" ? field.value === rule.value : rule.values.includes(field.value);
     return { op: rule.op, status: pass ? "eligible" : "ineligible" };
   }
-  if (!("ref" in rule)) throw new Error(`Unsupported V9 rule: ${rule.op}`);
   const answer = facts.answers[rule.ref.question];
   if (answer === undefined) {
     return { op: rule.op, status: "pending", dependency: `answer:${rule.ref.question}` };

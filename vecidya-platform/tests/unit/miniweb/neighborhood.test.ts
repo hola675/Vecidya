@@ -35,6 +35,11 @@ test("el directorio combina ubicación, modalidad, oferta y módulos publicados"
   assert.equal(matchesNeighborhoodFilters(profile, { offering: "service", module: "faq" }), false);
 });
 
+test("los filtros legacy no agrupan categorías desconocidas distintas", () => {
+  assert.equal(matchesNeighborhoodFilters({ ...profile, category: "Actividad histórica A" }, { category: "Actividad histórica A" }), true);
+  assert.equal(matchesNeighborhoodFilters({ ...profile, category: "Actividad histórica A" }, { category: "Actividad histórica B" }), false);
+});
+
 test("el índice oculta ofertas inactivas y ofertas cuyo módulo no está visible", () => {
   const visible = getVisibleNeighborhoodOfferings([
     { kind: "service", title: "Servicio visible", description: "Publicado", isActive: true },
