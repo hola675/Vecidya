@@ -1,6 +1,6 @@
-## Diagnóstico V9 — typecheck de baseline (2026-11-04; local)
+## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
 
-En una rama limpia basada en `origin/main@9c159a32`, se corrigieron incompatibilidades de tipos en el grafo V9, los registros de evidencia/calibración y la frontera V9↔Candidate V3. La correlación adapta evidencia explícitamente y rechaza identidad/versión incompleta; la finalización valida que las contribuciones de calibración coincidan con el contrato V3 antes de generar recomendaciones. `pnpm run typecheck`, tres archivos de pruebas unitarias focales (26/26), `pnpm run build` y `git diff --check` PASS local. Pendiente PR/checks e integración; esto no certifica el recorrido completo, no cambia estado de publicación y no autoriza D1 remota o deploy.
+La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La ejecución completa de CI sobre el head combinado queda pendiente. Sin cambio de publicación, migración remota ni deploy.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 

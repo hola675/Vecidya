@@ -1,6 +1,6 @@
-# Diagnóstico V9 — estado local, 2026-11-04
+# Diagnóstico V9 — correcciones locales de baseline, 2026-11-04
 
-El checkpoint de corrección de typecheck sobre `origin/main@9c159a32` elimina errores existentes en los módulos V9 de evaluación del grafo, registros de evidencia/calibración y adaptadores entre scoring V9 y Candidate V3. `pnpm run typecheck`, 26 pruebas unitarias focales V9 y `pnpm run build` pasan localmente; `git diff --check` pasa. Estos resultados son locales hasta que el checkpoint se integre por PR. PR #231 (F04) y #232 (ADR F07-L3) siguen pendientes de sus checks actualizados. V9 no está certificado ni publicado; F05+ y certificación integral siguen pendientes. No se ejecutaron migraciones remotas ni deploy.
+El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibración y fronteras entre scoring V9 y Candidate V3; typecheck y build pasan localmente. La suite amplia encontró además cuatro fallos reproducibles en `origin/main@9c159a32`: dos expectativas desactualizadas del máximo de 29 interacciones y un filtro de Vecindario que confundía sectores con «Otras actividades». Las expectativas y el filtro ya están corregidos; sus pruebas focales pasan 38/38. La suite amplia combinada de CI aún debe confirmar que no quedan otros fallos. PR #231 (F07-L1/L2) y #232 (ADR F07-L3) siguen pendientes de checks actualizados. V9 no está certificado ni publicado; F05+ y la certificación integral siguen pendientes. Sin migraciones remotas ni deploy.
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

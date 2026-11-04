@@ -1,6 +1,6 @@
-## Diagnóstico V9 — reparación de typecheck (2026-11-04; local)
+## Diagnóstico V9 — reparación de tipos y regresiones de baseline (2026-11-04; local)
 
-Desde `origin/main@9c159a32`, `pnpm run typecheck` — PASS. Pruebas focales: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-f04-scoring-correlation.test.ts tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts tests/unit/diagnostic/qa03b-v9-canonical-bank.test.ts` — 26/26 PASS. `pnpm run build` — PASS; conserva avisos locales de imports dinámicos inefectivos y sourcemap CSS. `git diff --check` — PASS. No se ejecutaron pruebas E2E ni migraciones. Esta evidencia es local; falta CI del PR y no constituye certificación integral de V9.
+Desde `origin/main@9c159a32`, `pnpm run typecheck` — PASS en el head de reparación combinado. Pruebas focales de correlación/replay/banco: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/diagnostic/qa03b-v9-f04-scoring-correlation.test.ts tests/unit/diagnostic/qa03b-worker-replay-v9.test.ts tests/unit/diagnostic/qa03b-v9-canonical-bank.test.ts` — 26/26 PASS. Sectores y presupuesto de clasificación: `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/business-sectors.test.ts tests/unit/diagnostic/qa03b-v9-classification-bundle.test.ts` — 38/38 PASS. `pnpm run build` — PASS con avisos locales habituales de secretos opcionales, imports dinámicos y sourcemap CSS; `git diff --check` — PASS. La suite unitaria amplia de CI del head combinado está pendiente. No se ejecutaron E2E ni migraciones; esto no certifica V9 integral.
 
 ## APRENDE-ARTICLE-ART-01 — ilustraciones por guía (2026-11-02)
 

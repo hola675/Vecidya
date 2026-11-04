@@ -1,4 +1,5 @@
 import { canonicalBusinessCategory } from "../../content/business-categories";
+import { getBusinessSectorByLabel } from "../../content/business-sectors";
 import type { MiniWebModuleType } from "./registry";
 
 export type NeighborhoodOfferingKind = "service" | "product";
@@ -39,7 +40,17 @@ function normalizeSearchText(value: string) {
 }
 
 export function matchesNeighborhoodFilters(profile: NeighborhoodProfile, filters: NeighborhoodFilters) {
-  if (filters.category && canonicalBusinessCategory(profile.category) !== canonicalBusinessCategory(filters.category)) return false;
+  if (filters.category) {
+    const profileSector = getBusinessSectorByLabel(profile.category ?? "");
+    const filterSector = getBusinessSectorByLabel(filters.category);
+    const profileCategory = profileSector && profileSector.id !== "other"
+      ? `sector:${profileSector.id}`
+      : `legacy:${canonicalBusinessCategory(profile.category)}`;
+    const filterCategory = filterSector && filterSector.id !== "other"
+      ? `sector:${filterSector.id}`
+      : `legacy:${canonicalBusinessCategory(filters.category)}`;
+    if (profileCategory !== filterCategory) return false;
+  }
   if (filters.city && profile.city !== filters.city) return false;
   if (filters.serviceArea && profile.serviceArea !== filters.serviceArea) return false;
   if (filters.serviceMode && profile.serviceMode !== filters.serviceMode) return false;

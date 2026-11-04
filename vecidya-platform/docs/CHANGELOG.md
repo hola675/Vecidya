@@ -1,8 +1,8 @@
-# 2026-11-04 — Diagnóstico V9 — compatibilidad de tipos del baseline (local)
+# 2026-11-04 — Diagnóstico V9 — corrección de tipos y regresiones de baseline (local)
 
-- Corrige el estrechamiento de uniones de reglas, preserva literales de calibración y tipa las búsquedas del manifiesto de evidencia.
-- Añade adaptadores explícitos entre evidencia/calibración V9 y los consumidores Candidate V3, con validaciones cerradas para identidad, versión y contribuciones nulas.
-- `pnpm run typecheck`, 26 pruebas focales V9, `pnpm run build` y `git diff --check`: PASS local. El checkpoint requiere PR y CI antes de integración; PR #231 y #232 continúan pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
+- Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
+- Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
+- Typecheck, build, diff-check y 64 pruebas focales combinadas (26 de correlación/replay/banco y 38 de sectores/clasificación) pasan localmente. La suite completa de CI del head combinado está pendiente; PR #231/#232 siguen pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
 
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
