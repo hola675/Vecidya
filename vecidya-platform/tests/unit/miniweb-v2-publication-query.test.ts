@@ -28,6 +28,7 @@ test("publication supplies every snapshot column and repeated revision returns a
   assert.match(snapshotSql, /insert into "miniweb_v2_publication"/i);
   assert.match(snapshotSql, /"created_at"/i);
   assert.match(snapshotSql, /on conflict do nothing/i);
+  assert.match(snapshotSql, /published_revision/i, "a revision already published must not create another snapshot");
 
   const repeated = await publishMiniWebV2Draft(database, { ...input, publicationId: "publication-retry" });
   assert.deepEqual(repeated, { ok: false, reason: "conflict" });

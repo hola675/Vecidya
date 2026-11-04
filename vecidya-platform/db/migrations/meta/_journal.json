@@ -309,6 +309,20 @@
       "when": 1793329303130,
       "tag": "0043_diagnostic_v9_result_finalization_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "6",
+      "when": 1793330450801,
+      "tag": "0044_miniweb-capacity-extensions",
+      "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "6",
+      "when": 1793330650050,
+      "tag": "0045_miniweb-capacity-extension-org-scope",
+      "breakpoints": true
     }
   ]
 }

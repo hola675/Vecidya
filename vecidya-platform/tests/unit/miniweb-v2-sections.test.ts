@@ -21,6 +21,7 @@ test("IMP-01 covers every contracted section with a typed validation branch", ()
 
 test("IMP-01 rejects unsafe links, duplicate identities/order, and unknown section types", () => {
   assert.equal(validateMiniWebV2Section({ ...section("hero"), content: { ...content.hero as object, cta: { label: "Go", href: "javascript:alert(1)" } } }).valid, false);
+  assert.equal(validateMiniWebV2Section({ ...section("hero"), content: { ...content.hero as object, cta: { label: "Go", href: "#contacto" } } }).valid, true);
   assert.equal(validateMiniWebV2Section(section("legacy-hours")).valid, false);
   assert.equal(validateMiniWebV2Document({ schemaVersion: 1, sections: [section("hero"), section("faq")] }).valid, false);
   assert.equal(validateMiniWebV2Document({ schemaVersion: 1, sections: [section("hero"), { ...section("faq"), id: "s-hero", order: 1 }] }).valid, false);

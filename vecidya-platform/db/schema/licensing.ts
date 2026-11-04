@@ -28,6 +28,29 @@ export const billingAccount = sqliteTable(
   (table) => [uniqueIndex("billing_account_owner_unique").on(table.ownerUserId)],
 );
 
+// Ampliación explícita de capacidad MiniWeb; no concede licencia CRM ni representa un cobro.
+export const billingMiniwebCapacityExtension = sqliteTable(
+  "billing_miniweb_capacity_extension",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id").notNull().references(() => organization.id),
+    billingAccountId: text("billing_account_id").notNull().references(() => billingAccount.id),
+    kind: text("kind", { enum: ["cuadra_extra"] }).default("cuadra_extra").notNull(),
+    status: text("status", { enum: ["active", "suspended", "cancelled"] }).default("active").notNull(),
+    startsAt: integer("starts_at", { mode: "timestamp_ms" }).notNull(),
+    endsAt: integer("ends_at", { mode: "timestamp_ms" }),
+    reason: text("reason").notNull(),
+    grantedByUserId: text("granted_by_user_id").notNull().references(() => user.id),
+    idempotencyKey: text("idempotency_key").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+  },
+  (table) => [
+    index("billing_miniweb_capacity_extension_account_idx").on(table.billingAccountId, table.status),
+    uniqueIndex("billing_miniweb_capacity_extension_idempotency_unique").on(table.idempotencyKey),
+  ],
+);
+
 // Versión de precio de un plan. Una organization_license conserva su price_id: cambiar el precio
 // vigente de un plan no afecta a quien ya contrató (grandfathering), porque nunca se re-resuelve
 // el precio de una licencia existente por plan_code, solo se lee por su price_id guardado.
