@@ -10,6 +10,11 @@
 - La retención prevista del resultado anónimo es local con TTL de 24 horas; guardar un informe no recalcula scoring. El ADR no implementa firma, endpoint, store ni persistencia, y no autoriza una migración o deploy.
 - Depende de cerrar F07-L1/L2; PR #231 sigue en CI actualizado. Sin migraciones remotas ni publicación.
 
+# 2026-11-04 — Diagnóstico V9 — F07-L1/L2 (actualización sobre main)
+
+- PR #231 mantiene el borrador anónimo en `CandidateSessionV9Prototype` local con TTL derivado de siete días, manejo de revisión/concurrencia y fallback en memoria; L2 delega a replay/scorer canónico sin persistir resultado ni respuestas.
+- El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. Se reconcilió typecheck contra el arreglo ya integrado en #233; CI del nuevo head pendiente. Sin migraciones, endpoint, D1 remota, deploy o publicación.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.

@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
 import { PublicLayout } from "../components/public-layout";
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { getSession } from "../../server/auth/session.server";
+import { createCandidateSessionV9Prototype } from "../features/diagnostic/qa03b/v9-session-prototype";
+import { createBrowserDiagnosticV9LocalDraftStore } from "../features/diagnostic/v9/local-draft.client";
+import { DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS } from "../features/diagnostic/v9/local-draft";
 import {
   isV9PublicRuntimeAvailable,
   type V9PublicRuntimeConfig,
@@ -18,19 +20,10 @@ export function meta() {
   ];
 }
 
-export async function loader({ context, request }: Route.LoaderArgs) {
+export function loader({ context }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const enabled = isV9PublicRuntimeAvailable(env as unknown as V9PublicRuntimeConfig);
-  let authenticated = false;
-  let sessionError = false;
-  if (enabled) {
-    try {
-      authenticated = Boolean(await getSession(env, request));
-    } catch {
-      sessionError = true;
-    }
-  }
-  return { enabled, authenticated, sessionError };
+  return { enabled };
 }
 
 export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) {
@@ -38,35 +31,33 @@ export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) 
   const [starting, setStarting] = useState(false);
   const [consented, setConsented] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [draftId, setDraftId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const stored = createBrowserDiagnosticV9LocalDraftStore().readResult(Date.now());
+    if (stored.status === "found") setDraftId(stored.envelope.session.sessionId);
+    if (stored.status === "expired") setError("El borrador local anterior expiró. Puedes iniciar uno nuevo.");
+    if (stored.status === "unavailable") setError("El almacenamiento local no está disponible; el recorrido podrá mantenerse solo mientras esta página permanezca abierta.");
+  }, []);
 
   async function start() {
-    if (starting || !consented || !loaderData.enabled || loaderData.sessionError) return;
+    if (starting || !consented || !loaderData.enabled) return;
     setStarting(true);
     setError(null);
     try {
-      if (!loaderData.authenticated) {
-        const identityResponse = await fetch("/api/diagnostic/anonymous-identity", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: "{}",
-          credentials: "same-origin",
-        });
-        if (!identityResponse.ok) {
-          const problem = await identityResponse.json() as { error?: string };
-          throw new Error(problem.error || "No pudimos crear una identidad de visitante.");
-        }
-      }
-      const response = await fetch("/api/diagnostic/v9/runs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ consent: true }),
-        credentials: "same-origin",
+      const sessionId = crypto.randomUUID();
+      const session = createCandidateSessionV9Prototype({
+        sessionId,
+        writerId: crypto.randomUUID(),
+        now: Date.now(),
       });
-      const data = await response.json() as { ok?: boolean; runId?: string; error?: string };
-      if (!response.ok || !data.ok || !data.runId) {
-        throw new Error(data.error || "No pudimos iniciar el diagnóstico.");
+      const saved = await createBrowserDiagnosticV9LocalDraftStore().write(session);
+      if (saved.status !== "written" && saved.status !== "idempotent") {
+        throw new Error(saved.status === "conflict"
+          ? "Ya existe un borrador más reciente en este navegador. Recupéralo antes de iniciar otro."
+          : "No pudimos iniciar el borrador local.");
       }
-      navigate(`/diagnostico/v9/${encodeURIComponent(data.runId)}`);
+      navigate(`/diagnostico/v9/${encodeURIComponent(sessionId)}`);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "No pudimos iniciar el diagnóstico.");
     } finally {
@@ -81,33 +72,26 @@ export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) 
           <div className="df-screen__header">
             <p className="df-screen__eyebrow">Vecidya · Diagnóstico V9</p>
             <h1 className="df-screen__title" id="v9-start-heading">Conoce el estado digital de tu negocio</h1>
-            <p className="df-screen__lead">
-              Un recorrido adaptado a tu actividad, con respuestas guardadas de forma segura para retomar tu diagnóstico.
-            </p>
+            <p className="df-screen__lead">Un recorrido adaptado a tu actividad. El borrador anónimo se guarda en este navegador durante un máximo de 7 días desde la última respuesta válida.</p>
           </div>
           {!loaderData.enabled ? (
             <div className="df-screen__note" role="status">
               La nueva versión está en validación y todavía no admite diagnósticos públicos.
               Puedes utilizar el <Link to="/diagnostico">diagnóstico disponible</Link>.
             </div>
-          ) : loaderData.sessionError ? (
-            <div role="alert" className="df-screen__note">No pudimos verificar la sesión. Vuelve a iniciar sesión antes de continuar.</div>
           ) : (
             <>
-              <p role="status">
-                {loaderData.authenticated
-                  ? "Sesión iniciada: el diagnóstico se asociará a tu cuenta Vecidya."
-                  : "Visita anónima: conservaremos una identidad de recuperación segura en este navegador."}
-              </p>
+              <p role="status">Borrador anónimo local. Vecidya no recibe ni guarda tus respuestas durante la entrevista.</p>
               <label className="v9-consent">
                 <input type="checkbox" checked={consented} onChange={(event) => setConsented(event.currentTarget.checked)} />
-                <span>He leído la <Link to="/privacidad">Política de privacidad</Link> y acepto que mis respuestas se traten para elaborar y conservar el diagnóstico en Vecidya.</span>
+                <span>He leído la <Link to="/privacidad">Política de privacidad</Link> y entiendo que este borrador se conserva solo en este navegador durante un máximo de 7 días.</span>
               </label>
               {error ? <p role="alert" className="df-screen__note">{error}</p> : null}
               <button type="button" className="button button--primary" disabled={starting || !consented} onClick={() => void start()}>
                 {starting ? "Preparando diagnóstico…" : "Comenzar diagnóstico"}
               </button>
-              <p>Podrás asociar después los resultados a tus organizaciones desde <Link to="/app/diagnosticos">Mis diagnósticos</Link>.</p>
+              {draftId ? <p><Link className="button" to={`/diagnostico/v9/${encodeURIComponent(draftId)}`}>Continuar borrador anterior</Link> · máximo {Math.ceil(DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS / 86_400_000)} días desde la última respuesta</p> : null}
+              <p>La finalización y el resultado estarán disponibles cuando se complete la siguiente fase de validación.</p>
             </>
           )}
         </section>
