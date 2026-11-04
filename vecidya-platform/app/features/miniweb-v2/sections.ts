@@ -33,6 +33,7 @@ const isText = (x: unknown, max = 4000) => typeof x === "string" && x.length <= 
 const validLink = (x: unknown): x is V2Link => isRecord(x) && isText(x.label, 120) && isText(x.href, 2048) && safeHref(x.href as string);
 function safeHref(href: string): boolean {
   if (href.startsWith("/") && !href.startsWith("//")) return true;
+  if (/^#[A-Za-z][A-Za-z0-9_-]*$/.test(href)) return true;
   try { const u = new URL(href); return ["https:", "http:", "mailto:", "tel:"].includes(u.protocol); } catch { return false; }
 }
 const validImage = (x: unknown): x is V2Image => isRecord(x) && isText(x.assetId, 160) && !!(x.assetId as string).trim() && isText(x.alt, 500) && (x.caption === undefined || isText(x.caption, 500));
