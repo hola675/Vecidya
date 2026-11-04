@@ -1,27 +1,29 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.4.0
+**Versión:** 1.5.0
 **Fecha:** 2026-11-04
-**Estado:** F07-L1/L2 INTEGRADOS · F07-L3-ADR EN PR #232 (CI previo PASS; rama actualizada por merge de main) · F07-L3 SIGUIENTE
+**Estado:** F07-L1/L2 INTEGRADOS · F07-L3 IMPLEMENTADO EN RAMA, PENDIENTE DE PROVISIONAR CLAVES Y CERTIFICAR WORKER · NO PUBLICADO
 **Repositorio:** `hola675/Vecidya`
-**Main integrado:** `cbebe22a4da7a8b2ccfaa423557b23f2bb6e4b2e` (PR #231)
-**Rama de implementación siguiente:** `feat/diagnostic-v9-f07-l3`
+**Main base:** `origin/main@03d2ba4c5b2cc521db221e22e4cdd39cd919a43d` (PR #232 integrado)
+**Rama:** `feat/diagnostic-v9-f07-l3`
 
 ## 0. Estado operativo actual
 
-- **F07-L1/L2:** integrados por PR #231 en `main@cbebe22a`; L1/L2 focales 10/10 y 5/5 PASS, typecheck/build locales PASS, CI focal PASS. El borrador anónimo vive localmente por 7 días y el replay finalizable es transitorio, sin escrituras individuales D1.
-- **F07-L3-ADR:** contrato Ed25519/JCS/SHA-256, claves, rotación/revocación, TTL 24 h y skew documentado en `docs/ARCHITECTURE.md`, PR #232. Su head previo pasó typecheck, build, regresión Diagnóstico/Aprende y suite unitaria; tras integrar #231 hubo conflicto documental y la rama se actualizó desde `main`. Verificar CI del nuevo head antes de merge.
-- **F07-L3:** rama nueva creada desde `origin/main@cbebe22a`; implementación de firma/finalización aún no iniciada. No afirmar que el resultado sea verificable hasta completar el Worker runtime y sus pruebas.
-- **Datos/operación:** cero migraciones remotas, cero deploy y ninguna publicación V9.
-- **Siguiente:** integrar #232 tras CI PASS, actualizar esta rama desde el main resultante y luego implementar el resultado local firmado de 24 h.
+- **F07-L1/L2:** integrados por PR #231 en `main@cbebe22a`; focales 10/10 y 5/5, typecheck/build locales y CI PASS. El draft anónimo es local por 7 días; replay es transitorio y no crea ledger individual D1.
+- **F07-L3-ADR:** integrado por PR #232 en `main@03d2ba4c`; JCS/RFC 8785, SHA-256, Ed25519, keyId, Worker Secret, rotación/revocación, timestamps y TTL 24 h.
+- **F07-L3 implementación:** esta rama añade replay/finalización firmada en memoria, endpoint transitorio con rate limit, resultado local 24 h, verificación criptográfica y eliminación del draft tras persistir el resultado. No crea migraciones ni escrituras D1.
+- **Validación RAN:** `pnpm run typecheck` PASS; `pnpm run build` PASS; focales V9 9/9 PASS (attestation/final-result/replay); `git diff --check` PASS.
+- **Gates pendientes:** configurar `DIAGNOSTIC_V9_ATTESTATION_PRIVATE_KEY_PKCS8` como Worker Secret y añadir su clave pública/keyId al registry versionado antes de habilitar finalización. La clave registry está vacía en esta rama; por diseño el navegador rechaza resultados sin clave conocida. No correr deploy.
+- **Runtime Worker:** intento `pnpm run dev` no llegó a escuchar; Miniflare agotó el tiempo al inicializar `Request.cf`. No hay evidencia RAN del endpoint real Worker; no declarar F07-L3 PASS/CERRADA.
+- **Siguiente:** resolver el startup del runtime local y certificar importación/verificación Ed25519 con claves de prueba en Cloudflare Worker; luego configurar las claves de entorno con autorización operativa y repetir smoke local. F05-01 queda después de L3 PASS.
+- **Publicación:** ninguna; cero migraciones remotas y cero deploy.
 
-## Evidencia integrada de F07-L1/L2
+## Evidencia integrada previa
 
-- Draft local con TTL derivado de `updatedAt + 7 días`, revisión/idempotencia, conflicto entre pestañas, persistencia de respaldo en memoria y cero identity/run/event D1 en entrevista anónima.
-- Replay server-side transitorio reutiliza el Worker/scorer canónico, valida versión y TTL de siete días; no persiste transcript ni acepta scoring del cliente.
-- Pruebas focales L1 10/10 y L2 5/5; `pnpm run typecheck`, `pnpm run build` y CI focal aprobados en el checkpoint #231.
-- Integrado por merge commit `cbebe22a4da7a8b2ccfaa423557b23f2bb6e4b2e`.
-`r`n## 1. Regla de autoridad
+- F07-L1: borrador local versionado, TTL derivado de `updatedAt + 7 días`, idempotencia/revisión, cambios entre pestañas y fallback en memoria; no hace identity/run/event D1.
+- F07-L2: replay canónico transitorio, versiones/TTL de 7 días, validación de transcript y límite 24+5; no acepta score del cliente ni persiste respuestas.
+- F07-L3: el server elimina valores no JSON de la representación antes de JCS, firma los claims con Ed25519 y valida digest, expiración de 24 h, skew máximo de 60 s y revocación. El resultado no incluye `answers` ni transcript.
+## 1. Regla de autoridad
 
 Este archivo responde “¿dónde estamos ahora?”. Si un documento histórico contradice este status, prevalecen: código/HEAD → este archivo → hoja humana A–H → scope post-aprobación → reportes Wn → backlog → packs DEC/Master histórico.
 
@@ -94,9 +96,14 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - no raw answers en logs/analytics.
 
 ### F07-L3
-- resultado local 24h;
-- attestation verificable;
-- ADR técnico pendiente: version/id, serialization, digest, algoritmo, key id, rotación/custodia, skew y claves retiradas.
+- candidata implementada en esta rama: replay/finalización autoritativa, resultado canónico sin answers/transcript, attestation JCS/SHA-256/Ed25519 y resultado local 24h;
+- cliente verifica firma, digest, expiración, skew y revocación antes de leer/aceptar el resultado;
+- endpoint sin persistencia D1, protegido por origen y rate limit, falla cerrado cuando faltan secreto o clave pública versionada;
+- **PARTIAL, no PASS:** Worker Secret y key registry no provisionados; la prueba con Cloudflare local no pudo arrancar (`Request.cf` timeout).
+
+### F07-L3-ADR
+- integrado en PR #232 / `main@03d2ba4c`;
+- JCS (RFC 8785), SHA-256, Ed25519, UUIDv4, `keyId`, Worker Secret, rotación/revocación, 24h y skew 60s.
 
 ## 8. Deuda explícita
 
@@ -105,11 +112,17 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - prototipo D1 histórico requiere inventario/cleanup policy.
 - F08 debe cubrir idioma/aclaración UI, accesibilidad, seguridad, concurrencia, carga y errores.
 
-## 9. Handoff`r`n`r`nF07-L1/L2 están integrados en main. F07-L3-ADR debe integrarse antes de emitir comprobantes; el siguiente checkpoint implementa finalización autoritativa, attestation Ed25519 y resultado anónimo local de 24 horas, sin persistencia individual D1.`r`n`r`n## 10. Qué significa “terminado”
+## 9. Handoff
+
+F07-L1/L2 y el ADR L3 están integrados. F07-L3 tiene una implementación candidata en `feat/diagnostic-v9-f07-l3`; queda bloqueada como PASS por la falta del keyId/clave pública versionada y por no haber validación en runtime Worker real. Resolver esos gates antes de avanzar a F05-01.
+
+## 10. Qué significa “terminado”
 
 V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + staging/piloto/aceptación/producción F10 + postdeploy verificable.
 
 ## Changelog
+
+- **1.5.0 / 2026-11-04:** PR #232 integrado en `main@03d2ba4c`; implementación candidata F07-L3 en rama, typecheck/build PASS, focal 9/9; secret/key registry y validación Worker local pendientes.
 
 - **1.4.0 / 2026-11-04:** F07-L1/L2 integrados por PR #231 en main@cbebe22a; ADR #232 pasó su head anterior pero fue actualizado para incluir #231 y requiere CI del nuevo head. F07-L3 sigue pendiente.
 
