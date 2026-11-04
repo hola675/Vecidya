@@ -1,7 +1,14 @@
-# 2026-11-03 — Diagnostic V9 F07-L3-ADR (documentado, no implementado)
+# 2026-11-04 — Diagnóstico V9 — corrección de tipos y regresiones de baseline (local)
 
-- Se registra en `ARCHITECTURE.md` el formato de comprobante anónimo, canonicalización JCS, digest SHA-256, firma Ed25519, gestión/rotación/revocación de claves y expiración máxima de 24 horas.
-- Se reconcilia el estado operativo: F07-L1/L2 están en PR #231 draft, pendientes de integración; este checkpoint no implementa finalización, no añade migraciones y no despliega.
+- Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
+- Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
+- Typecheck, build, diff-check, pruebas focales de correlación/replay/banco (26), sectores/clasificación (38), aislamiento de calibración (46) y R8-C (6) PASS local. CI completo del PR #233: 2079/2079 unitarias PASS. PR #233 integrada en `main@64b3ccd2`; sin migraciones remotas, deploy o publicación.
+
+# 2026-11-04 — Diagnóstico V9 — contrato ADR F07-L3 (pendiente de implementación)
+
+- Define canonicalización JCS (RFC 8785), digest SHA-256, firma Ed25519, `keyId`, secreto de Worker y ciclo de rotación/revocación para el comprobante verificable.
+- La retención prevista del resultado anónimo es local con TTL de 24 horas; guardar un informe no recalcula scoring. El ADR no implementa firma, endpoint, store ni persistencia, y no autoriza una migración o deploy.
+- Depende de cerrar F07-L1/L2; PR #231 sigue en CI actualizado. Sin migraciones remotas ni publicación.
 
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 

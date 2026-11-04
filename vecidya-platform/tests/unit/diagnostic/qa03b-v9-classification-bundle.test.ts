@@ -15,6 +15,7 @@ import { buildCandidateQuestionPlanFromBankV3 } from "../../../app/features/diag
 import { buildCandidateQuestionPlanV3 } from "../../../app/features/diagnostic/qa03b/qbv2-candidate-planner";
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { QUESTION_BANK_ID, SESSION_SCHEMA, SESSION_KEY } from "../../../app/features/diagnostic/qa03b/contract";
+import { V9_ABSOLUTE_INTERACTION_LIMIT } from "../../../app/features/diagnostic/v9/route-budget";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
 
 const restaurantContext: AnswersV2 = {
@@ -511,9 +512,10 @@ test("P2: un historial de 24 interacciones no permite ampliar el presupuesto por
   const exhausted = buildCandidateQuestionPlanV9Prototype(second.answers, events, 24);
   assert.equal(exhausted.visibleInteractionCount, 24);
   assert.ok(exhausted.plan.routeLength <= 24);
-  const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, 30);
-  assert.equal(overBudget.visibleInteractionCount, 30);
-  assert.ok(overBudget.plan.routeLength <= 24);
+  const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.equal(overBudget.visibleInteractionCount, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.equal(overBudget.plan.routeLength, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.equal(overBudget.plan.nextQuestionId, undefined);
   assert.equal(countVisibleInteractionsV9(second.answers, events),
     Object.keys(second.answers).length - 1);
 });
@@ -679,7 +681,7 @@ test("P2: replay rechaza propiedades extra no reconocidas en eventos", () => {
   assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
 });
 
-test("P2: un historial finito enorme se limita al máximo entero seguro", () => {
+test("P2: un historial finito enorme se limita al presupuesto absoluto de V9", () => {
   const classified = applyClassificationInteractionV9(restaurantContext, {
     sector: "food_hospitality", niche: "restaurant",
   });
@@ -688,8 +690,9 @@ test("P2: un historial finito enorme se limita al máximo entero seguro", () => 
   const result = buildCandidateQuestionPlanV9Prototype(
     classified.answers, [classified.event], Number.MAX_VALUE,
   );
-  assert.equal(result.visibleInteractionCount, Number.MAX_SAFE_INTEGER);
-  assert.ok(result.plan.routeLength <= 24);
+  assert.equal(result.visibleInteractionCount, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.equal(result.plan.routeLength, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.equal(result.plan.nextQuestionId, undefined);
 });
 
 test("P3: contrato de estado V9 produce el mismo plan que el adaptador candidato", () => {

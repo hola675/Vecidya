@@ -1,6 +1,6 @@
-## Diagnostic V9 — estado del checkpoint F07-L3-ADR (2026-11-03)
+## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
 
-La base `origin/main@9c159a32abdf01a341e9a97e5c1c1ac99191cf54` contiene el plan V9. F07-L1/L2 están implementados en PR #231, open/draft y no integrados: 10/10 y 5/5 pruebas focales, build PASS, typecheck global FAIL por errores preexistentes en módulos de scoring/calibración no editados. F07-L3-ADR se documenta en `ARCHITECTURE.md` en la rama `docs/diagnostic-v9-f07-l3-adr`; firma/finalización aún no implementadas. Cero migraciones o deploy de este checkpoint. El siguiente gate runtime es L3; luego resumen F05-01, recomendaciones F06, contrato F05-02, persistencia identificada L4/L5, certificación L6, F08, cutover F09 y operación F10. Deuda: baseline inicial 77 con 59 rewrites + 13 candidatos 82/90 pendientes; backup ≤30 días requiere certificación; prototipo D1 histórico requiere inventario/política de limpieza. No declarar V9 completo, seguro, integrado o publicado.
+PR #233 quedó integrada en `main@64b3ccd2` con typecheck/build y suite amplia CI (2079/2079) PASS. Corregía incompatibilidades de tipo en V9↔Candidate V3, expectativas obsoletas del hard cap y comparación sectorial de Vecindario; la prueba R8-C reconoce el puente de overall únicamente para scoring histórico. PR #231 contiene el borrador local y replay transitorio F07-L1/L2; focales, typecheck y build locales PASS, CI actualizado en curso. Este checkpoint documenta el contrato F07-L3, sin firma ni finalización implementadas. Sin cambio de publicación, migración remota ni deploy.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 

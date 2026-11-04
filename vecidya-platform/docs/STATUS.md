@@ -1,6 +1,6 @@
-# DIAGNOSTIC V9 — F07-L3-ADR documentado (checkpoint local, 2026-11-03)
+# Diagnóstico V9 — correcciones locales de baseline, 2026-11-04
 
-F07-L1/L2 están implementados en [PR #231](https://github.com/hola675/Vecidya/pull/231), abierta como draft y aún no integrada: draft anónimo local de 7 días y replay autoritativo transitorio, sin ledger individual anónimo D1. Las pruebas focales del PR pasan 10/10 y 5/5; build PASS. Typecheck global FAIL por cinco módulos de scoring/calibración no modificados según evidencia registrada en el PR. Este checkpoint documenta en `ARCHITECTURE.md` el contrato F07-L3-ADR (JCS RFC 8785, SHA-256, Ed25519, `keyId`, Worker Secret, rotación, TTL 24 h y desfase de reloj). **No implementa finalización/firmas, no está integrado ni publicado.** Sigue F07-L3; posteriormente F05/F06, L4–L6, F08–F10. Deuda: 59 rewrites + 13 candidatos excluidos, certificación operativa de backup ≤30 días e inventario/retención del prototipo D1. Sin migración, D1 remota, deploy ni HTTP pública.
+PR #233 corrigió los tipos del grafo, los registros de evidencia/calibración y las fronteras entre scoring V9 y Candidate V3, además de cuatro regresiones de baseline. Quedó integrado en `main@64b3ccd2`; typecheck/build y suite amplia CI (2079/2079) PASS. PR #231 contiene F07-L1/L2 y se actualizó sobre `main`; sus focales L1 10/10 y L2 5/5, typecheck y build pasan localmente, con CI actualizado en curso. PR #232 registra el ADR de F07-L3 en este checkpoint; firma/finalización siguen sin implementarse. V9 no está certificado ni publicado; F05+ y la certificación integral siguen pendientes. Sin migraciones remotas ni deploy.
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 
