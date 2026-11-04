@@ -145,6 +145,11 @@ try {
   assert.equal(validSave.status, 200);
   const publish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 5 });
   assert.equal(publish.status, 200, `publicación V2: ${await publish.clone().text()}`);
+  const activePublication = query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`)[0]?.active_publication_id;
+  const repeatedPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 5 });
+  assert.equal(repeatedPublish.status, 409, "a repeated publish request for the active revision must conflict");
+  assert.equal((await repeatedPublish.json()).code, "REVISION_CONFLICT");
+  assert.equal(query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`)[0]?.active_publication_id, activePublication, "a repeated request must preserve the active publication pointer");
   const publicPage = await fetch(new URL(`/miniweb/${emptySiteId}`, base));
   assert.equal(publicPage.status, 200);
   const html = await publicPage.text();

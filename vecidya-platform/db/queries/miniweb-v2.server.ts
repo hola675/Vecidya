@@ -81,6 +81,7 @@ export async function publishMiniWebV2Draft(
       AND e.starts_at <= ${now.getTime()} AND (e.ends_at IS NULL OR e.ends_at > ${now.getTime()})
   )`;
   const effectiveCapacity = sql`(CASE WHEN ${ownerHasActiveLicense} THEN 3 + 3 * ${explicitExtensionCount} ELSE 0 END)`;
+  const unpublishedRevision = sql`(${miniWebV2Site.publishedRevision} IS NULL OR ${miniWebV2Site.publishedRevision} < ${input.expectedRevision})`;
   const slot = database.insert(miniWebV2PublicationSlot).select(
     database.select({ siteId: miniWebV2Site.id, ownerUserId: miniWebV2Site.ownerUserId, reservedAt: sql<number>`${now.getTime()}`.as("reserved_at") }).from(miniWebV2Site)
       .where(sql`${eq(miniWebV2Site.id, input.siteId)} AND ${eq(miniWebV2Site.organizationId, input.organizationId)} AND ${ownerHasActiveLicense} AND (EXISTS (SELECT 1 FROM miniweb_v2_publication_slot s WHERE s.site_id = ${input.siteId}) OR (SELECT COUNT(*) FROM miniweb_v2_publication_slot s WHERE s.owner_user_id = miniweb_v2_site.owner_user_id) < ${effectiveCapacity})`),
@@ -88,13 +89,13 @@ export async function publishMiniWebV2Draft(
   const inserted = database.insert(miniWebV2Publication).select(
     database.select({ id: sql<string>`${input.publicationId}`.as("id"), siteId: miniWebV2Draft.siteId, revision: miniWebV2Draft.revision, schemaVersion: miniWebV2Draft.schemaVersion, documentJson: miniWebV2Draft.documentJson, publishedByUserId: sql<string>`${input.actorUserId}`.as("published_by_user_id"), createdAt: sql<number>`${now.getTime()}`.as("created_at") })
       .from(miniWebV2Draft).innerJoin(miniWebV2Site, eq(miniWebV2Site.id, miniWebV2Draft.siteId))
-      .where(sql`${eq(miniWebV2Draft.siteId, input.siteId)} AND ${eq(miniWebV2Site.organizationId, input.organizationId)} AND ${ownerHasActiveLicense} AND ${eq(miniWebV2Draft.revision, input.expectedRevision)} AND ${eq(miniWebV2Site.draftRevision, input.expectedRevision)} AND EXISTS (SELECT 1 FROM miniweb_v2_publication_slot s WHERE s.site_id = ${input.siteId} AND s.owner_user_id = ${miniWebV2Site.ownerUserId})`),
-  );
+      .where(sql`${eq(miniWebV2Draft.siteId, input.siteId)} AND ${eq(miniWebV2Site.organizationId, input.organizationId)} AND ${ownerHasActiveLicense} AND ${unpublishedRevision} AND ${eq(miniWebV2Draft.revision, input.expectedRevision)} AND ${eq(miniWebV2Site.draftRevision, input.expectedRevision)} AND EXISTS (SELECT 1 FROM miniweb_v2_publication_slot s WHERE s.site_id = ${input.siteId} AND s.owner_user_id = ${miniWebV2Site.ownerUserId})`),
+  ).onConflictDoNothing();
   const results = await database.batch([
     slot,
     inserted,
     database.update(miniWebV2Site).set({ activePublicationId: input.publicationId, publishedRevision: input.expectedRevision, updatedAt: now })
-      .where(sql`${eq(miniWebV2Site.id, input.siteId)} AND ${eq(miniWebV2Site.organizationId, input.organizationId)} AND ${ownerHasActiveLicense} AND ${eq(miniWebV2Site.draftRevision, input.expectedRevision)} AND EXISTS (SELECT 1 FROM miniweb_v2_publication p WHERE p.id = ${input.publicationId} AND p.site_id = ${input.siteId} AND p.revision = ${input.expectedRevision})`),
+      .where(sql`${eq(miniWebV2Site.id, input.siteId)} AND ${eq(miniWebV2Site.organizationId, input.organizationId)} AND ${ownerHasActiveLicense} AND ${unpublishedRevision} AND ${eq(miniWebV2Site.draftRevision, input.expectedRevision)} AND EXISTS (SELECT 1 FROM miniweb_v2_publication p WHERE p.id = ${input.publicationId} AND p.site_id = ${input.siteId} AND p.revision = ${input.expectedRevision})`),
   ]);
   if ((results[1]?.meta?.changes ?? 0) !== 1 || (results[2]?.meta?.changes ?? 0) !== 1) {
     const [reserved] = await database.select({ siteId: miniWebV2PublicationSlot.siteId }).from(miniWebV2PublicationSlot).where(eq(miniWebV2PublicationSlot.siteId, input.siteId)).limit(1);
