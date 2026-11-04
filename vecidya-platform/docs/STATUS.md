@@ -1,3 +1,7 @@
+# Diagnóstico V9 — correcciones locales de baseline, 2026-11-04
+
+El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibración y fronteras entre scoring V9 y Candidate V3; typecheck y build pasan localmente. La suite amplia encontró además cuatro fallos reproducibles en `origin/main@9c159a32`: dos expectativas desactualizadas del máximo de 29 interacciones y un filtro de Vecindario que confundía sectores con «Otras actividades». Las expectativas y el filtro ya están corregidos; sus pruebas focales pasan 38/38. La regresión completa dejó también una aserción R8-C desactualizada que no reconocía el puente histórico de overall V9, ahora explícitamente permitido solo para esa ruta histórica. Sus pruebas focales pasan; la suite amplia combinada de CI aún debe confirmar el resultado global. PR #231 (F07-L1/L2) y #232 (ADR F07-L3) siguen pendientes de checks actualizados. V9 no está certificado ni publicado; F05+ y la certificación integral siguen pendientes. Sin migraciones remotas ni deploy.
+
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 
 Se amplía el editor con formularios guiados para S01–S12, guardas de cambios sin guardar, publicación validada, referencias de imagen y render de medios asociados a una publicación activa. También se unifican 13 categorías con alias de lectura, metadata/sitemap V2, copy público y tres portadas de planes WebP. Rama `feat/app-mini-ux-impl-03`, base `origin/main@dbbf67c`. No hay migración de esquema, escritura remota, deploy ni HTTP pública fechada.

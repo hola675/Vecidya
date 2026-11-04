@@ -1,3 +1,9 @@
+# 2026-11-04 — Diagnóstico V9 — corrección de tipos y regresiones de baseline (local)
+
+- Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
+- Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
+- Typecheck, build, diff-check, 64 pruebas focales combinadas (26 de correlación/replay/banco y 38 de sectores/clasificación) y la aserción R8-C del puente histórico pasan localmente. La suite amplia identificó ese puente histórico como una excepción ausente en su allowlist; se autorizó solo `v9-historical-overall-compat.ts` para overall histórico. La suite completa de CI del head combinado está pendiente; PR #231/#232 siguen pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.

@@ -1,3 +1,7 @@
+## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
+
+La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. Su prueba focal pasa. La ejecución completa de CI sobre el head combinado queda pendiente. Sin cambio de publicación, migración remota ni deploy.
+
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
 Las 48 guías públicas de Aprende usan una ilustración WebP individual ligada a su slug y texto alternativo específico. Se conserva el contenido editorial y los controles de la plantilla; la imagen y Open Graph usan el alt contextual. Los assets tienen transparencia y no representan personas. `aprende-public-qa-check.mjs` valida las 48 rutas e imágenes; la inspección visual y las capturas cubren cinco anchos. Unitarias 53/53, typecheck/build/diff-check PASS. PR #223 integrada en `main@0685775e`; no hay cambios de datos o rutas, migraciones, D1 remota, deploy ni HTTP pública fechada. No es certificación WCAG.
