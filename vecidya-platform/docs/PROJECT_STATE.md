@@ -1,6 +1,6 @@
 ## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
 
-La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La ejecución completa de CI sobre el head combinado queda pendiente. Sin cambio de publicación, migración remota ni deploy.
+La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. Su prueba focal pasa. La ejecución completa de CI sobre el head combinado queda pendiente. Sin cambio de publicación, migración remota ni deploy.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
