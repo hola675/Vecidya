@@ -1,6 +1,10 @@
 ## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
 
-La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. Su prueba focal pasa. La ejecución completa de CI sobre el head combinado queda pendiente. Sin cambio de publicación, migración remota ni deploy.
+La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. PR #233 quedó integrada en `main@64b3ccd2` con CI PASS (2079/2079 unitarias). Sin cambio de publicación, migración remota ni deploy.
+
+## Diagnóstico V9 — F07-L1/L2 (2026-11-04; PR actualizada)
+
+La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL de borrador: siete días derivados de `updatedAt`; resultado todavía no finaliza. Focales L1 10/10 y L2 5/5 PASS; `main` ya corrige las incompatibilidades de typecheck previas. CI de la rama actualizada pendiente; no es certificación integral ni publicación.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
