@@ -815,9 +815,9 @@ QA-03B usa calibración v4 en el código de `/diagnostico` y el replay del Worke
 ## Release de producción 0.8.2 (2026-10-26)
 
 PR #139 integrado y migración `0029` aplicada; versión `0.8.2` desplegada al 100 % con GET anónimo posterior al deploy. El release incorpora QA-03B integrado en `/diagnostico`, cuyo estado de publicación específico no se certifica por esta nota. Version ID, HTTP y estado de staging: `ENVIRONMENTS.md`.
-## FIX-BUSINESS-PROFILE-SECTION-SCROLL — integrado en 0.9.0
+## FIX-BUSINESS-PROFILE-SECTION-SCROLL — publicado en 0.8.5 y ampliado en 0.9.0
 
-`/app/business-profile` comparte la composición de edición por secciones de MiniWeb: panel lateral persistente en escritorio, navegación horizontal en viewport estrecho y un grupo visible por vez. Se mantienen los contratos de perfil/horarios, preview, permisos y publicación explícita. PR #180 integra además TikTok y YouTube en el paso Redes; release `0.9.0` y migración `0030` están publicados/aplicados. Sin verificación manual de rutas autenticadas de producción.
+PR #177 publicó en `0.8.5` el editor por secciones de `/app/business-profile`: navegación persistente en escritorio, navegación horizontal en móvil y un grupo visible por vez. PR #180 lo amplió con TikTok y YouTube en Redes; `0.9.0` y la migración `0030` están publicados/aplicados. Se mantienen los contratos de perfil/horarios, preview, permisos y publicación explícita. Sin verificación manual de rutas autenticadas de producción. Versiones, deploys y comprobaciones HTTP en `ENVIRONMENTS.md`.
 
 ## APP-MINI-02B — publicado en 0.8.3 (2026-10-26)
 
