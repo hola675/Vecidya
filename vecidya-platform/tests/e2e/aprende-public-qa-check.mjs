@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { chromium } from "playwright";
 import { learnArticles, learnCategories, learnPathways } from "../../app/content/learn.ts";
 import { getLearnGuideAccess, getPublicLearnArticles, getPublicLearnPathways } from "../../app/content/learn-publication.ts";
+import { COOKIE_PREFERENCES_KEY } from "../../app/lib/cookie-preferences.ts";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
 // APRENDE-PUBLIC-QA-01 runs only against a loopback dev server. It does not
@@ -65,6 +66,14 @@ async function noHorizontalOverflow(page, context) {
     body: document.body.scrollWidth,
   }));
   assert(width.scroll <= width.available + 1 && width.body <= width.available + 1, context + " tiene desbordamiento horizontal: " + JSON.stringify(width));
+}
+async function dismissOptionalCookieConsent(page) {
+  await page.waitForFunction((key) => document.querySelector("#cookie-consent-panel") !== null || localStorage.getItem(key) !== null, COOKIE_PREFERENCES_KEY, { timeout: 5000 });
+  const panel = page.locator("#cookie-consent-panel");
+  if (await panel.isVisible().catch(() => false)) {
+    await panel.getByRole("button", { name: "Rechazar opcionales" }).click();
+    await panel.waitFor({ state: "detached" });
+  }
 }
 function siteCanonical(body, slug) {
   // In SSR the link attribute order may differ, so verify via the browser on
@@ -134,8 +143,7 @@ try {
     activePage.on("pageerror", (error) => pageErrors.push(error.message));
     await activePage.goto(new URL("/aprende", baseUrl).toString(), { waitUntil: "domcontentloaded" });
     await activePage.locator(".learn-guide-list > li").first().waitFor();
-    const rejectOptionalCookies = activePage.getByRole("button", { name: "Rechazar opcionales" });
-    if (await rejectOptionalCookies.isVisible().catch(() => false)) await rejectOptionalCookies.click();
+    await dismissOptionalCookieConsent(activePage);
     assert.equal(await activePage.locator("main h1").count(), 1, width + "px: H1 duplicado.");
     assert.equal(await activePage.locator(".learn-guide-list > li").count(), 48, width + "px: deben verse 48 guías.");
     assert.equal(await activePage.locator(".learn-topic-list > li").count(), 6, width + "px: temas incorrectos.");
@@ -230,6 +238,7 @@ try {
       const licensedSample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "licensed");
       assert(licensedSample, "Debe existir al menos una guía licenciada para verificar su preview.");
       await activePage.goto(new URL("/aprende/" + licensedSample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+      await dismissOptionalCookieConsent(activePage);
       assert.equal(await activePage.locator("main h1").textContent(), licensedSample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + licensedSample.slug);
       assert.equal(await activePage.locator(".learn-article-preview").count(), 1, "Guía licenciada sin sesión debe mostrar preview.");
@@ -241,6 +250,7 @@ try {
 
       const sample = publicArticles.find((article) => getLearnGuideAccess(article.slug) === "always_free") ?? publicArticles[0];
       await activePage.goto(new URL("/aprende/" + sample.slug, baseUrl).toString(), { waitUntil: "domcontentloaded" });
+      await dismissOptionalCookieConsent(activePage);
       assert.equal(await activePage.locator("main h1").textContent(), sample.title);
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
       const progressPanel = activePage.locator(".learn-progress-panel");
