@@ -2,10 +2,10 @@
 
 **Versión:** 1.5.0
 **Fecha:** 2026-11-04
-**Estado:** F07-L1/L2 INTEGRADOS · F07-L3 IMPLEMENTADO EN RAMA, PENDIENTE DE PROVISIONAR CLAVES Y CERTIFICAR WORKER · NO PUBLICADO
+**Estado:** F07-L1/L2 INTEGRADOS · F07-L3 IMPLEMENTADO Y SMOKE LOCAL PASS, PENDIENTE DE CLAVES OPERATIVAS · NO PUBLICADO
 **Repositorio:** `hola675/Vecidya`
-**Main base:** `origin/main@03d2ba4c5b2cc521db221e22e4cdd39cd919a43d` (PR #232 integrado)
-**Rama:** `feat/diagnostic-v9-f07-l3`
+**Main base:** `origin/main@4a692e00f8015ba9722e76b32e2936530588a7d2` (actualizada; PR #232 integrado)
+**Rama:** `feat/diagnostic-v9-f07-l3-finalize`
 
 ## 0. Estado operativo actual
 
@@ -14,8 +14,8 @@
 - **F07-L3 implementación:** esta rama añade replay/finalización firmada en memoria, endpoint transitorio con rate limit, resultado local 24 h, verificación criptográfica y eliminación del draft tras persistir el resultado. No crea migraciones ni escrituras D1.
 - **Validación RAN:** `pnpm run typecheck` PASS; `pnpm run build` PASS; focales V9 9/9 PASS (attestation/final-result/replay); `git diff --check` PASS.
 - **Gates pendientes:** configurar `DIAGNOSTIC_V9_ATTESTATION_PRIVATE_KEY_PKCS8` como Worker Secret y añadir su clave pública/keyId al registry versionado antes de habilitar finalización. La clave registry está vacía en esta rama; por diseño el navegador rechaza resultados sin clave conocida. No correr deploy.
-- **Runtime Worker:** intento `pnpm run dev` no llegó a escuchar; Miniflare agotó el tiempo al inicializar `Request.cf`. No hay evidencia RAN del endpoint real Worker; no declarar F07-L3 PASS/CERRADA.
-- **Siguiente:** resolver el startup del runtime local y certificar importación/verificación Ed25519 con claves de prueba en Cloudflare Worker; luego configurar las claves de entorno con autorización operativa y repetir smoke local. F05-01 queda después de L3 PASS.
+- **Runtime Worker RAN:** `pnpm exec react-router dev --host 127.0.0.1` escuchó tras fallback de `Request.cf`; guardas 405/403/415/503. Smoke local con clave efímera: POST finalizable 200, digest/firma verificados, sin `answers`; el runner restauró vars y registry temporales.
+- **Siguiente:** provisionar `keyId`/clave pública y Worker Secret emparejados en el entorno objetivo, luego repetir smoke HTTP firmado allí. F05-01 queda después de L3 PASS.
 - **Publicación:** ninguna; cero migraciones remotas y cero deploy.
 
 ## Evidencia integrada previa
@@ -99,7 +99,7 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - candidata implementada en esta rama: replay/finalización autoritativa, resultado canónico sin answers/transcript, attestation JCS/SHA-256/Ed25519 y resultado local 24h;
 - cliente verifica firma, digest, expiración, skew y revocación antes de leer/aceptar el resultado;
 - endpoint sin persistencia D1, protegido por origen y rate limit, falla cerrado cuando faltan secreto o clave pública versionada;
-- **PARTIAL, no PASS:** Worker Secret y key registry no provisionados; la prueba con Cloudflare local no pudo arrancar (`Request.cf` timeout).
+- **PARTIAL, no PASS:** Worker Secret y key registry no provisionados; Cloudflare local completó la firma de una sesión con una clave de prueba efímera y el verificador confirmó digest/firma; la configuración se restauró al finalizar.
 
 ### F07-L3-ADR
 - integrado en PR #232 / `main@03d2ba4c`;

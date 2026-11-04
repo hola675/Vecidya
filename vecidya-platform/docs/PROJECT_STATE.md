@@ -4,7 +4,7 @@ La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pr
 
 ## Diagnóstico V9 — F07-L1/L2 (2026-11-04; PR actualizada)
 
-La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL de borrador: siete días derivados de `updatedAt`; resultado todavía no finaliza. Focales L1 10/10 y L2 5/5 PASS; typecheck/build locales y CI focal PASS. PR #231 integrada en `main@cbebe22a`. El ADR F07-L3 de PR #232 está integrado en `main@03d2ba4c`. La rama L3 implementa finalización firmada y resultado local 24 h; focal 9/9, typecheck y build PASS. Sigue parcial por falta de Worker Secret/clave pública versionada y validación del endpoint Cloudflare local, impedida por timeout de `Request.cf`. No es certificación integral ni publicación.
+La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL del borrador: siete días derivados de updatedAt. PR #231 integra L1/L2 y PR #232 el ADR F07-L3. La implementación L3 candidata añade finalización firmada y resultado local 24 h; focales 9/9, typecheck y build PASS. El Worker local firmó una sesión finalizable con una clave efímera y el verificador confirmó la firma; no contenía answers. Sigue PARTIAL porque faltan Worker Secret/keyId operativos en el entorno objetivo. No es certificación integral ni publicación.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
