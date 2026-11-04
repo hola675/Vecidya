@@ -13,18 +13,23 @@
 - Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
 - Typecheck, build, diff-check, pruebas focales de correlación/replay/banco (26), sectores/clasificación (38), aislamiento de calibración (46) y R8-C (6) PASS local. CI completo del PR #233: 2079/2079 unitarias PASS. PR #233 integrada en `main@64b3ccd2`; sin migraciones remotas, deploy o publicación.
 
-# 2026-11-04 — Diagnóstico V9 — contrato ADR F07-L3 (pendiente de implementación)
+# 2026-11-04 — Diagnóstico V9 — contrato ADR F07-L3 (PR #232 integrada)
 
 - Define canonicalización JCS (RFC 8785), digest SHA-256, firma Ed25519, `keyId`, secreto de Worker y ciclo de rotación/revocación para el comprobante verificable.
 - La retención prevista del resultado anónimo es local con TTL de 24 horas; guardar un informe no recalcula scoring. El ADR no implementa firma, endpoint, store ni persistencia, y no autoriza una migración o deploy.
-- Depende de cerrar F07-L1/L2; PR #231 sigue en CI actualizado. Sin migraciones remotas ni publicación.
+- Depende de cerrar F07-L1/L2; PR #231 quedó integrada en `main@cbebe22a`; el ADR #232 quedó integrado en `main@03d2ba4c`. Sin migraciones remotas ni publicación.
 
 # 2026-11-04 — Diagnóstico V9 — F07-L1/L2 (actualización sobre main)
 
 - PR #231 mantiene el borrador anónimo en `CandidateSessionV9Prototype` local con TTL derivado de siete días, manejo de revisión/concurrencia y fallback en memoria; L2 delega a replay/scorer canónico sin persistir resultado ni respuestas.
-- El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. Se reconcilió typecheck contra el arreglo ya integrado en #233; CI del nuevo head pendiente. Sin migraciones, endpoint, D1 remota, deploy o publicación.
+- El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS; typecheck/build y CI focal PASS. PR #231 integrada en `main@cbebe22a`. Sin migraciones, endpoint de finalización, D1 remota, deploy o publicación.
 
 
+# 2026-11-04 — Diagnóstico V9 — F07-L3 candidata (sin certificar)
+
+- Añade endpoint transitorio de replay/finalización autoritativa Ed25519, JCS RFC 8785, SHA-256 y verificación en cliente. No escribe respuestas ni resultados en D1; el resultado se guarda localmente por 24 h y se limpia el draft al finalizar.
+- Focales 9/9, typecheck/build PASS. Worker local arrancó tras fallback de `Request.cf`; con clave Ed25519 efímera, POST finalizable respondió 200 y la verificación criptográfica PASS. El resultado no incluye answers. El registry y la config temporal se restauraron; el registry operativo/keyId y Worker Secret siguen sin provisionar, por lo que producción permanece fail-closed.
+- Rama `feat/diagnostic-v9-f07-l3-finalize`, basada en `origin/main@4a692e00`; sin migración remota, deploy ni publicación. F07-L3 es PARTIAL; falta provisionar claves y certificar runtime antes de F05-01.
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
