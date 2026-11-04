@@ -25,6 +25,10 @@ import {
   createBrowserDiagnosticV9LocalDraftStore,
   type DiagnosticV9LocalDraftStore,
 } from "../features/diagnostic/v9/local-draft.client";
+import { createBrowserDiagnosticV9FinalResultStore, type DiagnosticV9FinalResultStore } from "../features/diagnostic/v9/final-result.client";
+import { buildDiagnosticV9FinalResultEnvelope, parseDiagnosticV9FinalResult, type DiagnosticV9FinalResultEnvelope } from "../features/diagnostic/v9/final-result";
+import { verifyDiagnosticV9Attestation } from "../features/diagnostic/v9/attestation-verify";
+import { DIAGNOSTIC_V9_ATTESTATION_PUBLIC_KEYS, DIAGNOSTIC_V9_REVOKED_ATTESTATION_KEY_IDS } from "../features/diagnostic/v9/attestation-key-registry";
 import { V9_ABSOLUTE_INTERACTION_LIMIT } from "../features/diagnostic/v9/route-budget";
 import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
@@ -54,7 +58,12 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     () => typeof window === "undefined" ? null : createBrowserDiagnosticV9LocalDraftStore(),
     [],
   );
+  const resultStore = useMemo<DiagnosticV9FinalResultStore | null>(
+    () => typeof window === "undefined" ? null : createBrowserDiagnosticV9FinalResultStore(),
+    [],
+  );
   const [session, setSession] = useState<CandidateSessionV9Prototype | null>(null);
+  const [finalResult, setFinalResult] = useState<DiagnosticV9FinalResultEnvelope | null>(null);
   const [loading, setLoading] = useState(enabled);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -64,8 +73,30 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
   const [multiple, setMultiple] = useState<string[]>([]);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
-  const restore = useCallback(() => {
+  const restore = useCallback(async () => {
     if (!store) return;
+    const savedResult = resultStore?.read(Date.now());
+    if (savedResult?.status === "found") {
+      const valid = await verifyDiagnosticV9Attestation({
+        result: savedResult.envelope.result,
+        attestation: savedResult.envelope.attestation,
+        publicKeys: DIAGNOSTIC_V9_ATTESTATION_PUBLIC_KEYS,
+        revokedKeyIds: DIAGNOSTIC_V9_REVOKED_ATTESTATION_KEY_IDS,
+      });
+      if (valid) {
+        void store.clear();
+        setFinalResult(savedResult.envelope);
+        return;
+      }
+      void resultStore?.clear();
+      setError("El resultado guardado no tiene un comprobante válido. Inicia un diagnóstico nuevo.");
+    } else if (savedResult?.status === "expired") {
+      void resultStore?.clear();
+      void store.clear();
+      setError("El resultado expiró después de 24 horas. Inicia un diagnóstico nuevo.");
+      setSession(null);
+      return;
+    }
     setStorageMode(store.persistenceMode);
     const result = store.readResult(Date.now());
     if (result.status === "found" && result.envelope.session.sessionId === runId) {
@@ -79,12 +110,11 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
       setStorageMode("memory");
       setError("El almacenamiento local no está disponible. El recorrido puede continuar en memoria, pero no podrá recuperarse al cerrar esta página.");
     } else setError("No encontramos este borrador en el almacenamiento local. Inicia un diagnóstico nuevo.");
-  }, [runId, store]);
+  }, [resultStore, runId, store]);
 
   useEffect(() => {
     if (!enabled) return;
-    restore();
-    setLoading(false);
+    void restore().finally(() => setLoading(false));
   }, [enabled, restore]);
 
   useEffect(() => {
@@ -184,6 +214,39 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     void save(next.session).finally(() => setBusy(false));
   }
 
+  async function finalize() {
+    if (!session || session.status !== "completing" || !store || !resultStore || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/diagnostic/v9/finalize-transient", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session }),
+      });
+      if (!response.ok) throw new Error("finalize_failed");
+      const payload: unknown = await response.json();
+      if (!payload || typeof payload !== "object" || !("result" in payload) || !("attestation" in payload)) throw new Error("invalid_response");
+      const envelope = buildDiagnosticV9FinalResultEnvelope(payload.result as DiagnosticV9FinalResultEnvelope["result"], payload.attestation as DiagnosticV9FinalResultEnvelope["attestation"]);
+      const parsed = parseDiagnosticV9FinalResult(JSON.stringify(envelope), Date.now());
+      if (parsed.status !== "found" || !await verifyDiagnosticV9Attestation({
+        result: envelope.result,
+        attestation: envelope.attestation,
+        publicKeys: DIAGNOSTIC_V9_ATTESTATION_PUBLIC_KEYS,
+        revokedKeyIds: DIAGNOSTIC_V9_REVOKED_ATTESTATION_KEY_IDS,
+      })) throw new Error("invalid_attestation");
+      const resultPersistence = resultStore.write(envelope);
+      const cleared = await store.clear();
+      if (resultPersistence === "memory") setError("El resultado está abierto, pero el almacenamiento local no está disponible y no podrá recuperarse al volver.");
+      else if (cleared === "unavailable") setError("El resultado está abierto, pero no pudimos eliminar el borrador guardado en este navegador.");
+      setFinalResult(envelope);
+      setSession(null);
+    } catch {
+      setError("No pudimos finalizar el diagnóstico de forma segura. El borrador permanece en este navegador; vuelve a intentarlo más tarde.");
+    } finally { setBusy(false); }
+  }
+
   return (
     <PublicLayout>
       <main className="df-page">
@@ -197,6 +260,22 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
             <p role="status">V9 todavía no está habilitado. <Link to="/diagnostico">Usar el diagnóstico disponible</Link>.</p>
           ) : loading ? (
             <p role="status">Recuperando el borrador local…</p>
+          ) : finalResult ? (
+            <div className="df-screen__note" aria-live="polite">
+              <h2>Resultado del diagnóstico</h2>
+              {error ? <p role="status">{error}</p> : null}
+              {finalResult.result.core.overall.displayScore === null ? (
+                <p>No hay evidencia suficiente para mostrar un índice general. Las dimensiones con información disponible se conservan en el resultado.</p>
+              ) : <p>Índice general: <strong>{finalResult.result.core.overall.displayScore}</strong> sobre 100.</p>}
+              <p>{finalResult.result.core.overall.assessed} de {finalResult.result.core.overall.applicable} dimensiones aplicables cuentan con lectura. Este resultado refleja evidencia autodeclarada y no constituye una auditoría independiente.</p>
+              <p>Comprobante verificable: <code>{finalResult.attestation.attestationId}</code></p>
+              <p>Disponible en este navegador hasta {new Date(finalResult.attestation.expiresAt).toLocaleString()}.</p>
+              <button className="button" type="button" onClick={() => {
+                void resultStore?.clear();
+                setFinalResult(null);
+                setError("El resultado local se eliminó.");
+              }}>Eliminar resultado local</button>
+            </div>
           ) : !session ? (
             <p role="alert">{error ?? "No se pudo recuperar el borrador."} <Link to="/diagnostico/v9">Volver al inicio</Link></p>
           ) : (
@@ -238,7 +317,10 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
               ) : session.status === "completing" && !editingQuestionId ? (
                 <div className="df-screen__note">
                   <h2>Respuestas listas para finalizar</h2>
-                  <p>El borrador está guardado en este navegador. La finalización y el resultado se habilitarán en una fase posterior; tus respuestas no se han enviado al servidor.</p>
+                  <p>Para generar el resultado, el servidor reconstruye el diagnóstico y devuelve un comprobante firmado. Las respuestas no se guardan en D1.</p>
+                  <button className="button button--primary" type="button" disabled={busy} onClick={() => void finalize()}>
+                    {busy ? "Generando el resultado…" : "Finalizar diagnóstico"}
+                  </button>
                 </div>
               ) : questionId === "q2_sector" || questionId?.startsWith("q2_niche_") ? (
                 <Qa03bV9ClassificationStep
