@@ -6,6 +6,7 @@
 **Repositorio:** `hola675/Vecidya`
 **Main base:** `origin/main@4a692e00f8015ba9722e76b32e2936530588a7d2` (actualizada; PR #232 integrado)
 **Rama:** `feat/diagnostic-v9-f07-l3-finalize`
+- **PR:** #236 abierta para revisión sobre esta base, mergeable y no integrada. Check V9 PASS; en el primer run el job general quedó SKIPPED (typecheck/build y focales ya pasaron localmente).
 
 ## 0. Estado operativo actual
 
