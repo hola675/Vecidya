@@ -10,12 +10,14 @@ import { evidenceMigrationIdentity, migratedAnswerStatesV3, validateQuestionEvid
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
 import type { QuestionDefinitionV2 } from "../qbv2-contract";
+import type { QuestionVersionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
 import {
   applyV9ObservationCorrelationPolicy,
   type V9CorrelationPolicyResult,
 } from "../v9/evidence-correlation-registry";
+import type { V9ContextualEvidence } from "../v9/scoring-contract";
 
 export type CandidateContextualDimensionResultV3 = Omit<ReturnType<typeof scoreDimensionWithApplicability>, "applicability"> & {
   readonly applicability: DimensionApplicabilityDecisionV3["applicability"];
@@ -106,11 +108,19 @@ export function scoreCandidateContextualDimensionsV3(
   const derived = deriveContextualEvidence(resolution.activeAnswers, bank);
   const calibratedEvidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)
     .map((item) => ({ ...item, contribution: calibration.capabilityContribution[item.state] }));
+  const v9Evidence: readonly V9ContextualEvidence[] = calibratedEvidence.map((item) => {
+    if (item.questionVersion === undefined || item.migrationIdentity === undefined) {
+      throw new Error(`v9_evidence_missing_identity:${item.questionId}`);
+    }
+    return { ...item, questionVersion: Number(item.questionVersion), migrationIdentity: item.migrationIdentity };
+  });
   const correlation = input.strictCorrelation
-    ? applyV9ObservationCorrelationPolicy(calibratedEvidence, input.correlations ?? [])
+    ? applyV9ObservationCorrelationPolicy(v9Evidence, input.correlations ?? [])
     : null;
   if (correlation && !correlation.scoreSafe) throw new Error("v9_correlation_not_score_safe");
-  const evidence = correlation?.accepted ?? calibratedEvidence;
+  const evidence: readonly ContextualEvidence[] = correlation
+    ? correlation.accepted.map((item) => ({ ...item, questionVersion: item.questionVersion as QuestionVersionV2 }))
+    : calibratedEvidence;
   const dimensionCalibration = candidateDimensionCalibrationV3(calibration);
 
   const dimensions = DIGITAL_DIMENSIONS.map((definition) => {

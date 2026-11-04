@@ -80,7 +80,7 @@ const kindFor = (state: V9CapabilityState): V9EvidenceKind => {
 };
 
 const selectedValues = (answer: string | readonly string[] | undefined): readonly string[] =>
-  answer === undefined ? [] : Array.isArray(answer) ? [...new Set(answer)] : [answer];
+  answer === undefined ? [] : typeof answer === "string" ? [answer] : [...new Set(answer)];
 
 function resolveState(
   mapping: V9ScoringEvidenceMapping,
@@ -110,7 +110,7 @@ export function listV9ScoringEvidenceMappings(): readonly V9ScoringEvidenceMappi
 
 export function validateV9ScoringEvidenceRegistry(): readonly string[] {
   const issues: string[] = [];
-  const manifest = new Map(V9_CANONICAL_QUESTION_MANIFEST_V1.map((item) => [item.id, item] as const));
+  const manifest = new Map<string, (typeof V9_CANONICAL_QUESTION_MANIFEST_V1)[number]>(V9_CANONICAL_QUESTION_MANIFEST_V1.map((item) => [item.id, item] as const));
   const seen = new Set<string>();
   for (const mapping of mappings) {
     const key = JSON.stringify([mapping.questionId, mapping.dimension]);

@@ -77,7 +77,7 @@ export const V9_CALIBRATION_V3: V9Calibration = Object.freeze({
   overall: {
     minScoredDimensions: 3,
     minCoverage: 0.6,
-    coverageBasis: "applicable_dimensions",
+    coverageBasis: "applicable_dimensions" as const,
     bands: { developingFrom: 41, solidFrom: 71 },
     confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
   },
@@ -93,7 +93,7 @@ export const V9_CALIBRATION_V4: V9Calibration = Object.freeze({
   overall: {
     minScoredDimensions: 3,
     minCoverage: 0.6,
-    coverageBasis: "applicable_dimensions",
+    coverageBasis: "applicable_dimensions" as const,
     bands: { developingFrom: 26, solidFrom: 51, verySolidFrom: 76 },
     confidence: { mediumCoverage: 0.5, highCoverage: 0.75, share: 0.5 },
   },
@@ -102,7 +102,7 @@ export const V9_CALIBRATION_V4: V9Calibration = Object.freeze({
     { id: "developing", label: "En desarrollo", minimum: 26, maximum: 50 },
     { id: "functional", label: "Funcional", minimum: 51, maximum: 75 },
     { id: "strong", label: "Sólida", minimum: 76, maximum: 100 },
-  ],
+  ] as const,
 });
 
 export const V9_CURRENT_SCORING_VERSION = V9_CALIBRATION_V4.identity;

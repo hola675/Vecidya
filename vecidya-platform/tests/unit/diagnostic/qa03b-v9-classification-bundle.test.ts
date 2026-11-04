@@ -16,6 +16,7 @@ import { buildCandidateQuestionPlanV3 } from "../../../app/features/diagnostic/q
 import { resolveEligibleQuestionsV2 } from "../../../app/features/diagnostic/qa03b/engine";
 import { QUESTION_BANK_ID, SESSION_SCHEMA, SESSION_KEY } from "../../../app/features/diagnostic/qa03b/contract";
 import type { AnswersV2 } from "../../../app/features/diagnostic/qbv2-rules";
+import { V9_ABSOLUTE_INTERACTION_LIMIT } from "../../../app/features/diagnostic/v9/route-budget";
 
 const restaurantContext: AnswersV2 = {
   q2_entity: "business",
@@ -512,8 +513,8 @@ test("P2: un historial de 24 interacciones no permite ampliar el presupuesto por
   assert.equal(exhausted.visibleInteractionCount, 24);
   assert.ok(exhausted.plan.routeLength <= 24);
   const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, 30);
-  assert.equal(overBudget.visibleInteractionCount, 30);
-  assert.ok(overBudget.plan.routeLength <= 24);
+  assert.equal(overBudget.visibleInteractionCount, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.ok(overBudget.plan.routeLength <= V9_ABSOLUTE_INTERACTION_LIMIT);
   assert.equal(countVisibleInteractionsV9(second.answers, events),
     Object.keys(second.answers).length - 1);
 });
@@ -679,7 +680,7 @@ test("P2: replay rechaza propiedades extra no reconocidas en eventos", () => {
   assert.deepEqual(replayClassificationInteractionsV9(restaurantContext, [classified.event]), classified.answers);
 });
 
-test("P2: un historial finito enorme se limita al máximo entero seguro", () => {
+test("P2: un historial finito enorme se limita al presupuesto absoluto V9", () => {
   const classified = applyClassificationInteractionV9(restaurantContext, {
     sector: "food_hospitality", niche: "restaurant",
   });
@@ -688,8 +689,8 @@ test("P2: un historial finito enorme se limita al máximo entero seguro", () => 
   const result = buildCandidateQuestionPlanV9Prototype(
     classified.answers, [classified.event], Number.MAX_VALUE,
   );
-  assert.equal(result.visibleInteractionCount, Number.MAX_SAFE_INTEGER);
-  assert.ok(result.plan.routeLength <= 24);
+  assert.equal(result.visibleInteractionCount, V9_ABSOLUTE_INTERACTION_LIMIT);
+  assert.ok(result.plan.routeLength <= V9_ABSOLUTE_INTERACTION_LIMIT);
 });
 
 test("P3: contrato de estado V9 produce el mismo plan que el adaptador candidato", () => {

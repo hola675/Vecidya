@@ -12,6 +12,7 @@ import { replayDiagnosticAuditEventsV9 } from "./v9-audit-replay.server";
 import { QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2 } from "./specialty-branches-wave1";
 import { buildCandidateRecommendationsAndSolutionsV3 } from "./qbv2-candidate-recommendations";
 import { resolveV9ScoringCalibration } from "../v9/scoring-calibration-registry";
+import type { V9Calibration } from "../v9/scoring-contract";
 
 export type V9FinalizationOwner = {
   workspaceId: string;
@@ -76,6 +77,39 @@ function canonicalJsonValue(value: unknown): unknown {
   return value;
 }
 
+/** @internal Certification seam: preserves the V9 overall denominator when entering the candidate pipeline. */
+export function candidateCalibrationFromV9(calibration: V9Calibration) {
+  const states = ["strong", "established", "partial", "weak", "dependency", "missing"] as const;
+  const values = Object.fromEntries(states.map((state) => [state, calibration.capabilityContribution[state]])) as Record<(typeof states)[number], number | null>;
+  if (states.some((state) => typeof values[state] !== "number")) throw new Error("v9_candidate_calibration_invalid_contribution");
+  for (const state of ["constraint", "uncertainty", "not_applicable"] as const) {
+    if (calibration.capabilityContribution[state] !== null) throw new Error("v9_candidate_calibration_invalid_neutral_state");
+  }
+  const coverageBasis = calibration.overall.coverageBasis;
+  if (coverageBasis !== undefined && coverageBasis !== "observable_dimensions" && coverageBasis !== "applicable_dimensions") {
+    throw new Error("v9_candidate_calibration_invalid_coverage_basis");
+  }
+  return {
+    identity: calibration.identity,
+    version: calibration.version,
+    capabilityContribution: {
+      strong: values.strong!, established: values.established!, partial: values.partial!, weak: values.weak!,
+      dependency: values.dependency!, missing: values.missing!, constraint: null, uncertainty: null, not_applicable: null,
+    },
+    scoring: calibration.scoring,
+    dimensionConfidence: calibration.dimensionConfidence,
+    severity: calibration.severity,
+    overall: {
+      minScoredDimensions: calibration.overall.minScoredDimensions,
+      minCoverage: calibration.overall.minCoverage,
+      ...(coverageBasis === undefined ? {} : { coverageBasis }),
+      bands: calibration.overall.bands,
+      confidence: calibration.overall.confidence,
+    },
+    scoreRanges: calibration.scoreRanges,
+  };
+}
+
 function sameCanonicalJson(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonicalJsonValue(left)) === JSON.stringify(canonicalJsonValue(right));
 }
@@ -135,7 +169,7 @@ export async function finalizeOwnedDiagnosticRunV9(
   const outcome = buildCandidateRecommendationsAndSolutionsV3({
     answers: replay.session.answers,
     bank: QA03B_SPECIALTY_BRANCH_CANDIDATE_BANK_V2,
-    calibration: scoringProfile.calibration,
+    calibration: candidateCalibrationFromV9(scoringProfile.calibration),
     strictCorrelation: true,
   });
   if (!sameCanonicalJson(outcome.scoring.dimensions, replay.core.dimensions)) {

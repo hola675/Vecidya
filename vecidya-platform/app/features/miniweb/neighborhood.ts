@@ -39,7 +39,12 @@ function normalizeSearchText(value: string) {
 }
 
 export function matchesNeighborhoodFilters(profile: NeighborhoodProfile, filters: NeighborhoodFilters) {
-  if (filters.category && canonicalBusinessCategory(profile.category) !== canonicalBusinessCategory(filters.category)) return false;
+  if (filters.category) {
+    const profileCategory = canonicalBusinessCategory(profile.category);
+    const filterCategory = canonicalBusinessCategory(filters.category);
+    const bothUnclassified = profileCategory === "Otras actividades" && filterCategory === "Otras actividades";
+    if (profileCategory !== filterCategory || (bothUnclassified && normalizeSearchText(profile.category ?? "") !== normalizeSearchText(filters.category))) return false;
+  }
   if (filters.city && profile.city !== filters.city) return false;
   if (filters.serviceArea && profile.serviceArea !== filters.serviceArea) return false;
   if (filters.serviceMode && profile.serviceMode !== filters.serviceMode) return false;
