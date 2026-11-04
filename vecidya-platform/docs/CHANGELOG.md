@@ -2,7 +2,13 @@
 
 - Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
 - Vecindario compara por identidad los sectores del catálogo; los filtros agregados legacy conservan su comportamiento. Las aserciones de clasificación reflejan el máximo contractual de 29 interacciones y ausencia de preguntas después del tope.
-- Typecheck, build, diff-check, 64 pruebas focales combinadas (26 de correlación/replay/banco y 38 de sectores/clasificación) y la aserción R8-C del puente histórico pasan localmente. La suite amplia identificó ese puente histórico como una excepción ausente en su allowlist; se autorizó solo `v9-historical-overall-compat.ts` para overall histórico. La suite completa de CI del head combinado está pendiente; PR #231/#232 siguen pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
+- Typecheck, build, diff-check, pruebas focales de correlación/replay/banco (26), sectores/clasificación (38), aislamiento de calibración (46) y R8-C (6) PASS local. CI completo del PR #233: 2079/2079 unitarias PASS. PR #233 integrada en `main@64b3ccd2`; sin migraciones remotas, deploy o publicación.
+
+# 2026-11-04 — Diagnóstico V9 — contrato ADR F07-L3 (pendiente de implementación)
+
+- Define canonicalización JCS (RFC 8785), digest SHA-256, firma Ed25519, `keyId`, secreto de Worker y ciclo de rotación/revocación para el comprobante verificable.
+- La retención prevista del resultado anónimo es local con TTL de 24 horas; guardar un informe no recalcula scoring. El ADR no implementa firma, endpoint, store ni persistencia, y no autoriza una migración o deploy.
+- Depende de cerrar F07-L1/L2; PR #231 sigue en CI actualizado. Sin migraciones remotas ni publicación.
 
 # 2026-11-04 — Diagnóstico V9 — F07-L1/L2 (actualización sobre main)
 

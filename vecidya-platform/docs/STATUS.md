@@ -4,7 +4,7 @@ El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibraci
 
 # Diagnóstico V9 — F07-L1/L2 (candidato local, 2026-11-04)
 
-PR #231 se actualizó sobre el nuevo `main`. La entrevista anónima crea y guarda `CandidateSessionV9Prototype` solo en localStorage, con TTL derivado de `updatedAt + 7 días`, revisión/idempotencia y fallback en memoria; L2 reutiliza replay/scorer en memoria y rechaza sesiones expiradas. La entrada y la entrevista no llaman identity/run/event D1; el flujo termina en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. CI de la cabeza actualizada pendiente. Sin endpoints, migraciones, persistencia individual D1 ni deploy.
+PR #231 se actualizó sobre el nuevo `main`. La entrevista anónima crea y guarda `CandidateSessionV9Prototype` solo en localStorage, con TTL derivado de `updatedAt + 7 días`, revisión/idempotencia y fallback en memoria; L2 reutiliza replay/scorer en memoria y rechaza sesiones expiradas. La entrada y la entrevista no llaman identity/run/event D1; el flujo termina en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS; typecheck/build locales y CI focal PASS. PR #231 integrada en `main@cbebe22a`. No hay persistencia individual D1 ni deploy. PR #232 documenta ADR F07-L3; CI de su rama actualizada pendiente tras reconciliar el merge de #231.
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

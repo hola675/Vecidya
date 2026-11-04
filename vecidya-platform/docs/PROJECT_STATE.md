@@ -4,7 +4,7 @@ La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pr
 
 ## Diagnóstico V9 — F07-L1/L2 (2026-11-04; PR actualizada)
 
-La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL de borrador: siete días derivados de `updatedAt`; resultado todavía no finaliza. Focales L1 10/10 y L2 5/5 PASS; `main` ya corrige las incompatibilidades de typecheck previas. CI de la rama actualizada pendiente; no es certificación integral ni publicación.
+La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL de borrador: siete días derivados de `updatedAt`; resultado todavía no finaliza. Focales L1 10/10 y L2 5/5 PASS; typecheck/build locales y CI focal PASS. PR #231 integrada en `main@cbebe22a`. PR #232 registra el ADR F07-L3; su CI del head previo pasó y su rama fue actualizada tras el merge #231, por lo que el nuevo head aún requiere CI. No es certificación integral ni publicación.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
