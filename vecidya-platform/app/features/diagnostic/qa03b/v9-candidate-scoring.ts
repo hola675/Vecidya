@@ -9,10 +9,10 @@ import { evaluateDimensionApplicabilityV3, type ApplicabilityEvidenceV3, type Di
 import { evidenceMigrationIdentity, migratedAnswerStatesV3, validateQuestionEvidenceV3 } from "../qbv2-evidence-v3";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
+import type { V9ContextualEvidence } from "../v9/scoring-contract";
 import type { QuestionDefinitionV2, QuestionVersionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
-import type { V9ContextualEvidence } from "../v9/scoring-contract";
 import {
   applyV9ObservationCorrelationPolicy,
   type V9CorrelationPolicyResult,

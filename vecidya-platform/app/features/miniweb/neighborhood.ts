@@ -50,6 +50,8 @@ export function matchesNeighborhoodFilters(profile: NeighborhoodProfile, filters
       ? `sector:${filterSector.id}`
       : `legacy:${canonicalBusinessCategory(filters.category)}`;
     if (profileCategory !== filterCategory) return false;
+    const bothUnclassified = profileCategory === "legacy:Otras actividades" && filterCategory === "legacy:Otras actividades";
+    if (bothUnclassified && normalizeSearchText(profile.category ?? "") !== normalizeSearchText(filters.category)) return false;
   }
   if (filters.city && profile.city !== filters.city) return false;
   if (filters.serviceArea && profile.serviceArea !== filters.serviceArea) return false;

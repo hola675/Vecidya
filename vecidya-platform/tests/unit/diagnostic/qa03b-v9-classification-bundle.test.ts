@@ -512,7 +512,7 @@ test("P2: un historial de 24 interacciones no permite ampliar el presupuesto por
   const exhausted = buildCandidateQuestionPlanV9Prototype(second.answers, events, 24);
   assert.equal(exhausted.visibleInteractionCount, 24);
   assert.ok(exhausted.plan.routeLength <= 24);
-  const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, V9_ABSOLUTE_INTERACTION_LIMIT);
+  const overBudget = buildCandidateQuestionPlanV9Prototype(second.answers, events, 30);
   assert.equal(overBudget.visibleInteractionCount, V9_ABSOLUTE_INTERACTION_LIMIT);
   assert.equal(overBudget.plan.routeLength, V9_ABSOLUTE_INTERACTION_LIMIT);
   assert.equal(overBudget.plan.nextQuestionId, undefined);

@@ -1,3 +1,8 @@
+
+# FIX-APP-ADMIN-FORBIDDEN-UX — corrección local (2026-11-03)
+
+Las rutas protegidas que devuelven HTTP 403 ya presentan «Acceso restringido» y un retorno a Mi Vecidya; HTTP 401 ofrece acceso a iniciar sesión. La guarda y el status HTTP no cambian. Tras sincronizar PR #230 con `main@03d2ba4c`, typecheck, build y `pnpm run test:e2e:platform-admin-global` pasan sobre Worker/D1 local. El E2E aplica `0000–0037`, comprueba matriz de acceso, ciclo de organizaciones/licencias, capacitación, MiniWeb, invitaciones concurrentes y auditoría; verifica Job Object y terminación segura por identidad en Windows, cierre del puerto y eliminación de la D1 efímera. En CI de `fff3d99d`, la suite completa pasó **2096/2096** junto con typecheck, build y regresión Diagnostic/Aprende; Diagnostic V9 W5/F04 fue omitido por su condición de ruta. No requiere migración nueva, D1 remota ni deploy. Evidencia y límites en `TESTING.md`.
+
 # Diagnóstico V9 — correcciones locales de baseline, 2026-11-04
 
 El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibración y fronteras entre scoring V9 y Candidate V3; typecheck y build pasan localmente. La suite amplia encontró además cuatro fallos reproducibles en `origin/main@9c159a32`: dos expectativas desactualizadas del máximo de 29 interacciones y un filtro de Vecindario que confundía sectores con «Otras actividades». Las expectativas y el filtro ya están corregidos; sus pruebas focales pasan 38/38. La regresión completa dejó también una aserción R8-C desactualizada que no reconocía el puente histórico de overall V9, ahora explícitamente permitido solo para esa ruta histórica. PR #233 quedó integrada en `main@64b3ccd2`; su CI pasó (2079/2079 unitarias). V9 no está certificado ni publicado; F05+ y la certificación integral siguen pendientes. Sin migraciones remotas ni deploy.
@@ -5,6 +10,7 @@ El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibraci
 # Diagnóstico V9 — F07-L1/L2 (candidato local, 2026-11-04)
 
 PR #231 se actualizó sobre el nuevo `main`. La entrevista anónima crea y guarda `CandidateSessionV9Prototype` solo en localStorage, con TTL derivado de `updatedAt + 7 días`, revisión/idempotencia y fallback en memoria; L2 reutiliza replay/scorer en memoria y rechaza sesiones expiradas. La entrada y la entrevista no llaman identity/run/event D1; el flujo termina en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS; typecheck/build locales y CI focal PASS. PR #231 integrada en `main@cbebe22a`. No hay persistencia individual D1 ni deploy. PR #232 documenta ADR F07-L3; CI de su rama actualizada pendiente tras reconciliar el merge de #231.
+
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

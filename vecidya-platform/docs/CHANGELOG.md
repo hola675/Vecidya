@@ -1,3 +1,12 @@
+
+# 2026-11-03 — FIX-APP-ADMIN-FORBIDDEN-UX — respuesta legible para 401/403
+
+- La pantalla de error raíz distingue acceso restringido (403) e inicio de sesión (401), ofrece el retorno correspondiente y no altera las guards ni revela errores internos. El E2E añade la comprobación visible del caso 403 y actualiza los campos de licencia que requiere el formulario vigente.
+- El runner Worker/D1 crea `.wrangler` si falta. En Windows inicia Wrangler suspendido dentro de un Job Object con cierre del árbol al terminar el supervisor; un fixture comprueba que un hijo huérfano se termina al cerrar el Job y se clasifica como cierre forzado. La terminación forzada del supervisor valida PID y hora de creación con un handle antes de terminarlo, y un fixture local ejercita esa ruta. El apagado graceful usa un canal de control y marcador de salida; si no se confirma, la D1 se conserva y la prueba falla. Solo acepta `ECONNREFUSED` como puerto cerrado antes de borrar la D1. Tras integrar `main@03d2ba4c`, typecheck, build y E2E con migraciones locales `0000–0037` pasan; el E2E prueba el filtro con una categoría válida del catálogo. CI de `fff3d99d` pasó typecheck/build, regresión Diagnostic/Aprende y unitarias completas (2096/2096); Diagnostic V9 W5/F04 se omitió por condición de ruta. No requiere migración nueva, no usa base remota ni se desplegó. Detalle en `TESTING.md`.
+- La actualización de `main` expuso fallos de tipos en contratos V9; se alinearon explícitamente la evidencia/calibración y los tipos de reglas, sin cambiar criterios de puntuación. La suite unitaria también detectó que dos categorías desconocidas se agrupaban como «Otras actividades» al filtrar Vecindario; ahora ese grupo conserva igualdad exacta y los alias conocidos mantienen su equivalencia. El fixture Windows permite 60 segundos al iniciar PowerShell para evitar expiraciones bajo carga.
+- El adaptador de finalización V9 conserva `coverageBasis`; el test de calibración usa un perfil con dimensiones aplicables sin fuente directa en el banco y confirma el denominador de cobertura correcto. La certificación R8 reconoce explícitamente el adaptador V9 histórico que mantiene v1/v2 fuera del scoring actual.
+- Se actualizaron dos aserciones históricas del presupuesto de preguntas V9 para el límite absoluto vigente de 29 interacciones después de aceptar la extensión; evita que fixtures obsoletas confundan `Number.MAX_SAFE_INTEGER` con el límite funcional de ruta.
+
 # 2026-11-04 — Diagnóstico V9 — corrección de tipos y regresiones de baseline (local)
 
 - Corrige el estrechamiento de reglas del grafo, preserva tipos literales de calibración/evidencia y añade adaptadores validados entre scoring V9 y Candidate V3.
@@ -14,6 +23,7 @@
 
 - PR #231 mantiene el borrador anónimo en `CandidateSessionV9Prototype` local con TTL derivado de siete días, manejo de revisión/concurrencia y fallback en memoria; L2 delega a replay/scorer canónico sin persistir resultado ni respuestas.
 - El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS. Se reconcilió typecheck contra el arreglo ya integrado en #233; CI del nuevo head pendiente. Sin migraciones, endpoint, D1 remota, deploy o publicación.
+
 
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
