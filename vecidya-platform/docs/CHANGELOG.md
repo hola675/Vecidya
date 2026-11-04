@@ -1,4 +1,10 @@
 
+# 2026-11-04 — MiniWeb V2 IMP-09/10/11 — integrada por PR #238
+
+- Integra las ampliaciones auditadas de capacidad Cuadra (+3), gestión administrativa y reserva atómica de publicaciones; reintentar una revisión activa devuelve conflicto sin cambiar el puntero.
+- Las migraciones se consolidan en `0044–0045` tras Diagnóstico V9 (`0038–0043`). Worker/D1 local y 45 capturas sintéticas PASS; CI: typecheck/build, regresión Diagnostic/Aprende y 2101/2101 unitarias PASS.
+- Integrada en `main@d8ecfe4e`. Sin D1 remota ni deploy. VIS-01 humana, SEC-QA, COM-01/OPS-01 y pruebas remotas de backup/restore/rollback siguen bloqueando cualquier release. IMP-12 pagos permanece aplazado.
+
 # 2026-11-03 — FIX-APP-ADMIN-FORBIDDEN-UX — respuesta legible para 401/403
 
 - La pantalla de error raíz distingue acceso restringido (403) e inicio de sesión (401), ofrece el retorno correspondiente y no altera las guards ni revela errores internos. El E2E añade la comprobación visible del caso 403 y actualiza los campos de licencia que requiere el formulario vigente.
