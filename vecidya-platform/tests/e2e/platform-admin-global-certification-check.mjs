@@ -26,7 +26,7 @@ function verifyWindowsJobObjectReapsOrphans() {
   if (process.platform !== "win32") return;
   const marker = join(tmpdir(), `vecidya-job-child-${randomUUID()}.txt`);
   try {
-    const childArgs = ["-NoProfile", "-Command", `$child = Start-Process powershell.exe -ArgumentList '-NoProfile -Command Start-Sleep -Seconds 60' -PassThru; [IO.File]::WriteAllText('${marker.replaceAll("'", "''")}', [string]$child.Id)`];
+    const childArgs = ["-NoProfile", "-Command", `$child = Start-Process powershell.exe -ArgumentList '-NoProfile -Command Start-Sleep -Seconds 60' -PassThru; [IO.File]::WriteAllText('${marker.replaceAll("'", "''")}', [string]$child.Id); Start-Sleep -Milliseconds 500`];
     const helper = resolve(new URL("./windows-job-runner.ps1", import.meta.url).pathname.replace(/^\//, "").replace(/\//g, "\\"));
     const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", helper, "-Executable", resolve(process.env.SystemRoot, "System32/WindowsPowerShell/v1.0/powershell.exe"), "-ArgumentsBase64", Buffer.from(JSON.stringify(childArgs)).toString("base64"), "-WorkingDirectory", projectDirectory, "-ControlFile", `${marker}.stop`], { cwd: projectDirectory, encoding: "utf8", timeout: 60_000, windowsHide: true });
     if (result.error || result.status !== 0 || !existsSync(marker) || !result.stdout.includes("JOB_CHILD_EXIT:descendants-forced:")) throw new Error(`El fixture no clasificó el cierre con hijo huérfano como forzado: ${result.stdout} ${result.stderr || result.error?.message || result.status}`);
@@ -72,14 +72,49 @@ function windowsProcessCreationTime(pid, expectWrangler = false) {
   return output;
 }
 
-async function waitForWindowsProcessCreationTime(pid) {
+function terminateWindowsProcessByIdentity({ pid, creationTime, isWrangler = false }) {
+  const processId = Number(pid);
+  const expectedCreationTime = String(creationTime);
+  if (!Number.isSafeInteger(processId) || processId <= 0 || !/^\d+$/.test(expectedCreationTime)) {
+    throw new Error("La identidad del proceso Windows no es válida para terminarlo.");
+  }
+  const source = `using System;\nusing System.ComponentModel;\nusing System.Runtime.InteropServices;\npublic static class VecidyaIdentityTermination {\n  [StructLayout(LayoutKind.Sequential)] struct FILETIME { public uint low; public uint high; }\n  [DllImport("kernel32.dll", SetLastError=true)] static extern IntPtr OpenProcess(uint access, bool inherit, int processId);\n  [DllImport("kernel32.dll", SetLastError=true)] static extern bool GetProcessTimes(IntPtr process, out FILETIME creation, out FILETIME exit, out FILETIME kernel, out FILETIME user);\n  [DllImport("kernel32.dll", SetLastError=true)] static extern uint WaitForSingleObject(IntPtr handle, uint milliseconds);\n  [DllImport("kernel32.dll", SetLastError=true)] static extern bool TerminateProcess(IntPtr process, uint exitCode);\n  [DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr handle);\n  public static string Terminate(int processId, long expectedCreationTime) {\n    IntPtr process = OpenProcess(0x1001, false, processId);\n    if (process == IntPtr.Zero) { int error = Marshal.GetLastWin32Error(); if (error == 87) return "gone"; throw new Win32Exception(error); }\n    try {\n      if (WaitForSingleObject(process, 0) == 0) return "gone";\n      FILETIME creation, exit, kernel, user;\n      if (!GetProcessTimes(process, out creation, out exit, out kernel, out user)) throw new Win32Exception();\n      long actualCreationTime = unchecked((long)(((ulong)creation.high << 32) | creation.low));\n      if (Math.Abs(actualCreationTime - expectedCreationTime) > 10) return "gone";\n      if (!TerminateProcess(process, 1)) { int error = Marshal.GetLastWin32Error(); if (error == 5 && WaitForSingleObject(process, 0) == 0) return "gone"; throw new Win32Exception(error); }\n      return "terminated";\n    } finally { CloseHandle(process); }\n  }\n}`;
+  const validation = isWrangler ? "if ($process.Name -ne 'powershell.exe' -or $process.CommandLine -notmatch 'windows-job-runner\\.ps1') { throw 'El PID no corresponde al supervisor del Job Object.' }; " : "";
+  const command = `$ErrorActionPreference='Stop'; $process=Get-CimInstance Win32_Process -Filter 'ProcessId = ${processId}' -ErrorAction SilentlyContinue; if ($null -eq $process) { [Console]::Out.Write('gone'); exit 0 }; if ($process.CreationDate.ToUniversalTime().ToFileTimeUtc() -ne [long]::Parse('${expectedCreationTime}')) { [Console]::Out.Write('gone'); exit 0 }; ${validation}$source = @'\n${source}\n'@; Add-Type -TypeDefinition $source; [Console]::Out.Write([VecidyaIdentityTermination]::Terminate(${processId},[long]::Parse('${expectedCreationTime}')))`;
+  const result = spawnSync("powershell.exe", ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", command], { encoding: "utf8", timeout: 10_000, windowsHide: true });
+  if (result.error || result.status !== 0 || !["gone", "terminated"].includes(result.stdout.trim())) {
+    throw new Error(`No se pudo terminar de forma segura el proceso Windows ${processId}: ${result.stderr || result.error?.message || result.stdout || result.status}`);
+  }
+  return result.stdout.trim();
+}
+
+async function waitForWindowsProcessCreationTime(pid, expectWrangler = true) {
   let lastError;
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    try { return windowsProcessCreationTime(pid, true); }
+    try { return windowsProcessCreationTime(pid, expectWrangler); }
     catch (error) { lastError = error; }
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   }
   throw new Error(`No se pudo confirmar la identidad del proceso Wrangler: ${lastError instanceof Error ? lastError.message : String(lastError)}`);
+}
+
+async function verifyWindowsTerminationByIdentity() {
+  if (process.platform !== "win32") return;
+  const child = spawn(process.execPath, ["-e", "setTimeout(() => {}, 60_000)"], { stdio: "ignore", windowsHide: true });
+  let creationTime;
+  const exited = once(child, "exit");
+  try {
+    creationTime = await waitForWindowsProcessCreationTime(child.pid, false);
+    const result = terminateWindowsProcessByIdentity({ pid: child.pid, creationTime });
+    if (result !== "terminated") throw new Error("El fixture de terminación no terminó el proceso objetivo.");
+    const exit = await Promise.race([exited, new Promise((resolveWait) => setTimeout(() => resolveWait(null), 5000))]);
+    if (!exit) throw new Error("El proceso de prueba siguió activo tras la terminación por identidad.");
+  } finally {
+    if (child.exitCode === null) {
+      if (creationTime) terminateWindowsProcessByIdentity({ pid: child.pid, creationTime });
+      else child.kill();
+    }
+  }
 }
 
 function forceStopWorkerTree(child, workerStartedAt) {
@@ -194,6 +229,7 @@ const workerControlFile = `${persistence}.stop`;
 
 try {
   verifyWindowsJobObjectReapsOrphans();
+  await verifyWindowsTerminationByIdentity();
   runWrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
   query(`INSERT INTO platform_meta (key, value, updated_at) VALUES ('platform_name', 'Vecidya', ${now});`);
   query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${sqlLiteral(bootstrapUserId)},'Cert bootstrap',${sqlLiteral(`bootstrap-${suffix}@vecidya.test`)},1,${now},${now});
@@ -335,7 +371,7 @@ ${[publicOrgA, publicOrgB, draftOrg, governanceOrg, noLicenseOrg, inactiveLicens
 INSERT INTO platform_organization_lifecycle (organization_id,status,intended_owner_email,owner_user_id,created_by,updated_by,created_at,updated_at) VALUES
 ${[publicOrgA, publicOrgB, draftOrg, governanceOrg, noLicenseOrg, inactiveLicenseOrg].map((organizationId) => `(${sqlLiteral(organizationId)},'active',${sqlLiteral(publicOwnerEmail)},${sqlLiteral(publicOwnerId)},${sqlLiteral(adminIdentity.user.id)},${sqlLiteral(adminIdentity.user.id)},${sqlNow},${sqlNow})`).join(",")};
 INSERT INTO business_profile (id,organization_id,display_name,slug,short_description,description,category,city,country,status,created_at,updated_at) VALUES
-(${sqlLiteral(profileIds.a)},${sqlLiteral(publicOrgA)},'Public certification A',${sqlLiteral(publicSlugs.a)},'Published content','Description','Certification category','City A','Test country','published',${sqlNow},${sqlNow}),
+(${sqlLiteral(profileIds.a)},${sqlLiteral(publicOrgA)},'Public certification A',${sqlLiteral(publicSlugs.a)},'Published content','Description','Servicios profesionales','City A','Test country','published',${sqlNow},${sqlNow}),
 (${sqlLiteral(profileIds.b)},${sqlLiteral(publicOrgB)},'Public certification B',${sqlLiteral(publicSlugs.b)},'Isolation control','Description','Control category','City B','Test country','published',${sqlNow},${sqlNow}),
 (${sqlLiteral(profileIds.draft)},${sqlLiteral(draftOrg)},'Draft certification',${sqlLiteral(publicSlugs.draft)},'Hidden draft','Description','Draft category','Draft city','Test country','draft',${sqlNow},${sqlNow}),
 (${sqlLiteral(profileIds.governance)},${sqlLiteral(governanceOrg)},'Governance certification',${sqlLiteral(publicSlugs.governance)},'Hidden governance','Description','Governance category','Governance city','Test country','published',${sqlNow},${sqlNow}),
@@ -352,12 +388,12 @@ INSERT INTO miniweb_site (id,organization_id,template_key,template_version,layou
   await workerReady(baseUrl);
   const initialProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
   const initialDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
-  const initialCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const initialCategory = await getPublicHtml(new URL("/vecindario?category=Servicios%20profesionales", baseUrl));
   const initialCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
   const initialDirectoryHtml = initialDirectory.html;
   const initialCategoryHtml = initialCategory.html;
   const initialCityHtml = initialCity.html;
-  if (initialProfile.status !== 200 || !initialDirectoryHtml.includes("Public certification A") || !initialDirectoryHtml.includes("Public certification B") || !initialCategoryHtml.includes("Public certification A") || !initialCityHtml.includes("Public certification A")) throw new Error("Published profile with active owner license was not visible through HTTP profile/directory/filter routes.");
+  if (initialProfile.status !== 200 || !initialDirectoryHtml.includes("Public certification A") || !initialDirectoryHtml.includes("Public certification B") || !initialCategoryHtml.includes("Public certification A") || !initialCityHtml.includes("Public certification A")) throw new Error(`Published profile visibility mismatch: profile=${initialProfile.status}, directoryA=${initialDirectoryHtml.includes("Public certification A")}, directoryB=${initialDirectoryHtml.includes("Public certification B")}, categoryA=${initialCategoryHtml.includes("Public certification A")}, cityA=${initialCityHtml.includes("Public certification A")}.`);
   const publicSnapshot = query(`SELECT bp.display_name,bp.short_description,bp.description,bp.status,ol.status AS license_status,m.published_configuration_json,(SELECT count(*) FROM member WHERE organization_id=bp.organization_id) AS membership_count,(SELECT count(*) FROM member WHERE organization_id=bp.organization_id AND role='owner') AS owner_count FROM business_profile bp JOIN organization_license ol ON ol.organization_id=bp.organization_id JOIN miniweb_site m ON m.organization_id=bp.organization_id WHERE bp.id=${sqlLiteral(profileIds.a)};`)[0];
   const hiddenBefore = [];
   for (const key of ["draft", "governance", "no-license", "inactive-license"]) hiddenBefore.push({ key, status: (await getPublic(new URL(`/vecindario/${publicSlugs[key]}`, baseUrl))).status });
@@ -368,20 +404,20 @@ INSERT INTO miniweb_site (id,organization_id,template_key,template_version,layou
   const publicSuspend = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "suspend" });
   const suspendedProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
   const suspendedDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
-  const suspendedCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const suspendedCategory = await getPublicHtml(new URL("/vecindario?category=Servicios%20profesionales", baseUrl));
   const suspendedCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
   const suspendedTenantApi = await targetMember.jsonGet(`/api/organizations/${publicOrgA}/training`);
   const suspendedDirectoryHtml = suspendedDirectory.html;
   const suspendedCategoryHtml = suspendedCategory.html;
   const suspendedCityHtml = suspendedCity.html;
-  if (![302, 303].includes(publicSuspend.status) || suspendedProfile.status !== 404 || suspendedDirectoryHtml.includes("Public certification A") || suspendedCategoryHtml.includes("Public certification A") || suspendedCityHtml.includes("Public certification A") || suspendedDirectoryHtml.includes('value="Certification category"') || suspendedDirectoryHtml.includes('value="City A"') || !suspendedDirectoryHtml.includes("Public certification B") || suspendedTenantApi.status !== 403) throw new Error(`Suspension did not hide A from public HTTP surfaces/filters or block tenant API: action=${publicSuspend.status}, profile=${suspendedProfile.status}, api=${suspendedTenantApi.status}.`);
+  if (![302, 303].includes(publicSuspend.status) || suspendedProfile.status !== 404 || suspendedDirectoryHtml.includes("Public certification A") || suspendedCategoryHtml.includes("Public certification A") || suspendedCityHtml.includes("Public certification A") || suspendedDirectoryHtml.includes('value="City A"') || !suspendedDirectoryHtml.includes("Public certification B") || suspendedTenantApi.status !== 403) throw new Error(`Suspension did not hide A from public HTTP surfaces/filters or block tenant API: action=${publicSuspend.status}, profile=${suspendedProfile.status}, api=${suspendedTenantApi.status}.`);
   const suspendedState = query(`SELECT l.status,bp.status AS profile_status,ol.status AS license_status,(SELECT count(*) FROM platform_audit_log a WHERE a.organization_id=${sqlLiteral(publicOrgA)} AND a.action='organization.suspended') AS audit_count FROM platform_organization_lifecycle l JOIN business_profile bp ON bp.organization_id=l.organization_id JOIN organization_license ol ON ol.organization_id=l.organization_id WHERE l.organization_id=${sqlLiteral(publicOrgA)};`)[0];
   if (suspendedState.status !== "suspended" || suspendedState.profile_status !== "published" || suspendedState.license_status !== "active" || Number(suspendedState.audit_count) !== 1) throw new Error(`Suspension changed persisted publication/license state or audit: ${JSON.stringify(suspendedState)}.`);
 
   const publicActivate = await admin.request(`/app/internal/organizations/${publicOrgA}`, { intent: "activate" });
   const reactivatedProfile = await getPublic(new URL(`/vecindario/${publicSlugs.a}`, baseUrl));
   const reactivatedDirectory = await getPublicHtml(new URL("/vecindario", baseUrl));
-  const reactivatedCategory = await getPublicHtml(new URL("/vecindario?category=Certification%20category", baseUrl));
+  const reactivatedCategory = await getPublicHtml(new URL("/vecindario?category=Servicios%20profesionales", baseUrl));
   const reactivatedCity = await getPublicHtml(new URL("/vecindario?city=City%20A", baseUrl));
   const reactivatedDirectoryHtml = reactivatedDirectory.html;
   const reactivatedCategoryHtml = reactivatedCategory.html;
@@ -421,7 +457,7 @@ INSERT INTO miniweb_site (id,organization_id,template_key,template_version,layou
   const miniwebBillingAccountId = randomUUID();
   query(`INSERT INTO billing_account (id,owner_user_id,kind,name,created_at,updated_at) VALUES (${sqlLiteral(miniwebBillingAccountId)},${sqlLiteral(intendedIdentity.user.id)},'individual','Synthetic MiniWeb certification',${sqlNow},${sqlNow}) ON CONFLICT(owner_user_id) DO NOTHING;
 INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,ends_at,created_at,updated_at) VALUES (${sqlLiteral(randomUUID())},${sqlLiteral(orgId)},(SELECT id FROM billing_account WHERE owner_user_id=${sqlLiteral(intendedIdentity.user.id)}),'cuadra','license-price-cuadra-v1','active',${sqlNow},${sqlNow},NULL,${sqlNow},${sqlNow});
-INSERT INTO business_profile (id,organization_id,display_name,slug,short_description,description,category,city,country,status,created_at,updated_at) VALUES (${sqlLiteral(miniwebProfileId)},${sqlLiteral(orgId)},'MiniWeb certification ${suffix}', 'miniweb-cert-${suffix}','Synthetic profile','Synthetic description','Certification category','Test city','Test country','draft',${sqlNow},${sqlNow});`);
+INSERT INTO business_profile (id,organization_id,display_name,slug,short_description,description,category,city,country,status,created_at,updated_at) VALUES (${sqlLiteral(miniwebProfileId)},${sqlLiteral(orgId)},'MiniWeb certification ${suffix}', 'miniweb-cert-${suffix}','Synthetic profile','Synthetic description','Servicios profesionales','Test city','Test country','draft',${sqlNow},${sqlNow});`);
   await workerReady(baseUrl);
   const miniwebPath = `/app/internal/organizations/${orgId}/miniweb`;
   const configuration = { templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] };
