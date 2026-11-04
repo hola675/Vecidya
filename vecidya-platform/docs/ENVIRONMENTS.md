@@ -22,6 +22,18 @@ PR #180 integrada en `main@1aa0a9696a4bab96f69532a65794e315e218166c`; versión d
 
 Typecheck, build y los checks automáticos de CI de la PR #180 terminaron PASS. No se ejecutaron pruebas de certificación manuales, según instrucción del usuario.
 
+## Release de producción 0.8.5 — publicado (2026-10-28)
+
+PR #177 integrado en `main@d3a86cf6b2aefa8c8aa3267636294df145bc2863`; versión de aplicación `0.8.5`. Mi negocio edita por secciones con navegación sticky y un panel de contenido enfocado.
+
+**Deploy RAN 2026-10-28T17:52:01Z:** Wrangler 4.152.0 desplegó el Worker `vecidya-platform` en la cuenta Soporte (`8a13de3ea584f9055f78565b9860c125`), deployment `68c8ceb2-dbdd-4048-8adc-1a325cfff802`, Version ID `00e651ac-44e0-4a9f-b8dd-d56fa19078ac`, al 100 %. Se preservaron rutas, bindings productivos, flags y Cron `17 3 * * *`.
+
+**D1:** el cambio no tiene migraciones; no se ejecutaron migraciones ni escrituras en D1 remota.
+
+**HTTP anónimo de solo lectura, RAN 2026-10-28T17:52:10Z:** `GET https://vecidya.com/` → 200; el HTML contiene `0.8.5` y `© 2026 Vecidya`.
+
+**Validación del checkpoint:** typecheck, build y `git diff --check` PASS. No se ejecutaron pruebas locales de certificación por indicación del usuario; los checks automáticos del PR terminaron PASS.
+
 ## Release de producción 0.8.4 — publicado (2026-10-27)
 
 PR #175 integrado en `main@7eff191a06b4cf725ba4acfa811495eb32c0d31a`; versión de aplicación `0.8.4`. Incluye refinamientos del editor MiniWeb y Mi negocio, paginación de organizaciones ya integrada en PR #173 y el paquete A Team que el usuario pidió incluir.
