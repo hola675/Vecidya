@@ -1,3 +1,7 @@
+# Diagnóstico V9 — estado local, 2026-11-04
+
+El checkpoint de corrección de typecheck sobre `origin/main@9c159a32` elimina errores existentes en los módulos V9 de evaluación del grafo, registros de evidencia/calibración y adaptadores entre scoring V9 y Candidate V3. `pnpm run typecheck`, 26 pruebas unitarias focales V9 y `pnpm run build` pasan localmente; `git diff --check` pasa. Estos resultados son locales hasta que el checkpoint se integre por PR. PR #231 (F04) y #232 (ADR F07-L3) siguen pendientes de sus checks actualizados. V9 no está certificado ni publicado; F05+ y certificación integral siguen pendientes. No se ejecutaron migraciones remotas ni deploy.
+
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 
 Se amplía el editor con formularios guiados para S01–S12, guardas de cambios sin guardar, publicación validada, referencias de imagen y render de medios asociados a una publicación activa. También se unifican 13 categorías con alias de lectura, metadata/sitemap V2, copy público y tres portadas de planes WebP. Rama `feat/app-mini-ux-impl-03`, base `origin/main@dbbf67c`. No hay migración de esquema, escritura remota, deploy ni HTTP pública fechada.

@@ -1,3 +1,7 @@
+## Diagnóstico V9 — typecheck de baseline (2026-11-04; local)
+
+En una rama limpia basada en `origin/main@9c159a32`, se corrigieron incompatibilidades de tipos en el grafo V9, los registros de evidencia/calibración y la frontera V9↔Candidate V3. La correlación adapta evidencia explícitamente y rechaza identidad/versión incompleta; la finalización valida que las contribuciones de calibración coincidan con el contrato V3 antes de generar recomendaciones. `pnpm run typecheck`, tres archivos de pruebas unitarias focales (26/26), `pnpm run build` y `git diff --check` PASS local. Pendiente PR/checks e integración; esto no certifica el recorrido completo, no cambia estado de publicación y no autoriza D1 remota o deploy.
+
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 
 Las 48 guías públicas de Aprende usan una ilustración WebP individual ligada a su slug y texto alternativo específico. Se conserva el contenido editorial y los controles de la plantilla; la imagen y Open Graph usan el alt contextual. Los assets tienen transparencia y no representan personas. `aprende-public-qa-check.mjs` valida las 48 rutas e imágenes; la inspección visual y las capturas cubren cinco anchos. Unitarias 53/53, typecheck/build/diff-check PASS. PR #223 integrada en `main@0685775e`; no hay cambios de datos o rutas, migraciones, D1 remota, deploy ni HTTP pública fechada. No es certificación WCAG.

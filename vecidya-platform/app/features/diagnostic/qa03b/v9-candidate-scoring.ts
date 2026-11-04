@@ -9,9 +9,10 @@ import { evaluateDimensionApplicabilityV3, type ApplicabilityEvidenceV3, type Di
 import { evidenceMigrationIdentity, migratedAnswerStatesV3, validateQuestionEvidenceV3 } from "../qbv2-evidence-v3";
 import { REVIEWED_EVIDENCE_CANDIDATE_QUESTIONS_V3 } from "./bank";
 import type { AnswersV2 } from "../qbv2-rules";
-import type { QuestionDefinitionV2 } from "../qbv2-contract";
+import type { QuestionDefinitionV2, QuestionVersionV2 } from "../qbv2-contract";
 import { CANDIDATE_CALIBRATION_V3, candidateDimensionCalibrationV3, type CandidateCalibrationV3 } from "../qbv2-candidate-calibration";
 import type { ConfirmedObservationCorrelationV1 } from "./v9-observation-correlation";
+import type { V9ContextualEvidence } from "../v9/scoring-contract";
 import {
   applyV9ObservationCorrelationPolicy,
   type V9CorrelationPolicyResult,
@@ -90,6 +91,47 @@ function toApplicabilityEvidence(evidence: readonly ContextualEvidence[]): reado
   });
 }
 
+function toV9CorrelationEvidence(evidence: readonly ContextualEvidence[]): readonly V9ContextualEvidence[] {
+  return evidence.map((item) => {
+    if (item.questionVersion === undefined || item.migrationIdentity === undefined) {
+      throw new Error(`Candidate evidence lacks V3 identity: ${item.questionId}`);
+    }
+    return {
+      questionId: item.questionId,
+      questionVersion: item.questionVersion,
+      migrationIdentity: item.migrationIdentity,
+      dimension: item.dimension,
+      observationId: item.observationId,
+      directness: item.directness,
+      state: item.state,
+      kind: item.kind,
+      contribution: item.contribution,
+      answer: item.answer,
+    };
+  });
+}
+
+function toCandidateEvidence(evidence: readonly V9ContextualEvidence[]): readonly ContextualEvidence[] {
+  return evidence.map((item) => {
+    const questionVersion: QuestionVersionV2 = item.questionVersion === 1 || item.questionVersion === 2 ||
+      item.questionVersion === 3 || item.questionVersion === 4
+      ? item.questionVersion
+      : (() => { throw new Error(`Unsupported V9 question version: ${item.questionVersion}`); })();
+    return {
+      questionId: item.questionId,
+      questionVersion,
+      migrationIdentity: item.migrationIdentity,
+      dimension: item.dimension,
+      observationId: item.observationId,
+      directness: item.directness,
+      state: item.state,
+      kind: item.kind,
+      contribution: item.contribution,
+      answer: item.answer,
+    };
+  });
+}
+
 /**
  * Candidate-only scoring path: converge routing on the reviewed V3 evidence bank first, then
  * derive and validate migrated observations from active answers before applying R4-A. R8-A: candidate
@@ -107,10 +149,10 @@ export function scoreCandidateContextualDimensionsV3(
   const calibratedEvidence = validateActiveCandidateEvidenceV3(derived, resolution.activeAnswers, bank)
     .map((item) => ({ ...item, contribution: calibration.capabilityContribution[item.state] }));
   const correlation = input.strictCorrelation
-    ? applyV9ObservationCorrelationPolicy(calibratedEvidence, input.correlations ?? [])
+    ? applyV9ObservationCorrelationPolicy(toV9CorrelationEvidence(calibratedEvidence), input.correlations ?? [])
     : null;
   if (correlation && !correlation.scoreSafe) throw new Error("v9_correlation_not_score_safe");
-  const evidence = correlation?.accepted ?? calibratedEvidence;
+  const evidence = correlation ? toCandidateEvidence(correlation.accepted) : calibratedEvidence;
   const dimensionCalibration = candidateDimensionCalibrationV3(calibration);
 
   const dimensions = DIGITAL_DIMENSIONS.map((definition) => {

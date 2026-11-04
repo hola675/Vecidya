@@ -1,3 +1,9 @@
+# 2026-11-04 — Diagnóstico V9 — compatibilidad de tipos del baseline (local)
+
+- Corrige el estrechamiento de uniones de reglas, preserva literales de calibración y tipa las búsquedas del manifiesto de evidencia.
+- Añade adaptadores explícitos entre evidencia/calibración V9 y los consumidores Candidate V3, con validaciones cerradas para identidad, versión y contribuciones nulas.
+- `pnpm run typecheck`, 26 pruebas focales V9, `pnpm run build` y `git diff --check`: PASS local. El checkpoint requiere PR y CI antes de integración; PR #231 y #232 continúan pendientes de checks actualizados. Sin migraciones remotas, deploy o publicación.
+
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
