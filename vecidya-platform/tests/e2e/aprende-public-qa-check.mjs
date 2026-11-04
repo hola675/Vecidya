@@ -245,11 +245,9 @@ try {
       assert.equal(await activePage.locator('link[rel="canonical"]').getAttribute("href"), "https://vecidya.com/aprende/" + sample.slug);
       const progressPanel = activePage.locator(".learn-progress-panel");
       assert(await progressPanel.isVisible(), "Los controles personales deben quedar agrupados en el bloque superior de avance.");
-      const progressDisclosure = progressPanel.locator(".learn-section-progress-disclosure");
-      await progressDisclosure.locator("summary").click();
-      assert(await progressDisclosure.getAttribute("open") !== null, "Las acciones compactas por sección se pueden desplegar.");
-      assert.equal(await progressPanel.locator(".learn-section-progress").count(), sample.sections.length, "El panel agrupa las acciones de todas las secciones.");
-      const firstSectionAction = progressPanel.locator(".learn-section-progress").first();
+      const sectionActions = activePage.locator(".learn-article-body section .learn-section-progress");
+      assert.equal(await sectionActions.count(), sample.sections.length, "Cada sección muestra sus propias acciones de progreso.");
+      const firstSectionAction = activePage.locator(".learn-article-body section").first().locator(".learn-section-progress");
       assert((await firstSectionAction.getAttribute("aria-label"))?.includes(sample.sections[0].heading), "Las acciones identifican la sección correspondiente.");
       if (width >= 1366) {
         const controlHeight = await firstSectionAction.locator(".button").evaluate((button) => button.getBoundingClientRect().height);
