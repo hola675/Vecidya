@@ -414,8 +414,12 @@ El repositorio Git se reconstruirá desde el snapshot actual de `main` y se publ
 | `GMAIL_OAUTH_CLIENT_ID` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
 | `GMAIL_OAUTH_CLIENT_SECRET` | Cliente OAuth Gmail | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
 | `GMAIL_OAUTH_REFRESH_TOKEN` | Autorización offline de `hola@vecidya.com` | Sí para Gmail | Secreto Cloudflare configurado por el operador; valor no leído |
+| `DIAGNOSTIC_V9_ATTESTATION_KEY_ID` | Selecciona la clave activa del comprobante F07-L3 | Sí para finalizar V9 | Variable no secreta, aún no configurada; debe coincidir con `app/features/diagnostic/v9/attestation-key-registry.ts` |
+| `DIAGNOSTIC_V9_ATTESTATION_PRIVATE_KEY_PKCS8` | Firma el comprobante Ed25519 F07-L3 | Sí para finalizar V9 | Worker Secret por entorno; no configurado en este checkpoint; nunca leer ni versionar su valor |
 
 Con la configuración OAuth completa, el envío Gmail queda listo para validación real posterior al deploy; el proveedor fake solo existe para pruebas/local staging y no entrega correo. Ninguna variable secreta se envía al cliente. No hay variables de GHL, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. Los valores de secretos no se leen, imprimen ni versionan.
+
+**F07-L3, aún no habilitado:** el endpoint transitorio falla cerrado cuando falta el secret o el `keyId`; además, el cliente solo acepta una firma cuya clave pública esté en el registry versionado y no figure revocada. El registry está vacío y el secret no está provisionado. No se cambió `wrangler.jsonc`, ningún secret ni entorno remoto.
 
 **DIAG-V3-13 (2026-10-02):** el diagnóstico público pasó al motor V3, cliente-only. `DIAGNOSTIC_RECOVERY_HMAC_KEY`, el binding KV `DIAGNOSTIC_SNAPSHOTS` y el ratelimit `DIAGNOSTIC_RECOVERY_RATE_LIMITER` se eliminaron de `wrangler.jsonc` junto con el backend que los usaba (nunca desplegado — ver `STATUS.md` `DIAG-V3-RECOVERY-SECRET-001`/`DIAG-V3-KV-PLACEHOLDER-001`, cerradas por superseded). El diagnóstico ya no tiene requisitos de secretos, KV ni rate limit propios.
 
