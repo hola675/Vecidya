@@ -115,3 +115,19 @@ La limitación del stub aplica solo a `tests/unit/miniweb-v2-publication-query.t
 ## MW2-018 — E2E local no certifica DEV remoto (P1; gate)
 
 El E2E V2 usa Wrangler, D1 y R2 locales. No equivale a smoke contra Worker DEV desplegado. Planificar certificación DEV por URL con evidencia de SHA y entorno, sin despliegues no autorizados. Estado: GATE PENDIENTE.
+
+## MW2-019 — Caché de sitemap parcialmente degradado (P2, SEO)
+
+`app/routes/sitemap.ts` captura el fallo de consulta de MiniWeb V2 sin activar `profilesUnavailable`; puede devolver sitemap sin V2 con `max-age=3600`. Confirmado en lectura, no reproducido en producción. Revisar TTL y observabilidad.
+
+## MW2-020 — Invariante de titularidad de cupos (P1, investigación)
+
+`db/schema/miniweb.ts`: `miniweb_v2_publication_slot.owner_user_id` no declara FK en el esquema leído. Verificar transferencia, bajas y contabilidad de cupos. No es bug demostrado.
+
+## MW2-021 — Migraciones y recursos remotos (P1, gate)
+
+`wrangler.jsonc` distingue D1/R2 staging y producción; estado remoto, backups y rollback siguen sin certificar. Vinculado a MW2-007.
+
+## MW2-022 — Nombres de migraciones 0044/0045 (P2, RESUELTO como localización)
+
+Los nombres inicialmente supuestos no existían. Los archivos reales son `db/migrations/0044_miniweb-capacity-extensions.sql` y `0045_miniweb-capacity-extension-org-scope.sql`, localizados por archivos del PR #238 y leídos en main. **Queda pendiente** verificar historial de aplicación remota y migraciones anteriores que crean las tablas V2.
