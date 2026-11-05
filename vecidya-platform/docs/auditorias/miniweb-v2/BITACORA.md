@@ -58,3 +58,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Registrados MW2-026 (DDL base localizado), MW2-027 (política de suspensión de licencia por decidir) y MW2-028 (UX del selector inválido por verificar).
 - Total 28 IDs; F01/F06 continúan abiertas. Ninguna prueba o migración ejecutada en esta revisión.
 - La entrada independiente `BITACORA-F01-05.md` queda preservada como evidencia original.
+
+## 2026-11-05 — Inicio de F02, matriz de fallos D1
+
+- Revisadas `db/queries/miniweb-v2.server.ts` y `app/routes/api-miniweb-v2.ts`.
+- Creado `MATRIZ-PRUEBAS-D1-F02.md` con 16 escenarios: publicación (7), guardado (4), creación (2), migración (3).
+- Registrados MW2-029 y MW2-030; total 30 IDs. No hay ejecución ni PASS declarado.
+- F01 y F06 continúan abiertas; F02 comienza como investigación/documentación, no certificación.
