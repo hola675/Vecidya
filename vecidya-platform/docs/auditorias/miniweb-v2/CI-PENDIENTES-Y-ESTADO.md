@@ -65,3 +65,9 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-CI-24: definir y verificar migración segura para datos existentes, sin tocar remoto hasta aprobación.
 - P-CI-25: verificar historial real de 0045 en staging/prod, solo lectura con autorización.
 - Evidencia: `REPRODUCCION-SQLITE-MIGRACION-0045.md`.
+
+## 2026-11-05 — Apertura F07
+
+- P-CI-09: **PARCIAL**: rutas V1/V2 confirmadas en `app/routes.ts`, ver `MAPA-RUTAS-Y-CORTE-F07.md`. Pendiente inventario exhaustivo de referencias, clientes externos, redirecciones y consumidores.
+- Se abren P-F07-01..10 en documento F07, sin duplicar numeración CI.
+- MW2-035/036 pendientes de certificación; V1 no se retira.
