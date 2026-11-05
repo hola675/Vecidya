@@ -77,3 +77,7 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-F07-11..15 añadidos en `MATRIZ-PERMISOS-V1-V2-F07.md`: panel interno, roles, 10 pruebas auth, payloads y auditoría.
 - P-CI-09: **PARCIAL**: inventario ampliado con panel interno V1, API V1/V2, medios y rutas públicas; consumidores externos y árbol completo aún pendientes.
 - Pendiente F06-AUTH: ejecutar T-AUTH-01..10 con organizaciones aisladas y evidencia de HTTP/status; no confundir lectura de código con autorización certificada.
+
+## Reconciliación 2026-11-05
+
+El encabezado histórico MW2-001..018 y la frase sin pruebas ejecutadas se refieren al corte inicial; el registro actual incluye MW2-001..039 y ensayos SQLite de 0045. No se han ejecutado tests D1 ni certificación remota. MW2-038 resuelto estáticamente; T-AUTH-03 pendiente. Ver ESTADO-Y-BACKLOG-CONSOLIDADO-2026-11-05.md y REVISION-ROLES-AUTORIZACION-F07.md. P-REG-01 y P-REG-05: conciliación por adenda, queda normalizar encabezado.
