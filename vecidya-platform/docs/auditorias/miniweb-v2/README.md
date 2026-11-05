@@ -44,3 +44,5 @@ No cerrar un hallazgo solo por editar código: se exige prueba de regresión, re
 Las pruebas SQLite no certifican D1 ni el release. P-REG-06: índice README completado parcialmente; queda sincronizar PLAN-MAESTRO. P-REG-01..05 y P-REG-07..09 abiertos según consolidado.
 
 - [Reensayo de idempotencia y FK entrante](REENSAYO-0045-IDEMPOTENCIA-FK-ENTRANTE.md): demuestra que el prototipo SQLite puede sobrescribir organization_id al repetirse; NO es una prueba D1.
+
+- [Reensayo de índices parciales y expresiones F02](REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md): falso positivo del validador original y corrección experimental v2, sin D1.
