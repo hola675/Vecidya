@@ -35,3 +35,12 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Rectificado alcance de MW2-015: sí existe prueba E2E local con D1/R2, concurrencia y matriz visual.
 - Añadidos MW2-017 (runner general omite E2E V2) y MW2-018 (DEV remoto no certificado).
 - Sin pruebas ejecutadas; sin cambios de código o producción. Total registros: 18.
+
+## 2026-11-05 — F01-03 y localización de migraciones
+
+- Leídos `db/schema/miniweb.ts`, `wrangler.jsonc`, `app/routes/sitemap.ts`.
+- Registrados MW2-019 a MW2-022; MW2-022 resuelto únicamente respecto a localización de nombres.
+- Localizados mediante PR #238 y leídos `db/migrations/0044_miniweb-capacity-extensions.sql` y `0045_miniweb-capacity-extension-org-scope.sql`.
+- 0044 crea extensión de capacidad con FK de cuenta y usuario e índice único de idempotencia; 0045 agrega `organization_id` obligatorio con FK.
+- Pendiente comprobar despliegue de migraciones y DDL de tablas V2, así como comportamiento con datos existentes al aplicar 0045.
+- Total de IDs: 22. Sin pruebas ni despliegues ejecutados.
