@@ -79,3 +79,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Estados combinados de ese SHA: `statuses=[]`; no se infiere ausencia de check runs ni workflows.
 - Comprobadas seis rutas convencionales de workflows sin coincidencia. Inventario de directorio y branch protection aún pendiente.
 - Creado `REVISION-CI-HEAD-F06.md`. Sin pruebas ni cambios de código.
+
+## 2026-11-05 — F02: primer ensayo ejecutado (SQLite local)
+
+- Ejecutados dos casos en SQLite en memoria, esquema equivalente a 0044 y ALTER literal de 0045, `foreign_keys=ON`.
+- Tabla vacía: PASS; tabla con fila preexistente: FAIL, `Cannot add a NOT NULL column with default value NULL`.
+- MW2-023 pasa a incompatibilidad reproducida localmente bajo condición de datos previos; no extrapolar a estado remoto.
+- Ver `REPRODUCCION-SQLITE-MIGRACION-0045.md`. Sin cambios en DB remotas ni producto.
