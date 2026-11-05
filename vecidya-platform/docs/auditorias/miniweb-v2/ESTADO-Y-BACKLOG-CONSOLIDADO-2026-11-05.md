@@ -57,3 +57,7 @@ No se modificó código de producto, main, staging ni producción. No se ejecut�
 ## Reensayo F02 — idempotencia y FK entrantes
 
 Evidencia: REENSAYO-0045-IDEMPOTENCIA-FK-ENTRANTE.md. El prototipo SQLite permite segunda ejecución pero puede sobrescribir organization_id de o2 a o1; una FK entrante sintética bloquea la reconstrucción y rollback conserva datos. No afirmar existencia de FK entrante real ni fallo D1. P-MIG-15 y P-MIG-12 elevados en prioridad de revisión; nuevos P-MIG-17, P-MIG-18, P-REG-13, P-REG-14 abiertos. Los ensayos anteriores no certifican doble aplicación. F08 NO-GO.
+
+## F02 — Reensayo de índices 0045
+
+Ver REENSAYO-0045-GUARDAS-INDICES-F02.md: dos falsos positivos SKIP_VALID en prototipo SQLite si faltan índices; no demuestra fallo D1. P-MIG-21/22 y P-REG-16/17 nuevos. P-MIG-17/19 no cerrados. Actualizar rango de seguimiento a P-MIG-01..22 y P-REG-01..17, conservando estados individuales y sin cierre masivo. F08 NO-GO.
