@@ -155,3 +155,11 @@ El journal de migraciones confirma 0034–0037; leídos los cuatro SQL: 0034 cre
 ## MW2-028 — Selector de sitio inválido (P2, UX)
 
 `getMiniWebV2EditorState` devuelve null cuando `siteId` no pertenece a la organización o no existe; el editor muestra pantalla de crear sitio. Confirmar UX deseada (404/aviso/selección) y probar enlaces obsoletos. No se ha reproducido en navegador.
+
+## MW2-029 — CAS de guardado con resultado parcial (P0, investigación)
+
+`saveMiniWebV2Draft` hace dos UPDATE en `database.batch` y valida `meta.changes` después. Probar D1 real [1,0] y comprobar si draft y site divergen; cero filas no genera necesariamente excepción SQL. Estado: SIN REPRODUCIR. Matriz T-SAVE-01..04.
+
+## MW2-030 — Inicialización de sitio en dos operaciones (P1, investigación)
+
+`action(create)` crea sitio+borrador revisión cero en un batch y después llama `saveMiniWebV2Draft` en otra operación. Si falla inicialización, devuelve 409 sin limpieza explícita del sitio. Verificar si puede persistir sitio sin inicializar y diseñar recuperación. Estado: SIN REPRODUCIR. Matriz T-CREATE-01..02.
