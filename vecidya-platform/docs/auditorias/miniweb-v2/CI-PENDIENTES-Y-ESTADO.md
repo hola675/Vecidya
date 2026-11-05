@@ -34,3 +34,10 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-CI-09: **PARCIAL**: editor V2 enlaza explícitamente a `/app/miniweb`; aún falta mapa de consumidores completo.
 - Pendiente adicional P-CI-11: decidir política de licencia suspendida (MW2-027).
 - Pendiente adicional P-CI-12: verificar UX de `?site=` inexistente o ajeno (MW2-028).
+
+## 2026-11-05 — Apertura de matriz F02
+
+- P-CI-03: matriz diseñada, **ejecución pendiente**; ver `MATRIZ-PRUEBAS-D1-F02.md`.
+- Nuevo P-CI-13: reproducir guardado parcial [1,0] (MW2-029).
+- Nuevo P-CI-14: reproducir fallo de inicialización después de crear sitio (MW2-030).
+- Nuevo P-CI-15: ejecutar matriz de 16 casos con evidencia SHA/entorno, sin datos remotos.
