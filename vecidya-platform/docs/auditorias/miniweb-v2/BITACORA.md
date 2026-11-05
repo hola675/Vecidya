@@ -20,3 +20,11 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Creados MW2-013 y MW2-014. Total de registros: 14.
 - F01 sigue EN CURSO: faltan referencias inversas, esquema completo, migraciones, CI y consumidores.
 - Sin tests ejecutados, sin correcciones de producto, sin despliegues ni cambios en `main`.
+
+## 2026-11-05 — Frente de integración continua
+
+- Leídos `vecidya-platform/package.json` y `tests/unit/miniweb-v2-publication-query.test.ts` de main.
+- Confirmado que el test de publicación usa un stub y no certifica transacción D1 real; añadido MW2-015, vinculado a MW2-001.
+- Intentada localización de workflows `ci.yml` y `ci.yaml` sin resultados; añadido MW2-016, pendiente búsqueda más amplia.
+- Creado `INTEGRACION-CONTINUA.md`. Total registros: 16.
+- Sin pruebas ejecutadas ni cambios de producto o producción.
