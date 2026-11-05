@@ -38,3 +38,9 @@ Cierre: inventario de pipelines, triggers, matrices Node/pnpm, permisos, secrets
 3. Mapear test→invariante→entorno→gate.
 4. Diseñar matriz de fallos reales D1, media R2, permisos y URLs.
 5. Mantener CI sin despliegue automático a producción hasta aprobación.
+
+## Reconciliación CI-02 y F01-03 — 2026-11-05
+
+Existe E2E `tests/e2e/miniweb-v2-conversion-check.mjs` con Worker/D1/R2 locales, concurrencia, permisos, media, SEO y matriz visual 5×3×3; no ejecutado aquí. MW2-015 se limita al test unitario stub y escenarios no cubiertos confirmadamente. MW2-017: el runner E2E general de 37 scripts omite la prueba V2, aunque existe script dedicado. MW2-018: E2E local no certifica Worker DEV remoto.
+
+Se localizaron migraciones 0044 (`0044_miniweb-capacity-extensions.sql`) y 0045 (`0045_miniweb-capacity-extension-org-scope.sql`). La aplicación remota no está verificada. Workflows y checks obligatorios aún no identificados. No se han ejecutado pruebas ni cambiado producto.
