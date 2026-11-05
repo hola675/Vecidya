@@ -95,3 +95,11 @@ Corte inicial: 2026-11-05. Estado de las pruebas: **no ejecutadas en esta audito
 ## MW2-014 — Rutas V1 y V2 coexisten (P1; migración)
 
 **Evidencia directa:** `app/routes.ts` registra `/app/miniweb` (V1) y `/app/miniweb-v2` (V2), además de API V1 `miniweb-config` y API V2 `miniweb-v2`. Coexistencia deliberada durante migración, no bug. Inventariar enlaces, consumidores, permisos y redirecciones antes de retirar V1. Estado: PENDIENTE.
+
+## MW2-015 — Stub de D1 no certifica atomicidad (P1; cobertura)
+
+**Evidencia:** `tests/unit/miniweb-v2-publication-query.test.ts` programa `meta.changes` con `createD1Stub`; solo comprueba éxito [1,1,1] y conflicto [0,0,0]. No ejecuta transacciones reales ni escenario [1,0,0]. No es bug de producto demostrado; falta prueba de integración D1 real para MW2-001. Estado: CONFIRMADA LIMITACIÓN DE ESTA PRUEBA.
+
+## MW2-016 — Pipeline CI pendiente de localizar (P1; inventario)
+
+**Evidencia:** `package.json` tiene scripts unit, typecheck, build y E2E conversión. No se encontraron `.github/workflows/ci.yml` ni `ci.yaml`; esto no implica ausencia de otros workflows. Localizar checks y protecciones antes de concluir. Estado: EN ANÁLISIS.
