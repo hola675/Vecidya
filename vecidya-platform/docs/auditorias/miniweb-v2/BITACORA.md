@@ -11,3 +11,12 @@
 ## Convención para nuevas entradas
 
 Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · impacto · reproducción · decisión · evidencia de cierre.
+
+## 2026-11-05 — F01, primera pasada
+
+- Leídos en `main` `app/routes.ts`, `app/routes/public-miniweb-v2.tsx`, `app/routes/api-public-miniweb-v2-media.ts` y `app/features/miniweb-v2/media.ts`.
+- Enumerados archivos cambiados en PR #226, #229, #238 y #239 como **candidatos de inventario**, no como árbol exhaustivo.
+- Registrada conexión de publicación pública y entrega de medios; identificada revocación por `isActive` y caché `no-store`.
+- Creados MW2-013 y MW2-014. Total de registros: 14.
+- F01 sigue EN CURSO: faltan referencias inversas, esquema completo, migraciones, CI y consumidores.
+- Sin tests ejecutados, sin correcciones de producto, sin despliegues ni cambios en `main`.
