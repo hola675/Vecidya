@@ -131,3 +131,15 @@ El E2E V2 usa Wrangler, D1 y R2 locales. No equivale a smoke contra Worker DEV d
 ## MW2-022 — Nombres de migraciones 0044/0045 (P2, RESUELTO como localización)
 
 Los nombres inicialmente supuestos no existían. Los archivos reales son `db/migrations/0044_miniweb-capacity-extensions.sql` y `0045_miniweb-capacity-extension-org-scope.sql`, localizados por archivos del PR #238 y leídos en main. **Queda pendiente** verificar historial de aplicación remota y migraciones anteriores que crean las tablas V2.
+
+## MW2-023 — Upgrade 0045 con datos previos (P1; migración)
+
+0044 crea extensiones sin `organization_id`; 0045 agrega columna `NOT NULL` sin backfill visible. Verificar migración desde tabla poblada/vacía en copia local; no se afirma fallo remoto. Estado: PRUEBA PENDIENTE.
+
+## MW2-024 — Política de ampliaciones por titular u organización (P1; decisión)
+
+`grantMiniWebCapacityExtension` vincula ampliación a organización, mientras capacidad/publicación suman ampliaciones por titular de facturación. Confirmar si los cupos son compartidos deliberadamente entre organizaciones y probar transferencias. Estado: DECISIÓN PENDIENTE.
+
+## MW2-025 — Publicación parcial sin rollback automático por cero filas (P0; investigación)
+
+`publishMiniWebV2Draft` comprueba `meta.changes` después de `database.batch`. Probar en D1 real escenarios [1,0,0] y [1,1,0], estado de slots/snapshots/punteros y reintento. Una sentencia que modifica cero filas no equivale a error SQL. Vinculado a MW2-001. Estado: SIN REPRODUCIR.
