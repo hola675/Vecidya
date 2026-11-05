@@ -72,3 +72,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Documentada diferencia entre fixtures SQL, pruebas de API, imágenes reales y certificación de accesibilidad.
 - Registrados MW2-031 a MW2-034; total 34 IDs. Pendientes P-CI-16 a P-CI-20 añadidos.
 - Ver `REVISION-E2E-VISUAL-F06.md`. Ninguna captura o prueba se ejecutó aquí.
+
+## 2026-11-05 — F06: HEAD de main y comprobación CI
+
+- Identificado HEAD de main `4cf1872efaf9a8c81c297a37f41d86796bab5d58` (merge #239).
+- Estados combinados de ese SHA: `statuses=[]`; no se infiere ausencia de check runs ni workflows.
+- Comprobadas seis rutas convencionales de workflows sin coincidencia. Inventario de directorio y branch protection aún pendiente.
+- Creado `REVISION-CI-HEAD-F06.md`. Sin pruebas ni cambios de código.
