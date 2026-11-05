@@ -85,3 +85,11 @@ No registrar un supuesto como hecho ni duplicar IDs; vincular hallazgos relacion
 ## Disciplina de Git
 
 Rama documental de auditoría separada; commits pequeños y descriptivos. No mezclar correcciones de producto con documentación exploratoria. Para correcciones usar rama/PR específicos, tests y changelog. No desplegar ni borrar V1 sin aprobación.
+
+## Evidencia de ejecución y pendientes de registro (revisión 2026-11-05)
+
+El índice de documentos se mantiene en README.md y el estado global en ESTADO-Y-BACKLOG-CONSOLIDADO-2026-11-05.md. Evidencias de migración 0045: REPRODUCCION-SQLITE-MIGRACION-0045.md, ENSAYO-SQLITE-0045-SEIS-CASOS.md, ENSAYO-RECONSTRUCCION-0045-F02.md, ROLLBACK-0045-SEIS-INYECCIONES-F02.md y REINTENTOS-Y-VOLUMEN-0045-F02.md. Son ensayos SQLite, no D1.
+
+Permisos y migración V1/V2: MATRIZ-PERMISOS-V1-V2-F07.md, REVISION-ROLES-AUTORIZACION-F07.md y MAPA-RUTAS-Y-CORTE-F07.md. MW2-038 resuelto en inspección estática; las pruebas T-AUTH siguen pendientes.
+
+P-REG-06: referencias del plan maestro e índice README sincronizadas. P-REG-01..05 y P-REG-07..09 siguen pendientes según el consolidado. La fase F08 continúa NO-GO; no se autoriza retirada de V1 ni despliegue.
