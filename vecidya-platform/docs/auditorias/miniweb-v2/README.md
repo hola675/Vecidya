@@ -27,3 +27,18 @@ Finalizar MiniWeb V2, verificar paridad funcional y calidad, sustituir V1 y elim
 ## Regla de cierre
 
 No cerrar un hallazgo solo por editar código: se exige prueba de regresión, revisión de impacto y evidencia asociada. La certificación de release es independiente del cierre de tickets.
+
+## Índice de evidencias y seguimiento (2026-11-05)
+
+- [Estado ejecutivo y backlog](ESTADO-Y-BACKLOG-CONSOLIDADO-2026-11-05.md): fases, gates y pendientes.
+- [Ensayo de migración 0045](REPRODUCCION-SQLITE-MIGRACION-0045.md): tabla vacía/poblada.
+- [Seis escenarios SQLite](ENSAYO-SQLITE-0045-SEIS-CASOS.md): claves externas activadas/desactivadas.
+- [Reconstrucción SQLite](ENSAYO-RECONSTRUCCION-0045-F02.md): alternativa aislada.
+- [Rollback inyectado](ROLLBACK-0045-SEIS-INYECCIONES-F02.md): recuperación ante seis interrupciones.
+- [Reintentos y volumen](REINTENTOS-Y-VOLUMEN-0045-F02.md): hasta 10000 filas en memoria.
+- [Matriz de permisos V1/V2](MATRIZ-PERMISOS-V1-V2-F07.md): casos T-AUTH-01..10.
+- [Revisión de roles](REVISION-ROLES-AUTORIZACION-F07.md): equivalencia estática, sin tests HTTP.
+- [Mapa de rutas y corte](MAPA-RUTAS-Y-CORTE-F07.md): dependencias y migración V1/V2.
+- [CI y pendientes](CI-PENDIENTES-Y-ESTADO.md): estado y gates pendientes.
+
+Las pruebas SQLite no certifican D1 ni el release. P-REG-06: índice README completado parcialmente; queda sincronizar PLAN-MAESTRO. P-REG-01..05 y P-REG-07..09 abiertos según consolidado.
