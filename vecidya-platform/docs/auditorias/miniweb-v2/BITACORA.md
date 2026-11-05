@@ -86,3 +86,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Tabla vacía: PASS; tabla con fila preexistente: FAIL, `Cannot add a NOT NULL column with default value NULL`.
 - MW2-023 pasa a incompatibilidad reproducida localmente bajo condición de datos previos; no extrapolar a estado remoto.
 - Ver `REPRODUCCION-SQLITE-MIGRACION-0045.md`. Sin cambios en DB remotas ni producto.
+
+## 2026-11-05 — F07: mapa de rutas y cutover
+
+- Leídos `app/routes.ts`, editores V1/V2, API V2, publicación y media V2, sitemap.
+- Confirmadas rutas V1/V2 separadas; conversión V1→V2 voluntaria y V1 preservada.
+- Creado `MAPA-RUTAS-Y-CORTE-F07.md` con 10 pendientes P-F07-01..10.
+- Registrados MW2-035 y MW2-036; total 36 IDs. F07 iniciada como auditoría, sin migración ni retirada.
