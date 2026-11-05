@@ -115,3 +115,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - P-REG-06: completado en README y PLAN-MAESTRO.
 - P-REG-01..05 y P-REG-07..09 permanecen abiertos; HALLAZGOS.md y CI-PENDIENTES-Y-ESTADO.md aún necesitan sincronización.
 - Ningún test D1 ni despliegue ejecutado en esta revisión. F08 NO-GO.
+
+## 2026-11-05 — Corrección de estados canónicos
+
+- HALLAZGOS.md: MW2-038 ahora RESUELTO EN INSPECCIÓN ESTÁTICA; T-AUTH-03 pendiente.
+- CI-PENDIENTES-Y-ESTADO.md: encabezado corregido a MW2-001..039; ensayos SQLite documentados, sin D1 ejecutado.
+- P-REG-02 y P-REG-05: COMPLETADOS en documentos canónicos. P-REG-01: conciliación parcial, falta comprobar restantes evidencias. P-REG-11: parcial, pendiente verificar otras adendas y tablas.
+- Sin cambios en código de aplicación, bases remotas o despliegues. F08 NO-GO.
