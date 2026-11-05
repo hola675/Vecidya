@@ -65,3 +65,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Creado `MATRIZ-PRUEBAS-D1-F02.md` con 16 escenarios: publicación (7), guardado (4), creación (2), migración (3).
 - Registrados MW2-029 y MW2-030; total 30 IDs. No hay ejecución ni PASS declarado.
 - F01 y F06 continúan abiertas; F02 comienza como investigación/documentación, no certificación.
+
+## 2026-11-05 — F06: revisión de cobertura E2E visual
+
+- Inspeccionado tramo final de `tests/e2e/miniweb-v2-conversion-check.mjs`; matriz 5 familias × 3 variantes × 3 viewports = 45 capturas previstas.
+- Documentada diferencia entre fixtures SQL, pruebas de API, imágenes reales y certificación de accesibilidad.
+- Registrados MW2-031 a MW2-034; total 34 IDs. Pendientes P-CI-16 a P-CI-20 añadidos.
+- Ver `REVISION-E2E-VISUAL-F06.md`. Ninguna captura o prueba se ejecutó aquí.
