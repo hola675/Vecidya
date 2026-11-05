@@ -51,3 +51,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Registrados MW2-023 (migración NOT NULL), MW2-024 (alcance de ampliaciones) y MW2-025 (atomicidad lógica del lote), sin afirmar reproducción.
 - Total IDs: 25. F01 y F06 abiertas. No se ejecutaron tests, migraciones ni deploys.
 - Próximos pasos detallados en `REVISION-F01-04.md`.
+
+## 2026-11-05 — F01-05: sincronización retrospectiva
+
+- Inspeccionados journal D1 y migraciones 0034–0037; las tablas V2 y sus cambios históricos están documentados.
+- Registrados MW2-026 (DDL base localizado), MW2-027 (política de suspensión de licencia por decidir) y MW2-028 (UX del selector inválido por verificar).
+- Total 28 IDs; F01/F06 continúan abiertas. Ninguna prueba o migración ejecutada en esta revisión.
+- La entrada independiente `BITACORA-F01-05.md` queda preservada como evidencia original.
