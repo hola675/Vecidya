@@ -44,3 +44,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - 0044 crea extensión de capacidad con FK de cuenta y usuario e índice único de idempotencia; 0045 agrega `organization_id` obligatorio con FK.
 - Pendiente comprobar despliegue de migraciones y DDL de tablas V2, así como comportamiento con datos existentes al aplicar 0045.
 - Total de IDs: 22. Sin pruebas ni despliegues ejecutados.
+
+## 2026-11-05 — F01-04
+
+- Leídas consultas `miniweb-v2.server.ts`, `licensing.server.ts` y migraciones reales 0044/0045.
+- Registrados MW2-023 (migración NOT NULL), MW2-024 (alcance de ampliaciones) y MW2-025 (atomicidad lógica del lote), sin afirmar reproducción.
+- Total IDs: 25. F01 y F06 abiertas. No se ejecutaron tests, migraciones ni deploys.
+- Próximos pasos detallados en `REVISION-F01-04.md`.
