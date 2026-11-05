@@ -93,3 +93,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Confirmadas rutas V1/V2 separadas; conversión V1→V2 voluntaria y V1 preservada.
 - Creado `MAPA-RUTAS-Y-CORTE-F07.md` con 10 pendientes P-F07-01..10.
 - Registrados MW2-035 y MW2-036; total 36 IDs. F07 iniciada como auditoría, sin migración ni retirada.
+
+## 2026-11-05 — F07/F06: permisos y paneles administrativos
+
+- Inspeccionadas API V1/V2, editores V1/V2, panel interno de organización, ruta pública y media V2.
+- Creado `MATRIZ-PERMISOS-V1-V2-F07.md` con 10 pruebas T-AUTH-01..10 y 5 controles P-F07-11..15.
+- Registrados MW2-037..039; total 39 IDs.
+- No se han ejecutado peticiones autenticadas, pruebas ni despliegues; autorización real y roles aún pendientes.
