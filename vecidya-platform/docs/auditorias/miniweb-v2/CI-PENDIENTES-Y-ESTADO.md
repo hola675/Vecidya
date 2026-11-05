@@ -58,3 +58,10 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-CI-22: verificar CI externo y workflows no convencionales.
 - P-CI-23: vincular matriz F02 con gates identificados.
 - Referencia: `REVISION-CI-HEAD-F06.md`.
+
+## 2026-11-05 — Resultado ejecutado migración 0045
+
+- P-CI-05: ensayo SQLite en memoria **PARCIAL**. T-MIG-01 (tabla vacía) PASS; T-MIG-02 (tabla poblada) FAIL por ADD NOT NULL sin default. Pendiente replicar en D1 local y diseñar corrección segura.
+- P-CI-24: definir y verificar migración segura para datos existentes, sin tocar remoto hasta aprobación.
+- P-CI-25: verificar historial real de 0045 en staging/prod, solo lectura con autorización.
+- Evidencia: `REPRODUCCION-SQLITE-MIGRACION-0045.md`.
