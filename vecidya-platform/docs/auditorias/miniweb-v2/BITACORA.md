@@ -129,3 +129,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Detectan mapeo incompleto, organización inexistente, FK entrante sintética, esquema ya migrado y preservan asignación previa. No ejecutan reconstrucción ni D1.
 - Evidencia GUARDAS-0045-IDEMPOTENCIA-Y-DEPENDENCIAS-F02.md; script local vecidya_0045_guardas_idempotencia.py.
 - P-MIG-17/18: avances parciales; P-MIG-19/20 y P-REG-15 nuevos pendientes. F08 NO-GO.
+
+## 2026-11-05 — Reensayo de guardas: índices ausentes
+
+- Reejecutado script original de guardas SQLite: resultados esperados confirmados.
+- Dos escenarios adicionales: eliminar índice UNIQUE de idempotencia o índice de consulta; guard devolvió SKIP_VALID en ambos, pese a faltar índices. Falsos positivos confirmados en prototipo, no en D1.
+- Evidencia REENSAYO-0045-GUARDAS-INDICES-F02.md y script local vecidya_0045_auditoria_guardas_indices.py.
+- Nuevos pendientes P-MIG-21/22 y P-REG-16/17; P-MIG-17/19 permanecen parciales/abiertos. F08 NO-GO.
