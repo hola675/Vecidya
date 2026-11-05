@@ -191,3 +191,15 @@ Ejecutado fixture en SQLite en memoria con DDL equivalente a 0044 y ALTER litera
 ## MW2-036 — Etiqueta de retorno de V2 hacia V1 (P2, UX)
 
 `miniweb-v2-editor.tsx` enlaza a `/app/miniweb` bajo 'Volver a Mi sitio web'. Validar claridad de etiquetas y navegación inversa durante convivencia. No se afirma confusión observada. Estado: PENDIENTE UX.
+
+## MW2-037 — Panel interno administrativo sigue usando V1 (P1, migración)
+
+`internal-organization-miniweb.tsx` mantiene operaciones de configuración/publicación V1 bajo permisos `miniweb:save` y `miniweb:publish`. Antes de retirar V1, planificar sustitución o compatibilidad y probarla. Estado: ABIERTO, sin fallo demostrado.
+
+## MW2-038 — Equivalencia de roles UI y permisos API V2 (P1, autorización/UX)
+
+El editor V2 habilita mutaciones solo para owner/admin, mientras API exige `business-profile:update` o `business-profile:publish`. Comparar roles efectivos y probar miembros; podría ser política deliberada. Estado: POR VERIFICAR.
+
+## MW2-039 — Límites de payload V1/V2 no equivalentes (P2, paridad)
+
+API V2 limita cuerpo JSON a 128000 bytes; API V1 combina límites de configuración y contenido. Verificar límites prácticos, importaciones y respuestas 413. Estado: POR VERIFICAR.
