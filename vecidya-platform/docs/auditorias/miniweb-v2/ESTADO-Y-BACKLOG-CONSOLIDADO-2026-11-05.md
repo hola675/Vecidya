@@ -65,3 +65,7 @@ Ver REENSAYO-0045-GUARDAS-INDICES-F02.md: dos falsos positivos SKIP_VALID en pro
 ## F02 — Validador estricto 0045
 
 VALIDADOR-ESTRICTO-0045-CINCO-CASOS-F02.md registra 5/5 pruebas SQLite del prototipo (índices ausentes, columnas invertidas, UNIQUE perdido y esquema válido). P-MIG-21/22 PARCIALES; nuevos P-MIG-23/24 y P-REG-18/19 abiertos. Rangos de seguimiento ahora P-MIG-01..24 y P-REG-01..19; no cerrar tareas anteriores automáticamente. No hay pruebas D1 ni release autorizado. F08 NO-GO.
+
+## F02 — Índices parciales y expresiones
+
+Ver REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md. Se detectó un falso positivo en el validador original para índice parcial y se bloqueó con variante v2 local (2/2 regresiones esperadas). P-MIG-23 PARCIAL; P-MIG-25/26 y P-REG-20/21 NUEVOS. Seguimiento P-MIG-01..26 y P-REG-01..21; ningún cierre masivo. F08 NO-GO.
