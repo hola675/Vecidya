@@ -183,3 +183,11 @@ Los fixtures usan identificadores sintéticos de imágenes; la comprobación de 
 ### Actualización MW2-023 — Reproducción local SQLite (2026-11-05)
 
 Ejecutado fixture en SQLite en memoria con DDL equivalente a 0044 y ALTER literal de 0045, FK activas. Tabla vacía: PASS. Tabla con una extensión: FAIL `Cannot add a NOT NULL column with default value NULL`. **Incompatibilidad reproducida en SQLite con datos previos**; no probada en Cloudflare D1 remoto. Evidencia y límites en `REPRODUCCION-SQLITE-MIGRACION-0045.md`. Mantener gate abierto hasta backfill/migración segura y certificación.
+
+## MW2-035 — Inventario inverso V1/V2 antes de corte (P1, migración)
+
+`app/routes.ts` confirma editores, APIs, rutas públicas y media V1/V2 separadas; faltan consumidores, enlaces y redirecciones externos/internos para retirada segura. Vinculado MW2-008 y MW2-014. Estado: F07 ABIERTA.
+
+## MW2-036 — Etiqueta de retorno de V2 hacia V1 (P2, UX)
+
+`miniweb-v2-editor.tsx` enlaza a `/app/miniweb` bajo 'Volver a Mi sitio web'. Validar claridad de etiquetas y navegación inversa durante convivencia. No se afirma confusión observada. Estado: PENDIENTE UX.
