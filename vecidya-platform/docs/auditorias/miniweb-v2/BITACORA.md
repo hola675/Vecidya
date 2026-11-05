@@ -143,3 +143,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Variante v2 local: detecta índice parcial con PRAGMA index_list; ambos escenarios bloqueados (2/2). No D1.
 - Evidencia REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md; scripts locales v2 y test de deriva.
 - P-MIG-23 parcial; nuevos P-MIG-25/26 y P-REG-20/21. F08 NO-GO.
+
+## 2026-11-05 — Validador V3 index_xinfo
+
+- Ejecutadas 5/5 pruebas SQLite con aserciones: válido, DESC, NOCASE, parcial y expresión.
+- V2 tenía falsos positivos DESC y NOCASE; V3 los bloquea mediante index_xinfo. No D1.
+- Evidencia REENSAYO-0045-INDEX-XINFO-V3-F02.md; scripts locales V3/test y ZIP reproducible.
+- P-MIG-25 PARCIAL; P-MIG-27/28, P-REG-22/23 NUEVOS. F08 NO-GO.
