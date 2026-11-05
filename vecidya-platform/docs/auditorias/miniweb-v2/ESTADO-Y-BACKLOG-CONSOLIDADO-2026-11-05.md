@@ -69,3 +69,7 @@ VALIDADOR-ESTRICTO-0045-CINCO-CASOS-F02.md registra 5/5 pruebas SQLite del proto
 ## F02 — Índices parciales y expresiones
 
 Ver REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md. Se detectó un falso positivo en el validador original para índice parcial y se bloqueó con variante v2 local (2/2 regresiones esperadas). P-MIG-23 PARCIAL; P-MIG-25/26 y P-REG-20/21 NUEVOS. Seguimiento P-MIG-01..26 y P-REG-01..21; ningún cierre masivo. F08 NO-GO.
+
+## F02 — V3 index_xinfo
+
+Ver REENSAYO-0045-INDEX-XINFO-V3-F02.md: 5/5 casos SQLite, falsos positivos DESC/NOCASE corregidos en prototipo. P-MIG-25 PARCIAL; P-MIG-27/28 y P-REG-22/23 NUEVOS. Seguimiento P-MIG-01..28, P-REG-01..23, estados individuales conservados. D1 pendiente; F08 NO-GO.
