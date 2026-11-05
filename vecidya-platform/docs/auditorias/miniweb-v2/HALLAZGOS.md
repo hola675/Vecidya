@@ -163,3 +163,19 @@ El journal de migraciones confirma 0034–0037; leídos los cuatro SQL: 0034 cre
 ## MW2-030 — Inicialización de sitio en dos operaciones (P1, investigación)
 
 `action(create)` crea sitio+borrador revisión cero en un batch y después llama `saveMiniWebV2Draft` en otra operación. Si falla inicialización, devuelve 409 sin limpieza explícita del sitio. Verificar si puede persistir sitio sin inicializar y diseñar recuperación. Estado: SIN REPRODUCIR. Matriz T-CREATE-01..02.
+
+## MW2-031 — Matriz visual con fixtures SQL, no publicación API por combinación (P1)
+
+La matriz 5×3×3 crea 15 sitios visuales por SQL directo y los captura en 3 viewports; no valida publicación API de cada combinación. Completar flujo representativo y QA humana. Estado: COBERTURA PARCIAL.
+
+## MW2-032 — Accesibilidad automatizada parcial (P1)
+
+E2E comprueba alt presente, contraste aproximado, reduced motion y Tab a algún enlace, pero no constituye auditoría axe/WCAG, lector, zoom o navegación completa. Vinculado a MW2-003. Estado: GATE ABIERTO.
+
+## MW2-033 — Retención de capturas visuales (P2)
+
+Las 45 capturas y manifest se escriben en carpeta local `.playwright-mcp`; falta verificar almacenamiento como artefactos de CI con SHA y revisión. Estado: PENDIENTE.
+
+## MW2-034 — Matriz visual no prueba imágenes R2 reales por combinación (P2)
+
+Los fixtures usan identificadores sintéticos de imágenes; la comprobación de alt no asegura imágenes cargadas. Probar imágenes R2 autorizadas y estados rotos por familia/variante. Estado: PENDIENTE.
