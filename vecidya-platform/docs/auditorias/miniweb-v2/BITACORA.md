@@ -107,3 +107,11 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Matriz owner/admin/member coincide con botones V2 y permisos API; MW2-038 resuelto en revisión estática, sin ejecución de T-AUTH-03.
 - Diferenciadas suspensión de organización (lifecycle 403) y licencia comercial (MW2-027 abierto).
 - Creado `REVISION-ROLES-AUTORIZACION-F07.md`; P-F07-16..18 registrados. Total 39 IDs históricos, no 39 defectos abiertos.
+
+## 2026-11-05 — Sincronización de índice y plan maestro
+
+- README.md actualizado con enlaces a diez documentos de auditoría y evidencias.
+- PLAN-MAESTRO.md actualizado con referencias cruzadas y separación explícita SQLite/D1.
+- P-REG-06: completado en README y PLAN-MAESTRO.
+- P-REG-01..05 y P-REG-07..09 permanecen abiertos; HALLAZGOS.md y CI-PENDIENTES-Y-ESTADO.md aún necesitan sincronización.
+- Ningún test D1 ni despliegue ejecutado en esta revisión. F08 NO-GO.
