@@ -136,3 +136,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Dos escenarios adicionales: eliminar índice UNIQUE de idempotencia o índice de consulta; guard devolvió SKIP_VALID en ambos, pese a faltar índices. Falsos positivos confirmados en prototipo, no en D1.
 - Evidencia REENSAYO-0045-GUARDAS-INDICES-F02.md y script local vecidya_0045_auditoria_guardas_indices.py.
 - Nuevos pendientes P-MIG-21/22 y P-REG-16/17; P-MIG-17/19 permanecen parciales/abiertos. F08 NO-GO.
+
+## 2026-11-05 — Reensayo de índice parcial
+
+- Validador estricto original: índice parcial con nombre/columnas correctos devolvió SKIP_VALID (falso positivo); índice de expresión fue bloqueado.
+- Variante v2 local: detecta índice parcial con PRAGMA index_list; ambos escenarios bloqueados (2/2). No D1.
+- Evidencia REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md; scripts locales v2 y test de deriva.
+- P-MIG-23 parcial; nuevos P-MIG-25/26 y P-REG-20/21. F08 NO-GO.
