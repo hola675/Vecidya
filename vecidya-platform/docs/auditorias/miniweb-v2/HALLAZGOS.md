@@ -87,3 +87,11 @@ Corte inicial: 2026-11-05. Estado de las pruebas: **no ejecutadas en esta audito
 - https://github.com/hola675/Vecidya/pull/229
 - https://github.com/hola675/Vecidya/pull/238
 - https://github.com/hola675/Vecidya/pull/239
+
+## MW2-013 — Revocación de medios y consistencia visual (P1; decisión UX)
+
+**Evidencia directa:** `app/routes/api-public-miniweb-v2-media.ts` devuelve 404 si un asset publicado deja de estar activo; `app/features/miniweb-v2/media.ts` limita medios a IDs de secciones visibles. Es revocación intencionada y segura, no bug confirmado. **Riesgo de experiencia:** snapshot puede seguir apuntando a imagen revocada. Evaluar aviso al borrar, sustitución y placeholder sin volver a servir un asset revocado. Estado: POR VERIFICAR.
+
+## MW2-014 — Rutas V1 y V2 coexisten (P1; migración)
+
+**Evidencia directa:** `app/routes.ts` registra `/app/miniweb` (V1) y `/app/miniweb-v2` (V2), además de API V1 `miniweb-config` y API V2 `miniweb-v2`. Coexistencia deliberada durante migración, no bug. Inventariar enlaces, consumidores, permisos y redirecciones antes de retirar V1. Estado: PENDIENTE.
