@@ -71,3 +71,9 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-CI-09: **PARCIAL**: rutas V1/V2 confirmadas en `app/routes.ts`, ver `MAPA-RUTAS-Y-CORTE-F07.md`. Pendiente inventario exhaustivo de referencias, clientes externos, redirecciones y consumidores.
 - Se abren P-F07-01..10 en documento F07, sin duplicar numeración CI.
 - MW2-035/036 pendientes de certificación; V1 no se retira.
+
+## 2026-11-05 — Seguridad y permisos V1/V2
+
+- P-F07-11..15 añadidos en `MATRIZ-PERMISOS-V1-V2-F07.md`: panel interno, roles, 10 pruebas auth, payloads y auditoría.
+- P-CI-09: **PARCIAL**: inventario ampliado con panel interno V1, API V1/V2, medios y rutas públicas; consumidores externos y árbol completo aún pendientes.
+- Pendiente F06-AUTH: ejecutar T-AUTH-01..10 con organizaciones aisladas y evidencia de HTTP/status; no confundir lectura de código con autorización certificada.
