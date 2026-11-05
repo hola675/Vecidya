@@ -198,7 +198,7 @@ Ejecutado fixture en SQLite en memoria con DDL equivalente a 0044 y ALTER litera
 
 ## MW2-038 — Equivalencia de roles UI y permisos API V2 (P1, autorización/UX)
 
-El editor V2 habilita mutaciones solo para owner/admin, mientras API exige `business-profile:update` o `business-profile:publish`. Comparar roles efectivos y probar miembros; podría ser política deliberada. Estado: POR VERIFICAR.
+El editor V2 habilita mutaciones solo para owner/admin, mientras API exige `business-profile:update` o `business-profile:publish`. Comparar roles efectivos y probar miembros; podría ser política deliberada. Estado: RESUELTO EN INSPECCIÓN ESTÁTICA; T-AUTH-03 pendiente de prueba HTTP. Evidencia: REVISION-ROLES-AUTORIZACION-F07.md.
 
 ## MW2-039 — Límites de payload V1/V2 no equivalentes (P2, paridad)
 
