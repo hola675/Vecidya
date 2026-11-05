@@ -46,3 +46,5 @@ Las pruebas SQLite no certifican D1 ni el release. P-REG-06: índice README comp
 - [Reensayo de idempotencia y FK entrante](REENSAYO-0045-IDEMPOTENCIA-FK-ENTRANTE.md): demuestra que el prototipo SQLite puede sobrescribir organization_id al repetirse; NO es una prueba D1.
 
 - [Reensayo de índices parciales y expresiones F02](REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md): falso positivo del validador original y corrección experimental v2, sin D1.
+
+- [Reensayo de índice index_xinfo V3 F02](REENSAYO-0045-INDEX-XINFO-V3-F02.md): cinco escenarios SQLite y limitaciones frente a D1.
