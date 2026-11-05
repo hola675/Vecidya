@@ -24,3 +24,13 @@ P-CI-10: validar accesibilidad y revisión humana de capturas, no solo métricas
 
 ## Decisiones de calidad
 P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores también se registran. No convertir hipótesis en bug confirmado. No modificar main, producción, V1 ni datos.
+
+## Actualización de seguimiento — 2026-11-05
+
+- P-CI-08: **CERRADO DOCUMENTALMENTE**: `INTEGRACION-CONTINUA.md` incorpora CI-02 y F01-03. No implica certificación de CI.
+- P-CI-05: **PARCIAL**: leídos journal y migraciones 0034–0037 y 0044–0045; faltan ensayo de upgrade 0045 con datos, aplicación remota y rollback.
+- P-CI-01: se consultaron los estados combinados del commit histórico `d8ecfe4e`; el endpoint devolvió `statuses: []`. **No demuestra ausencia de GitHub Actions/check runs**, ni identifica el HEAD actual de main. Pendiente inventario real.
+- P-CI-03: **ABIERTO**: escenarios D1 [1,0,0] y [1,1,0] sin ejecutar.
+- P-CI-09: **PARCIAL**: editor V2 enlaza explícitamente a `/app/miniweb`; aún falta mapa de consumidores completo.
+- Pendiente adicional P-CI-11: decidir política de licencia suspendida (MW2-027).
+- Pendiente adicional P-CI-12: verificar UX de `?site=` inexistente o ajeno (MW2-028).
