@@ -143,3 +143,15 @@ Los nombres inicialmente supuestos no existían. Los archivos reales son `db/mig
 ## MW2-025 — Publicación parcial sin rollback automático por cero filas (P0; investigación)
 
 `publishMiniWebV2Draft` comprueba `meta.changes` después de `database.batch`. Probar en D1 real escenarios [1,0,0] y [1,1,0], estado de slots/snapshots/punteros y reintento. Una sentencia que modifica cero filas no equivale a error SQL. Vinculado a MW2-001. Estado: SIN REPRODUCIR.
+
+## MW2-026 — DDL base V2 localizado (P2, inventario; resuelto)
+
+El journal de migraciones confirma 0034–0037; leídos los cuatro SQL: 0034 crea sitio/borrador/publicación; 0035 cambia índice único organización+familia a índice no único; 0036 crea cupos; 0037 añade procedencia y consentimiento de conversión. No confundir existencia en Git con aplicación remota.
+
+## MW2-027 — Publicación visible tras suspensión de licencia (P1, decisión)
+
+`getPublicMiniWebV2BySiteId` sigue el puntero de publicación sin comprobar licencia; `publishMiniWebV2Draft` sí exige licencia activa. Confirmar política: suspensión bloquea nuevas publicaciones o también acceso público a sitios existentes. Si debe despublicar, crear caso de prueba; no es bug demostrado.
+
+## MW2-028 — Selector de sitio inválido (P2, UX)
+
+`getMiniWebV2EditorState` devuelve null cuando `siteId` no pertenece a la organización o no existe; el editor muestra pantalla de crear sitio. Confirmar UX deseada (404/aviso/selección) y probar enlaces obsoletos. No se ha reproducido en navegador.
