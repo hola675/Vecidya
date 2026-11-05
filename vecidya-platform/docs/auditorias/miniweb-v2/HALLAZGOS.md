@@ -179,3 +179,7 @@ Las 45 capturas y manifest se escriben en carpeta local `.playwright-mcp`; falta
 ## MW2-034 — Matriz visual no prueba imágenes R2 reales por combinación (P2)
 
 Los fixtures usan identificadores sintéticos de imágenes; la comprobación de alt no asegura imágenes cargadas. Probar imágenes R2 autorizadas y estados rotos por familia/variante. Estado: PENDIENTE.
+
+### Actualización MW2-023 — Reproducción local SQLite (2026-11-05)
+
+Ejecutado fixture en SQLite en memoria con DDL equivalente a 0044 y ALTER literal de 0045, FK activas. Tabla vacía: PASS. Tabla con una extensión: FAIL `Cannot add a NOT NULL column with default value NULL`. **Incompatibilidad reproducida en SQLite con datos previos**; no probada en Cloudflare D1 remoto. Evidencia y límites en `REPRODUCCION-SQLITE-MIGRACION-0045.md`. Mantener gate abierto hasta backfill/migración segura y certificación.
