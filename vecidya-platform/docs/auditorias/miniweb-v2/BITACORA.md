@@ -28,3 +28,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Intentada localización de workflows `ci.yml` y `ci.yaml` sin resultados; añadido MW2-016, pendiente búsqueda más amplia.
 - Creado `INTEGRACION-CONTINUA.md`. Total registros: 16.
 - Sin pruebas ejecutadas ni cambios de producto o producción.
+
+## 2026-11-05 — Reconciliación de segunda revisión CI
+
+- Verificados `tests/e2e/miniweb-v2-conversion-check.mjs` (SHA d382616454dfbccc0188693657c20cf31eb44c13), `tests/e2e/run-local-e2e.mjs` (SHA 45e12dfc1408965ead844263a497b85c6660a8d8), `tests/unit/miniweb-v2-capacity.test.ts` y `db/queries/miniweb-v2.server.ts`.
+- Rectificado alcance de MW2-015: sí existe prueba E2E local con D1/R2, concurrencia y matriz visual.
+- Añadidos MW2-017 (runner general omite E2E V2) y MW2-018 (DEV remoto no certificado).
+- Sin pruebas ejecutadas; sin cambios de código o producción. Total registros: 18.
