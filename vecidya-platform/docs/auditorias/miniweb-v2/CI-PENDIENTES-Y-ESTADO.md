@@ -1,6 +1,6 @@
 # CI — Estado consolidado y pendientes (2026-11-05)
 
-F01 y F06 EN CURSO. Registros MW2-001 a MW2-018. Sin pruebas ejecutadas ni cambios de producto.
+F01 y F06 EN CURSO. Registro histórico MW2-001..039. Se ejecutaron ensayos SQLite aislados de 0045; NO se han ejecutado pruebas D1 ni certificación de producto. Sin cambios de producto.
 
 ## Evidencia comprobada
 - tests/e2e/miniweb-v2-conversion-check.mjs ejecuta Worker, D1 y R2 locales; contiene casos de licencia, concurrencia, media, SEO, aislamiento y capturas visuales 5×3×3. Evidencia de código, NO de ejecución.
