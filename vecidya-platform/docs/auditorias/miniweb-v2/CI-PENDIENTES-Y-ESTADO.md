@@ -41,3 +41,12 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - Nuevo P-CI-13: reproducir guardado parcial [1,0] (MW2-029).
 - Nuevo P-CI-14: reproducir fallo de inicialización después de crear sitio (MW2-030).
 - Nuevo P-CI-15: ejecutar matriz de 16 casos con evidencia SHA/entorno, sin datos remotos.
+
+## 2026-11-05 — Revisión E2E visual F06
+
+- P-CI-04: **PARCIAL/CÓDIGO INSPECCIONADO**: leído tramo final de E2E, incluidas aserciones, 45 screenshots, manifest y limpieza. Falta ejecutar y revisar tramo inicial completo en detalle.
+- P-CI-16: ejecutar y conservar 45 capturas con SHA y revisión humana.
+- P-CI-17: axe, teclado completo, lector de pantalla y zoom.
+- P-CI-18: imágenes R2 reales y estados de fallo por familia/variante.
+- P-CI-19: retención y publicación de artefactos CI.
+- P-CI-20: pruebas de publicación por API para familias/variantes representativas.
