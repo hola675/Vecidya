@@ -122,3 +122,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - CI-PENDIENTES-Y-ESTADO.md: encabezado corregido a MW2-001..039; ensayos SQLite documentados, sin D1 ejecutado.
 - P-REG-02 y P-REG-05: COMPLETADOS en documentos canónicos. P-REG-01: conciliación parcial, falta comprobar restantes evidencias. P-REG-11: parcial, pendiente verificar otras adendas y tablas.
 - Sin cambios en código de aplicación, bases remotas o despliegues. F08 NO-GO.
+
+## 2026-11-05 — Guardas previas de 0045 (F02)
+
+- Ejecutadas seis verificaciones PASS en SQLite 3.46.1 en memoria; adicionalmente se rechazó un organization_id existente inválido.
+- Detectan mapeo incompleto, organización inexistente, FK entrante sintética, esquema ya migrado y preservan asignación previa. No ejecutan reconstrucción ni D1.
+- Evidencia GUARDAS-0045-IDEMPOTENCIA-Y-DEPENDENCIAS-F02.md; script local vecidya_0045_guardas_idempotencia.py.
+- P-MIG-17/18: avances parciales; P-MIG-19/20 y P-REG-15 nuevos pendientes. F08 NO-GO.
