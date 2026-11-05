@@ -103,3 +103,15 @@ Corte inicial: 2026-11-05. Estado de las pruebas: **no ejecutadas en esta audito
 ## MW2-016 — Pipeline CI pendiente de localizar (P1; inventario)
 
 **Evidencia:** `package.json` tiene scripts unit, typecheck, build y E2E conversión. No se encontraron `.github/workflows/ci.yml` ni `ci.yaml`; esto no implica ausencia de otros workflows. Localizar checks y protecciones antes de concluir. Estado: EN ANÁLISIS.
+
+## Rectificación MW2-015 — 2026-11-05
+
+La limitación del stub aplica solo a `tests/unit/miniweb-v2-publication-query.test.ts`. **Existe** `tests/e2e/miniweb-v2-conversion-check.mjs` con Worker Wrangler y D1/R2 locales, concurrencia de cupos, permisos, medios, SEO y capturas Playwright 5×3×3. No se ejecutó en esta auditoría. Sigue pendiente verificar el fallo parcial de MW2-001.
+
+## MW2-017 — Runner E2E general omite la prueba V2 (P1; cobertura CI)
+
+**Confirmado en código:** `tests/e2e/run-local-e2e.mjs` lista 37 scripts sin `miniweb-v2-conversion-check.mjs`; `package.json` sí define `test:e2e:miniweb-v2-conversion`. Comprobar si otros workflows lo ejecutan y exigir gate explícito. Estado: CONFIRMADO EN RUNNER, PENDIENTE EN CI.
+
+## MW2-018 — E2E local no certifica DEV remoto (P1; gate)
+
+El E2E V2 usa Wrangler, D1 y R2 locales. No equivale a smoke contra Worker DEV desplegado. Planificar certificación DEV por URL con evidencia de SHA y entorno, sin despliegues no autorizados. Estado: GATE PENDIENTE.
