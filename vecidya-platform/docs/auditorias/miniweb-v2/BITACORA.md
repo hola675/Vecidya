@@ -100,3 +100,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - Creado `MATRIZ-PERMISOS-V1-V2-F07.md` con 10 pruebas T-AUTH-01..10 y 5 controles P-F07-11..15.
 - Registrados MW2-037..039; total 39 IDs.
 - No se han ejecutado peticiones autenticadas, pruebas ni despliegues; autorización real y roles aún pendientes.
+
+## 2026-11-05 — F07: cierre estático de MW2-038
+
+- Leídos authorization.server.ts, session.server.ts y platform-authorization.server.ts.
+- Matriz owner/admin/member coincide con botones V2 y permisos API; MW2-038 resuelto en revisión estática, sin ejecución de T-AUTH-03.
+- Diferenciadas suspensión de organización (lifecycle 403) y licencia comercial (MW2-027 abierto).
+- Creado `REVISION-ROLES-AUTORIZACION-F07.md`; P-F07-16..18 registrados. Total 39 IDs históricos, no 39 defectos abiertos.
