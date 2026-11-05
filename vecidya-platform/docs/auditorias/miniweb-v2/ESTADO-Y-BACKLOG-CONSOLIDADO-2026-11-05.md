@@ -53,3 +53,7 @@ No se modificó código de producto, main, staging ni producción. No se ejecut�
 - P-REG-03/04 y P-REG-07..11: abiertos o parciales; verificar cada fuente antes de cerrar.
 - Nuevo P-REG-12: revisar que el estado MW2-038 sea consistente en la tabla resumen, descripción detallada y documentos secundarios, sin convertir cierre estático en prueba dinámica.
 - Gate F08 NO-GO; D1 local y pruebas de publicación todavía pendientes.
+
+## Reensayo F02 — idempotencia y FK entrantes
+
+Evidencia: REENSAYO-0045-IDEMPOTENCIA-FK-ENTRANTE.md. El prototipo SQLite permite segunda ejecución pero puede sobrescribir organization_id de o2 a o1; una FK entrante sintética bloquea la reconstrucción y rollback conserva datos. No afirmar existencia de FK entrante real ni fallo D1. P-MIG-15 y P-MIG-12 elevados en prioridad de revisión; nuevos P-MIG-17, P-MIG-18, P-REG-13, P-REG-14 abiertos. Los ensayos anteriores no certifican doble aplicación. F08 NO-GO.
