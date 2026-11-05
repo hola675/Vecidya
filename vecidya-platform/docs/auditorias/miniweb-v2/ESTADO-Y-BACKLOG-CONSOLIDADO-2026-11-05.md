@@ -61,3 +61,7 @@ Evidencia: REENSAYO-0045-IDEMPOTENCIA-FK-ENTRANTE.md. El prototipo SQLite permit
 ## F02 — Reensayo de índices 0045
 
 Ver REENSAYO-0045-GUARDAS-INDICES-F02.md: dos falsos positivos SKIP_VALID en prototipo SQLite si faltan índices; no demuestra fallo D1. P-MIG-21/22 y P-REG-16/17 nuevos. P-MIG-17/19 no cerrados. Actualizar rango de seguimiento a P-MIG-01..22 y P-REG-01..17, conservando estados individuales y sin cierre masivo. F08 NO-GO.
+
+## F02 — Validador estricto 0045
+
+VALIDADOR-ESTRICTO-0045-CINCO-CASOS-F02.md registra 5/5 pruebas SQLite del prototipo (índices ausentes, columnas invertidas, UNIQUE perdido y esquema válido). P-MIG-21/22 PARCIALES; nuevos P-MIG-23/24 y P-REG-18/19 abiertos. Rangos de seguimiento ahora P-MIG-01..24 y P-REG-01..19; no cerrar tareas anteriores automáticamente. No hay pruebas D1 ni release autorizado. F08 NO-GO.
