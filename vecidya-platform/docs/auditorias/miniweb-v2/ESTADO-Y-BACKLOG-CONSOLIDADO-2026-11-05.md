@@ -43,3 +43,13 @@ P-REG-09: verificar scripts locales referidos por documentación y publicar solo
 
 ## Límites y seguridad
 No se modificó código de producto, main, staging ni producción. No se ejecutó D1 en esta revisión. V1 no se elimina ni redirige. Cualquier cambio a migraciones o datos requiere revisión, prueba y aprobación explícita.
+
+## Actualización de sincronización 2026-11-05
+
+- P-REG-02: COMPLETADO, MW2-038 corregido en HALLAZGOS.md y aclarado en CI-PENDIENTES-Y-ESTADO.md. T-AUTH-03 NO ejecutada.
+- P-REG-05: COMPLETADO, encabezado CI normalizado a MW2-001..039 y evidencia SQLite distinguida de D1.
+- P-REG-06: COMPLETADO, README y PLAN-MAESTRO indexados.
+- P-REG-01: PARCIAL, quedan conciliaciones de evidencias y pendientes.
+- P-REG-03/04 y P-REG-07..11: abiertos o parciales; verificar cada fuente antes de cerrar.
+- Nuevo P-REG-12: revisar que el estado MW2-038 sea consistente en la tabla resumen, descripción detallada y documentos secundarios, sin convertir cierre estático en prueba dinámica.
+- Gate F08 NO-GO; D1 local y pruebas de publicación todavía pendientes.
