@@ -50,3 +50,11 @@ P0 y P1 bloqueantes sin resolver impiden certificación; observaciones menores t
 - P-CI-18: imágenes R2 reales y estados de fallo por familia/variante.
 - P-CI-19: retención y publicación de artefactos CI.
 - P-CI-20: pruebas de publicación por API para familias/variantes representativas.
+
+## 2026-11-05 — CI sobre HEAD real
+
+- P-CI-01: **PARCIAL**. HEAD main 4cf1872efaf9a8c81c297a37f41d86796bab5d58; combined statuses vacíos, no prueba ausencia de checks.
+- P-CI-21: consultar check runs del HEAD por API específica.
+- P-CI-22: verificar CI externo y workflows no convencionales.
+- P-CI-23: vincular matriz F02 con gates identificados.
+- Referencia: `REVISION-CI-HEAD-F06.md`.
