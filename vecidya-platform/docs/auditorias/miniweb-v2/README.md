@@ -48,3 +48,6 @@ Las pruebas SQLite no certifican D1 ni el release. P-REG-06: índice README comp
 - [Reensayo de índices parciales y expresiones F02](REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md): falso positivo del validador original y corrección experimental v2, sin D1.
 
 - [Reensayo de índice index_xinfo V3 F02](REENSAYO-0045-INDEX-XINFO-V3-F02.md): cinco escenarios SQLite y limitaciones frente a D1.
+
+- [Verificación del ZIP V3 en directorio limpio](VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md): 5/5 index_xinfo, reensayo de deriva y aclaración de fixture trigger.
+- [Deriva de triggers e índices](REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md): cobertura parcial; no D1.
