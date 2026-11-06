@@ -81,3 +81,7 @@ REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md: trigger adicional e índice adicio
 ## F02 — Verificación ZIP limpio y nombre de fixture
 
 VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md: ZIP corregido reproducido en directorio limpio, 5/5 index_xinfo PASS; extra_check crea trigger y no CHECK. Nuevos P-REG-27/28 y P-MIG-32/33. P-REG-24/25 parciales hasta versionado. Seguimiento P-MIG-01..33 y P-REG-01..28; F08 NO-GO.
+
+## F02 — CHECK genuino y actualización de estado ejecutivo
+
+ENSAYO-CHECK-GENUINO-0045-F02.md: SQLite confirma falso positivo SKIP_VALID al agregar CHECK genuino; P-MIG-26/31/32 PARCIALES; P-MIG-34 NUEVO. P-REG-27 PARCIAL, P-REG-29 NUEVO. Rangos actuales P-MIG-01..34 y P-REG-01..29; todos los estados anteriores conservados. Prioridad: D1 local 0044→0045; validación de DDL/FK/constraints; migración forward-only transaccional; tests CI y F07. F08 NO-GO.
