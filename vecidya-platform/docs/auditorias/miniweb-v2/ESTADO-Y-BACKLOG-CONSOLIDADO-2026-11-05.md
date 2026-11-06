@@ -77,3 +77,7 @@ Ver REENSAYO-0045-INDEX-XINFO-V3-F02.md: 5/5 casos SQLite, falsos positivos DESC
 ## F02 — Deriva de esquema no detectada por V3
 
 REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md: trigger adicional e índice adicional obtuvieron SKIP_VALID en prototipo. P-MIG-26 PARCIAL; P-MIG-29..31 y P-REG-24..25 NUEVOS. ZIP corregido localmente con dependencia faltante y SHA-256 documentado en BITACORA; P-REG-24 PARCIAL hasta publicación/versionado. Rangos P-MIG-01..31 y P-REG-01..25. F08 NO-GO.
+
+## F02 — Verificación ZIP limpio y nombre de fixture
+
+VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md: ZIP corregido reproducido en directorio limpio, 5/5 index_xinfo PASS; extra_check crea trigger y no CHECK. Nuevos P-REG-27/28 y P-MIG-32/33. P-REG-24/25 parciales hasta versionado. Seguimiento P-MIG-01..33 y P-REG-01..28; F08 NO-GO.
