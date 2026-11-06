@@ -150,3 +150,10 @@ Fecha · ID · fuente/archivo/línea o PR · observación · clasificación · i
 - V2 tenía falsos positivos DESC y NOCASE; V3 los bloquea mediante index_xinfo. No D1.
 - Evidencia REENSAYO-0045-INDEX-XINFO-V3-F02.md; scripts locales V3/test y ZIP reproducible.
 - P-MIG-25 PARCIAL; P-MIG-27/28, P-REG-22/23 NUEVOS. F08 NO-GO.
+
+## 2026-11-05 — Reconciliación y prueba CHECK genuina
+
+- Informe previo de deriva de trigger e índice: REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md; BITACORA no pudo actualizarse en ejecución anterior.
+- ZIP V3 corregido verificado en directorio limpio: index_xinfo 5/5 PASS; VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md.
+- Nuevo ensayo ENSAYO-CHECK-GENUINO-0045-F02.md: restricción CHECK auténtica añadida en SQLite; validador V3 respondió SKIP_VALID. Falso positivo de deriva confirmado en prototipo; NO D1.
+- P-REG-26 conciliado en bitácora; P-REG-27 parcial, P-REG-29 nuevo; P-MIG-32 parcial, P-MIG-34 nuevo. F08 NO-GO.
