@@ -51,3 +51,5 @@ Las pruebas SQLite no certifican D1 ni el release. P-REG-06: índice README comp
 
 - [Verificación del ZIP V3 en directorio limpio](VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md): 5/5 index_xinfo, reensayo de deriva y aclaración de fixture trigger.
 - [Deriva de triggers e índices](REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md): cobertura parcial; no D1.
+
+- [Ensayo CHECK genuino 0045 F02](ENSAYO-CHECK-GENUINO-0045-F02.md): falso positivo del validador V3 en SQLite; D1 pendiente.
