@@ -73,3 +73,7 @@ Ver REENSAYO-0045-INDICES-PARCIALES-Y-EXPRESIONES-F02.md. Se detectó un falso p
 ## F02 — V3 index_xinfo
 
 Ver REENSAYO-0045-INDEX-XINFO-V3-F02.md: 5/5 casos SQLite, falsos positivos DESC/NOCASE corregidos en prototipo. P-MIG-25 PARCIAL; P-MIG-27/28 y P-REG-22/23 NUEVOS. Seguimiento P-MIG-01..28, P-REG-01..23, estados individuales conservados. D1 pendiente; F08 NO-GO.
+
+## F02 — Deriva de esquema no detectada por V3
+
+REENSAYO-0045-DERIVA-TRIGGERS-INDICES-F02.md: trigger adicional e índice adicional obtuvieron SKIP_VALID en prototipo. P-MIG-26 PARCIAL; P-MIG-29..31 y P-REG-24..25 NUEVOS. ZIP corregido localmente con dependencia faltante y SHA-256 documentado en BITACORA; P-REG-24 PARCIAL hasta publicación/versionado. Rangos P-MIG-01..31 y P-REG-01..25. F08 NO-GO.
