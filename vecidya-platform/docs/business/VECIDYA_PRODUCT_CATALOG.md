@@ -1,5 +1,7 @@
 # VECIDYA — COMMERCIAL PRODUCT SYSTEM V1
 
+> **Actualización comercial aprobada (2026-11-07):** [Licencias, organizaciones, MiniWeb y CRM V2](./VECIDYA_LICENCIAS_ORGANIZACIONES_CRM_V2.md). Cada contratación inicial Cuadra/Barrio/Ciudad habilita **3 organizaciones**, con **1 MiniWeb por organización**; la cuarta requiere **Cuadra adicional (+3 organizaciones)**. **Barrio/Ciudad CRM se licencia individualmente por organización**: la contratación inicial habilita CRM para **una**, no para las tres. Los niveles superiores heredan funcionalidades inferiores. Esta regla prevalece sobre descripciones antiguas incompatibles; **no certifica implementación ni resuelve políticas pendientes**.
+
 ## 1. Principio del producto
 
 Vecidya combina plataforma, tecnología y servicios profesionales para ayudar a un negocio a organizarse, captar oportunidades, dar seguimiento, automatizar procesos y fortalecer su operación digital.
@@ -72,7 +74,7 @@ El proveedor documenta el inbox multicanal, cronología de contactos y triggers 
 
 ## Cuadra
 
-Para negocios que necesitan organizar su presencia, información, servicios, diagnóstico, prioridades y relación con Vecidya sin requerir todavía un CRM comercial operativo. Una licencia Cuadra activa también habilita a su titular autorizado a gestionar varias organizaciones con perfil y presencia en Vecindario, sin una licencia Cuadra adicional por cada organización.
+Para negocios que necesitan organizar su presencia, información, servicios, diagnóstico, prioridades y relación con Vecidya sin requerir todavía un CRM comercial operativo. Una licencia Cuadra activa habilita inicialmente hasta tres organizaciones, cada una con su MiniWeb; para la cuarta organización se requiere Cuadra adicional, que amplía la capacidad en tres. Véase el contrato V2 del 2026-11-07.
 
 Cuadra es un producto independiente.
 
