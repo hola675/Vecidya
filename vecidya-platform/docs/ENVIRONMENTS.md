@@ -431,7 +431,7 @@ El repositorio Git se reconstruirá desde el snapshot actual de `main` y se publ
 
 Con la configuración OAuth completa, el envío Gmail queda listo para validación real posterior al deploy; el proveedor fake solo existe para pruebas/local staging y no entrega correo. Ninguna variable secreta se envía al cliente. No hay variables de GHL, Meta, Stripe ni WhatsApp. `worker-configuration.d.ts` se regenera con `pnpm run cf-typegen` a partir de `wrangler.jsonc`; nunca a partir de `.env` o `.dev.vars`. Los valores de secretos no se leen, imprimen ni versionan.
 
-**F07-L3, aún no habilitado:** el endpoint transitorio falla cerrado cuando falta el secret o el `keyId`; además, el cliente solo acepta una firma cuya clave pública esté en el registry versionado y no figure revocada. El registry está vacío y el secret no está provisionado. No se cambió `wrangler.jsonc`, ningún secret ni entorno remoto.
+**F07-L3, implementación integrada por PR #236 pero aún no habilitada:** el endpoint transitorio falla cerrado cuando falta el secret o el `keyId`; además, el cliente solo acepta una firma cuya clave pública esté en el registry versionado y no figure revocada. El registry está vacío y el secret no está provisionado. Este checkpoint no modificó `wrangler.jsonc`, ningún secret ni entorno remoto.
 
 **DIAG-V3-13 (2026-10-02):** el diagnóstico público pasó al motor V3, cliente-only. `DIAGNOSTIC_RECOVERY_HMAC_KEY`, el binding KV `DIAGNOSTIC_SNAPSHOTS` y el ratelimit `DIAGNOSTIC_RECOVERY_RATE_LIMITER` se eliminaron de `wrangler.jsonc` junto con el backend que los usaba (nunca desplegado — ver `STATUS.md` `DIAG-V3-RECOVERY-SECRET-001`/`DIAG-V3-KV-PLACEHOLDER-001`, cerradas por superseded). El diagnóstico ya no tiene requisitos de secretos, KV ni rate limit propios.
 

@@ -1,22 +1,20 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.5.0
-**Fecha:** 2026-11-04
-**Estado:** F07-L1/L2 INTEGRADOS · F07-L3 IMPLEMENTADO Y SMOKE LOCAL PASS, PENDIENTE DE CLAVES OPERATIVAS · NO PUBLICADO
+**Versión:** 1.6.0
+**Fecha:** 2026-11-08
+**Estado:** F07-L1/L2 Y F07-L3 IMPLEMENTADOS E INTEGRADOS · F07-L3 OPERACIÓN PARCIAL/FAIL-CLOSED, CLAVES PENDIENTES · NO PUBLICADO
 **Repositorio:** `hola675/Vecidya`
-**Main base:** `origin/main@4a692e00f8015ba9722e76b32e2936530588a7d2` (actualizada; PR #232 integrado)
-**Rama:** `feat/diagnostic-v9-f07-l3-finalize`
-- **PR:** #236 abierta para revisión sobre esta base y aún no integrada. El workflow de `feat/diagnostic-v9-*` omite intencionalmente el job general y ejecuta W5/F04 focal; el typecheck/build y las focales de L3 pasan localmente.
+**Main observado:** `origin/main@8ae0052c9dd0352ba6a44c7c5e64445356823722`; incluye PR #236 (`4ead64a0`).
 
 ## 0. Estado operativo actual
 
 - **F07-L1/L2:** integrados por PR #231 en `main@cbebe22a`; focales 10/10 y 5/5, typecheck/build locales y CI PASS. El draft anónimo es local por 7 días; replay es transitorio y no crea ledger individual D1.
 - **F07-L3-ADR:** integrado por PR #232 en `main@03d2ba4c`; JCS/RFC 8785, SHA-256, Ed25519, keyId, Worker Secret, rotación/revocación, timestamps y TTL 24 h.
-- **F07-L3 implementación:** esta rama añade replay/finalización firmada en memoria, endpoint transitorio con rate limit, resultado local 24 h, verificación criptográfica y eliminación del draft tras persistir el resultado. No crea migraciones ni escrituras D1.
+- **F07-L3 implementación:** PR #236 integra replay/finalización firmada en memoria, endpoint transitorio con rate limit, resultado local 24 h, verificación criptográfica y eliminación del draft tras persistir el resultado. No crea migraciones ni escrituras D1.
 - **Validación RAN:** `pnpm run typecheck` PASS; `pnpm run build` PASS; focales V9 9/9 PASS (attestation/final-result/replay); `git diff --check` PASS.
 - **Gates pendientes:** configurar `DIAGNOSTIC_V9_ATTESTATION_PRIVATE_KEY_PKCS8` como Worker Secret y añadir su clave pública/keyId al registry versionado antes de habilitar finalización. La clave registry está vacía en esta rama; por diseño el navegador rechaza resultados sin clave conocida. No correr deploy.
 - **Runtime Worker RAN:** `pnpm exec react-router dev --host 127.0.0.1` escuchó tras fallback de `Request.cf`; guardas 405/403/415/503. Smoke local con clave efímera: POST finalizable 200, digest/firma verificados, sin `answers`; el runner restauró vars y registry temporales.
-- **Siguiente:** provisionar `keyId`/clave pública y Worker Secret emparejados en el entorno objetivo, luego repetir smoke HTTP firmado allí. F05-01 queda después de L3 PASS.
+- **Siguiente gate:** provisionar `keyId`/clave pública y Worker Secret emparejados en el entorno objetivo, luego repetir smoke HTTP firmado allí. F05-01 queda después de L3 PASS; este paso requiere operar en el entorno objetivo y no se ejecutó en este checkpoint.
 - **Publicación:** ninguna; cero migraciones remotas y cero deploy.
 
 ## Evidencia integrada previa
@@ -72,7 +70,7 @@ Estos conteos son volátiles. Revalidar inmediatamente antes de ejecutar.
 - PR #162 pasó a `mergeable=true`;
 - los cuatro overlaps se resolvieron semánticamente sin mezclar implementación F07.
 
-El siguiente scope de implementación es **F07-L1**.
+El siguiente scope en ese snapshot era **F07-L1**; está completado e integrado por PR #231. La secuencia actual sigue condicionada al gate operativo F07-L3 descrito arriba.
 
 ## 6. Secuencia restante canónica
 
@@ -97,7 +95,7 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - no raw answers en logs/analytics.
 
 ### F07-L3
-- candidata implementada en esta rama: replay/finalización autoritativa, resultado canónico sin answers/transcript, attestation JCS/SHA-256/Ed25519 y resultado local 24h;
+- integrada por PR #236: replay/finalización autoritativa, resultado canónico sin answers/transcript, attestation JCS/SHA-256/Ed25519 y resultado local 24h;
 - cliente verifica firma, digest, expiración, skew y revocación antes de leer/aceptar el resultado;
 - endpoint sin persistencia D1, protegido por origen y rate limit, falla cerrado cuando faltan secreto o clave pública versionada;
 - **PARTIAL, no PASS:** Worker Secret y key registry no provisionados; Cloudflare local completó la firma de una sesión con una clave de prueba efímera y el verificador confirmó digest/firma; la configuración se restauró al finalizar.
@@ -115,7 +113,7 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 
 ## 9. Handoff
 
-F07-L1/L2 y el ADR L3 están integrados. F07-L3 tiene una implementación candidata en `feat/diagnostic-v9-f07-l3`; queda bloqueada como PASS por la falta del keyId/clave pública versionada y por no haber validación en runtime Worker real. Resolver esos gates antes de avanzar a F05-01.
+F07-L1/L2, ADR L3 e implementación F07-L3 están integrados en `main`; PR #236 fue fusionada en `4ead64a0`. La operación de F07-L3 no alcanza PASS: faltan `keyId`/clave pública versionada y Worker Secret emparejados y smoke en el entorno objetivo. Resolver esos gates antes de avanzar a F05-01.
 
 ## 10. Qué significa “terminado”
 
@@ -124,6 +122,8 @@ V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + 
 ## Changelog
 
 - **1.5.0 / 2026-11-04:** PR #232 integrado en `main@03d2ba4c`; implementación candidata F07-L3 en rama, typecheck/build PASS, focal 9/9; secret/key registry y validación Worker local pendientes.
+
+- **1.6.0 / 2026-11-08:** PR #236 integró F07-L3 en `main@4ead64a0`; se actualiza el snapshot a `origin/main@8ae0052c`. Se mantiene PARTIAL/fail-closed hasta completar claves operativas y smoke en el entorno objetivo; no hubo configuración remota ni deploy.
 
 - **1.4.0 / 2026-11-04:** F07-L1/L2 integrados por PR #231 en main@cbebe22a; ADR #232 pasó su head anterior pero fue actualizado para incluir #231 y requiere CI del nuevo head. F07-L3 sigue pendiente.
 
