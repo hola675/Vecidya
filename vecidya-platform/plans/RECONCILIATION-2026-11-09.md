@@ -49,3 +49,14 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `feat/app-mini-imp-10`: solo diferencias documentales en `PROJECT_STATE.md` y `STATUS.md`; requieren evaluación histórica.
 - `feat/app-mini-v2a-variant-registry`, `feat/app-mini-v2b-dual-reader`, `feat/app-mini-v2c-visual-entitlements` y `feat/app-mini-v2d-verified-license-reader`: los cuatro módulos centrales respectivos coinciden exactamente por SHA de blob con `main`. Los tres primeros tienen diferencias documentales históricas; V2D conserva también pruebas a verificar.
 - No inferir que una rama está completamente integrada solo porque un módulo coincide. Mantener todas las ramas remotas hasta revisión de pruebas, documentación y merge de PR #241.
+
+## Lote adicional: seis ramas MiniWeb, Aprende y React 418 — 2026-11-09
+
+- `feat/miniweb-v2-hours-contract`: `hours.ts` tiene SHA distinto al de `main`; comprobar evolución del contrato y tests antes de considerar rescate.
+- `feat/miniweb-v2-section-contract-hours-isolation`: `sections.ts` difiere y `migrate.ts` no existe en `main` en esa ruta. No reintroducir migración sin análisis de arquitectura y dependencias.
+- `feat/aprende-article-art-01`: `learn-illustrations.ts` coincide exactamente por SHA con `main`. Falta comprobar los demás archivos y recursos WebP.
+- `fix/aprende-progress-controls`: comparar contra su sucesora `fix/aprende-progress-controls-main` y `main`; no fusionar ambas indiscriminadamente.
+- `fix/aprende-progress-controls-main`: `learn-progress-controls.tsx` coincide exactamente con `main`. Faltan las rutas, estilos y pruebas.
+- `fix/react-418-hydration-local-repro`: `platform-date-format.ts` difiere del contenido de `main`; revisar si el arreglo ya fue ampliado o reemplazado.
+
+**Cierre del lote:** seis ramas inspeccionadas a nivel de comparación de commits; seis archivos centrales contrastados con SHA. No equivalen a seis ramas completamente reconciliadas. No se han ejecutado pruebas ni se ha autorizado borrado de ramas sin integración verificada.
