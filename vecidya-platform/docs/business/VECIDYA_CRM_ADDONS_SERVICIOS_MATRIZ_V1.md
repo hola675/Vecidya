@@ -1,5 +1,7 @@
 # Vecidya — Matriz CRM, addons, consumos y servicios V1
 
+> **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas concretas de cada addon siguen pendientes de validación; cualquier mención previa a «política de recargos pendiente» queda reemplazada por esta aprobación.
+
 > **Ciudad aprobado 2026-11-09:** [Ciudad CRM Standard V1](./VECIDYA_CIUDAD_CRM_STANDARD_V1.md). Los **seis módulos estándar** (ventas, incorporación, atención, reactivación, renovaciones y coordinación) están **incluidos en la biblioteca de Ciudad** y se **activan según corresponda al negocio, sin recargo por módulo estándar**. La aprobación es comercial/funcional; implementación GHL y pruebas E2E pendientes. Cualquier mención anterior a «Ciudad pendiente de aprobación/detalle» queda reemplazada por esta decisión; permanecen pendientes validaciones técnicas y políticas contractuales.
 **Fecha:** 2026-11-09. **Estado:** clasificación comercial de trabajo; Barrio APROBADO, Ciudad pendiente de definición detallada; precios de addons y servicios NO aprobados; implementación GHL NO certificada.
 
