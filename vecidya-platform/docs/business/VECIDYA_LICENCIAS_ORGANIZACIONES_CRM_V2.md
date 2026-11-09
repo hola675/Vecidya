@@ -1,6 +1,6 @@
 # Vecidya — Licencias, organizaciones, MiniWeb y CRM V2
 
-> **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas concretas de cada addon siguen pendientes de validación; cualquier mención previa a «política de recargos pendiente» queda reemplazada por esta aprobación.
+> **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas individuales del catálogo operativo V1 están aprobadas; su disponibilidad y coste del proveedor se verifican antes de activar.
 
 > **Ciudad aprobado 2026-11-09:** [Ciudad CRM Standard V1](./VECIDYA_CIUDAD_CRM_STANDARD_V1.md). Los **seis módulos estándar** (ventas, incorporación, atención, reactivación, renovaciones y coordinación) están **incluidos en la biblioteca de Ciudad** y se **activan según corresponda al negocio, sin recargo por módulo estándar**. La aprobación es comercial/funcional; implementación GHL y pruebas E2E pendientes. Cualquier mención anterior a «Ciudad pendiente de aprobación/detalle» queda reemplazada por esta decisión; permanecen pendientes validaciones técnicas y políticas contractuales.
 **Fecha:** 2026-11-07. **Estado:** acuerdo comercial de producto; implementación y políticas contractuales aún por validar. Este documento prevalece sobre reglas anteriores incompatibles del catálogo V1.
@@ -63,8 +63,8 @@
 - Incluye subcuenta aislada (sujeta a capacidad GHL), identidad, roles, contactos, segmentación, oportunidades, pipeline comercial principal, formulario, calendario si aplica, tareas, workflows internos estándar, indicadores, conversaciones de canales realmente habilitados, capacitación básica y pruebas de entrega.
 - **No se cobran como addons** las funciones CRM estándar del recorrido comercial. No imponer topes ficticios de usuarios, contactos o workflows.
 - El propietario y equipo operan CRM según permisos; Vecidya supervisa configuración estructural, integraciones y workflows críticos. Roles efectivos pendientes de prueba.
-- **Ciudad todavía por definir en detalle y aprobar**: hereda Barrio y diferencia procesos operativos coordinados (incorporación, atención, reactivación, renovaciones, asignación). Precio previamente aprobado USD 89/mes + USD 15 de alta; diferencia +USD 30/mes respecto a Barrio.
-- **Addons y servicios:** consultar [matriz de separación CRM/addons/servicios V1](./VECIDYA_CRM_ADDONS_SERVICIOS_MATRIZ_V1.md); precios de addons, consumos y SLA no aprobados.
+- **Ciudad CRM Standard V1 APROBADO**: seis módulos estándar incluidos en biblioteca, activables según necesidad sin recargo; USD 89/mes + USD 15 de alta; diferencia +USD 30/mes frente a Barrio.
+- **Addons y servicios:** consultar [matriz de separación CRM/addons/servicios V1](./VECIDYA_CRM_ADDONS_SERVICIOS_MATRIZ_V1.md); tarifas de nueve addons aprobadas; consumos según uso y SLA pendientes de especificar.
 - **Capacidad GHL:** Starter de referencia admite hasta 3 subcuentas totales de agencia, no por cliente; validar condiciones y cuenta real. Las 3 organizaciones de Vecidya no son 3 subcuentas GHL. Sin despliegue ni aprovisionamiento certificado.
 
 ## Pendientes que NO se deben presentar como aprobados
