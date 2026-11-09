@@ -62,7 +62,7 @@ export default function Services() {
             </li>
             <li>
               <h3>Conversa sobre el alcance</h3>
-              <span>Los servicios se cotizan según el trabajo acordado; no necesitas elegir una licencia por defecto.</span>
+              <span>Los servicios profesionales se cotizan según entregables y trabajo extraordinario; no necesitas elegir una licencia por defecto.</span>
               <Link className="services-process-list__link" to="/contacto">Consultar un servicio <span aria-hidden="true">→</span></Link>
             </li>
           </ol>
@@ -85,7 +85,7 @@ export default function Services() {
         <section className="services-core" aria-labelledby="services-core-title">
           <div className="services-section-heading">
             <h2 id="services-core-title">Un alcance claro para cada necesidad.</h2>
-            <p>Son trabajos profesionales con entregables acordados; no todos requieren licencia. Las funciones estándar incluidas en Barrio o Ciudad no se cobran nuevamente como servicio.</p>
+            <p>Son trabajos profesionales con entregables acordados; no todos requieren licencia. Las funciones estándar incluidas en Barrio o en los seis módulos de la biblioteca Ciudad no se cobran nuevamente como servicio. La cuota de addons y sus consumos reales se facturan aparte; los servicios profesionales requieren presupuesto aceptado.</p>
           </div>
           <div className="services-offers">
             {services.map((service) => (
