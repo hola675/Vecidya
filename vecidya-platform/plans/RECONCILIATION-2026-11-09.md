@@ -60,3 +60,14 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `fix/react-418-hydration-local-repro`: `platform-date-format.ts` difiere del contenido de `main`; revisar si el arreglo ya fue ampliado o reemplazado.
 
 **Cierre del lote:** seis ramas inspeccionadas a nivel de comparación de commits; seis archivos centrales contrastados con SHA. No equivalen a seis ramas completamente reconciliadas. No se han ejecutado pruebas ni se ha autorizado borrado de ramas sin integración verificada.
+
+## Administración y pruebas locales — lote de seis ramas
+
+- `docs/admin-org-pagination-status`: un commit exclusivo; cambios documentales en seis archivos. Revisar actualidad antes de trasladar.
+- `feat/platform-admin-org-access`: tres commits exclusivos, diferencias en ~40 archivos de aplicación, D1, consultas, documentación y pruebas; riesgo de sustituir arquitectura más reciente. No hacer merge automático.
+- `fix/admin-audit-pagination`: un commit exclusivo; `internal-audit.tsx` difiere de `main`. Comprobar paginación actual y consulta SQL.
+- `fix/admin-organizations-pagination`: un commit exclusivo, pero su diff incluye decenas de archivos de agentes, scripts, plantillas, recursos y `third_party/a-team`, además del cambio administrativo. **Rama de alto riesgo de contaminación de alcance**; no fusionar sin aislar y auditar archivos pertinentes.
+- `fix/business-profile-section-scroll`: tres commits exclusivos; `business-profile.tsx` difiere de `main`. El editor actual por pasos impide sustituir el archivo antiguo sin revisión de navegación y guardado.
+- `fix/local-platform-e2e`: 14 commits exclusivos; los archivos `app/features/miniweb/neighborhood.ts` y `tests/e2e/windows-job-runner.ps1` coinciden exactamente con `main`, pero los otros cambios no están certificados.
+
+**Evidencia:** comparación de commits de seis ramas y SHA de seis archivos relevantes. No hubo merge a `main`, deploy, ni borrado remoto. Estas seis ramas no están declaradas completamente integradas.
