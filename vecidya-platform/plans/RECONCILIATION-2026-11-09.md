@@ -42,3 +42,10 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - **Taxonomía / CSS:** las reglas `SECTOR-UX-03` del selector ya están presentes en `main` (bloque `.business-sector-picker`), aunque el SHA del archivo completo difiere por cambios posteriores. No copiar el CSS antiguo.
 - **Léxico / ROADMAP:** `docs/diag-v9-lexicon-logic-plan-04` añade al principio un plan `DIAG-V9-LEX-GRAPH-04` de 2026-10-26 marcado `PLANNED, NO IMPLEMENTADO`, con tope histórico de **24** interacciones; la documentación V9 posterior registra **29**. No insertar el texto histórico como plan vigente ni declarar completados P0–P5. Conservar la rama hasta decidir si archivar/adaptar el plan al contrato actual.
 - **Consecuencia:** los tres archivos divergentes están clasificados; ninguno es apto para sustitución completa automática. El cierre de estas ramas requiere decisión semántica y pruebas, no igualdad de SHA.
+
+## MiniWeb/App Mini — inventario inicial verificado
+
+- `feat/app-mini-imp-09`: compare muestra un commit histórico exclusivo pero ningún archivo diferente frente a la rama de reconciliación. Verificar historia de merge antes de borrado.
+- `feat/app-mini-imp-10`: solo diferencias documentales en `PROJECT_STATE.md` y `STATUS.md`; requieren evaluación histórica.
+- `feat/app-mini-v2a-variant-registry`, `feat/app-mini-v2b-dual-reader`, `feat/app-mini-v2c-visual-entitlements` y `feat/app-mini-v2d-verified-license-reader`: los cuatro módulos centrales respectivos coinciden exactamente por SHA de blob con `main`. Los tres primeros tienen diferencias documentales históricas; V2D conserva también pruebas a verificar.
+- No inferir que una rama está completamente integrada solo porque un módulo coincide. Mantener todas las ramas remotas hasta revisión de pruebas, documentación y merge de PR #241.
