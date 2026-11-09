@@ -1,9 +1,9 @@
 # Vecidya — Matriz CRM, addons, consumos y servicios V1
 
-> **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas concretas de cada addon siguen pendientes de validación; cualquier mención previa a «política de recargos pendiente» queda reemplazada por esta aprobación.
+> **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas individuales de nueve addons del catálogo operativo V1 están aprobadas; verificar disponibilidad y costes reales antes de activar.
 
 > **Ciudad aprobado 2026-11-09:** [Ciudad CRM Standard V1](./VECIDYA_CIUDAD_CRM_STANDARD_V1.md). Los **seis módulos estándar** (ventas, incorporación, atención, reactivación, renovaciones y coordinación) están **incluidos en la biblioteca de Ciudad** y se **activan según corresponda al negocio, sin recargo por módulo estándar**. La aprobación es comercial/funcional; implementación GHL y pruebas E2E pendientes. Cualquier mención anterior a «Ciudad pendiente de aprobación/detalle» queda reemplazada por esta decisión; permanecen pendientes validaciones técnicas y políticas contractuales.
-**Fecha:** 2026-11-09. **Estado:** clasificación comercial de trabajo; Barrio APROBADO, Ciudad pendiente de definición detallada; precios de addons y servicios NO aprobados; implementación GHL NO certificada.
+**Fecha:** 2026-11-09. **Estado:** clasificación comercial de trabajo; Barrio y Ciudad APROBADOS; nueve tarifas de addons aprobadas, precios de servicios profesionales por cotizar; implementación GHL NO certificada.
 
 ## 1. Cuatro conceptos que nunca se mezclan
 | Categoría | Qué paga el cliente | Regla |
@@ -24,12 +24,12 @@
 | Formulario, calendario si aplica | No | Incluido estándar | Heredado |
 | Workflows internos del proceso | No | Incluidos | Heredados |
 | Indicadores comerciales, formación básica | No | Incluidos | Heredados |
-| Onboarding/atención/reactivación/renovación/coordinación como procesos diferenciados | No | No | Biblioteca de seis módulos estándar prevista; detalle pendiente de aprobar |
+| Onboarding/atención/reactivación/renovación/coordinación como procesos diferenciados | No | No | Seis módulos estándar incluidos, activables según necesidad sin recargo |
 | Cuarta organización | Cuadra adicional: +3 espacios | Cuadra adicional: +3 espacios | Cuadra adicional: +3 espacios |
 
 **Cuadra adicional no da CRM.** CRM Barrio/Ciudad por organización; la política sobre si una compra CRM adicional afecta capacidad de organizaciones permanece pendiente. No confundir organización Vecidya con subcuenta GHL.
 
-## 3. Addons opcionales (sin precio Vecidya aprobado)
+## 3. Addons opcionales (tarifas de nueve productos aprobadas; otros conceptos por uso o cotización)
 | Addon | Barrio | Ciudad | Costes y dependencias |
 |---|---|---|---|
 | WhatsApp CRM | Opcional | Opcional | Habilitación, conversaciones/plantillas, tarifas Meta/GHL, consentimiento |
@@ -68,8 +68,8 @@ GHL Starter de referencia: USD 97/mes, hasta 3 subcuentas totales para la agenci
 El catálogo no certifica aprovisionamiento, snapshots, workflows, roles, canales ni operación productiva. No modificar código ni GHL basándose solo en este documento.
 
 ## 7. Pendientes de decisión
-1. Ciudad: procesos, entregables, capacitación, permisos, módulos y pruebas estándar.
-2. Tarifas Vecidya por addon, margen, consumo, impuestos, moneda, país y soporte.
+1. Ciudad: diseño comercial aprobado; quedan implementación, permisos y pruebas estándar.
+2. Tarifas individuales de nueve addons aprobadas y recargo 25 % estándar; verificar impuestos, país, soporte y coste real.
 3. Políticas de licencia CRM adicional y capacidad de organizaciones; upgrade/downgrade, prorrateo, baja, datos y SLA.
 4. Verificación GHL Starter con subcuentas de prueba, seguridad, roles, snapshots y coste real.
 5. Condiciones de cada servicio profesional, contrato y criterios de aceptación.
@@ -82,4 +82,4 @@ El catálogo no certifica aprovisionamiento, snapshots, workflows, roles, canale
 - https://help.gohighlevel.com/
 
 ## Changelog
-- 2026-11-09 V1: matriz de licencias, addons, consumos, servicios y pendientes; Barrio aprobado, Ciudad no cerrada.
+- 2026-11-09 V1: matriz de licencias, addons, consumos, servicios y pendientes; Barrio y Ciudad aprobados; tarifas de nueve addons aprobadas; implementación pendiente.
