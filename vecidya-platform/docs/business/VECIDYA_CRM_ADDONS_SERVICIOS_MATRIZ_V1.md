@@ -1,4 +1,6 @@
 # Vecidya — Matriz CRM, addons, consumos y servicios V1
+
+> **Ciudad aprobado 2026-11-09:** [Ciudad CRM Standard V1](./VECIDYA_CIUDAD_CRM_STANDARD_V1.md). Los **seis módulos estándar** (ventas, incorporación, atención, reactivación, renovaciones y coordinación) están **incluidos en la biblioteca de Ciudad** y se **activan según corresponda al negocio, sin recargo por módulo estándar**. La aprobación es comercial/funcional; implementación GHL y pruebas E2E pendientes. Cualquier mención anterior a «Ciudad pendiente de aprobación/detalle» queda reemplazada por esta decisión; permanecen pendientes validaciones técnicas y políticas contractuales.
 **Fecha:** 2026-11-09. **Estado:** clasificación comercial de trabajo; Barrio APROBADO, Ciudad pendiente de definición detallada; precios de addons y servicios NO aprobados; implementación GHL NO certificada.
 
 ## 1. Cuatro conceptos que nunca se mezclan
