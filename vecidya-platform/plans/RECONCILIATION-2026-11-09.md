@@ -79,3 +79,9 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `backup/miniweb-v2-pre-main-sync-20261029` y `docs/app-mini-master-plan-v1`: compare entre sí devuelve `identical` (0 ahead / 0 behind); duplican exactamente el mismo commit de referencia. No borrar aún hasta evaluar su documentación/artefactos no presentes en main.
 - `docs/app-mini-v2-merge-reconcile-20261030`, `docs/chat-integration-reconcile`, `docs/release-0-8-5-20261028`, `docs/release-0-8-5-integrate` y `docs/release-0-9-0-20261028`: diffs predominantemente documentales históricos; pendiente cotejar vigencia.
 - Estado tras rescate: 35 archivos de auditoría más ocho documentos V9 y este registro; **sin merge a main, sin pruebas CI nuevas, sin deploy ni borrado remoto**.
+
+## Verificación correctiva de planes App Mini — 2026-11-09
+
+- Se verificaron individualmente cinco archivos `plans/app-mini/`: `PLAN-V1.md`, `CONTRATO-VARIANTES-V2.md`, `SERVICIOS-PAGOS-PLAN-V1.md`, `prototypes/miniweb-tiers-comparison.html` y `prototypes/test-miniweb-tiers.mjs`. Sus SHA de blob coinciden exactamente en `main`, `reconcile/vecidya-20261109` y `docs/app-mini-master-plan-v1`. **Ya están integrados en main; no recrear ni sustituir.**
+- Advertencia metodológica: `compare_commits` sobre ramas históricas divergadas mostró esos archivos como `added` aunque la consulta directa `fetch_file(ref=main)` confirmó su presencia con SHA idéntico. Para cierre, contrastar siempre blobs actuales y no interpretar la lista del compare como prueba de ausencia.
+- La auditoría MiniWeb V2 recuperada conserva SHA idéntico a la rama fuente en muestras `README.md`, `PLAN-MAESTRO.md`, `HALLAZGOS.md` y `VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md`. La comprobación total 35/35 por SHA sigue pendiente, aunque los 35 archivos se crearon satisfactoriamente.
