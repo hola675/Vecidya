@@ -92,3 +92,10 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `feat/aprende-article-art-01`: `app/content/learn.ts` y `tests/unit/learn-content.test.ts` coinciden exactamente con `main`; `tests/e2e/aprende-public-qa-check.mjs` difiere respecto a esa rama antigua.
 - `fix/aprende-progress-controls-main`: `app/app.css`, `app/components/learn-progress-controls.tsx`, `app/routes/learn-article.tsx` y `tests/e2e/aprende-public-qa-check.mjs` coinciden por SHA con `main`. La rama predecesora `fix/aprende-progress-controls` tiene una versión diferente del componente, superada por la posterior en estos archivos.
 - Los recursos binarios WebP de Aprende no se pudieron verificar mediante `fetch_file`: el conector intenta decodificar como UTF-8 y devuelve `UnicodeDecodeError`. **No declarar imágenes verificadas** sin API de árbol Git/metadata binaria o checkout.
+
+## Limpieza de PR y correcciones posteriores — 2026-11-09
+
+- PR #240 **cerrado sin merge**: sus ocho documentos ya fueron trasladados a `reconcile/vecidya-20261109` (PR #241). Rama histórica retenida hasta cierre definitivo. Evita conflicto y doble integración.
+- `fix/miniweb-cover-sections`: módulo `app/components/miniweb/modules/hero.tsx` y prueba `tests/e2e/miniweb-core-check.mjs` tienen SHA idéntico a `main`. Pendiente verificar resto del diff.
+- `fix/react-418-local-test-environment`: `app/lib/platform-date-format.ts`, prueba unitaria `tests/unit/platform-date-format.test.ts` y E2E `tests/e2e/react-418-hydration-check.mjs` coinciden por SHA con `main`. Es evidencia de incorporación de la versión posterior, no certificación de todos los archivos de la rama.
+- **Límite operativo:** el conector GitHub disponible permite cerrar PR y editar archivos, pero no expone borrado de referencias/ramas. No se ha eliminado ninguna rama remota; para hacerlo tras el merge se necesitará Git local o la UI de GitHub.
