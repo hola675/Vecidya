@@ -1,4 +1,7 @@
 # VECIDYA — COMMERCIAL PRODUCT SYSTEM V1
+## Decisión comercial — addons y facturación (2026-11-09)
+**Precios de addons V1 aprobados**: [catálogo](./VECIDYA_ADDONS_CATALOGO_OPERATIVO_V1.md). Regla: cuota fija con recargo 25 % estándar (ajustable 20–30 %); consumos adicionales al coste real según uso, facturados aparte. **Cobro inicial externo** (proveedor e integración pendientes); cuando se adquiera GHL Unlimited USD 297/mes, evaluar rebilling automático según prestaciones efectivas. No afirmar que está implementado.
+
 
 > **Política de addons aprobada (2026-11-09):** [VECIDYA_ADDONS_PRICING_V1.md](./VECIDYA_ADDONS_PRICING_V1.md). Recargo estándar **25 %** sobre cuota base verificable del addon, ajustable **20–30 %**; **consumos adicionales separados y cobrados según uso real**, sin recargo automático del 25 % sobre consumo. Las tarifas concretas de cada addon siguen pendientes de validación; cualquier mención previa a «política de recargos pendiente» queda reemplazada por esta aprobación.
 
