@@ -71,3 +71,11 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `fix/local-platform-e2e`: 14 commits exclusivos; los archivos `app/features/miniweb/neighborhood.ts` y `tests/e2e/windows-job-runner.ps1` coinciden exactamente con `main`, pero los otros cambios no están certificados.
 
 **Evidencia:** comparación de commits de seis ramas y SHA de seis archivos relevantes. No hubo merge a `main`, deploy, ni borrado remoto. Estas seis ramas no están declaradas completamente integradas.
+
+## Recuperación documental MiniWeb V2 — 35/35 archivos
+
+- `docs/miniweb-v2-auditoria-perfeccionista`: se trasladaron **35 archivos nuevos** desde `vecidya-platform/docs/auditorias/miniweb-v2/` a esta rama de reconciliación, preservando el contenido histórico sin modificar runtime, D1 ni R2.
+- Evidencia destacada: plan de ocho fases, inventario V1/V2, registro MW2-001..039, matrices de permisos y pruebas, ensayos SQLite sobre migración 0045, CI y rollback. Los resultados son históricos y no equivalen a nueva certificación.
+- `backup/miniweb-v2-pre-main-sync-20261029` y `docs/app-mini-master-plan-v1`: compare entre sí devuelve `identical` (0 ahead / 0 behind); duplican exactamente el mismo commit de referencia. No borrar aún hasta evaluar su documentación/artefactos no presentes en main.
+- `docs/app-mini-v2-merge-reconcile-20261030`, `docs/chat-integration-reconcile`, `docs/release-0-8-5-20261028`, `docs/release-0-8-5-integrate` y `docs/release-0-9-0-20261028`: diffs predominantemente documentales históricos; pendiente cotejar vigencia.
+- Estado tras rescate: 35 archivos de auditoría más ocho documentos V9 y este registro; **sin merge a main, sin pruebas CI nuevas, sin deploy ni borrado remoto**.
