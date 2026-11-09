@@ -35,3 +35,10 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `feat/diagnostic-sector-taxonomy-02`: los tres módulos nuevos y sus tres pruebas coinciden exactamente por SHA de blob con `main` (6/6). `business-profile.tsx` y `vecidya-polish.css` difieren; requieren revisión semántica, no reemplazo directo.
 - `docs/diag-v9-lexicon-logic-plan-04`: `ROADMAP.md` difiere de `main`; falta verificar si sus 58 líneas históricas ya fueron integradas o sustituidas.
 - Estado de seguridad: sin merge a `main`, sin deploy, sin eliminación remota. PR #241 permanece en borrador.
+
+## Resolución de diferencias semánticas — revisión adicional 2026-11-09
+
+- **Taxonomía / perfil:** la rama antigua usa `BusinessSectorPicker` en `business-profile.tsx`, pero `main` emplea un selector nativo en un editor por pasos con campos ocultos/deshabilitados fuera del paso activo. No reemplazar el archivo actual por el antiguo: revertiría el contrato de navegación y guardado. La integración de `BusinessSectorPicker` en ese flujo es una decisión UX separada, con pruebas propias; se conserva como deuda, no como cherry-pick seguro.
+- **Taxonomía / CSS:** las reglas `SECTOR-UX-03` del selector ya están presentes en `main` (bloque `.business-sector-picker`), aunque el SHA del archivo completo difiere por cambios posteriores. No copiar el CSS antiguo.
+- **Léxico / ROADMAP:** `docs/diag-v9-lexicon-logic-plan-04` añade al principio un plan `DIAG-V9-LEX-GRAPH-04` de 2026-10-26 marcado `PLANNED, NO IMPLEMENTADO`, con tope histórico de **24** interacciones; la documentación V9 posterior registra **29**. No insertar el texto histórico como plan vigente ni declarar completados P0–P5. Conservar la rama hasta decidir si archivar/adaptar el plan al contrato actual.
+- **Consecuencia:** los tres archivos divergentes están clasificados; ninguno es apto para sustitución completa automática. El cierre de estas ramas requiere decisión semántica y pruebas, no igualdad de SHA.
