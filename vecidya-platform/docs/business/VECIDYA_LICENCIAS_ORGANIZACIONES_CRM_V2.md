@@ -52,6 +52,17 @@
 3. **Barrio:** todo Cuadra, CRM para una organización, recorrido comercial estándar, incluidos, complementos y límites.
 4. **Ciudad:** todo Barrio, CRM para una organización, seis módulos y coordinación multiproceso, incluidos y exclusiones.
 
+
+## Actualización aprobada 2026-11-09 — Barrio CRM Standard V1
+**Aprobado:** [Definición operativa, entrega y capacitación de Barrio CRM Standard V1](./VECIDYA_BARRIO_CRM_STANDARD_V1.md). Prevalece como detalle de Barrio sobre descripciones genéricas anteriores.
+- Barrio USD 59/mes + USD 10 de alta estándar; hereda Cuadra, pero **CRM para una sola organización**. Cuadra USD 39/mes; diferencia +USD 20/mes, no se suman mensualidades.
+- Incluye subcuenta aislada (sujeta a capacidad GHL), identidad, roles, contactos, segmentación, oportunidades, pipeline comercial principal, formulario, calendario si aplica, tareas, workflows internos estándar, indicadores, conversaciones de canales realmente habilitados, capacitación básica y pruebas de entrega.
+- **No se cobran como addons** las funciones CRM estándar del recorrido comercial. No imponer topes ficticios de usuarios, contactos o workflows.
+- El propietario y equipo operan CRM según permisos; Vecidya supervisa configuración estructural, integraciones y workflows críticos. Roles efectivos pendientes de prueba.
+- **Ciudad todavía por definir en detalle y aprobar**: hereda Barrio y diferencia procesos operativos coordinados (incorporación, atención, reactivación, renovaciones, asignación). Precio previamente aprobado USD 89/mes + USD 15 de alta; diferencia +USD 30/mes respecto a Barrio.
+- **Addons y servicios:** consultar [matriz de separación CRM/addons/servicios V1](./VECIDYA_CRM_ADDONS_SERVICIOS_MATRIZ_V1.md); precios de addons, consumos y SLA no aprobados.
+- **Capacidad GHL:** Starter de referencia admite hasta 3 subcuentas totales de agencia, no por cliente; validar condiciones y cuenta real. Las 3 organizaciones de Vecidya no son 3 subcuentas GHL. Sin despliegue ni aprovisionamiento certificado.
+
 ## Pendientes que NO se deben presentar como aprobados
 - Tratamiento exacto de capacidad y precio cuando se compran **licencias CRM adicionales** para organizaciones existentes: no asumir que cada CRM adicional añade tres espacios ni que se cobra una nueva capacidad.
 - Acumulación y coexistencia de planes, propiedad y transferencia de organizaciones, reutilización de espacios tras bajas, asignación/reasignación CRM.
@@ -62,3 +73,5 @@
 
 ## Changelog
 - 2026-11-07 V2: regla de tres organizaciones, una MiniWeb por negocio, ampliación Cuadra +3, CRM por organización, herencia y matriz de pendientes.
+
+- 2026-11-09: Barrio CRM Standard V1 aprobado; matriz de addons/servicios y limitaciones GHL vinculadas; Ciudad pendiente de detalle.
