@@ -1,4 +1,11 @@
 # VECIDYA — Catálogo operativo de addons V1
+## Aprobación comercial posterior — 2026-11-09
+**APROBADOS los precios individuales Vecidya al 25 %** de los nueve addons listados en la tabla de cuotas fijas (WhatsApp 12.50, Online Listings 37.50, Premium Prospecting 36.25, SEO Search Atlas 98.75, AI Employee Growth 62.50, AI Employee Unlimited 121.25, IP dedicada email 73.75, portal con marca 61.25, WordPress Hosting Standard 12.50 USD/mes), siempre sujetos a elegibilidad y cambios reales de tarifa del proveedor. El cliente paga consumos variables aparte, según uso real, sin recargo automático sobre el consumo.
+
+**Cobro vigente decidido:** mediante un servicio/plataforma de facturación externo aún por seleccionar y configurar; separar líneas de cuota addon, consumo y servicios profesionales, conservar evidencia de medición, conciliación y consentimiento. No afirmar que ya está integrado.
+
+**Evolución decidida:** tras contratar GHL Unlimited USD 297/mes, **evaluar** rebilling automático y su compatibilidad; no prometer markup automático sobre teléfono/email ni otras funciones restringidas a planes superiores. No se ha comprado Unlimited ni habilitado rebilling. Precios base y disponibilidad sujetos a verificación al activar cada producto.
+
 **Fecha:** 2026-11-09. **Estado:** propuesta técnica y tarifaria derivada de política de precios APROBADA; precios individuales de venta NO aprobados explícitamente; validación en cuenta GHL pendiente. No equivale a activación ni contrato.
 
 ## Política aprobada
