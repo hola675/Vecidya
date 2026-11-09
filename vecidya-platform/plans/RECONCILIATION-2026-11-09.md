@@ -99,3 +99,14 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `fix/miniweb-cover-sections`: módulo `app/components/miniweb/modules/hero.tsx` y prueba `tests/e2e/miniweb-core-check.mjs` tienen SHA idéntico a `main`. Pendiente verificar resto del diff.
 - `fix/react-418-local-test-environment`: `app/lib/platform-date-format.ts`, prueba unitaria `tests/unit/platform-date-format.test.ts` y E2E `tests/e2e/react-418-hydration-check.mjs` coinciden por SHA con `main`. Es evidencia de incorporación de la versión posterior, no certificación de todos los archivos de la rama.
 - **Límite operativo:** el conector GitHub disponible permite cerrar PR y editar archivos, pero no expone borrado de referencias/ramas. No se ha eliminado ninguna rama remota; para hacerlo tras el merge se necesitará Git local o la UI de GitHub.
+
+## Lote App Mini V2 y E2E local — cotejo de SHA
+
+- `feat/app-mini-v2a-variant-registry`: `visual-variants.ts` y `miniweb-visual-variants.test.ts` idénticos a `main` por SHA.
+- `feat/app-mini-v2b-dual-reader`: `configuration-reader-v2.ts` y `miniweb-configuration-reader-v2.test.ts` idénticos a `main` por SHA.
+- `feat/app-mini-v2c-visual-entitlements`: `visual-entitlements.ts` y `miniweb-visual-entitlements.test.ts` idénticos a `main` por SHA.
+- `feat/app-mini-v2d-verified-license-reader`: `verified-licenses.server.ts` y `miniweb-verified-licenses.test.ts` idénticos a `main` por SHA. Esta rama contiene solo estos dos archivos en el compare histórico; funcionalmente preservada.
+- `fix/local-platform-e2e`: **9/9** archivos no documentales del compare (4 archivos app + 5 tests/scripts) cotejados individualmente: SHA idéntico a `main`. Restan diferencias de documentación histórica; no sustituir estados vigentes.
+- `feat/app-mini-imp-09`: un commit exclusivo histórico pero diff de archivos vacío frente a `main`; no implica trabajo de código faltante. `feat/app-mini-imp-10`: diferencias solo en `PROJECT_STATE.md` y `STATUS.md`, pendiente clasificar como histórico.
+
+**Alcance:** comparación estática de blobs, no ejecución de tests. No merge a main ni borrado de ramas.
