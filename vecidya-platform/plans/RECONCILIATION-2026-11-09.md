@@ -27,3 +27,11 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - Fusionar a `main` solo cuando esté validado y aprobado.
 - Confirmar commit de merge en `main` antes de borrar cualquier rama remota.
 - Registrar por rama: integrada, sustituida o conservada con motivo.
+
+## Avance comprobado — 2026-11-09
+
+- PR #240: sus ocho parches documentales se trasladaron a la rama de reconciliación y se comprobó que los fragmentos resultantes están presentes (8/8). La PR original no se ha fusionado.
+- `feat/diagnostic-v9-f07-l3`: los diez archivos principales de attestation/resultado/API/pruebas y los dos archivos de rutas revisados coinciden exactamente por SHA de blob con `main` (12/12). Falta contrastar documentación y cualquier cambio restante antes de borrar la rama.
+- `feat/diagnostic-sector-taxonomy-02`: los tres módulos nuevos y sus tres pruebas coinciden exactamente por SHA de blob con `main` (6/6). `business-profile.tsx` y `vecidya-polish.css` difieren; requieren revisión semántica, no reemplazo directo.
+- `docs/diag-v9-lexicon-logic-plan-04`: `ROADMAP.md` difiere de `main`; falta verificar si sus 58 líneas históricas ya fueron integradas o sustituidas.
+- Estado de seguridad: sin merge a `main`, sin deploy, sin eliminación remota. PR #241 permanece en borrador.
