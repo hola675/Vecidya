@@ -56,8 +56,9 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     benefits: ["Tu información y presentación viven en un espacio propio de Vecidya, en vez de quedar dispersas entre perfiles sociales.","Puedes actualizar una vez la información de tu negocio y usarla en tu presencia pública, conforme a las herramientas habilitadas."],
     continuity: "Si un canal de contacto externo deja de funcionar, tu perfil y MiniWeb de Vecidya pueden seguir mostrando la información y los demás canales válidos. Cuadra no conserva conversaciones externas dentro de un CRM.",
     price: "USD 39/mes", priceUsd: 39, setupUsd: 0,
-    preview: ["Cuenta y organización Vecidya", "Perfil público y MiniWeb", "Presencia en Vecindario", "Acceso a Mi Vecidya y gestión de información"],
+    preview: ["Hasta 3 organizaciones Vecidya", "Una MiniWeb por organización", "Perfiles aprobados en Vecindario", "Sin CRM"],
     includes: [
+      "Capacidad inicial de tres organizaciones Vecidya, cada una con una MiniWeb y perfil publicable según aprobación.",
       "Cuenta Vecidya, datos de tu organización y acceso a Mi Vecidya.",
       "Perfil de negocio y MiniWeb con presentación, servicios, ubicación, horarios y contacto, según sus componentes disponibles.",
       "Visibilidad en el Vecindario para perfiles aprobados y publicados.",
@@ -84,9 +85,9 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     benefits: ["Cada contacto y oportunidad queda relacionado con un proceso comercial que permite recordar lo que ya se habló y qué hacer después.","Puedes atender mensajes de canales conectados desde un historial común, sujeto a la identidad y vinculación correcta de cada contacto.","Los recordatorios y tareas estándares reducen el riesgo de olvidar consultas sin añadir un servicio a medida."],
     continuity: "Los contactos, oportunidades, tareas y mensajes ya sincronizados con el CRM se consultan allí mientras se conserven. Una desconexión impide sincronizar nuevos mensajes por el canal afectado; no garantiza recuperación posterior de mensajes perdidos.",
     price: "USD 59/mes", priceUsd: 59, setupUsd: 10,
-    preview: ["Todo Cuadra", "CRM: contactos y oportunidades", "Proceso comercial principal y agenda", "Seguimiento y automatización estándar"],
+    preview: ["Todo Cuadra: 3 organizaciones y MiniWeb", "CRM para una organización asignada", "Proceso comercial principal, agenda y tareas", "Automatización y capacitación estándar"],
     includes: [
-      "Todas las capacidades de Cuadra.",
+      "Todas las capacidades de Cuadra; el CRM se asigna a una sola de las tres organizaciones iniciales.",
       "CRM operativo para contactos, oportunidades y etapas del proceso comercial principal.",
       "Formulario de captación estándar y entrada de solicitudes al proceso correspondiente.",
       "Calendario o reserva estándar cuando tenga sentido para la actividad.",
@@ -122,10 +123,10 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
     benefits: ["Cuando ventas cierra una oportunidad, otro responsable puede recibir el siguiente paso sin reconstruir los datos desde cero.","Se conoce el estado de varias etapas relacionadas, quién se ocupa y qué tareas siguen pendientes.","Los módulos estándar permiten coordinar procesos sin cobrar cada plantilla como complemento independiente."],
     continuity: "Si falla un canal externo, los procesos, tareas y datos previamente guardados en el CRM continúan dependiendo de la disponibilidad y conservación del CRM, no del canal. La automatización hacia ese canal puede quedar interrumpida.",
     price: "USD 89/mes", priceUsd: 89, setupUsd: 15,
-    preview: ["Todo Barrio", "Biblioteca modular multiproceso", "Coordinación de equipos y asignaciones", "Automatizaciones conectadas y control"],
+    preview: ["Todo Barrio: CRM para una organización", "Seis módulos estándar incluidos", "Activación de módulos según necesidad", "Coordinación y capacitación multiproceso"],
     includes: [
-      "Todas las capacidades de Barrio, incluido el CRM estándar.",
-      "Selección y configuración de módulos operativos estándar de la biblioteca Ciudad según las necesidades de la organización.",
+      "Todas las capacidades de Barrio, incluido el CRM estándar para una organización asignada.",
+      "Los seis módulos de la biblioteca Ciudad están incluidos; se activan los aplicables al negocio, sin recargo por módulo estándar.",
       "Procesos relacionados con etapas, responsables y traspasos definidos.",
       "Asignación, enrutamiento y seguimiento entre equipos o funciones.",
       "Automatizaciones condicionales y coordinación entre módulos estándar.",
@@ -156,6 +157,22 @@ export const LICENSE_OFFERS: readonly LicenseOffer[] = [
   },
 ];
 
+/** Tarifas de addons aprobadas (USD/mes); precio fijo no incluye consumos.
+ * Disponibilidad y tarifa del proveedor se verifican antes de activar.
+ * No convertir servicios puramente medidos en cuotas mensuales ficticias.
+ */
+export const APPROVED_ADDON_PRICES = [
+  { name: "WhatsApp Business CRM", priceUsd: 12.50, note: "Mensajes y llamadas aplicables según consumo." },
+  { name: "Listados online", priceUsd: 37.50, note: "Operación de marketing gestionada aparte." },
+  { name: "Prospección premium", priceUsd: 36.25, note: "Gestión de prospección delegada aparte." },
+  { name: "SEO avanzado", priceUsd: 98.75, note: "Estrategia y ejecución SEO profesional aparte." },
+  { name: "IA Employee Growth", priceUsd: 62.50, note: "Excesos y telefonía aparte; no duplicar uso incluido." },
+  { name: "IA Employee Unlimited", priceUsd: 121.25, note: "Sujeto a condiciones y exclusiones del proveedor." },
+  { name: "IP dedicada de email", priceUsd: 73.75, note: "Solo cuando el plan GHL permita habilitarla; no en Starter." },
+  { name: "Portal de cliente con marca", priceUsd: 61.25, note: "No equivale a una aplicación personalizada." },
+  { name: "WordPress Hosting Standard", priceUsd: 12.50, note: "Por sitio; no reemplaza la MiniWeb incluida." },
+] as const;
+
 export const ADDON_OFFERS: readonly CommercialOffer[] = [
   {
     id: "whatsapp-business", kind: "addon", title: "WhatsApp Business",
@@ -170,7 +187,7 @@ export const ADDON_OFFERS: readonly CommercialOffer[] = [
     examples: ["Una nueva consulta entra por WhatsApp y queda asociada a su seguimiento comercial."],
     dependencies: "Requiere Barrio o Ciudad, cuenta/canal admisible y aprobación del proveedor del canal.",
     decision: "No exige Ciudad si solo añades WhatsApp al proceso estándar de Barrio.",
-    price: "Desde USD 15/mes + consumo", externalCosts: "Pueden aplicarse cargos de mensajes, comisiones y consumos de la plataforma externa. Se confirmarán por escrito antes de la activación.",
+    price: "USD 12.50/mes + consumo real", externalCosts: "Mensajes y otros consumos facturables se cobran aparte según uso real y tarifa aplicable; sin recargo automático del addon sobre consumo.",
     contactInterest: "complemento-whatsapp-business", catalogPath: "/addons", detailPath: addon("whatsapp-business"),
   },
   {
