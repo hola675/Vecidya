@@ -32,6 +32,8 @@ Ejemplo ilustrativo: coste base USD 10/mes → addon Vecidya USD 12.50/mes al 25
 - **Consumos:** facturación adicional según uso, no margen fijo de addon.
 - **Servicios profesionales:** proyecto/trabajo extraordinario con presupuesto y aceptación independientes.
 
+> **Catálogo investigado 2026-11-09:** [VECIDYA_ADDONS_CATALOGO_OPERATIVO_V1.md](./VECIDYA_ADDONS_CATALOGO_OPERATIVO_V1.md). Precios individuales orientativos al 25 %, todavía sujetos a aprobación comercial y verificación de elegibilidad/consumos en GHL. Importante: WhatsApp cambió su facturación de mensajes de servicio desde 2026-10-01; IP dedicada no está disponible en Starter; no inventar cuota fija para canales puramente medidos.
+
 ## Pendientes
 Catálogo por addon con costes vigentes, condiciones de activación, coste fijo/variable, impuestos y facturación; controles de consumo y alertas; términos de revisión tarifaria, cancelación, soporte y SLAs; pruebas reales de GHL.
 
