@@ -27,7 +27,10 @@ const licenses = LICENSE_OFFERS.map((offer) => ({
 const comparisonRows = [
   { label: "Objetivo", values: ["Ordenar", "Captar", "Automatizar"] },
   { label: "Etapa", values: ["Inicio", "Crecimiento", "Escala"] },
-  { label: "Organización", values: ["Base Vecidya", "Base Vecidya", "Base Vecidya"] },
+  { label: "Organizaciones iniciales", values: ["3", "3", "3"] },
+  { label: "MiniWeb", values: ["1 por organización", "1 por organización", "1 por organización"] },
+  { label: "CRM asignado", values: ["Ninguno", "1 organización", "1 organización"] },
+  { label: "Biblioteca Ciudad (6 módulos)", values: ["No", "No", "Incluida; activación según necesidad"] },
   { label: "MiniWeb y Vecindario", values: ["Incluidos", "Incluidos", "Incluidos"] },
   { label: "CRM operativo", values: ["No incluido", "Proceso principal", "Multiproceso"] },
   { label: "Seguimiento CRM", values: ["No incluido", "Proceso principal", "Coordinado"] },
@@ -75,6 +78,8 @@ export default function Licenses() {
             <div className="licenses-decision-notes">
               <p className="licenses-price-note">Precios públicos en USD. La activación se coordina por contacto; no hay compra automática.</p>
               <p className="licenses-price-note">Antes de contratar, confirma por escrito la periodicidad, renovación, cancelación, alcance y posibles costes de terceros. <Link to="/informacion-legal">Información legal y comercial</Link>.</p>
+              <p className="licenses-price-note">Cada licencia inicial permite hasta tres organizaciones Vecidya, con una MiniWeb por organización. Barrio y Ciudad incluyen CRM para una sola organización designada; las demás no reciben CRM automáticamente. Una ampliación Cuadra añade tres espacios, sin añadir CRM.</p>
+              <p className="licenses-price-note">Ciudad incluye los seis módulos estándar en su biblioteca; se activan según las necesidades del negocio, sin cobrar cada módulo de nuevo.</p>
               <p className="licenses-price-note">Cuadra funciona de forma independiente y no requiere CRM. Barrio incorpora el CRM para un proceso comercial principal; Ciudad coordina procesos relacionados.</p>
               <p className="licenses-price-note">De Cuadra a Barrio: USD 20/mes más para captar y dar seguimiento. De Barrio a Ciudad: USD 30/mes más para coordinar varios procesos. No necesitas subir de nivel si tu licencia actual ya resuelve el trabajo.</p>
             </div>
