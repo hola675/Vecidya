@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { publicAssets } from "../assets/public-assets";
 import { CommercialBoundary, CTASection } from "../components/public-v2";
 import { DIAGNOSTIC_CTA_COPY, PUBLIC_ACTION_LABELS } from "../content/public-copy";
-import { ADDON_OFFERS } from "../content/commercial-detail";
+import { ADDON_OFFERS, APPROVED_ADDON_PRICES } from "../content/commercial-detail";
 import { PublicLayout, publicMeta } from "../components/public-layout";
 import { PublicHeroArt } from "../components/public-hero-art";
 
@@ -67,12 +67,12 @@ export default function Addons() {
         <section aria-labelledby="addons-list-title" className="addons-list">
           <div className="addons-section-heading addons-section-heading--catalog">
             <div>
-              <p className="eyebrow">SIETE COMPLEMENTOS V1</p>
+              <p className="eyebrow">CAPACIDADES ADICIONALES</p>
               <h2 id="addons-list-title">Una capacidad por necesidad.</h2>
             </div>
             <div className="addons-price-note">
               <strong>Costes de uso</strong>
-              <p>Algunos canales y proveedores cobran según mensajes, llamadas, IA, envíos o APIs. Se informan por separado y se confirman antes de activar cualquier canal o consumo adicional.</p>
+              <p>La cuota fija del addon es independiente de mensajes, llamadas, emails, IA y otros consumos. Estos se facturan según uso real y tarifa aplicable, sin recargo automático del 25 % sobre el consumo. El cobro se coordina mediante un servicio externo; no hay pago automático aquí.</p>
             </div>
           </div>
           <div className="addons-grid">
@@ -93,6 +93,27 @@ export default function Addons() {
                 </article>
             ))}
           </div>
+        </section>
+
+        <section className="public-v2-section" aria-labelledby="approved-addon-prices-title">
+          <div className="addons-section-heading">
+            <div>
+              <p className="eyebrow">TARIFAS APROBADAS</p>
+              <h2 id="approved-addon-prices-title">Cuotas mensuales de addons específicos.</h2>
+              <p>Precios en USD. Se activan únicamente cuando corresponden a tu negocio y están disponibles en el plan técnico contratado.</p>
+            </div>
+          </div>
+          <div className="licenses-compare-table-wrap" role="region" tabIndex={0} aria-label="Precios mensuales de addons Vecidya">
+            <table className="licenses-compare-table">
+              <thead><tr><th scope="col">Addon</th><th scope="col">Cuota</th><th scope="col">Condiciones</th></tr></thead>
+              <tbody>{APPROVED_ADDON_PRICES.map((item) => (
+                <tr key={item.name}><th scope="row">{item.name}</th><td>{`USD ${item.priceUsd.toFixed(2)}/mes`}</td><td>{item.note}</td></tr>
+              ))}</tbody>
+            </table>
+          </div>
+          <p>Telefonía, SMS, email y acciones sin cuota fija de addon se cobran según consumo real. Las campañas gestionadas, integraciones a medida y configuraciones extraordinarias se presupuestan como servicios profesionales.</p>
+          <p>Los importes publicados se confirman antes de contratar si el proveedor cambia sus tarifas o condiciones. La activación y el cobro se coordinan por contacto, no mediante compra automática.</p>
+          <Link className="text-link" to="/contacto">Consultar disponibilidad y contratación <span aria-hidden="true">→</span></Link>
         </section>
 
         <CommercialBoundary current="addon" />
