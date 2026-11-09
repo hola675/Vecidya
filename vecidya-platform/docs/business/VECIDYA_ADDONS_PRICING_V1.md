@@ -1,4 +1,7 @@
 # VECIDYA — Política de precios de addons V1 (APROBADA)
+## Aprobación adicional — 2026-11-09
+Se **aprueban los precios individuales al 25 %** del [catálogo operativo V1](./VECIDYA_ADDONS_CATALOGO_OPERATIVO_V1.md). La facturación inicial será por **servicio externo**, por definir e integrar; cuota del addon separada de consumo real y servicios profesionales. Tras adquirir GHL Unlimited USD 297/mes, se **revisará** la posibilidad de rebilling automático según las capacidades reales del plan, sin asumir markup nativo. La compra del plan y la integración de cobro no están ejecutadas.
+
 **Fecha:** 2026-11-09. **Estado:** política comercial aprobada; tarifas concretas, impuestos, cobro e implementación pendientes de validación.
 
 ## Decisión aprobada
