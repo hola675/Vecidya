@@ -1,4 +1,6 @@
 # Vecidya — Licencias, organizaciones, MiniWeb y CRM V2
+
+> **Ciudad aprobado 2026-11-09:** [Ciudad CRM Standard V1](./VECIDYA_CIUDAD_CRM_STANDARD_V1.md). Los **seis módulos estándar** (ventas, incorporación, atención, reactivación, renovaciones y coordinación) están **incluidos en la biblioteca de Ciudad** y se **activan según corresponda al negocio, sin recargo por módulo estándar**. La aprobación es comercial/funcional; implementación GHL y pruebas E2E pendientes. Cualquier mención anterior a «Ciudad pendiente de aprobación/detalle» queda reemplazada por esta decisión; permanecen pendientes validaciones técnicas y políticas contractuales.
 **Fecha:** 2026-11-07. **Estado:** acuerdo comercial de producto; implementación y políticas contractuales aún por validar. Este documento prevalece sobre reglas anteriores incompatibles del catálogo V1.
 
 ## Modelo aprobado
