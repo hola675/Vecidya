@@ -110,3 +110,11 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `feat/app-mini-imp-09`: un commit exclusivo histórico pero diff de archivos vacío frente a `main`; no implica trabajo de código faltante. `feat/app-mini-imp-10`: diferencias solo en `PROJECT_STATE.md` y `STATUS.md`, pendiente clasificar como histórico.
 
 **Alcance:** comparación estática de blobs, no ejecución de tests. No merge a main ni borrado de ramas.
+
+## MiniWeb V2 contratos — decisión de no trasplantar ramas obsoletas
+
+- `feat/miniweb-v2-hours-contract`: el `hours.ts` de `main` extiende el contrato antiguo con `exceptions`, rangos nocturnos, zona horaria IANA y controles de solapamiento semanal. El test histórico difiere del test actual. **No sustituir** código/test actual por la versión anterior.
+- `feat/miniweb-v2-section-contract-hours-isolation`: `main` contiene contrato `sections.ts` tipado con 12 secciones, validación específica y `hours` autónomo; el `migrate.ts` histórico importa tipos `V2Draft`, `V2Section`, `V2TemplateFamily`, `V2VisualTier` y `createEmptyV2Hours` de un contrato distinto que no se encuentra en `main`. También falta el test histórico `v2-sections.test.ts` en `main`. **No copiar directamente**: el import histórico no es compatible con el contrato actual y arriesga fallos de TypeScript. Considerar adaptación posterior como nueva funcionalidad opt-in, con pruebas.
+- `fix/admin-audit-pagination`: consulta `db/queries/platform-governance.server.ts` ya coincide exactamente con `main`; la ruta `internal-audit.tsx` y prueba E2E difieren, así que no declarar la rama totalmente integrada.
+
+No se ejecutaron pruebas ni se alteró runtime.
