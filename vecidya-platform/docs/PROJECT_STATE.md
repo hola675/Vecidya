@@ -1,3 +1,26 @@
+## MiniWeb V2 — contrato funcional canónico (decisiones del usuario, 2026-11-08)
+
+MiniWeb V2 reemplazará completamente MiniWeb V1. Cada MiniWeb pertenece a una organización; `owner` y `admin` pueden editar. El destino público final es `/vecindario/[slug]`; no se requieren dominios personalizados porque los sitios viven bajo Vecindario V2. El flujo editorial contempla `borrador → revisión → publicado`, con autoguardado y botón explícito **Guardar**. Quién puede aprobar la revisión y si owner/admin pueden publicar directamente siguen pendientes.
+
+El editor debe admitir, como mínimo, Hero, descripción, servicios, galería, horario, ubicación/mapa, WhatsApp, teléfono, redes, promociones, reseñas, FAQ, formulario, equipo y catálogo, además de otros bloques especializados que se definan. Las tres familias visuales existentes serán plantillas distintas sobre un mismo sistema configurable: comparten el modelo de contenido y difieren en estilo, estructura y acabado. El negocio puede cambiar colores, tipografías, fondos, orden de bloques y estilos. Cambiar de plantilla conserva todo el contenido; solo cambia su presentación.
+
+Las imágenes se almacenan únicamente en R2. V1→V2 requiere migración manual de datos. La definición de terminado abarca editor completo, publicación, experiencia móvil, SEO, R2, permisos, migración V1 y analytics. Estos requisitos funcionales no certifican que las capacidades estén implementadas o publicadas.
+
+### Matriz de decisiones
+
+| Tema | Confirmado | Pendiente de definición |
+| --- | --- | --- |
+| Sustitución y URL | V2 reemplaza V1; URL `/vecindario/[slug]`; sin dominio personalizado | Política de redirects de URLs V1 |
+| Organización y capacidad | MiniWeb pertenece a una organización; `owner`/`admin` editan | Número de MiniWebs por organización/cupos; significado preciso de capacidad extra (página, variante, módulo especializado o combinación) |
+| Workflow | Borrador → revisión → publicado; autoguardado y botón Guardar | Quién aprueba revisión; si owner/admin pueden publicar directamente |
+| Contenido y presentación | Bloques enumerados arriba; tres plantillas; personalización de colores, tipografías, fondos, orden y estilos; cambiar plantilla conserva el contenido | Catálogo final de bloques y reglas particulares de cada bloque |
+| Medios | Imágenes únicamente en R2 | Máximo por MiniWeb, peso, formatos, optimización automática y comportamiento al reemplazar/eliminar |
+| Ciclo de vida | No se confirmó una política | Suspensión/vencimiento; borrado y retención de organización/MiniWeb |
+| Migración V1 | Migración manual de datos | Procedimiento, responsable, validación, tratamiento de omisiones y rollback; redirects V1 |
+| Analytics | Incluido en la definición de terminado | Eventos, métricas, atribución, retención y acceso |
+
+Las reglas de suspensión, retención y borrado, y el alcance de analytics, no se deben inferir de esta especificación. Las decisiones pendientes bloquean la aceptación de sus áreas, pero no alteran las decisiones ya confirmadas.
+
 ## Diagnóstico V9 — reparación de baseline y regresiones de CI (2026-11-04; local)
 
 La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. PR #233 quedó integrada en `main@64b3ccd2` con CI PASS (2079/2079 unitarias). Sin cambio de publicación, migración remota ni deploy.
