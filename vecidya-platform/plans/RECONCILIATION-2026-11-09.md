@@ -118,3 +118,21 @@ F07-L3 permanece **PARTIAL/fail-closed** hasta configurar y emparejar `keyId`, c
 - `fix/admin-audit-pagination`: consulta `db/queries/platform-governance.server.ts` ya coincide exactamente con `main`; la ruta `internal-audit.tsx` y prueba E2E difieren, así que no declarar la rama totalmente integrada.
 
 No se ejecutaron pruebas ni se alteró runtime.
+
+## 2026-11-09 — Cierre de binarios Aprende y paginación administrativa
+
+### Aprende — imágenes WebP
+- Fuente: `feat/aprende-article-art-01`; directorio `vecidya-platform/public/assets/selected/illustrations/learn-guides/`.
+- Comparación binaria por metadatos GitHub Contents API, no por decodificación UTF-8: **48 archivos .webp en `main` y 48 en la rama**, con **48/48 coincidencias de nombre, blob SHA y tamaño**; 0 diferencias, 0 ausentes en `main`. Total del conjunto: 9.429.796 bytes.
+- **Conclusión limitada:** la carpeta de imágenes está íntegramente integrada en `main`; no se requieren cherry-picks de esos binarios. No se han ejecutado pruebas visuales ni se ha certificado cualquier recurso ajeno a esa carpeta.
+
+### Paginación de organizaciones y auditoría
+- `fix/admin-organizations-pagination`: `main` conserva `page`, `pageSize`, filtros y enlaces Anterior/Siguiente; la implementación actual añade selección de rutas `/app/platform` / `/app/internal`, opciones de organizaciones y mejores textos. `platform-organizations.server.ts` conserva la consulta paginada y añade `listPlatformOrganizationOptions`. **No restaurar la ruta antigua**.
+- `fix/admin-audit-pagination`: la consulta `platform-governance.server.ts` tiene SHA idéntico en `main` y la rama antigua; la ruta principal conserva los parámetros de paginación y sustituye la función horaria local por `formatPlatformDateTime`. La prueba E2E actual incluye escenarios adicionales de 55 organizaciones y filtros. **No restaurar la ruta ni prueba antiguas**.
+- `fix/business-profile-section-scroll`: la ruta de negocio histórica difiere únicamente en el antiguo input de categoría; `main` lo convierte en selector tipado, añade TikTok y YouTube, y conserva `scrollIntoView`. La prueba `business-profile-experience-check.mjs` es idéntica por SHA. **No restaurar el archivo antiguo**.
+- Los CSS históricos difieren de `main`, que contiene estilos y superficies posteriores; no se ha hecho sustitución masiva.
+- Validaciones: comparaciones estáticas de contenido, **no** regresión ejecutada. Sin desplegar ni modificar `main`.
+
+### Puertas de cierre
+- PR #241 sigue en borrador mientras CI y las diferencias funcionales pendientes no estén aprobadas.
+- Las ramas antiguas solo se eliminarán tras verificar su contenido útil en `main`; el conector GitHub disponible no incluye borrado de refs.
