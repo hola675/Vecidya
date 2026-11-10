@@ -2,9 +2,9 @@
 
 La reparación de tipos en el checkpoint #233 hace pasar typecheck/build y 26 pruebas focales de correlación/replay/banco. Se alinearon dos expectativas de clasificación con el límite contractual de 29 interacciones y se corrigió el filtro de Vecindario para distinguir los sectores por identidad; las pruebas focales combinadas de ambos módulos pasan 38/38. La suite completa local detectó además una aserción R8-C que no enumeraba el puente de compatibilidad histórica `v9-historical-overall-compat.ts`; la allowlist ahora reconoce solo ese puente para overall histórico. PR #233 quedó integrada en `main@64b3ccd2` con CI PASS (2079/2079 unitarias). Sin cambio de publicación, migración remota ni deploy.
 
-## Diagnóstico V9 — F07-L1/L2 (2026-11-04; PR actualizada)
+## Diagnóstico V9 — F07-L3 integrada; operación pendiente (2026-11-08)
 
-La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL del borrador: siete días derivados de updatedAt. PR #231 integra L1/L2 y PR #232 el ADR F07-L3. La implementación L3 candidata añade finalización firmada y resultado local 24 h; focales 9/9, typecheck y build PASS. El Worker local firmó una sesión finalizable con una clave efímera y el verificador confirmó la firma; no contenía answers. Sigue PARTIAL porque faltan Worker Secret/keyId operativos en el entorno objetivo. No es certificación integral ni publicación.
+La ruta anónima de entrevista opera con borrador local y replay transitorio en memoria; no crea identity/run/event D1 ni persiste respuestas individuales. TTL del borrador: siete días derivados de `updatedAt`. PR #231 integra L1/L2, PR #232 el ADR L3 y PR #236 la implementación de finalización firmada (`main@4ead64a0`). La evidencia local documentada para L3 es 9/9 focales, typecheck/build PASS y smoke de Worker con clave efímera; la firma se verificó y el resultado no contenía respuestas. El código está integrado, pero la operación sigue **PARTIAL/fail-closed**: faltan el `keyId`, la clave pública registrada y el Worker Secret emparejados en el entorno objetivo, además de repetir allí el smoke. Sin configuración, publicación ni certificación integral de V9.
 
 ## APRENDE-ARTICLE-ART-01 — ilustración contextual por guía (2026-11-02; PR #223 integrada)
 

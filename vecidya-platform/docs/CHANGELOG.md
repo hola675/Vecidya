@@ -31,11 +31,12 @@
 - El inicio y la entrevista no crean identity/run/event D1; el flujo se detiene en `readyToFinalize`. Focales L1 10/10 y L2 5/5 PASS; typecheck/build y CI focal PASS. PR #231 integrada en `main@cbebe22a`. Sin migraciones, endpoint de finalización, D1 remota, deploy o publicación.
 
 
-# 2026-11-04 — Diagnóstico V9 — F07-L3 candidata (sin certificar)
+# 2026-11-08 — Diagnóstico V9 — F07-L3 integrada; gate operativo pendiente
 
 - Añade endpoint transitorio de replay/finalización autoritativa Ed25519, JCS RFC 8785, SHA-256 y verificación en cliente. No escribe respuestas ni resultados en D1; el resultado se guarda localmente por 24 h y se limpia el draft al finalizar.
 - Focales 9/9, typecheck/build PASS. Worker local arrancó tras fallback de `Request.cf`; con clave Ed25519 efímera, POST finalizable respondió 200 y la verificación criptográfica PASS. El resultado no incluye answers. El registry y la config temporal se restauraron; el registry operativo/keyId y Worker Secret siguen sin provisionar, por lo que producción permanece fail-closed.
-- Rama `feat/diagnostic-v9-f07-l3-finalize`, basada en `origin/main@4a692e00`; sin migración remota, deploy ni publicación. F07-L3 es PARTIAL; falta provisionar claves y certificar runtime antes de F05-01.
+- PR #236 integra la implementación en `main@4ead64a0`: endpoint transitorio, replay autoritativo, attestation Ed25519 y verificación del resultado local de 24 h. No persiste respuestas ni resultado en D1.
+- Focales 9/9, typecheck/build PASS y smoke Worker local con clave efímera PASS, según la evidencia del checkpoint. El código está integrado; la operación permanece PARTIAL/fail-closed hasta provisionar y emparejar `keyId`, clave pública y Worker Secret en el entorno objetivo y repetir allí el smoke. Sin migración remota, deploy ni publicación; F05-01 espera el cierre de ese gate.
 # 2026-11-02 — MiniWeb V2 UX-IMPL-03 — candidato local
 
 - El editor permite crear y modificar las doce secciones con formularios guiados, separa guardar de publicar, confirma la publicación y protege cambios sin guardar. El servidor exige una portada visible con título y referencias de imagen activas del mismo negocio; la ruta pública solo sirve imágenes de la publicación vigente y desactiva caché para respetar retiros.
