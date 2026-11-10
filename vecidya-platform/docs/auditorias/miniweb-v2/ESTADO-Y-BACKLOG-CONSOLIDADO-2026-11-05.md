@@ -85,3 +85,35 @@ VERIFICACION-ZIP-V3-LIMPIO-Y-TRAZABILIDAD-2026-11-05.md: ZIP corregido reproduci
 ## F02 — CHECK genuino y actualización de estado ejecutivo
 
 ENSAYO-CHECK-GENUINO-0045-F02.md: SQLite confirma falso positivo SKIP_VALID al agregar CHECK genuino; P-MIG-26/31/32 PARCIALES; P-MIG-34 NUEVO. P-REG-27 PARCIAL, P-REG-29 NUEVO. Rangos actuales P-MIG-01..34 y P-REG-01..29; todos los estados anteriores conservados. Prioridad: D1 local 0044→0045; validación de DDL/FK/constraints; migración forward-only transaccional; tests CI y F07. F08 NO-GO.
+
+## Reconciliación funcional con decisiones del usuario — 2026-11-08
+
+La especificación canónica y la matriz de decisiones viven en `../../PROJECT_STATE.md`, sección «MiniWeb V2 — contrato funcional canónico». Este registro añade su efecto en el backlog/gates; no crea una segunda fuente de verdad. La decisión recibida en este turno es **migración manual de datos V1→V2**. No reinterpretar como migración automatizada por notas anteriores de conversación. La política concreta de redirects sigue pendiente.
+
+### Confirmado para el contrato funcional
+
+- V2 reemplaza completamente V1; destino público `/vecindario/[slug]`, sin dominio personalizado; cada MiniWeb pertenece a una organización.
+- `owner` y `admin` editan; estados borrador → revisión → publicado, autoguardado y botón explícito Guardar. No está decidido quién aprueba revisión ni publicación directa.
+- El editor contempla Hero, descripción, servicios, galería, horario, mapa/ubicación, WhatsApp, teléfono, redes, promociones, reseñas, FAQ, formulario, equipo, catálogo y otros bloques.
+- Las tres familias visuales son plantillas sobre un modelo configurable compartido: difieren en estilo, estructura y acabado. El negocio puede cambiar colores, tipografías, fondos, orden y estilos; cambiar de plantilla conserva todo el contenido y solo cambia la presentación.
+- Imágenes únicamente en R2. La migración V1→V2 es manual de datos. La definición de terminado incluye editor completo, publicación, mobile, SEO, R2, permisos, migración V1 y analytics.
+
+### Pendientes de decisión; no asumir valores
+
+1. Número de MiniWebs por organización y reglas de cupos.
+2. Qué significa capacidad extra: página, variante, módulo especializado o combinación.
+3. R2: máximo de imágenes, peso, formatos, optimización automática y comportamiento al reemplazar/eliminar.
+4. Suspensión/vencimiento y qué se muestra/permite durante esos estados.
+5. Borrado y retención de organización/MiniWeb.
+6. Redirects de URLs V1.
+7. Quién aprueba revisión y si owner/admin pueden publicar directamente.
+8. Alcance de analytics.
+
+### Backlog y gates
+
+- **F02 — BLOQUEANTE:** continuar validación de 0044→0045 sobre Cloudflare D1 local con base vacía y poblada; validar esquema real (DDL, índices, triggers, constraints y FK entrantes), organización/cupos, reintento/idempotencia, fallos/rollback y concurrencia. Los ensayos SQLite y prototipos de validación no cierran F02 ni prueban comportamiento D1. Mantener sin cambios la prohibición de D1 remota. Solo cerrar con resultados reproducibles, estado antes/después y evidencia vinculada al SHA.
+- **F03/F04/F05/F06 — SIN CERTIFICAR:** cerrar el editor contra el contrato funcional; probar autoguardado/Guardar, workflow y permisos; validar ciclo de vida R2 una vez definidos sus límites; revisar renderer público, responsive/mobile, SEO y accesibilidad; ejecutar matriz autenticada/tenant y regresión. No marcar funcionalidades confirmadas como implementadas por el solo hecho de estar especificadas.
+- **F07 — PARCIAL:** preparar migración manual con inventario de datos V1, mapeo explícito, informe de campos no migrables, validación por negocio y plan de recuperación. Comprobar paridad funcional y consumidores antes de retirar V1. No borrar datos durante la migración.
+- **F08 — NO-GO:** requiere F02 cerrado con D1; F03–F07 aceptados; políticas pendientes resueltas para las áreas afectadas; pruebas de permisos, mobile, SEO, R2 y analytics; redirects acordados; backup/restore/rollback ensayados; aceptación humana; plan de observación y cero consumidores V1. Ninguna evidencia de SQLite, una rama documental o esta actualización autoriza cutover, deploy o eliminación de V1.
+
+El backlog técnico numerado P-MIG/P-REG y T-AUTH conserva sus IDs y estados previos; esta reconciliación no los cierra masivamente ni añade conteos de ejecución. `../../STATUS.md` registra F02 como bloqueante y F08 como NO-GO; `../../PROJECT_STATE.md` es la fuente del contrato funcional.
