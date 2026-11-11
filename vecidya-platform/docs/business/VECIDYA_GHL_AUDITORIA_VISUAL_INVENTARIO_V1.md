@@ -306,3 +306,68 @@ Esta sección separa lo que HighLevel documenta como capacidad general de lo que
 
 ### Changelog adicional E05.1
 - **2026-11-11:** ampliación con documentación oficial actual de Smart Lists, acciones masivas, campos por objeto, importación CSV, personalización del formulario y riesgo de zona horaria EST frente a Colombia. Sin cambios en la subcuenta, tarifas, web pública ni `main`.
+
+
+## E05 — Subcuenta Vecidya > Contactos > Listas inteligentes
+
+**Fecha:** 2026-11-11. **Evidencia:** captura de usuario \`image(20261111-185323).png\`. Auditoría observacional; no se añadieron, importaron, editaron o eliminaron contactos ni configuraciones.
+
+### Evidencia directa
+- Cabecera de Contactos con seis áreas visibles: **Contactos, Listas inteligentes (activa), Acciones en lote, Campos personalizados, Tareas, Empresas**.
+- Dentro de Listas inteligentes se observa pestaña **Todo** y acción **+ Añadir**, controles **Filtros**, **Ordenar**, selector de columnas (muestra 7/36), búsqueda de contactos, acción **Importar** y menú adicional.
+- Se observan **5 contactos de ejemplo** (prefijo «Example»), con columnas visibles para nombre, teléfono, correo, nombre de empresa, fecha de creación, última actividad y etiquetas. Los datos de ejemplo no deben confundirse con clientes reales.
+- Etiquetas visibles de ejemplo incluyen categorías como seguimiento y lead cálido; demuestran visualmente que la columna de tags existe, no que haya una taxonomía Vecidya configurada.
+- La captura demuestra interfaz disponible, **NO** que existan Smart Lists creadas, campos personalizados Vecidya, tareas operativas, empresas reales, automatizaciones ni permisos configurados.
+
+### Contraste oficial actualizado
+- HighLevel define las **Smart Lists de contactos** como vistas dinámicas basadas en filtros/condiciones que se actualizan con los datos y pueden usarse para segmentación y automatización. Fuente oficial: https://help.gohighlevel.com/support/solutions/articles/48001062094
+- Los **Custom Fields** pueden pertenecer a Contact u Opportunity y utilizarse en formularios, workflows, Smart Lists y pipelines. El tipo de objeto importa; un campo Contact no se convierte en Opportunity después. Fuente: https://help.gohighlevel.com/support/solutions/articles/48001161579-how-to-use-custom-values
+- **Companies** permite relaciones a nivel empresa, campos personalizados y vistas configurables; útil en clientes B2B, pero no obligatorio para todos los negocios locales. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000004430
+- La gestión de **Tasks** permite responsables, estados, vencimientos y filtrado; es base útil para seguimiento Barrio. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000005529
+- Snapshots no incluyen **contactos, citas, conversaciones ni datos vivos**; sí pueden incluir múltiples activos de configuración, incluidos Custom Fields. Las Smart Lists de Company/Custom Objects y Opportunity Smart Lists cuentan con soporte específico reciente; **no generalizar esta portabilidad a todas las Smart Lists de Contactos sin verificarla**. Fuentes: https://help.gohighlevel.com/support/solutions/articles/48000982512-creating-new-snapshots-in-highlevel y https://help.gohighlevel.com/support/solutions/articles/155000004922
+
+### Clasificación comercial preliminar
+| Capacidad | Barrio | Ciudad | Addon/Servicio | Estado E05 |
+|---|---|---|---|---|
+| Contactos y ficha CRM | **Incluido** | Heredado | No addon | Interfaz visible; configuración no probada |
+| Filtros / Smart Lists de contactos | **Incluido** cuando sean necesarias para el proceso principal | Heredado y ampliado por procesos | No addon estándar | Visible; no hay listas Vecidya verificadas |
+| Campos personalizados necesarios | **Incluido** | Heredado + campos de módulos Ciudad | Desarrollo especial solo si excede estándar | Menú visible |
+| Etiquetas / segmentación básica | **Incluido** | Heredado | No addon | Columna visible; taxonomía no configurada |
+| Acciones en lote | Herramienta operativa, no elemento que justifique subir de plan | Heredado | Consumos de canal aparte si una acción envía comunicaciones | Menú visible |
+| Tareas | **Incluidas** | Heredadas + coordinación multiproceso | No addon | Menú visible |
+| Empresas | Disponible cuando el caso B2B lo requiera | Disponible | No motivo por sí solo para Ciudad | Menú visible |
+| Importación estándar | Incluible como puesta en marcha básica si volumen/formato es razonable | Igual | Migración/limpieza compleja = servicio profesional | Botón visible; flujo no probado |
+
+### Decisiones de producto derivadas
+1. **No usar Smart Lists, campos o acciones en lote como diferenciador artificial Barrio→Ciudad.** Son herramientas básicas de CRM y deben estar disponibles cuando el proceso Barrio las necesite.
+2. La diferenciación Ciudad sigue siendo **multiproceso, traspasos, responsables y coordinación**; podrá reutilizar contactos/empresas/campos, pero no se cobra cada filtro o etiqueta.
+3. Para Colombia, los campos mínimos deben definirse por proceso y privacidad; no crear una plantilla con decenas de campos innecesarios.
+4. La importación de contactos no implica que una migración compleja esté incluida. Limpieza, deduplicación, normalización masiva, mapeos históricos o múltiples fuentes siguen como servicio profesional.
+5. Antes de construir snapshot Barrio/Ciudad, definir **diccionario de datos mínimo** y separar campos de Contact, Opportunity, Company y futuros objetos.
+
+### Inventario ampliado
+| ID | Capacidad | Evidencia | Uso Vecidya | Estado |
+|---|---|---|---|---|
+| GHL-SUB-017 | Smart Lists de Contactos | VISIBLE E05 | Segmentación dinámica Barrio/Ciudad | DISPONIBLE UI; NO CONFIGURADO |
+| GHL-SUB-018 | Filtros y orden | VISIBLE E05 | Priorización y vistas operativas | DISPONIBLE UI |
+| GHL-SUB-019 | Columnas configurables | VISIBLE 7/36 | Adaptar vistas por rol/proceso | DISPONIBLE UI |
+| GHL-SUB-020 | Importar contactos | VISIBLE E05 | Onboarding/migración básica | FLUJO NO PROBADO |
+| GHL-SUB-021 | Acciones en lote | VISIBLE menú | Operación masiva controlada | NO INSPECCIONADO |
+| GHL-SUB-022 | Campos personalizados | VISIBLE menú | Datos específicos de negocio | NO INSPECCIONADO |
+| GHL-SUB-023 | Tareas | VISIBLE menú | Seguimiento y responsables | NO INSPECCIONADO |
+| GHL-SUB-024 | Empresas | VISIBLE menú | B2B / agrupación de contactos | NO INSPECCIONADO |
+| GHL-SUB-025 | Etiquetas de contacto | VISIBLE columna | Segmentación/estado auxiliar | EJEMPLOS, NO TAXONOMÍA VECIDYA |
+| GHL-SUB-026 | Asociación contacto-empresa | EVIDENCIA por columnas + documentación oficial | B2B y contexto | NO PROBADA E2E |
+
+### Riesgos y pendientes
+- **Privacidad:** no usar capturas con contactos reales identificables en la auditoría.
+- **Duplicados/importación:** no evaluar calidad hasta inspeccionar reglas de deduplicación/importación.
+- **Datos:** definir campos mínimos por vertical; evitar dependencia de tags como sustituto de estados de oportunidad.
+- **Snapshots:** no asumir que datos vivos o todas las vistas/listas se replican; validar activo por activo.
+- **Permisos:** todavía no auditados. Un menú visible para administrador no prueba acceso de vendedor/empleado.
+
+### Próxima evidencia E06
+Subcuenta Vecidya → **Clientes Potenciales**. Enviar una captura de la pantalla inicial donde se vean el encabezado, vistas, pipelines/etapas u opciones disponibles. **No crear ni mover oportunidades.** Objetivo: confirmar si esta etiqueta corresponde al módulo de Opportunities/Pipelines y auditar el núcleo comercial de Barrio.
+
+### Changelog E05
+- **2026-11-11:** Contactos/Smart Lists auditados; capacidades base clasificadas como Barrio sin limitación artificial; inventario ampliado GHL-SUB-017 a GHL-SUB-026.
