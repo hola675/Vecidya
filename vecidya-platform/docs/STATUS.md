@@ -1,4 +1,8 @@
 
+# BUSINESS-SECTOR-PROFILE-PICKER-01 — categoría asistida del perfil (2026-11-11)
+
+El editor `/app/business-profile` usa el catálogo transversal como sugerencias buscables. Las sugerencias no asignan categoría automáticamente; una elección explícita cambia la etiqueta. Las categorías legacy desconocidas se conservan hasta que el usuario elija otra opción, y el selector se reinicia al cambiar de organización. No hay migración ni cambio de schema, no se infiere categoría o score y Diagnóstico V9 permanece separado. Sin deploy ni publicación.
+
 # FIX-APP-ADMIN-FORBIDDEN-UX — corrección local (2026-11-03)
 
 Las rutas protegidas que devuelven HTTP 403 ya presentan «Acceso restringido» y un retorno a Mi Vecidya; HTTP 401 ofrece acceso a iniciar sesión. La guarda y el status HTTP no cambian. Tras sincronizar PR #230 con `main@03d2ba4c`, typecheck, build y `pnpm run test:e2e:platform-admin-global` pasan sobre Worker/D1 local. El E2E aplica `0000–0037`, comprueba matriz de acceso, ciclo de organizaciones/licencias, capacitación, MiniWeb, invitaciones concurrentes y auditoría; verifica Job Object y terminación segura por identidad en Windows, cierre del puerto y eliminación de la D1 efímera. En CI de `fff3d99d`, la suite completa pasó **2096/2096** junto con typecheck, build y regresión Diagnostic/Aprende; Diagnostic V9 W5/F04 fue omitido por su condición de ruta. No requiere migración nueva, D1 remota ni deploy. Evidencia y límites en `TESTING.md`.

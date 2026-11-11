@@ -713,7 +713,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | `slug` | `0003` | `^[a-z0-9]+(-[a-z0-9]+)*$` ≤80; único global (el servidor rechaza colisiones con 400; no hay sufijo automático) | sí; sugerido en cliente desde el nombre visible (recortado a 80) solo mientras el perfil no se ha guardado con éxito y el usuario no lo ha editado; tras el primer guardado queda estable (`bc93a31` + SLUG-005B) | sí | URL | enlace | `url` | IMPL |
 | `short_description` | `0003` | ≤280; requerido para publicar | sí | sí | sí | sí | fallback | IMPL |
 | `description` | `0003` | ≤5000 | sí (input de una línea) | sí | sí | no | `description` | IMPL (editor débil) |
-| `category` | `0003` | ≤100 libre; requerido para publicar | sí | sí | sí | eyebrow | — | IMPL (sin LD; texto libre fragmenta filtros) |
+| `category` | `0003` | ≤100 libre; requerido para publicar | sí, selector asistido: busca entre 15 sectores y «Otra actividad»; una selección explícita guarda la etiqueta pública exacta; categoría legacy no reconocida se conserva | sí | sí | eyebrow | — | IMPL (sin LD; no asigna sector ni score automáticamente; no cambia el contrato textual) |
 | `city`, `country` | `0003` | ≤120 | sí | sí | sí | sí | `address` | IMPL |
 | `phone` | `0003` | ≤50 sin formato | sí | sí | `tel:` | no | `telephone` | IMPL |
 | `public_email` | `0003` | regex ≤254 | sí | sí | `mailto:` | no | `email` | IMPL |

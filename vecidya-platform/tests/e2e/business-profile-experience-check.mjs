@@ -190,7 +190,7 @@ await expectStatus(client.form("/app/business-profile", {
   slug: `negocio-b-${suffix}`,
   shortDescription: "Un negocio local de prueba.",
   description: "Descripción de prueba para validar la experiencia privada.",
-  category: "Servicios",
+  category: "Comercio y distribución",
   city: "La Habana",
   country: "Cuba",
   phone: "+5355551234",
@@ -235,6 +235,17 @@ try {
   })));
   const page = await context.newPage();
   await page.goto(new URL("/app/business-profile", baseUrl).toString(), { waitUntil: "networkidle" });
+  const categoryPicker = page.getByRole("group", { name: "Categoría principal del negocio o emprendimiento" });
+  assert(await categoryPicker.isVisible(), "El editor no muestra el selector de categoría compartido.");
+  const categoryValue = categoryPicker.locator('input[name="category"]');
+  assert(await categoryValue.inputValue() === "Servicios", "La categoría heredada no se conservó al abrir el perfil A.");
+  assert(await categoryPicker.getByText("Categoría anterior conservada", { exact: true }).isVisible(), "El editor no identifica la categoría heredada.");
+  const categorySearch = categoryPicker.getByRole("searchbox", { name: "¿A qué se dedica principalmente tu negocio o emprendimiento?" });
+  await categorySearch.fill("dentista");
+  const healthCategory = categoryPicker.getByRole("button", { name: "Salud y bienestar", exact: true });
+  assert(await healthCategory.isVisible(), "La búsqueda no sugiere la categoría correspondiente.");
+  await healthCategory.click();
+  assert(await categoryValue.inputValue() === "Salud y bienestar", "La selección explícita no actualizó el valor guardable.");
   const profileSteps = page.getByRole("navigation", { name: "Pasos para configurar tu negocio" });
   assert(await profileSteps.isVisible(), "La navegación por secciones del perfil no está visible.");
   assert(await page.getByRole("heading", { name: "Identidad", exact: true }).isVisible(), "El editor no inicia en Identidad.");
@@ -251,6 +262,7 @@ try {
   const preview = page.getByRole("region", { name: "Vista previa privada del minisitio" });
   assert(await preview.isVisible(), "La vista previa privada no se abrió.");
   assert(await preview.getByRole("heading", { name: `Negocio A ${suffix}`, exact: true }).isVisible(), "La vista previa no usa el nombre guardado del perfil activo.");
+  assert(await preview.getByText("Salud y bienestar", { exact: true }).isVisible(), "La vista previa no refleja la categoría seleccionada.");
   await page.getByLabel("Nombre visible").fill(`Negocio A editado ${suffix}`);
   assert(await preview.getByRole("heading", { name: `Negocio A editado ${suffix}`, exact: true }).isVisible(), "La vista previa no refleja los cambios sin guardar.");
   await page.locator('input[name="hours_1_opens"]').fill("09:00");
@@ -258,6 +270,10 @@ try {
   await page.locator('input[name="hours_1_closes"]').fill("17:00");
   assert(await preview.getByText("Lun · 09:00–17:00").isVisible(), "La vista previa no refleja los horarios comerciales sin guardar.");
   assert(await preview.locator("a").count() === 0, "La vista previa privada permite activar enlaces externos.");
+  await page.getByLabel("Negocio activo").selectOption(organizationB);
+  await page.waitForFunction((organizationId) => document.querySelector("#organization-switcher")?.value === organizationId, organizationB);
+  assert(await categoryValue.inputValue() === "Comercio y distribución", "El selector conservó el valor del perfil A al cambiar al perfil B.");
+  assert(await categoryPicker.getByText("Categoría anterior conservada", { exact: true }).count() === 0, "El estado de legado del perfil A se filtró al perfil B.");
   await assertResponsive(page, "Editor y vista previa privada");
   await captureIfRequested(page, "editor");
   await page.goto(new URL("/app", baseUrl).toString(), { waitUntil: "networkidle" });
