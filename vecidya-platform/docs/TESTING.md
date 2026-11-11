@@ -200,9 +200,9 @@ La primera CI automática del commit `a916b32` terminó con 3 fallos unitarios: 
 
 `pnpm run typecheck` y `pnpm run build`: **PASS**. El E2E focal amplía `business-profile-experience-check.mjs` para recorrer Identidad, Redes y Horarios, comprobar que solo el paso activo expone sus campos y confirmar el guardado independiente de horarios. No pudo certificarse: con D1 local `0000–0029` y Worker local, el test falla al registrar el propietario (HTTP 500) porque faltan los secretos de Auth de desarrollo. La primera corrida sin migraciones falló durante la limpieza del fixture (`organization_license` inexistente); se aplicó la cadena solo a D1 local. Sin acceso remoto ni deploy.
 
-## BUSINESS-SECTOR-PROFILE-PICKER-01 — selector de categoría en perfil (2026-11-11; CI pendiente)
+## BUSINESS-SECTOR-PROFILE-PICKER-01 — selector de categoría en perfil (2026-11-11; PR #246)
 
-`business-sector-picker.test.ts`: **2/2 PASS**; `git diff --check`: **PASS**. `business-profile-experience-check.mjs` ahora cubre la conservación de una categoría legacy, la selección explícita y su reflejo en la vista previa, y el reinicio del selector al cambiar de organización; el E2E no se ejecutó localmente. `react-router typegen` no llegó a validar tipos: falló al abrir su archivo temporal de Vite con `EPERM` bajo `node_modules` enlazado al worktree, por lo que typecheck y build locales quedaron sin resultado. Pendiente CI del PR para typecheck, build y regresión. Sin migración, D1 remota ni deploy.
+`business-sector-picker.test.ts`: **2/2 PASS**; `node --check tests/e2e/business-profile-experience-check.mjs` y `git diff --check`: **PASS**. El E2E cubre conservación de categoría legacy, selección explícita y reflejo en la vista previa, y reinicio al cambiar de organización; no se ejecutó localmente. `react-router typegen` no llegó a validar tipos: falló al abrir su archivo temporal de Vite con `EPERM` bajo `node_modules` enlazado al worktree, por lo que typecheck y build locales quedaron sin resultado. CI de PR #246, ejecución 43098916152 (run 931): typecheck, build, regresión Diagnostic/Aprende y regresión unitaria **PASS**; el workflow V9 W5/F04 se omitió por su condición de ruta. Sin migración, D1 remota ni deploy.
 
 ## Release 0.8.4 — evidencia de publicación (2026-10-27)
 
