@@ -58,5 +58,51 @@
 ### Próxima evidencia E02
 **Agency View > Configuración**, mostrar navegación/menú del área de configuración, sin abrir formas de pago ni mostrar credenciales. Objetivo: localizar datos de plan, facturación y permisos, y luego definir una inspección puntual.
 
+
+## E02 — Agencia > Configuración > Mi perfil
+
+**Fecha:** 2026-11-11. **Evidencia E02:** segunda captura recibida por conversación. Contiene datos personales visibles (nombre, email, teléfono): **no reproducirlos ni trasladarlos al inventario**. Se observa la pestaña **General** (activa), pestaña **Seguridad**, y sección Mi perfil. No se abrió Facturación ni ninguna información de pago.
+
+### Evidencia directa en captura E02
+- Menú Configuración a nivel agencia con: Mi perfil, Empresa, Usuarios, Facturación, Configuración de flujo de trabajo (etiqueta truncada), Integración telefónica, Servicios de correo electrónico (truncado), Correos electrónicos del sistema (truncado), Anuncios, Flujo de trabajo - Funciones (truncado), Flujo de trabajo - Modelos (truncado), Compra de dominio, Integraciones Privado, Afiliados, Enlaces de menú personalizados (truncado), Stripe, Claves de API, Conformidad, Laboratorios, Registros de auditoría y Uso de contenido multimedia (truncado). **20 entradas de configuración observables**; algunas denominaciones requieren apertura para identificar el título completo.
+- Dentro de Mi perfil aparecen pestañas **General** y **Seguridad**. **Ninguna de estas entradas demuestra SaaS Mode, una integración de pagos activa ni uso de API habilitado**.
+- Se ven botones/controles de edición de perfil, pero no fueron pulsados ni modificados.
+
+### Declaración del titular (no acreditada visualmente)
+El titular informa que su plan vigente es **GHL Starter USD 97/mes** y que **mantendrá Starter hasta que el aumento de clientes e ingresos justifique contratar Unlimited USD 297/mes**. Esto es **PLAN DECLARADO POR USUARIO**, no verificación de Facturación. No pedir nuevamente el dato mientras no se necesite comprobar un detalle contractual.
+
+### Contraste con documentación oficial
+- Starter: **3 subcuentas en total** de la agencia; Unlimited: **subcuentas ilimitadas** y rebilling de teléfono/email sin markup; Founder/Agency Pro USD 497: SaaS Mode y rebilling con markup, según elegibilidad. https://www.gohighlevel.com/pricing
+- E01 mostraba dos subcuentas; bajo Starter el máximo documentado es tres, por lo que **podría existir una tercera plaza**, pero quedan por verificar asignaciones, excepciones y capacidad efectiva antes de crear otra.
+- **API estándar:** la guía oficial actual describe OAuth2 y Private Integration Tokens disponibles también en Starter, mientras ciertos endpoints como creación programática de subcuentas o habilitación SaaS siguen reservados a plan superior. No afirmar «API imposible en Starter». https://help.gohighlevel.com/support/solutions/articles/48001060529
+
+### Inventario ampliado
+| ID | Elemento | Evidencia | Estado | Próxima comprobación |
+|---|---|---|---|---|
+| GHL-AG-013 | Agencia > Configuración > Mi perfil | VISIBLE E02 | Sin probar | No prioritaria; evitar datos personales |
+| GHL-AG-014 | Pestaña Seguridad del perfil | VISIBLE E02 | Sin abrir | Auditoría posterior de controles sin credenciales |
+| GHL-AG-015 | Empresa | VISIBLE E02 | Sin abrir | Identidad/marca de agencia |
+| GHL-AG-016 | Usuarios | VISIBLE E02 | Sin abrir | Roles agencia vs subcuentas |
+| GHL-AG-017 | Facturación | VISIBLE E02 | Sin abrir | Ver cargos y suscripción sin mostrar métodos de pago |
+| GHL-AG-018 | Configuraciones globales de workflows | VISIBLE E02 (etiquetas truncadas) | Sin abrir | Identificar nombre completo, restricciones y costes |
+| GHL-AG-019 | Integración telefónica/email | VISIBLE E02 | Sin abrir | Canal, proveedor, consumos y permisos |
+| GHL-AG-020 | Anuncios | VISIBLE E02 | Sin abrir | Gestor y cargos |
+| GHL-AG-021 | Compra de dominio | VISIBLE E02 | Sin abrir | Costes/domaines |
+| GHL-AG-022 | Integraciones Privado | VISIBLE E02 | Sin abrir | PIT, OAuth, accesos y scopes; no compartir claves |
+| GHL-AG-023 | Stripe | VISIBLE E02 | Sin abrir | Solo presencia del menú, sin certificar conexión |
+| GHL-AG-024 | Claves de API | VISIBLE E02 | Sin abrir | Elegibilidad sin exponer credenciales |
+| GHL-AG-025 | Conformidad | VISIBLE E02 | Sin abrir | Regulación y datos |
+| GHL-AG-026 | Laboratorios | VISIBLE E02 | Sin abrir | Funciones experimentales, no prometer a clientes |
+| GHL-AG-027 | Registros de auditoría | VISIBLE E02 | Sin abrir | Acciones y control |
+| GHL-AG-028 | Personalización de menús | VISIBLE E02 | Sin abrir | Comprobar alcances técnicos |
+| GHL-AG-029 | Facturación externa actual Vecidya | DECISIÓN APROBADA, no visible en E02 | Por implementar | Proveedor externo a seleccionar e integrar |
+
+### Implicaciones para Vecidya
+- No comprar ni recomendar upgrade inmediato: **Starter sigue siendo el plan operativo elegido**.
+- No mezclar tres plazas GHL con las tres organizaciones permitidas por licencia Vecidya; CRM solo para una organización autorizada por licencia Barrio/Ciudad.
+- Diseñar Biblioteca Ciudad de seis módulos bajo capacidades verificadas de cada subcuenta y snapshots reproducibles.
+- Mantener addon con precio fijo + consumos reales separados y facturación externa; reexaminar rebilling al contratar Unlimited, sin prometer SaaS Configurator.
+- Próxima pantalla: **Agency View > Reventa**, para auditar catálogo de reventa y condiciones de addons, **sin activar nada, sin cambios de margen y sin datos de pago**.
+
 ## Changelog
-- **2026-11-11 V1:** inicio de inventario acumulativo, auditoría de captura E01 y selección de E02.
+- **2026-11-11 E02:** confirmación declarativa Starter USD 97 y objetivo futuro Unlimited USD 297; 20 controles de configuración visibles, revisión API estándar y siguiente captura Reventa.
