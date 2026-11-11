@@ -186,3 +186,50 @@ Desde **Agencia > Subcuentas > Vecidya > Cambiar a subcuenta**, enviar captura d
 
 ## Changelog
 - **2026-11-11 E03:** revisión 11 capturas Reventa Subscription/Usage/Marketplace, detección de precios incompatibles, Starter confirmado visualmente y segmentación prioritaria Colombia.
+
+
+## E04 — Subcuenta Vecidya > Tablero (captura del menú lateral)
+
+**Fecha:** 2026-11-11. **Evidencia:** captura de usuario `image(20261111-183115).png`, con subcuenta «Vecidya» y ubicación mostrada «Bello, Medellín». **Estado:** solo observación; contenido central en blanco, posible carga pendiente, por lo que NO permite certificar funcionamiento del tablero. El usuario solicita expresamente continuar en rama independiente de `main`.
+
+### Rama de trabajo aislada
+- Rama de auditoría: `audit/ghl-catalogo-e04-2026-11-11`, creada a partir de `main` antes de este registro.
+- Nuevos registros de auditoría se escribirán en la rama, no en `main`. **No autoriza** merge, despliegue, modificaciones GHL ni cambios de precios.
+
+### Navegación observable (subcuenta, NO vista de agencia)
+| ID | Menú observado | Clasificación potencial para Vecidya | Estado de evidencia |
+|---|---|---|---|
+| GHL-SUB-001 | Tablero | Informes comerciales/operativos | VISIBLE E04, contenido en blanco; NO PROBADO |
+| GHL-SUB-002 | Conversaciones | Bandeja, canales conectados y contexto | VISIBLE, configuración NO PROBADA |
+| GHL-SUB-003 | Calendarios | Citas/reservas Barrio | VISIBLE, NO PROBADO |
+| GHL-SUB-004 | Contactos | Contactos, notas, segmentos, tareas Barrio | VISIBLE, NO PROBADO |
+| GHL-SUB-005 | Clientes Potenciales | Leads/prospectos: función exacta por inspeccionar; NO asumir que sea «Oportunidades» | VISIBLE, NO PROBADO |
+| GHL-SUB-006 | Pagos | Herramientas transaccionales de subcuenta | VISIBLE, NO PROBADO; no confundir con cobro externo Vecidya |
+| GHL-SUB-007 | Marketing | Captación y campañas | VISIBLE, NO PROBADO |
+| GHL-SUB-008 | Automatización | Workflows estándar o multiproceso; premium separado | VISIBLE, NO PROBADO |
+| GHL-SUB-009 | Sitios | Formularios, webs/embudos según herramientas disponibles | VISIBLE, NO PROBADO; no sustituir MiniWeb Vecidya automáticamente |
+| GHL-SUB-010 | Suscripciones | Producto/cobro; nombre funcional por inspeccionar | VISIBLE, NO PROBADO |
+| GHL-SUB-011 | Contenido multimedia U… | Menú truncado; identificar posteriormente | VISIBLE, NO PROBADO |
+| GHL-SUB-012 | Reputación | Reseñas y seguimiento | VISIBLE, NO PROBADO |
+| GHL-SUB-013 | Informes | Reportes | VISIBLE, NO PROBADO |
+| GHL-SUB-014 | Aplicaciones del mercado | Integraciones y addons de terceros | VISIBLE, NO PROBADO |
+| GHL-SUB-015 | Aplicación móvil | Acceso móvil | VISIBLE, NO PROBADO |
+| GHL-SUB-016 | Configuración | Roles, campos, identidad, integraciones, cuentas y permisos | VISIBLE, NO PROBADO |
+
+### Diferencia funcional Barrio/Ciudad que investigaremos
+- Barrio V1 aprobado: contactos, proceso comercial principal, tareas, agenda si aplica, formularios, pipelines/oportunidades, automatizaciones internas y capacitación; NO agregar límites artificiales.
+- Ciudad V1 aprobado: Barrio + biblioteca de seis módulos estándar (ventas, incorporación, atención, reactivación, renovaciones, coordinación), activables según necesidad sin recargo por módulo.
+- El menú solo demuestra acceso visual: **no se ha comprobado** existencia/configuración de pipelines, automatizaciones, permisos ni funciones de los módulos Ciudad.
+- GHL documenta oficialmente **Contacts > Smart Lists**, filtros dinámicos, campos y etiquetas; documentación: https://help.gohighlevel.com/support/solutions/articles/48001062094 . Se debe verificar en esta subcuenta y no afirmar que se heredan mediante snapshot: la guía indica que Smart Lists no pueden trasladarse a otra subcuenta por snapshot.
+- GHL documenta oportunidades y pipelines en Sub-account > Opportunities > Pipelines, pero en la captura la etiqueta visible es «Clientes Potenciales». Verificar visualmente la equivalencia o diferencia antes de clasificar el módulo. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000005062-getting-started-setup-pipelines-and-opportunities .
+
+### Riesgos/pendientes
+- Sin evidencia de datos o configuración funcional. Pantalla central blanca no es prueba de fallo ni de ausencia de datos.
+- El mercado principal señalado es Colombia: canales/consumos específicos requieren verificación por país.
+- Confirmar visualmente cada sección antes de configurar; no mostrar información personal identificable en capturas de contactos.
+
+### Siguiente captura E05
+Subcuenta Vecidya → **Contactos**. Solicitar **una** captura donde se vean pestañas, encabezado y menús de Contactos (Smart Lists, acciones, campos, filtros si están visibles), sin abrir fichas reales ni revelar información personal. Objetivo: auditar inventario base Barrio y evaluar su posible reutilización en Ciudad.
+
+### Changelog E04
+- **2026-11-11:** menú de subcuenta (16 accesos), distinción de navegación vs capacidades funcionales, rama aislada y siguiente sección Contactos.
