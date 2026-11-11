@@ -104,5 +104,85 @@ El titular informa que su plan vigente es **GHL Starter USD 97/mes** y que **man
 - Mantener addon con precio fijo + consumos reales separados y facturación externa; reexaminar rebilling al contratar Unlimited, sin prometer SaaS Configurator.
 - Próxima pantalla: **Agency View > Reventa**, para auditar catálogo de reventa y condiciones de addons, **sin activar nada, sin cambios de margen y sin datos de pago**.
 
+
+## E03 — Agencia > Reventa (Subscription / Usage / Marketplace)
+
+**Fecha:** 2026-11-11. **Evidencia E03:** 11 capturas proporcionadas por el usuario, segmentos de tres pestañas de Reventa. Auditoría observacional **sin cambios, sin guardar precios y sin activar servicios**. Mercado comercial predominante indicado por usuario: **Colombia**. Esta preferencia NO determina automáticamente la moneda de cobro ni autoriza transformar tarifas USD en COP sin tasa/términos aprobados.
+
+### 1. Plan y capacidades declaradas por la propia interfaz (VISIBLE E03)
+- Banda superior: «Estás en el plan $97 — upgrade to $297 for static markup (1.05x), or $497 to unlock fully configurable custom markups». Es **confirmación visual de Starter $97/mes**, antes solo declarado por titular.
+- GHL ofrece pestañas **Subscription**, **Usage**, **Marketplace** en Reventa. La presencia de campos editables, interruptores y «Guardar cambios» **no confirma** la posibilidad de cobrar, ni que exista un método de pago válido, ni que los cambios se hayan guardado.
+- El plan Unlimited $297 sigue siendo **objetivo futuro, no contratado**. SaaS Mode y custom rebilling avanzado requieren comprobación de plan superior, especialmente $497.
+- «Habilitado 2 / Deshabilitado 0» aparece repetidamente bajo «Gestión de Subcuentas» para varias fichas. Describe estado de gestión/reventa en la UI, **NO significa dos clientes pagando**, ni asegura que producto esté activado funcionalmente. Usar «Administrar» solo para inspección autorizada en una captura futura, sin cambios.
+
+### 2. Pestaña Subscription — categorías listadas (VISIBLE E03)
+Ad Manager, AI Employee, Branded Client Portal Mobile App, Listings, Prospecting, SEO (By Search Atlas), WhatsApp, WordPress y Workflow Pro. **Nueve familias** en menú. Ad Manager presenta coste agencia $0, precio cliente $0, beneficio $0, pero **no hay base para añadirle una cuota fija artificial**. Workflow Pro aparece como producto separado de las automatizaciones CRM estándar incluidas en Barrio/Ciudad.
+
+### 3. Precios efectivos visibles en formulario GHL vs catálogo comercial Vecidya
+| Producto | Coste mostrado GHL (USD) | «El precio de su cliente» visible (USD) | Vecidya aprobado (USD) | Nota/estado |
+|---|---:|---:|---:|---|
+| Ad Manager | 0 | 0 | Sin cuota fija adicional | Gasto ads y operación gestionada separados |
+| AI Employee Growth | 50/mes | 75/mes | **62.50/mes** | Discrepancia; cuota Growth según uso incluido vigente |
+| AI Employee Unlimited | 97/mes | 127/mes | **121.25/mes** | Discrepancia; no prometer uso ilimitado absoluto |
+| Branded Client Portal Mobile App | 49/mes | 79/mes | **61.25/mes** | Discrepancia |
+| Listings mensual | 30/mes | 49/mes | **37.50/mes** | Discrepancia |
+| Listings 6 meses | 150/6 meses | 200/6 meses | Sin aprobación específica | **NO asumir** regla 25% del precio mensual en plazo semestral |
+| Listings anual | 300/año | 450/año | Sin aprobación específica | **NO asumir** precio anual de Vecidya |
+| Prospecting | 29/mes | 45/mes | **36.25/mes** | Discrepancia |
+| SEO Search Atlas | 79/mes | 97/mes | **98.75/mes** | Discrepancia inversa |
+| WhatsApp | 10/mes | 29.99/mes | **12.50/mes** | **Discrepancia crítica** frente a catálogo aprobado |
+| WordPress Standard por sitio | 10/mes | Campo con cadena no traducida / sin precio válido; «beneficio NaN» | **12.50/mes** | **Anomalía visible de UI**, no guardar, comprobar método real |
+
+Los campos capturados no prueban que esas ofertas sean comprables ni que las subcuentas estén efectivamente abonándolas. La cuenta presenta distintos valores base de margen aparentemente precargados. **No alterar precios ni guardar durante la auditoría**. Si los clientes tienen acceso al muro de compra de GHL, existe riesgo potencial de ver importes incoherentes con la web Vecidya; verificar acceso antes de abrir contratación. El cobro por proveedor externo sigue aprobado y **aún pendiente de integración**.
+
+### 4. Pestaña Usage (VISIBLE E03)
+Menú: **Domain Purchase; Email System; Email Verification; Phone System; Workflow - External AI Models; Workflow - Premium Features**. Texto del panel indica que los recargos configurados podrían aplicarse cuando clientes agreguen tarjeta de pago. Los campos aparecen difuminados/inactivos/no legibles en varias capturas; **no se puede inferir porcentaje aplicado ni cobros activos**. Banner advierte sobre disponibilidad de markup por plan. Política Vecidya aprobada: consumos medidos se repercuten al coste real verificable, sin el 25% de recargo del addon; cobro externo, conciliación de registros por subcuenta y alertas.
+
+### 5. Pestaña Marketplace (VISIBLE E03)
+Encabezado «Agency App Reselling For All Sub-Accounts»; listado indica **1.544 apps** disponibles en catálogo de reventa, búsqueda y filtros, casillas y control de recargo masivo inicialmente **0%**. Se muestran, por ejemplo, «All The Apps» y «myCRMSIM» como anuncios del marketplace; **no se han inspeccionado, contratado, recomendado o certificado**. La presencia de una app no implica compatibilidad Colombia, garantía de precio, seguridad o disponibilidad en Starter. No aplicar márgenes masivos.
+
+### 6. Colombia — prioridad comercial y técnica (DECISIÓN DE ENFOQUE)
+- Clientes principalmente **colombianos**: evaluar casos de uso y facturación de país de destino; no usar tarifas de números, SMS, A2P o minutos de Estados Unidos para cotizar Colombia.
+- WhatsApp: GHL cobra **USD 10/mes por subcuenta + mensajes/llamadas variables** según producto y mercado. El precio fijo Vecidya sigue **USD 12.50/mes + consumo real**; las tablas de WhatsApp distinguen Marketing, Utility, Authentication y Service. Desde **2026-10-01** servicio y utility dentro de ventana pueden facturarse; los primeros 1.000 mensajes de servicio/mes/número siguen gratuitos. Consultar guía actualizada al cotizar; no prometer todo gratis ni ilimitado.
+- Verificar números y operaciones locales, consentimiento y normativa colombiana aplicable, moneda de venta USD/COP, tipo de cambio, impuestos/facturación local y plataforma externa concreta antes de cobrar. **No se ha aprobado moneda COP, tasa de cambio o proveedor de pagos.**
+- No inferir que todos los negocios colombianos requieren telefonía/SMS, portal móvil, WordPress o SEO de pago; recomendar por necesidad y viabilidad.
+
+### 7. Contraste oficial (PUBLICADO; no certifica cuenta)
+- GHL Pricing: https://www.gohighlevel.com/pricing (Starter $97/3 subcuentas; Unlimited $297/subcuentas ilimitadas, rebilling teléfono/email sin markup; superior $497 SaaS Mode y markup).
+- Guide: https://help.gohighlevel.com/support/solutions/articles/155000001156-highlevel-pricing-guide (suscripciones / uso, precios y wallet).
+- WhatsApp guía modificada 2026-11-04: https://help.gohighlevel.com/support/solutions/articles/155000001428-whatsapp-pricing-billing-and-rebilling-guide (vigencia de cargos desde 2026-10-01, cambios por mercado).
+- AI Employee: https://help.gohighlevel.com/support/solutions/articles/155000003906-ai-employee-overview (reventa vs rebilling, uso e inclusiones).
+- SaaS direct deployment: https://help.gohighlevel.com/support/solutions/articles/155000007221-how-to-package-add-ons-as-part-of-saas-plans (coste de addon absorbido por agencia dentro del paquete SaaS).
+- Marketplace y pagos SaaS V2: https://help.gohighlevel.com/support/solutions/articles/155000005083/ (reventa/cartera si el producto cumple condiciones de SaaS V2).
+
+### 8. Inventario ampliado E03
+| ID | Capacidad/área | Evidencia | Clasificación comercial | Validación pendiente |
+|---|---|---|---|---|
+| GHL-AG-030 | Reventa / Subscription | VISIBLE E03 | Addons de cuota fija | Compatibilidad venta externa vs pago directo |
+| GHL-AG-031 | Reventa / Usage | VISIBLE E03 | Consumos variables | Lectura de tarifas, estado y factura real |
+| GHL-AG-032 | Reventa / Marketplace | VISIBLE E03 | Integraciones de terceros | Riesgo, elegibilidad, condiciones |
+| GHL-AG-033 | WhatsApp mensual | VISIBLE 10→29.99 | Aprobado Vecidya 12.50 + consumo | Estado de comercialización y muro pago |
+| GHL-AG-034 | AI Employee Growth/Unlimited | VISIBLE 50→75 / 97→127 | Aprobados 62.50 / 121.25 | Incluidos, restricciones y cobro |
+| GHL-AG-035 | Listings mensual/6m/anual | VISIBLE 30→49 / 150→200 / 300→450 | Mensual aprobado 37.50; otros periodos sin aprobar | Periodos y precio final |
+| GHL-AG-036 | Prospecting | VISIBLE 29→45 | Aprobado 36.25 | Activación y alcance |
+| GHL-AG-037 | SEO Search Atlas | VISIBLE 79→97 | Aprobado 98.75 | Alcance, soporte, reselling |
+| GHL-AG-038 | Portal móvil marca | VISIBLE 49→79 | Aprobado 61.25 | Disponibilidad vs app Vecidya |
+| GHL-AG-039 | WordPress Standard | VISIBLE coste 10, cliente inválido NaN | Aprobado 12.50 por sitio | Error UI / modalidad |
+| GHL-AG-040 | Workflow Pro | VISIBLE en menú | Producto externo/consumo | No confundir con workflows incluidos en CRM |
+| GHL-AG-041 | Ad Manager | VISIBLE 0→0 | Herramienta sin cuota fija; gestión servicio | Publicidad real aparte |
+| GHL-AG-042 | Marketplace 1.544 apps | VISIBLE en catálogo | Solo extensiones verificadas | No instalar por aparecer listada |
+| GHL-AG-043 | Banners de elegibilidad plan | VISIBLE Starter 97 y 297/497 upgrades | Administración / restricciones | Mecanismo de cobro real |
+| GHL-AG-044 | Mercado principal Colombia | DECLARADO por titular | Criterio geográfico de ofertas | Moneda, tasas, facturación y servicios compatibles |
+
+### Hallazgos / clasificación por riesgo
+- **ALTO — Desalineación de precios públicos vs muro GHL:** WhatsApp, IA, Listings, Prospecting, Portal; confirmar visibilidad a clientes antes de abrir checkout directo. Sin pruebas de cargo efectivo.
+- **MEDIO — Estado «Habilitado 2»:** no tratar como 2 clientes pagos; comprobar elegibilidad por subcuenta posteriormente.
+- **MEDIO — WordPress «NaN»:** error de visualización o estado incompleto; no guardar campos afectados.
+- **MEDIO — Cobros de consumo por país:** para Colombia se precisan tarifas y reglas específicas, no extrapolar EE. UU.
+- **BAJO — Anuncios Marketplace y Ad Manager:** no recomendar addons hasta validación individual.
+
+### Próxima captura E04
+Desde **Agencia > Subcuentas > Vecidya > Cambiar a subcuenta**, enviar captura de la **barra lateral y pantalla inicial**. Objetivo: inventariar navegación real CRM (contactos, oportunidades, calendarios, conversaciones, automatizaciones y ajustes) y comenzar diferenciación funcional Barrio/Ciudad. **No abrir datos privados, no crear pruebas ni modificar configuraciones.**
+
 ## Changelog
-- **2026-11-11 E02:** confirmación declarativa Starter USD 97 y objetivo futuro Unlimited USD 297; 20 controles de configuración visibles, revisión API estándar y siguiente captura Reventa.
+- **2026-11-11 E03:** revisión 11 capturas Reventa Subscription/Usage/Marketplace, detección de precios incompatibles, Starter confirmado visualmente y segmentación prioritaria Colombia.
