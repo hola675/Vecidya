@@ -233,3 +233,55 @@ Subcuenta Vecidya → **Contactos**. Solicitar **una** captura donde se vean pes
 
 ### Changelog E04
 - **2026-11-11:** menú de subcuenta (16 accesos), distinción de navegación vs capacidades funcionales, rama aislada y siguiente sección Contactos.
+
+
+## E05 — Subcuenta Vecidya > Contactos > Listas inteligentes
+
+**Fecha:** 2026-11-11. **Evidencia:** captura `image(20261111-185323).png` compartida en el chat. **Rama:** `audit/ghl-catalogo-e04-2026-11-11`. Estado: observación, sin crear ni editar contactos, listas o automatizaciones. No registrar en este inventario nombres, teléfonos, correos ni información de identificación de los contactos visibles.
+
+### Hechos constatados en E05
+- Sección **Contactos**, pestaña **Listas inteligentes** activa; otras pestañas visibles: **Acciones en lote**, **Campos personalizados**, **Tareas** y **Empresas**.
+- Subpestaña/lista predeterminada **Todo** y acción **+ Añadir** (no pulsada).
+- Herramientas visibles: **Filtros**, **Ordenar**, **Buscar contactos**, **Importar**, controles de selección de filas, menú de tres puntos, botón iconográfico de añadir y selector de columnas.
+- Indicador **5 Contactos**: cinco registros marcados visualmente como «(Example)», no deben tratarse como clientes reales ni importaciones del cliente.
+- Indicador **7/36 columnas**; encabezados visibles: Nombre de Contacto, Teléfono, Correo electrónico, Nombre de la empresa, Creado (EST), Última actividad (EST), Etiquetas.
+- Se observan etiquetas en datos de ejemplo, como `follow-up` y `warm lead`; **no demuestra** que las etiquetas estén normalizadas o asociadas a reglas de automatización.
+- Creación de los registros de ejemplo mostrada el **27 oct 2026** según huso indicado (EST). No inferir que esa sea la fecha de alta de la cuenta ni que represente actividad real.
+- No se ha abierto un registro individual, panel de filtros, ajustes de campos, acciones en lote, tareas ni empresas. El indicador 36 columnas no prueba 36 campos personalizados ni sus tipos.
+
+### Contraste oficial independiente de la captura
+- Documentación GHL **How to Create & Manage Smart Lists** (modificada mayo 2026): las listas inteligentes son filtros dinámicos actualizados según datos, con columnas personalizables; pueden crearse y editarse en Contactos. https://help.gohighlevel.com/support/solutions/articles/48001062094
+- Documentación GHL **Advanced Filters in Smart Lists** (mayo 2026): filtros por campos, estados, oportunidades, fechas, etiquetas y combinaciones de condiciones AND/OR. Eso es **capacidad del producto documentada**, no certificación de que todos los operadores estén habilitados o configurados aquí. https://help.gohighlevel.com/support/solutions/articles/155000007530
+- Documentación GHL **How to Filter and View Associated Records in Smart Lists** (octubre 2026): filtros y columnas de registros asociados cuando las asociaciones existen; no demuestra que la cuenta tenga objetos personalizados ya creados. https://help.gohighlevel.com/support/solutions/articles/155000009452-how-to-filter-and-view-associated-records-in-smart-lists
+
+### Inventario de capacidades observado
+| ID | Función / menú | Evidencia E05 | Clasificación comercial | Comprobación pendiente |
+|---|---|---|---|---|
+| GHL-CRM-001 | Contactos / Smart Lists | Pestaña y vista Todo VISIBLE | Base incluida Barrio y heredada Ciudad | Abrir Filtros y comprobar operadores |
+| GHL-CRM-002 | Filtros y ordenación | Controles VISIBLES | Barrio | Categorías y criterios realmente disponibles |
+| GHL-CRM-003 | Personalización de columnas | 7/36 VISIBLE | Barrio | Qué campos y columnas se pueden mostrar |
+| GHL-CRM-004 | Etiquetas | Etiquetas en 5 registros de ejemplo | Barrio | Administración/normalización; no inferir workflows |
+| GHL-CRM-005 | Importación estándar | Botón VISIBLE | Barrio (importación estándar); migración compleja servicio profesional | Tipos/formato, mapeo, duplicados, permisos |
+| GHL-CRM-006 | Acciones en lote | Pestaña VISIBLE | Barrio, con seguridad y consentimiento | Riesgos, costes de envíos, controles por rol |
+| GHL-CRM-007 | Campos personalizados | Pestaña VISIBLE | Barrio; Ciudad reutiliza los campos necesarios por módulo | Tipos, objetos, límites reales |
+| GHL-CRM-008 | Tareas | Pestaña VISIBLE | Barrio; Ciudad coordina tareas multiproceso | Funciones reales y permisos |
+| GHL-CRM-009 | Empresas | Pestaña VISIBLE y columna Empresa | Barrio cuando aplique; Ciudad la reutiliza | Asociaciones/roles de empresas |
+| GHL-CRM-010 | Búsqueda de contactos | Campo VISIBLE | Barrio | Comportamiento, filtros y autorizaciones |
+| GHL-CRM-011 | Contactos de ejemplo | Conteo 5 VISIBLE | Datos de demostración, no clientes | No usar como prueba E2E ni métricas comerciales |
+| GHL-CRM-012 | Nueva Smart List / +Añadir | Control VISIBLE | Barrio, si se confirma su funcionamiento | Creación, guardado, visibilidad y permisos sin cambios ahora |
+
+### Decisión de frontera comercial
+- **Barrio** incluye contactos, etiquetas, campos, listas inteligentes, filtros, empresas cuando se requiera, tareas y proceso comercial principal. **No reservar segmentación básica ni filtros exclusivamente para Ciudad**. La herramienta disponible no implica datos importados, automatizaciones configuradas, canales externos conectados ni accesos por rol probados.
+- **Ciudad** hereda todo Barrio; se diferencia por la biblioteca aprobada de seis módulos estándar activables según necesidad (ventas, incorporación, atención, reactivación, renovaciones, coordinación), usando reglas, etapas y traspasos entre procesos. La segmentación avanzada de GHL **no debe cobrarse dos veces** ni convertirse por sí sola en motivo de upgrade.
+- No asumir que la pestaña Tareas equivale a un módulo de Project Management separado, ni que la pestaña Empresas por sí sola prueba objetos/asociaciones avanzadas.
+
+### Restricciones/pendientes
+- Ningún workflow, permiso, pipeline ni reporte fue probado.
+- No enviar campañas/SMS/emails ni realizar importaciones durante auditoría; los consumos se separan de la licencia Vecidya.
+- Política comercial y mercado principal Colombia sin cambios; la fuente operativa sigue siendo Starter.
+
+### Próxima captura E06
+**Subcuenta Vecidya > Contactos > Listas inteligentes > Filtros.** Abrir el panel sin aplicar ni guardar criterios y enviar una captura con categorías/opciones visibles. Objetivo: clasificar criterios reales de segmentación, capacidad de combinación, dependencias, y potencial de Barrio y Ciudad.
+
+### Changelog E05
+- **2026-11-11:** evidencia de cinco registros de ejemplo, Smart Lists y herramientas visibles; inventario GHL-CRM-001–012; próxima pantalla Filtros.
