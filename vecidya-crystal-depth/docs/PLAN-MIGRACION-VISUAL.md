@@ -1,22 +1,22 @@
 # Plan de cambios visuales — sin modificación prematura de producción
 
-Versión 0.2 · Estado: planificación, sin ejecución de migración.
+Versión 0.4 · Estado: biblioteca visual local implementada; integración de la plataforma no iniciada ni autorizada.
 
-## Fase 1: inventario y referencia
+## Fase 1: inventario y referencia — completada para esta iteración
 
-Auditar los componentes reales de `vecidya-platform/app/components/ui.tsx`, estilos `premium-foundation.css`, `home-premium.css`, recursos en `app/assets/public-assets.ts` y el registro de MiniWeb2. Identificar activos oficiales de Vico. No sustituir iconos existentes sin inventario.
+Se contrastaron componentes y activos oficiales existentes, incluido el registro app/assets/public-assets.ts. Se verificaron Vico, el símbolo de marca, escenas y siete iconos oficiales; se crearon ocho propuestas Crystal como PNG y WhatsApp se exportó a PNG desde su SVG oficial. No se sustituyeron ni editaron archivos de plataforma.
 
-## Fase 2: aprobación visual
+## Fase 2: aprobación visual — revisión interna completada; aprobación integral pendiente
 
-Generar y revisar muestras de material (6 familias), componentes clave, estados y escenas de página. Evaluar con seis pasadas: identidad, composición, materia, iluminación, accesibilidad y viabilidad técnica. Registrar defectos y decisiones.
+Se implementó la biblioteca y se revisaron seis pasadas de identidad, composición, material, luz, accesibilidad y viabilidad técnica. El usuario aprobó la primera escena generada como referencia de estilo. La escena clara y los iconos son propuestas por aprobar; la inspección interactiva de escritorio/móvil sigue pendiente porque el navegador bloqueó localhost en esta sesión.
 
-## Fase 3: biblioteca
+## Fase 3: biblioteca — implementada localmente
 
-Catalogar iconos SVG, fondos y escenas optimizados, componentes React/TypeScript, tokens y ejemplos. Cada recurso requiere nombre, propósito, variantes, estados, responsive, licencia/origen y estado de aprobación.
+biblioteca.html, styles/crystal-depth.css y styles/themes.css contienen superficies, temas claro/oscuro, botones, pestañas, formularios, tabla, estados, diálogo, búsqueda y reglas responsive. Hay dos fondos ambientales WebP y nueve PNG bajo assets/. Marca, Vico, escenas y siete iconos siguen enlazados desde el catálogo original. Esta biblioteca usa HTML/CSS/JavaScript nativo y todavía no es un paquete de componentes de la plataforma.
 
-## Fase 4: integración controlada
+## Fase 4: integración controlada — pendiente, fuera del alcance actual
 
-Aplicar cambios opt-in por sección. Evitar selectores globales. Mantener contratos y comportamiento de botones, formularios, diagnóstico, rutas y MiniWeb2. Validar build, typecheck, pruebas de regresión, accesibilidad, contraste y rendimiento.
+La integración requiere una solicitud y aprobación visual separadas. Si se autoriza, aplicar cambios opt-in por sección, conservar contratos y flujos de botones, formularios, diagnóstico, rutas y MiniWeb2, y ejecutar las validaciones de plataforma correspondientes.
 
 ## Matriz inicial
 
@@ -25,7 +25,7 @@ Aplicar cambios opt-in por sección. Evitar selectores globales. Mantener contra
 | Inicio público | escena narrativa y hero | alta | pendiente de aprobación |
 | Vecindario | composición territorial y tarjetas | alta | pendiente de aprobación |
 | MiniWeb2 editor | materiales configurables | alta | requiere auditoría del registro |
-| Panel interno | tarjetas y datos legibles | media | pendiente |
+| Panel interno | tarjetas y datos | media | pendiente |
 | Diagnóstico | claridad sin alterar flujo | crítica | protegido |
 
 ## Condición de avance
@@ -34,4 +34,6 @@ No migrar visualmente ninguna pantalla hasta contar con diseño aprobado, refere
 
 ## Changelog
 
-- v0.2: secuencia de aprobación y migración, matriz inicial y protección de flujos.
+- v0.4: tema claro/oscuro, fondo claro propuesto, nueve iconos PNG y revisión de evidencia; integración y aprobación visual pendientes.
+- v0.3: biblioteca local implementada; la integración sigue pendiente.
+- v0.2: secuencia de aprobación y matriz inicial, sin migración.

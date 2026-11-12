@@ -1,20 +1,555 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071c43"><title>Vecidya Crystal Depth · Biblioteca visual</title>
-<style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#edf7ff;background:#04132d;--ink:#f3f9ff;--muted:#a9c7e5;--line:#a7dbff4d;--blue:#0786f9;--orange:#fb8300;--radius:22px;--glow:#43cfff;--surface:#0d3164;--glass:rgba(31,115,211,.23)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 90% 0%,#0b5aab80,transparent 35%),#04132d}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ffc36d;outline-offset:3px}.shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:27px 18px;background:linear-gradient(165deg,#082653f5,#05172ff8);border-right:1px solid #a9e8ff24;overflow:auto}.logo{font-size:25px;font-weight:850;letter-spacing:-1px;display:flex;gap:10px;align-items:center}.logo-mark{display:grid;place-items:center;width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#08d1f4,#0755bd 65%,#fb8300);box-shadow:inset 0 2px 2px #ffffff90,0 12px 24px #00a8ff55}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#7ce3ff;font-weight:800}.nav{display:grid;gap:5px;margin-top:32px}.nav a{padding:11px 13px;border-radius:12px;color:#bbd4ee;font-size:13px}.nav a:hover,.nav a.active{background:#2483dc35;color:#fff;border:1px solid #9ee7ff44}.nav a.active{box-shadow:inset 3px 0 #ff9b2b}.sidebar-note{font-size:12px;line-height:1.6;color:#9dbad6;margin-top:32px;padding:14px;border:1px solid #8ed9ff30;border-radius:15px}.main{min-width:0}.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:18px clamp(20px,4vw,60px);border-bottom:1px solid #ffffff1b;background:#061b3a8c;backdrop-filter:blur(18px)}.topbar .pill{font-size:12px;color:#b6f0ff;padding:8px 13px;border:1px solid #7bdaff55;border-radius:40px}.page{max-width:1440px;margin:auto;padding:30px clamp(20px,4vw,60px) 100px}.section{margin:0 0 76px;scroll-margin-top:30px}.section-head{margin:0 0 24px}.section-head h2{font-size:clamp(25px,3vw,36px);margin:6px 0 8px;letter-spacing:-.04em}.section-head p{max-width:780px;color:var(--muted);margin:0;line-height:1.65}.hero{position:relative;isolation:isolate;overflow:hidden;min-height:440px;border:1px solid #92d9ff59;border-radius:34px;background:radial-gradient(circle at 78% 36%,#139fff66,transparent 34%),radial-gradient(circle at 20% 95%,#ff912844,transparent 36%),linear-gradient(125deg,#061932,#0c397a 60%,#051b3b);box-shadow:inset 0 2px 1px #ffffff47,0 40px 90px #0007;display:grid;grid-template-columns:1.1fr .9fr;align-items:center;padding:clamp(24px,5vw,70px);gap:20px}.hero:before{content:"";position:absolute;inset:-20%;background:repeating-radial-gradient(ellipse at 75% 50%,transparent 0 46px,#83dfff13 47px 48px);transform:rotate(-15deg);pointer-events:none}.hero-copy,.scene{position:relative;z-index:1}.hero h1{font-size:clamp(38px,5vw,70px);line-height:1.02;letter-spacing:-.06em;margin:12px 0 20px}.hero h1 em{font-style:normal;background:linear-gradient(95deg,#78e7ff,#ffffff 50%,#ffab40);background-clip:text;color:transparent}.hero p{max-width:540px;color:#c8e6ff;line-height:1.7}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.btn{border:1px solid #b3eaff88;border-radius:13px;padding:12px 18px;color:white;background:linear-gradient(145deg,#2277c7aa,#0c3163bb);box-shadow:inset 0 2px 1px #ffffff70,0 12px 24px #001b3770;transition:transform .2s,filter .2s}.btn:hover{transform:translateY(-2px);filter:brightness(1.15)}.btn.primary{background:linear-gradient(135deg,#ffb345,#fb8300 48%,#dc5900);border-color:#ffe4a8;box-shadow:inset 0 2px 2px #fff8,0 12px 26px #fb830066;color:#111f36;font-weight:800}.btn.ghost{background:#ffffff0d}.btn.danger{background:linear-gradient(135deg,#fa7777,#b82743)}.btn:disabled{opacity:.48;cursor:not-allowed;transform:none}.scene{min-height:300px;perspective:900px;display:grid;place-items:center}.platform{position:absolute;width:83%;height:43%;bottom:4%;border-radius:50%;background:radial-gradient(ellipse,#139bff77,#06204d 65%);border:2px solid #73dfff7a;box-shadow:0 0 35px #24b8ff80,inset 0 0 36px #4de2ff5c;transform:rotateX(66deg)}.shop{position:relative;width:195px;height:174px;transform:rotateY(-14deg) rotateX(4deg);filter:drop-shadow(0 25px 22px #0009)}.shop .roof{height:58px;border-radius:18px 18px 8px 8px;background:repeating-linear-gradient(90deg,#fff3db 0 29px,#fb8300 29px 58px);transform:skewX(-7deg);border:4px solid #ffde9b;box-shadow:0 10px 15px #0006,inset 0 5px #fff9}.shop .body{height:116px;margin:0 12px;border-radius:6px 6px 12px 12px;background:linear-gradient(125deg,#16529a,#092451);border:3px solid #6cd6ff;display:flex;justify-content:space-around;align-items:end;padding:15px}.shop .window{height:75px;width:58px;border:5px solid #8ce9ff;border-radius:9px;background:linear-gradient(160deg,#baf9ff,#1873bb 55%,#ffab47);box-shadow:inset 0 0 20px #fff8,0 0 15px #08b9ff}.shop .door{width:37px;height:89px;border:4px solid #a5e7ff;background:#041d45;border-radius:8px 8px 0 0}.orbit{position:absolute;border-radius:50%;border:2px solid #2cd9ff7a;box-shadow:0 0 20px #0bf4ff77;transform:rotateX(70deg)}.orbit.one{width:300px;height:220px}.orbit.two{width:380px;height:280px}.pin{position:absolute;top:4%;right:12%;font-size:55px;filter:drop-shadow(0 0 15px #ff9d2d)}.glass{position:relative;isolation:isolate;overflow:hidden;border:1px solid #c3ecff75;border-radius:var(--radius);background:linear-gradient(145deg,#ffffff35 0%,var(--glass) 35%,#0c2e6070 100%);box-shadow:inset 0 2px 1px #ffffff9c,inset 0 -3px 12px #06172a80,0 22px 38px #00112777,0 0 28px #35c9ff22;backdrop-filter:blur(19px) saturate(155%);-webkit-backdrop-filter:blur(19px) saturate(155%)}.glass:before{content:"";position:absolute;inset:0 0 auto;height:38%;border-radius:inherit;background:linear-gradient(#ffffff28,transparent);pointer-events:none}.glass>*{position:relative}.panel{padding:23px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.four{grid-template-columns:repeat(4,minmax(0,1fr))}.card-title{font-weight:750;margin:12px 0 5px}.small{color:var(--muted);font-size:13px;line-height:1.55}.material{min-height:185px;display:flex;flex-direction:column;justify-content:space-between;padding:20px;--tint:#197de6;background:linear-gradient(140deg,#ffffff77,var(--tint) 38%,#082452d9 100%);box-shadow:inset 0 3px 3px #ffffffbc,inset 0 -7px 18px #001b3d88,0 22px 32px #0008,0 0 30px color-mix(in srgb,var(--tint),transparent 65%)}.material .symbol{font-size:37px;text-shadow:0 5px 10px #0006}.material strong{font-size:18px}.material small{color:#f5faff}.material.white{color:#092347}.material.white small{color:#16446d}.icon-tile{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#b2f5ff,#0e85eb 55%,#072a73);border:1px solid #d7faffaa;box-shadow:inset 0 2px 2px #fff9,0 12px 24px #00152b88;font-size:27px}.stat{font-size:36px;font-weight:850;letter-spacing:-.05em;margin:12px 0}.positive{color:#73ffbd}.negative{color:#ff9d9d}.field{display:grid;gap:7px;margin:0 0 16px}.field label{font-size:13px;color:#d5e9ff}.input{width:100%;min-height:44px;background:#06234b9c;color:#f5faff;border:1px solid #99dfff80;border-radius:11px;padding:11px 13px}.input::placeholder{color:#98b7d7}.check{display:flex;gap:10px;align-items:center;margin:12px 0}.check input{accent-color:#ff9b2b}.progress{height:13px;background:#051d42;border-radius:99px;overflow:hidden;border:1px solid #ffffff3d}.progress span{display:block;height:100%;width:72%;background:linear-gradient(90deg,#0668ed,#5ae9ff);box-shadow:0 0 15px #54d9ff}.badge{display:inline-flex;align-items:center;gap:6px;border:1px solid #a8eaff66;background:#2b8ddb32;border-radius:99px;padding:6px 11px;font-size:12px}.badge.success{background:#15b77a30;border-color:#5af4b566}.badge.warn{background:#ffad2935;border-color:#ffc77677}.badge.error{background:#ff525536;border-color:#ff888877}.alert{padding:15px 18px;border-radius:14px;border:1px solid #a4e6ff6b;background:#1485e638;margin:10px 0}.alert.success{border-color:#5af4b588;background:#10b87b2b}.alert.warn{border-color:#ffca6c8a;background:#ff9a2d2e}.alert.error{border-color:#ff9b9b99;background:#e33c4b2e}.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}.icon-sample{text-align:center;padding:16px 5px}.icon-sample .icon-tile{margin:auto auto 10px}.icon-sample span{font-size:11px;color:#bcd7ef}.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;font-size:14px}.table th{text-align:left;color:#a7cbe8;font-size:12px;padding:15px;border-bottom:1px solid #b2eaff55}.table td{padding:15px;border-bottom:1px solid #b2eaff25}.mini-scene{position:relative;min-height:235px;padding:24px;overflow:hidden;border-radius:22px;border:1px solid #a1e9ff77;background:radial-gradient(circle at 90% 15%,#35d8ff65,transparent 45%),linear-gradient(145deg,#06204b,#0b4d92 75%,#061e40);display:flex;flex-direction:column;justify-content:end}.mini-scene:before{content:"";position:absolute;width:200px;height:200px;right:-25px;top:-65px;border-radius:50%;border:22px solid #7feeff33;box-shadow:0 0 35px #3dcaff55}.mini-scene>*{position:relative}.mini-scene h3{margin:0;font-size:22px}.mini-scene p{font-size:13px;color:#cbe8ff}.section-note{border-left:3px solid #fb8300;padding:12px 17px;background:#0c3260;color:#cce7ff;border-radius:0 12px 12px 0;margin-top:22px}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}.tab{border:1px solid #a3e5ff55;border-radius:11px;padding:10px 15px;background:#0a2d60;color:#cce6ff}.tab[aria-selected=true]{background:#1876d1;color:white;box-shadow:inset 0 2px #ffffff88}.tab-panel[hidden]{display:none}.modal-backdrop{position:fixed;inset:0;z-index:20;background:#010a1bd9;display:grid;place-items:center;padding:20px}.modal-backdrop[hidden]{display:none}.modal{max-width:500px;width:100%;padding:28px}.toast{position:fixed;bottom:25px;right:25px;z-index:30;max-width:340px;padding:16px 20px;border-radius:15px;background:#0b437a;border:1px solid #a6e9ff;box-shadow:0 15px 45px #0009}.toast[hidden]{display:none}.swatches{display:flex;gap:10px;flex-wrap:wrap}.swatch{width:44px;height:44px;border-radius:13px;border:2px solid #ffffff99;box-shadow:inset 0 3px 4px #fff8,0 8px 18px #0007}.footer{border-top:1px solid #ffffff28;padding-top:30px;color:#9dbfdd;font-size:13px}@media(max-width:1100px){.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto;padding:18px}.nav{display:flex;flex-wrap:wrap;margin-top:15px}.sidebar-note{display:none}.grid.four{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.hero{grid-template-columns:1fr}.scene{min-height:270px}.grid,.grid.two{grid-template-columns:1fr}.icon-grid{grid-template-columns:repeat(3,1fr)}.topbar{flex-wrap:wrap}.page{padding-top:20px}.hero h1{font-size:42px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}@supports not (backdrop-filter:blur(1px)){.glass{background:#17477eea}}
-</style></head>
-<body><div class="shell"><aside class="sidebar"><a class="logo" href="#inicio"><span class="logo-mark">V</span> Vecidya</a><div class="eyebrow" style="margin-top:8px">Crystal Depth / Biblioteca</div><nav class="nav" aria-label="Secciones"><a class="active" href="#inicio">◈ Visión general</a><a href="#materiales">◉ Materiales</a><a href="#componentes">▣ Componentes</a><a href="#formularios">☷ Formularios</a><a href="#datos">▥ Datos y tablas</a><a href="#estados">◈ Estados</a><a href="#iconos">✦ Iconografía</a><a href="#escenas">▧ Composiciones</a></nav><div class="sidebar-note">Sitio de referencia visual independiente. Diseños en revisión; no modifica la plataforma existente ni las plantillas de clientes.</div></aside><div class="main"><header class="topbar"><span class="eyebrow">Vecidya / Design System</span><span class="pill">● Vista de componentes · v0.3</span></header><main class="page">
-<section class="section" id="inicio"><div class="hero"><div class="hero-copy"><span class="eyebrow">Materiales · Luz · Profundidad</span><h1>Diseñado con <em>dimensión.</em></h1><p>Una biblioteca visual navegable de componentes reales, superficies cristalinas y escenas integradas. No solo controles de configuración: aquí los elementos se ven, se comparan y se prueban.</p><div class="actions"><a class="btn primary" href="#materiales">Explorar materiales</a><a class="btn ghost" href="#componentes">Ver componentes</a></div></div><div class="scene" aria-label="Escena ilustrada de negocio local con plataforma y anillos luminosos"><div class="orbit one"></div><div class="orbit two"></div><div class="platform"></div><div class="shop"><div class="roof"></div><div class="body"><div class="window"></div><div class="door"></div></div></div><div class="pin" aria-hidden="true">📍</div></div></div><div class="section-note">Referencia de diseño en evolución. La escena es una ilustración CSS provisional, no un asset oficial ni una sustitución de Vico.</div></section>
-<section class="section" id="materiales"><div class="section-head"><span class="eyebrow">01 / Materia</span><h2>Una geometría, seis acabados</h2><p>El material mantiene el mismo volumen, bisel, reflejo y elevación. El color expresa identidad o estado; no cambia las reglas del cristal.</p></div><div class="grid"><article class="glass material" style="--tint:#197de6"><span class="symbol">◈</span><div><strong>Azul océano</strong><br><small>Marca · navegación</small></div></article><article class="glass material white" style="--tint:#e5f6ff"><span class="symbol">◇</span><div><strong>Blanco hielo</strong><br><small>Lectura · superficies</small></div></article><article class="glass material" style="--tint:#fb8300"><span class="symbol">✦</span><div><strong>Naranja solar</strong><br><small>Acción · énfasis</small></div></article><article class="glass material" style="--tint:#ffc247"><span class="symbol">☀</span><div><strong>Ámbar</strong><br><small>Atención · detalles</small></div></article><article class="glass material" style="--tint:#18bb83"><span class="symbol">✓</span><div><strong>Verde</strong><br><small>Éxito · validación</small></div></article><article class="glass material" style="--tint:#f04a5c"><span class="symbol">!</span><div><strong>Rojo</strong><br><small>Error · riesgo</small></div></article></div></section>
-<section class="section" id="componentes"><div class="section-head"><span class="eyebrow">02 / Componentes</span><h2>Botones, tarjetas y superficies</h2><p>Estados funcionales y jerarquía de interacción, con reflejos contenidos para no competir con el contenido.</p></div><div class="grid two"><div class="glass panel"><h3>Botones</h3><div class="actions"><button class="btn primary" id="toast-button">Acción principal</button><button class="btn">Secundario</button><button class="btn ghost">Fantasma</button><button class="btn danger" id="modal-button">Abrir modal</button><button class="btn" disabled>Deshabilitado</button></div></div><div class="glass panel"><h3>Tarjeta informativa</h3><div class="icon-tile">▤</div><div class="card-title">Presencia digital activa</div><p class="small">Tarjeta con estructura, volumen y lectura clara. Contenido por encima del material translúcido.</p><span class="badge success">✓ Verificado</span></div><div class="glass panel"><h3>Panel de navegación</h3><div class="tabs" role="tablist" aria-label="Ejemplo de pestañas"><button class="tab" role="tab" aria-selected="true" aria-controls="tab-a" id="tab-button-a" data-tab="a">Resumen</button><button class="tab" role="tab" aria-selected="false" aria-controls="tab-b" id="tab-button-b" data-tab="b">Actividad</button><button class="tab" role="tab" aria-selected="false" aria-controls="tab-c" id="tab-button-c" data-tab="c">Detalles</button></div><div id="tab-a" class="tab-panel" role="tabpanel" aria-labelledby="tab-button-a"><p>Resumen del negocio con indicadores principales.</p></div><div id="tab-b" class="tab-panel" role="tabpanel" aria-labelledby="tab-button-b" hidden><p>Actividad reciente y eventos del perfil.</p></div><div id="tab-c" class="tab-panel" role="tabpanel" aria-labelledby="tab-button-c" hidden><p>Detalles de configuración y publicación.</p></div></div><div class="glass panel"><h3>Progreso y estados</h3><p class="small">Publicación del perfil · 72 %</p><div class="progress" role="progressbar" aria-label="Progreso de publicación" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"><span></span></div><div class="actions"><span class="badge">En preparación</span><span class="badge success">Publicado</span><span class="badge warn">Revisión</span></div></div></div></section>
-<section class="section" id="formularios"><div class="section-head"><span class="eyebrow">03 / Entrada de datos</span><h2>Formularios y controles</h2><p>Menos brillo, mayor legibilidad. La profundidad acompaña al formulario sin obstaculizar la tarea.</p></div><div class="grid two"><form class="glass panel" id="demo-form"><h3>Datos del negocio</h3><div class="field"><label for="business-name">Nombre comercial</label><input class="input" id="business-name" placeholder="Ej. Café del Vecindario" required></div><div class="field"><label for="category">Categoría</label><select class="input" id="category" required><option value="">Seleccionar categoría</option><option>Gastronomía</option><option>Servicios</option><option>Comercio</option></select></div><div class="field"><label for="description">Descripción</label><textarea class="input" id="description" rows="3" placeholder="Cuéntanos sobre el negocio"></textarea></div><label class="check"><input type="checkbox" required> Confirmo que los datos son de demostración</label><button class="btn primary" type="submit">Validar formulario</button></form><div class="glass panel"><h3>Controles</h3><label class="check"><input type="checkbox" checked> Mostrar información pública</label><label class="check"><input type="checkbox"> Activar notificaciones</label><label class="check"><input type="radio" name="view" checked> Vista de tarjetas</label><label class="check"><input type="radio" name="view"> Vista de lista</label><div class="field"><label for="intensity">Intensidad visual</label><input type="range" id="intensity" min="0" max="100" value="65"></div><p class="small">Estos controles funcionan como muestras de interacción, sin persistir datos ni modificar servicios.</p></div></div></section>
-<section class="section" id="datos"><div class="section-head"><span class="eyebrow">04 / Información</span><h2>Métricas y tablas</h2><p>Superficies con jerarquía clara para el panel interno, sin sacrificar densidad ni contraste.</p></div><div class="grid"><article class="glass panel"><div class="icon-tile">▥</div><p class="small">Visitas</p><div class="stat">2.480</div><span class="positive">↗ +18,5 %</span></article><article class="glass panel"><div class="icon-tile">♧</div><p class="small">Contactos</p><div class="stat">146</div><span class="positive">↗ +12 %</span></article><article class="glass panel"><div class="icon-tile">◎</div><p class="small">Conversión</p><div class="stat">6,2 %</div><span class="positive">↗ +2,1 pp</span></article></div><div class="glass panel" style="margin-top:18px"><h3>Directorio de ejemplo</h3><div class="table-wrap"><table class="table"><thead><tr><th>Negocio</th><th>Categoría</th><th>Estado</th><th>Actividad</th></tr></thead><tbody><tr><td>Café Central</td><td>Gastronomía</td><td><span class="badge success">Activo</span></td><td>Hoy</td></tr><tr><td>Taller Norte</td><td>Servicios</td><td><span class="badge warn">Pendiente</span></td><td>Ayer</td></tr><tr><td>Mercado Local</td><td>Comercio</td><td><span class="badge">Borrador</span></td><td>Esta semana</td></tr></tbody></table></div></div></section>
-<section class="section" id="estados"><div class="section-head"><span class="eyebrow">05 / Comunicación</span><h2>Alertas y notificaciones</h2><p>Color, iconografía y texto comunican el estado de manera redundante y accesible.</p></div><div class="grid two"><div class="glass panel"><div class="alert success">✓ <strong>Operación realizada.</strong> Los cambios se guardaron correctamente.</div><div class="alert">ⓘ <strong>Información.</strong> Tu perfil está en revisión.</div></div><div class="glass panel"><div class="alert warn">⚠ <strong>Atención.</strong> Completa los datos pendientes.</div><div class="alert error">✕ <strong>Error.</strong> No fue posible completar la operación.</div></div></div></section>
-<section class="section" id="iconos"><div class="section-head"><span class="eyebrow">06 / Iconografía</span><h2>Lenguaje de iconos</h2><p>Muestras de escala y soporte tridimensional. La biblioteca SVG oficial todavía requiere desarrollo y aprobación individual.</p></div><div class="icon-grid"><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">⌂</div><span>Inicio</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">▣</div><span>Negocios</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">⌖</div><span>Ubicación</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">▤</div><span>Documentos</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">▥</div><span>Analítica</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">✉</div><span>Mensajes</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">⚙</div><span>Ajustes</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">◈</div><span>Servicios</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">✦</div><span>Destacados</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">✓</div><span>Éxito</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">!</div><span>Alertas</span></div><div class="glass icon-sample"><div class="icon-tile" aria-hidden="true">♧</div><span>Comunidad</span></div></div></section>
-<section class="section" id="escenas"><div class="section-head"><span class="eyebrow">07 / Composición</span><h2>Escenas completas por producto</h2><p>Cada contexto requiere su propia narrativa, estructura de planos y densidad de efectos.</p></div><div class="grid two"><article class="mini-scene"><span class="eyebrow">Sitio público</span><h3>Una comunidad conectada</h3><p>Arquitectura, negocios locales, iluminación ambiental y llamada a la acción.</p></article><article class="mini-scene" style="background:radial-gradient(circle at 85% 15%,#ff9c3f77,transparent 45%),linear-gradient(135deg,#06204b,#155a9d)"><span class="eyebrow">Vecindario</span><h3>Explora tu entorno</h3><p>Territorio, conexiones y perfiles con profundidad ambiental.</p></article><article class="mini-scene" style="background:radial-gradient(circle at 85% 15%,#42f3c66b,transparent 45%),linear-gradient(135deg,#061a39,#114b80)"><span class="eyebrow">MiniWeb2</span><h3>Construye tu presencia</h3><p>Editor funcional, materiales adaptables a cada identidad de cliente.</p></article><article class="mini-scene" style="background:radial-gradient(circle at 85% 15%,#72b7ff55,transparent 45%),linear-gradient(135deg,#06132e,#0c2f60)"><span class="eyebrow">Panel interno</span><h3>Datos con claridad</h3><p>Información estructurada, densidad controlada y efectos discretos.</p></article></div><div class="section-note">Estas escenas son referencias HTML/CSS funcionales, no diseños finales aprobados. Faltan assets ilustrados oficiales, revisión responsive completa y validación de contraste.</div></section><footer class="footer">Vecidya Crystal Depth · Sitio de biblioteca visual v0.3 · Rama de diseño independiente · Sin cambios en producción</footer>
-</main></div></div>
-<div id="modal" class="modal-backdrop" hidden><div class="glass modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><h2 id="modal-title">Modal de ejemplo</h2><p>Un diálogo funcional con acabado cristalino y jerarquía de lectura.</p><div class="actions"><button class="btn primary" id="modal-confirm">Confirmar</button><button class="btn ghost" id="modal-close">Cancelar</button></div></div></div><div class="toast" id="toast" role="status" hidden>Interacción de ejemplo completada.</div>
-<script>
-(()=>{const modal=document.getElementById('modal'),open=document.getElementById('modal-button'),close=document.getElementById('modal-close'),confirm=document.getElementById('modal-confirm'),toast=document.getElementById('toast');let focusBefore;const showToast=msg=>{toast.textContent=msg;toast.hidden=false;clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.hidden=true,3500)};const openModal=()=>{focusBefore=document.activeElement;modal.hidden=false;close.focus()};const closeModal=()=>{modal.hidden=true;focusBefore?.focus()};open.addEventListener('click',openModal);close.addEventListener('click',closeModal);confirm.addEventListener('click',()=>{closeModal();showToast('Acción de ejemplo confirmada.')});modal.addEventListener('click',e=>{if(e.target===modal)closeModal()});document.addEventListener('keydown',e=>{if(modal.hidden)return;if(e.key==='Escape')closeModal();if(e.key==='Tab'){const controls=[...modal.querySelectorAll('button:not([disabled])')];if(e.shiftKey&&document.activeElement===controls[0]){e.preventDefault();controls.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===controls.at(-1)){e.preventDefault();controls[0].focus()}}});document.getElementById('toast-button').addEventListener('click',()=>showToast('Acción principal de demostración.'));document.getElementById('demo-form').addEventListener('submit',e=>{e.preventDefault();showToast('Formulario validado localmente; no se enviaron datos.')});document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(t=>t.setAttribute('aria-selected',String(t===btn)));document.querySelectorAll('.tab-panel').forEach(p=>p.hidden=p.id!=='tab-'+btn.dataset.tab)}));const links=[...document.querySelectorAll('.nav a')];links.forEach(a=>a.addEventListener('click',()=>{links.forEach(x=>x.classList.remove('active'));a.classList.add('active')}))})();
-</script></body></html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f0f8ff">
+  <meta name="description" content="Biblioteca visual Vecidya Crystal Depth: superficies cristalinas, componentes reales, activos visuales y escenas con profundidad.">
+  <title>Vecidya Crystal Depth · Biblioteca visual</title>
+  <link rel="stylesheet" href="styles/crystal-depth.css">
+  <link rel="stylesheet" href="styles/themes.css">
+</head>
+<body class="vx-crystal-theme">
+  <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
+  <div class="ambient-lights" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand-lockup" href="#inicio" aria-label="Vecidya Crystal Depth, inicio">
+        <span class="brand-mark"><img src="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" alt=""></span>
+        <span class="brand-name">Vecidya<span>Crystal Depth</span></span>
+      </a>
+
+      <p class="sidebar-caption">Biblioteca visual · revisión local</p>
+
+      <nav class="section-nav" aria-label="Navegación de la biblioteca">
+        <a class="nav-link is-active" href="#inicio" aria-current="location"><span>01</span> Experiencia</a>
+        <a class="nav-link" href="#superficies"><span>02</span> Superficies</a>
+        <a class="nav-link" href="#componentes"><span>03</span> Componentes</a>
+        <a class="nav-link" href="#formularios"><span>04</span> Formularios</a>
+        <a class="nav-link" href="#datos"><span>05</span> Datos y estados</a>
+        <a class="nav-link" href="#activos"><span>06</span> Activos e iconos</a>
+        <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong>Exploración independiente</strong>
+          <p>Los patrones de esta biblioteca no se aplican todavía a producción ni a MiniWeb2.</p>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumb"><span>Vecidya</span><span aria-hidden="true">/</span><strong>Crystal Depth</strong></div>
+        <div class="topbar-meta">
+          <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo oscuro"><span class="theme-track" aria-hidden="true"><span></span></span><span id="theme-label">Claro</span></button>
+          <span class="review-pill"><span class="review-dot" aria-hidden="true"></span>Biblioteca interactiva · 0.5</span>
+          <a class="topbar-link" href="#activos">Ver activos e iconos <span aria-hidden="true">↗</span></a>
+        </div>
+      </header>
+
+      <main id="contenido" class="page">
+        <section class="hero section-anchor" id="inicio" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Material · luz · profundidad</p>
+            <h1 id="hero-title">Una interfaz con <span>dimensión.</span></h1>
+            <p class="hero-lead">Un mismo material cristalino, seis tonos y componentes funcionales construidos por separado. La luz acompaña la lectura; el volumen se siente en cada superficie.</p>
+            <div class="hero-actions">
+              <a class="crystal-button crystal-button--primary" href="#superficies">Explorar superficies <span aria-hidden="true">↓</span></a>
+              <a class="crystal-button crystal-button--quiet" href="#componentes">Ver componentes</a>
+            </div>
+            <div class="hero-proof" aria-label="Características de la biblioteca">
+              <span><i aria-hidden="true">01</i> Un material compartido</span>
+              <span><i aria-hidden="true">02</i> Seis variantes cromáticas</span>
+              <span><i aria-hidden="true">03</i> Activos Vecidya verificados</span>
+            </div>
+          </div>
+
+          <div class="hero-visual" role="group" aria-label="Vico en una escena ambiental de Vecidya">
+            <div class="hero-orbit hero-orbit--one" aria-hidden="true"></div>
+            <div class="hero-orbit hero-orbit--two" aria-hidden="true"></div>
+            <div class="hero-stage-glow" aria-hidden="true"></div>
+            <img class="hero-vico" src="../vecidya-platform/public/assets/selected/illustrations/vico-home.webp" alt="Vico, la mascota zorro de Vecidya">
+            <div class="hero-float hero-float--top crystal-surface">
+              <span class="mini-mark"><img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-storefront-verified.webp" alt=""></span>
+              <span><strong>Identidad oficial</strong><small>Vico · activo verificado</small></span>
+            </div>
+            <div class="hero-float hero-float--bottom crystal-surface">
+              <span class="float-index">06</span>
+              <span><strong>Variantes de material</strong><small>Una geometría · seis tonos</small></span>
+            </div>
+          </div>
+
+          <div class="hero-bottomline">
+            <span>Profundidad por capas</span>
+            <div class="depth-steps" aria-label="Capas: ambiente, contexto, estructura, materia, contenido y foco">
+              <i>L0</i><i>L1</i><i>L2</i><i>L3</i><i>L4</i><i>L5</i>
+            </div>
+            <span>Contenido siempre al frente</span>
+          </div>
+        </section>
+
+        <section class="section-intro" aria-label="Principios del sistema">
+          <p>La forma conserva el volumen.</p>
+          <p>El color expresa la intención.</p>
+          <p>El contenido mantiene el control.</p>
+        </section>
+
+        <section class="content-section section-anchor" id="superficies" aria-labelledby="surfaces-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>01 / Sistema de superficies</p>
+              <h2 id="surfaces-title">Seis tonos, la misma materia.</h2>
+              <p>Espesor, bisel, transparencia, refracción y sombra siguen una sola regla. Cada acabado mantiene esa geometría y cambia solo la luz y el tono.</p>
+            </div>
+            <span class="section-count">06 <small>acabados</small></span>
+          </div>
+
+          <div class="surface-grid">
+            <article class="surface-card crystal-surface" data-tone="blue">
+              <div class="surface-card-top"><span class="tone-label">01 · Información</span><span class="surface-status">Azul</span></div>
+              <div class="material-specimen material-specimen--blue" aria-hidden="true"><span></span></div>
+              <div><h3>Azul profundo</h3><p>Navegación y superficies de información.</p></div>
+              <div class="surface-card-foot"><span>Bisel frío</span><span>Transparencia media</span></div>
+            </article>
+            <article class="surface-card crystal-surface" data-tone="ice">
+              <div class="surface-card-top"><span class="tone-label">02 · Lectura</span><span class="surface-status">Hielo</span></div>
+              <div class="material-specimen material-specimen--ice" aria-hidden="true"><span></span></div>
+              <div><h3>Blanco hielo</h3><p>Lectura, formularios y superficies claras.</p></div>
+              <div class="surface-card-foot"><span>Bisel claro</span><span>Texto oscuro</span></div>
+            </article>
+            <article class="surface-card crystal-surface" data-tone="orange">
+              <div class="surface-card-top"><span class="tone-label">03 · Acción</span><span class="surface-status">Naranja</span></div>
+              <div class="material-specimen material-specimen--orange" aria-hidden="true"><span></span></div>
+              <div><h3>Naranja solar</h3><p>Acciones principales y acentos de Vecidya.</p></div>
+              <div class="surface-card-foot"><span>Bisel cálido</span><span>Reflejo contenido</span></div>
+            </article>
+            <article class="surface-card crystal-surface" data-tone="yellow">
+              <div class="surface-card-top"><span class="tone-label">04 · Atención</span><span class="surface-status">Ámbar</span></div>
+              <div class="material-specimen material-specimen--yellow" aria-hidden="true"><span></span></div>
+              <div><h3>Ámbar</h3><p>Avisos y elementos que requieren atención.</p></div>
+              <div class="surface-card-foot"><span>Bisel dorado</span><span>Contraste alto</span></div>
+            </article>
+            <article class="surface-card crystal-surface" data-tone="green">
+              <div class="surface-card-top"><span class="tone-label">05 · Confirmación</span><span class="surface-status">Verde</span></div>
+              <div class="material-specimen material-specimen--green" aria-hidden="true"><span></span></div>
+              <div><h3>Verde claro</h3><p>Éxito, confirmación y validación.</p></div>
+              <div class="surface-card-foot"><span>Bisel verde</span><span>Estado con etiqueta</span></div>
+            </article>
+            <article class="surface-card crystal-surface" data-tone="red">
+              <div class="surface-card-top"><span class="tone-label">06 · Error</span><span class="surface-status">Rojo</span></div>
+              <div class="material-specimen material-specimen--red" aria-hidden="true"><span></span></div>
+              <div><h3>Rojo rubí</h3><p>Error, riesgo y acciones destructivas.</p></div>
+              <div class="surface-card-foot"><span>Bisel rojo</span><span>Estado con texto</span></div>
+            </article>
+          </div>
+
+          <div class="material-note crystal-surface">
+            <span class="material-note-icon" aria-hidden="true">L3</span>
+            <p><strong>La materia no depende del tono.</strong> El borde refracta la luz, el canto inferior aporta espesor y la sombra fija cada superficie al plano.</p>
+          </div>
+        </section>
+
+        <section class="content-section section-anchor" id="componentes" aria-labelledby="components-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>02 / Componentes en uso</p>
+              <h2 id="components-title">La profundidad sirve a la interfaz.</h2>
+              <p>Botones, paneles y pestañas son controles reales: reciben foco, cambian de estado y mantienen el contenido por encima del efecto.</p>
+            </div>
+            <span class="section-count">UI <small>funcional</small></span>
+          </div>
+
+          <div class="component-grid">
+            <article class="component-card crystal-surface">
+              <div class="component-card-heading"><div><p class="component-kicker">Acciones</p><h3>Botones con relieve</h3></div><span class="component-chip">44 px mínimo</span></div>
+              <div class="button-showcase">
+                <button class="crystal-button crystal-button--primary" type="button" id="toast-button">Acción principal <span aria-hidden="true">↗</span></button>
+                <button class="crystal-button crystal-button--secondary" type="button">Secundario</button>
+                <button class="crystal-button crystal-button--quiet" type="button">Discreto</button>
+                <button class="crystal-button crystal-button--danger" type="button" id="open-dialog">Abrir modal</button>
+                <button class="crystal-button crystal-button--secondary" type="button" disabled>Deshabilitado</button>
+              </div>
+              <p class="component-caption">El bisel ilumina el borde; el estado y el nombre siguen legibles sin depender del color.</p>
+            </article>
+
+            <article class="component-card crystal-surface">
+              <div class="component-card-heading"><div><p class="component-kicker">Contenido</p><h3>Tarjeta informativa</h3></div><span class="component-chip">L4 · contenido</span></div>
+              <div class="profile-specimen">
+                <div class="profile-icon"><img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-storefront-verified.webp" alt=""></div>
+                <div class="profile-copy"><span class="profile-overline">Muestra de componente</span><h4>Perfil de negocio</h4><p>Nombre, categoría y estado se ordenan sobre el cristal.</p></div>
+                <span class="profile-check" aria-label="Estado verificado">Verificado</span>
+              </div>
+              <div class="profile-meta"><span>Superficie azul</span><span>Jerarquía de lectura</span><span>Estado explícito</span></div>
+            </article>
+
+            <article class="component-card crystal-surface component-card--tabs">
+              <div class="component-card-heading"><div><p class="component-kicker">Navegación local</p><h3>Pestañas accesibles</h3></div><span class="component-chip">Flechas · inicio · fin</span></div>
+              <div class="tabs" role="tablist" aria-label="Muestra de pestañas">
+                <button class="tab is-selected" id="tab-overview" role="tab" aria-selected="true" aria-controls="panel-overview" tabindex="0" type="button">Resumen</button>
+                <button class="tab" id="tab-activity" role="tab" aria-selected="false" aria-controls="panel-activity" tabindex="-1" type="button">Actividad</button>
+                <button class="tab" id="tab-settings" role="tab" aria-selected="false" aria-controls="panel-settings" tabindex="-1" type="button">Detalles</button>
+              </div>
+              <div class="tab-panel" id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0"><strong>Resumen del contenido</strong><p>Una capa de apoyo mantiene el material separado de los datos.</p></div>
+              <div class="tab-panel" id="panel-activity" role="tabpanel" aria-labelledby="tab-activity" tabindex="0" hidden><strong>Actividad reciente</strong><p>Los cambios se distinguen por fecha y estado, sin usar el color como única señal.</p></div>
+              <div class="tab-panel" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" tabindex="0" hidden><strong>Detalles del patrón</strong><p>La superficie conserva borde, reflejo y elevación en todas sus variantes.</p></div>
+            </article>
+
+            <article class="component-card crystal-surface">
+              <div class="component-card-heading"><div><p class="component-kicker">Jerarquía y elevación</p><h3>Indicador de avance</h3></div><span class="component-chip">Contenido claro</span></div>
+              <div class="progress-label"><span>Configuración de muestra</span><strong>En curso</strong></div>
+              <div class="progress-track" role="progressbar" aria-label="Progreso de la muestra visual" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100"><span></span></div>
+              <div class="layer-labels"><span>Fondo ambiental</span><span>Superficie</span><span>Contenido</span></div>
+              <p class="component-caption">El valor pertenece a una muestra visual; no representa datos de la plataforma.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="content-section section-anchor" id="formularios" aria-labelledby="forms-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>03 / Entrada de datos</p>
+              <h2 id="forms-title">Menos brillo donde importa leer.</h2>
+              <p>Los controles reciben una capa de vidrio más sobria, con etiquetas visibles, foco claro y validación local.</p>
+            </div>
+            <span class="section-count">AA <small>en revisión</small></span>
+          </div>
+
+          <div class="forms-layout">
+            <form class="form-card crystal-surface" id="sample-form">
+              <div class="component-card-heading"><div><p class="component-kicker">Formulario local</p><h3>Datos de muestra</h3></div><span class="component-chip">No se envía</span></div>
+              <p class="form-intro">Los campos muestran estados reales del navegador. No guardan ni transmiten información.</p>
+              <div class="form-field">
+                <label for="pattern-name">Nombre del patrón <span aria-hidden="true">*</span></label>
+                <input class="crystal-input" id="pattern-name" name="pattern-name" type="text" required minlength="3" placeholder="Ej. Superficie de lectura" autocomplete="off">
+                <small>Usa un nombre descriptivo para esta muestra.</small>
+              </div>
+              <div class="form-field">
+                <label for="pattern-tone">Tono de superficie</label>
+                <select class="crystal-input" id="pattern-tone" name="pattern-tone">
+                  <option value="blue">Azul profundo</option>
+                  <option value="ice">Blanco hielo</option>
+                  <option value="orange">Naranja solar</option>
+                  <option value="yellow">Ámbar</option>
+                  <option value="green">Verde claro</option>
+                  <option value="red">Rojo rubí</option>
+                </select>
+              </div>
+              <label class="check-row" for="local-only"><input id="local-only" name="local-only" type="checkbox" required><span>Confirmo que es una prueba local</span></label>
+              <div class="form-actions"><button class="crystal-button crystal-button--primary" type="submit">Validar muestra</button><span id="form-feedback" class="inline-feedback" role="status" aria-live="polite">La validación ocurre en este navegador.</span></div>
+            </form>
+
+            <div class="form-side">
+              <article class="input-sample crystal-surface">
+                <p class="component-kicker">Estados de campo</p>
+                <h3>Control, error y ayuda</h3>
+                <div class="form-field">
+                  <label for="field-normal">Estado normal</label>
+                  <input class="crystal-input" id="field-normal" type="text" value="Contenido de muestra" readonly>
+                </div>
+                <div class="form-field">
+                  <label for="field-error">Estado con error</label>
+                  <input class="crystal-input input-error" id="field-error" type="text" value="" aria-invalid="true" aria-describedby="field-error-message">
+                  <small class="field-error-message" id="field-error-message">Escribe un valor para continuar.</small>
+                </div>
+                <div class="form-field">
+                  <label for="field-disabled">Estado deshabilitado</label>
+                  <input class="crystal-input" id="field-disabled" type="text" value="No disponible" disabled>
+                </div>
+              </article>
+              <div class="form-note"><span class="note-symbol" aria-hidden="true">i</span><p><strong>Contraste antes que destello.</strong> En zonas densas, la translucidez baja y el texto toma el primer plano.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section section-anchor" id="datos" aria-labelledby="data-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>04 / Datos y estados</p>
+              <h2 id="data-title">Estados que se entienden sin color.</h2>
+              <p>La misma estructura funciona para tablas, métricas y mensajes. Cada estado combina tono, etiqueta y contexto.</p>
+            </div>
+            <span class="section-count">L4 <small>lectura</small></span>
+          </div>
+
+          <div class="data-grid">
+            <div class="table-card crystal-surface">
+              <div class="component-card-heading"><div><p class="component-kicker">Tabla de referencia</p><h3>Uso de las superficies</h3></div><span class="component-chip">Datos del sistema</span></div>
+              <div class="table-wrap">
+                <table class="crystal-table">
+                  <caption class="sr-only">Relación entre tono, uso y texto recomendado</caption>
+                  <thead><tr><th scope="col">Tono</th><th scope="col">Uso previsto</th><th scope="col">Texto</th><th scope="col">Estado</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row"><span class="table-tone table-tone--blue"></span>Azul profundo</th><td>Navegación e información</td><td>Claro</td><td><span class="state-tag state-tag--ready">Disponible</span></td></tr>
+                    <tr><th scope="row"><span class="table-tone table-tone--ice"></span>Blanco hielo</th><td>Lectura y formularios</td><td>Oscuro</td><td><span class="state-tag state-tag--ready">Disponible</span></td></tr>
+                    <tr><th scope="row"><span class="table-tone table-tone--orange"></span>Naranja solar</th><td>Acción y énfasis</td><td>Oscuro</td><td><span class="state-tag state-tag--review">En revisión</span></td></tr>
+                    <tr><th scope="row"><span class="table-tone table-tone--green"></span>Verde claro</th><td>Confirmación</td><td>Claro</td><td><span class="state-tag state-tag--ready">Disponible</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="state-card crystal-surface">
+              <div class="component-card-heading"><div><p class="component-kicker">Feedback</p><h3>Mensajes y alertas</h3></div></div>
+              <div class="state-message state-message--success"><span class="state-symbol" aria-hidden="true">✓</span><div><strong>Listo</strong><p>La muestra se validó correctamente.</p></div></div>
+              <div class="state-message state-message--info"><span class="state-symbol" aria-hidden="true">i</span><div><strong>Información</strong><p>Esta acción solo modifica el ejemplo local.</p></div></div>
+              <div class="state-message state-message--warning"><span class="state-symbol" aria-hidden="true">!</span><div><strong>Atención</strong><p>Revisa el campo señalado antes de continuar.</p></div></div>
+              <div class="state-message state-message--error"><span class="state-symbol" aria-hidden="true">×</span><div><strong>Error</strong><p>No se completó la operación de muestra.</p></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section section-anchor" id="activos" aria-labelledby="assets-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>05 / Galería de marca</p>
+              <h2 id="assets-title">Activos Vecidya e iconos Crystal.</h2>
+              <p>Ocho iconos Crystal propuestos comparten material y luz. Siete activos del catálogo existente conservan su identidad; WhatsApp se exporta a PNG.</p>
+            </div>
+            <span class="section-count">15 <small>activos</small></span>
+          </div>
+
+          <div class="asset-toolbar">
+            <label class="search-box" for="asset-search">
+              <img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-search.png" alt="">
+              <span class="sr-only">Buscar activos por nombre o categoría</span>
+              <input id="asset-search" type="search" placeholder="Buscar en la galería…" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+            <p id="asset-count" role="status" aria-live="polite">15 activos visuales</p>
+          </div>
+
+          <div class="asset-grid" id="asset-grid">
+            <article class="asset-card crystal-surface" data-search="diagnóstico creador icono png cristal">
+              <div class="asset-image"><img src="assets/icons/diagnostic-creator.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Creador</h3><p>Perfil de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="diagnóstico negocio icono png cristal">
+              <div class="asset-image"><img src="assets/icons/diagnostic-business.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Negocio</h3><p>Perfil de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="diagnóstico profesional icono png cristal">
+              <div class="asset-image"><img src="assets/icons/diagnostic-professional.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Profesional</h3><p>Perfil de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="diagnóstico proyecto icono png cristal">
+              <div class="asset-image"><img src="assets/icons/diagnostic-project.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Proyecto</h3><p>Perfil de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="servicio visibilidad icono png cristal">
+              <div class="asset-image"><img src="assets/icons/service-visibility.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Visibilidad</h3><p>Servicio digital</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="servicio estructura icono png cristal">
+              <div class="asset-image"><img src="assets/icons/service-structure.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Estructura</h3><p>Servicio digital</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="presencia digital icono png cristal">
+              <div class="asset-image"><img src="assets/icons/service-digital-presence.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Presencia digital</h3><p>Servicio digital</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="formalización icono png cristal">
+              <div class="asset-image"><img src="assets/icons/service-formalization.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Propuesta Crystal · PNG</span><h3>Formalización</h3><p>Servicio digital</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="estado diagnóstico prioridad urgente webp">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/status/diagnostic-status-priority.webp" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Estados · WebP</span><h3>Prioridad</h3><p>Estado de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="estado diagnóstico saludable éxito webp">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/status/diagnostic-status-healthy.webp" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Estados · WebP</span><h3>Saludable</h3><p>Estado de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="estado diagnóstico en desarrollo webp">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/status/diagnostic-status-developing.webp" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Estados · WebP</span><h3>En desarrollo</h3><p>Estado de diagnóstico</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="interfaz búsqueda search png">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-search.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Interfaz · PNG</span><h3>Búsqueda</h3><p>Icono de interfaz</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="interfaz negocio verificado webp">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-storefront-verified.webp" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Interfaz · WebP</span><h3>Negocio verificado</h3><p>Icono de interfaz</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="interfaz vecidya ubicación mapa webp">
+              <div class="asset-image"><img src="../vecidya-platform/public/assets/selected/icons/ui/ui-icon-vecidya-pin.webp" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Interfaz · WebP</span><h3>Pin Vecidya</h3><p>Icono de interfaz</p></div>
+            </article>
+            <article class="asset-card crystal-surface" data-search="interfaz whatsapp contacto svg">
+              <div class="asset-image"><img src="assets/icons/ui-icon-whatsapp.png" alt="" loading="lazy" decoding="async"></div>
+              <div><span class="asset-kind">Interfaz · PNG</span><h3>WhatsApp</h3><p>Icono de interfaz</p></div>
+            </article>
+          </div>
+          <p class="empty-search crystal-surface" id="asset-empty" hidden>No hay activos con ese término. Prueba con “diagnóstico”, “servicio” o “interfaz”.</p>
+          <p class="asset-source">Fuentes: <code>public/assets/selected/icons/</code> y <code>public/assets/selected/brand/</code> · referencias locales, sin duplicados.</p>
+        </section>
+
+        <section class="content-section section-anchor" id="escenas" aria-labelledby="scenes-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>06 / Escenas ambientales</p>
+              <h2 id="scenes-title">Capas propias para cada contexto.</h2>
+              <p>Los fondos definen el ambiente; las ilustraciones oficiales aportan contexto; las tarjetas reales se componen encima, a su escala.</p>
+            </div>
+            <span class="section-count">L0–L5 <small>profundidad</small></span>
+          </div>
+
+          <div class="scene-grid">
+            <article class="scene-card scene-card--public crystal-surface">
+              <div class="scene-artwell"><img src="../vecidya-platform/public/assets/selected/illustrations/home-scene.webp" alt="Escena 3D de una tienda local conectada a una presencia digital" loading="lazy" decoding="async"></div>
+              <div class="scene-copy"><span class="scene-index">01 / Sitio público</span><h3>Un horizonte luminoso</h3><p>La luz guía el foco y deja aire para el contenido real.</p></div>
+            </article>
+            <article class="scene-card scene-card--neighborhood crystal-surface">
+              <div class="scene-artwell"><img src="../vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp" alt="Tres negocios locales conectados en una escena de vecindario" loading="lazy" decoding="async"></div>
+              <div class="scene-copy"><span class="scene-index">02 / Vecindario</span><h3>Conexiones en el territorio</h3><p>Las rutas de luz vinculan negocios sin ocultar su contenido.</p></div>
+            </article>
+            <article class="scene-card scene-card--diagnostic crystal-surface">
+              <div class="scene-artwell"><img src="../vecidya-platform/public/assets/selected/illustrations/diagnostic-scene.webp" alt="Ilustración de diagnóstico con lista, indicador y gráfico" loading="lazy" decoding="async"></div>
+              <div class="scene-copy"><span class="scene-index">03 / Diagnóstico</span><h3>Lectura sobre espectáculo</h3><p>El vidrio baja de intensidad cuando aumentan los datos.</p></div>
+            </article>
+            <article class="scene-card scene-card--services crystal-surface">
+              <div class="scene-artwell"><img src="../vecidya-platform/public/assets/selected/illustrations/services-scene.webp" alt="Ilustración de búsqueda, estructura y análisis de servicios" loading="lazy" decoding="async"></div>
+              <div class="scene-copy"><span class="scene-index">04 / Servicios</span><h3>Planos con propósito</h3><p>La jerarquía separa contexto, estructura y acción.</p></div>
+            </article>
+          </div>
+          <div class="scene-disclaimer"><span class="note-symbol" aria-hidden="true">i</span><p><strong>Estado de la iteración.</strong> La biblioteca es local y de revisión visual. No migra estilos, rutas, formularios ni diagnósticos de la plataforma.</p></div>
+        </section>
+
+        <footer class="site-footer">
+          <div class="footer-brand"><img src="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" alt=""><span>Vecidya Crystal Depth</span></div>
+          <p>Biblioteca visual independiente · 12 nov 2026 · pendiente de aprobación visual para cualquier integración.</p>
+          <a href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <dialog class="demo-dialog crystal-surface" id="sample-dialog" aria-labelledby="dialog-title">
+    <form method="dialog">
+      <button class="dialog-close" value="cancel" aria-label="Cerrar diálogo">×</button>
+      <p class="component-kicker">Interacción de muestra</p>
+      <h2 id="dialog-title">¿Aplicar esta muestra?</h2>
+      <p>La acción vive solo en esta página. No cambia preferencias ni datos de la plataforma.</p>
+      <div class="dialog-actions">
+        <button class="crystal-button crystal-button--primary" value="confirm">Confirmar muestra</button>
+        <button class="crystal-button crystal-button--quiet" value="cancel">Cancelar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast crystal-surface" id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+
+  <script>
+    (() => {
+      const themeToggle = document.getElementById("theme-toggle");
+      const applyTheme = (theme) => {
+        document.documentElement.dataset.theme = theme;
+        themeToggle.setAttribute("aria-checked", String(theme === "dark"));
+        document.getElementById("theme-label").textContent = theme === "dark" ? "Oscuro" : "Claro";
+      };
+      themeToggle.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+      const toast = document.getElementById("toast");
+      let toastTimer;
+      const showToast = (message) => {
+        toast.textContent = message;
+        toast.hidden = false;
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => { toast.hidden = true; }, 3600);
+      };
+
+      document.getElementById("toast-button").addEventListener("click", () => {
+        showToast("Acción de muestra completada. No se guardaron datos.");
+      });
+
+      const dialog = document.getElementById("sample-dialog");
+      document.getElementById("open-dialog").addEventListener("click", () => dialog.showModal());
+      dialog.addEventListener("close", () => {
+        if (dialog.returnValue === "confirm") showToast("Muestra confirmada en esta página.");
+      });
+
+      document.getElementById("sample-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const feedback = document.getElementById("form-feedback");
+        feedback.textContent = "Validación correcta. Los datos siguen en esta página.";
+        feedback.classList.add("is-success");
+        showToast("Formulario validado localmente.");
+      });
+
+      const tabButtons = Array.from(document.querySelectorAll('[role="tab"]'));
+      const activateTab = (selected) => {
+        tabButtons.forEach((tab) => {
+          const isSelected = tab === selected;
+          tab.setAttribute("aria-selected", String(isSelected));
+          tab.tabIndex = isSelected ? 0 : -1;
+          tab.classList.toggle("is-selected", isSelected);
+          document.getElementById(tab.getAttribute("aria-controls")).hidden = !isSelected;
+        });
+        selected.focus();
+      };
+      tabButtons.forEach((tab, index) => {
+        tab.addEventListener("click", () => activateTab(tab));
+        tab.addEventListener("keydown", (event) => {
+          let nextIndex = index;
+          if (event.key === "ArrowRight") nextIndex = (index + 1) % tabButtons.length;
+          else if (event.key === "ArrowLeft") nextIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+          else if (event.key === "Home") nextIndex = 0;
+          else if (event.key === "End") nextIndex = tabButtons.length - 1;
+          else return;
+          event.preventDefault();
+          activateTab(tabButtons[nextIndex]);
+        });
+      });
+
+      const search = document.getElementById("asset-search");
+      const cards = Array.from(document.querySelectorAll(".asset-card"));
+      const count = document.getElementById("asset-count");
+      const empty = document.getElementById("asset-empty");
+      const normalize = (value) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const filterAssets = () => {
+        const query = normalize(search.value.trim());
+        let visible = 0;
+        cards.forEach((card) => {
+          const matches = normalize(card.dataset.search + " " + card.textContent).includes(query);
+          card.hidden = !matches;
+          if (matches) visible += 1;
+        });
+        count.textContent = visible + (visible === 1 ? " activo visual" : " activos visuales");
+        empty.hidden = visible !== 0;
+      };
+      search.addEventListener("input", filterAssets);
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
+          event.preventDefault();
+          search.focus();
+        }
+        if (event.key === "Escape" && document.activeElement === search) {
+          search.value = "";
+          filterAssets();
+        }
+      });
+
+      const navLinks = Array.from(document.querySelectorAll(".nav-link"));
+      const sections = navLinks.map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+      const setActiveLink = (id) => {
+        navLinks.forEach((link) => {
+          const active = link.getAttribute("href") === "#" + id;
+          link.classList.toggle("is-active", active);
+          if (active) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      };
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          if (visible[0]) setActiveLink(visible[0].target.id);
+        }, { rootMargin: "-24% 0px -62% 0px", threshold: [0, 0.2, 0.5, 1] });
+        sections.forEach((section) => observer.observe(section));
+      }
+    })();
+  </script>
+</body>
+</html>

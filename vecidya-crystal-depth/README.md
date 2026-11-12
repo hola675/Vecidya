@@ -1,22 +1,32 @@
-# Vecidya Crystal Depth Design System
+# Vecidya Crystal Depth
 
-**Estado:** laboratorio aislado V0.1. No integrado en la aplicación.
+**Estado:** biblioteca visual 0.5, revisión local. No está integrada en Vecidya ni en MiniWeb2.
 
-Sistema de materiales translúcidos, iluminación, relieve y profundidad reutilizable para Vecidya y, tras validación, MiniWeb2.
+Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en tema claro y permite alternar a oscuro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes.
 
-## Estructura
+## Abrir
 
-- `index.html`: laboratorio HTML interactivo, sin dependencias.
-- `styles/crystal-depth.css`: tokens y clases opt-in para materiales, tarjetas y botones.
-- `assets/icons/`: iconos SVG originales de demostración.
-- `docs/INTEGRACION.md`: fases de integración y restricciones.
+- Abrir `biblioteca.html` directamente en el navegador.
+- Abrir `index.html` para que redirija a la biblioteca.
+- Para servir desde la raíz del repositorio, iniciar un servidor HTTP estático y visitar `/vecidya-crystal-depth/biblioteca.html`.
 
-## Uso
+No requiere dependencias. La galería referencia marca, Vico, escenas y siete iconos del catálogo oficial. Ocho propuestas de iconos Crystal y una exportación PNG de WhatsApp residen en `assets/icons/`. Los dos fondos ambientales generados optimizados residen en `assets/`.
 
-Abrir `index.html` en un navegador. Ajustar los controles y copiar los tokens CSS. Para integrar, importar `styles/crystal-depth.css` y aplicar `vx-crystal-theme` al contenedor y `vx-crystal-surface` a las superficies seleccionadas.
+## Archivos
 
-**No se modifican** los estilos, rutas, formularios, diagnósticos ni el editor MiniWeb2 existentes.
+- `biblioteca.html`: navegación, tarjetas, formularios, pestañas, tabla, estados, diálogo y galería filtrable.
+- `styles/crystal-depth.css` y `styles/themes.css`: material, componentes responsive y temas claro/oscuro.
+- `assets/crystal-depth-hero.webp` y `assets/crystal-depth-hero-light.webp`: escenas ambientales aprobadas como referencia de estilo.
+- `assets/icons/`: PNG separados para ocho propuestas Crystal y WhatsApp rasterizado desde su activo oficial.
+- `docs/DIRECCION-ARTISTICA.md`: dirección artística y seis revisiones críticas.
+- `docs/PLAN-MIGRACION-VISUAL.md` y `docs/INTEGRACION.md`: límites de integración.
+
+## Verificación y límites
+
+La inspección estática local comprueba sintaxis JavaScript, existencia de referencias y limpieza del diff. En esta sesión el navegador bloqueó la URL local, así que los cambios recientes de tema, búsqueda, diálogo y respuesta móvil aún requieren confirmación visual e interactiva. No cambia la plataforma, MiniWeb2, rutas ni flujos, y no autoriza migración ni publicación.
 
 ## Changelog
 
-- 2026-11-12 — V0.1: estructura independiente, tokens de material, laboratorio y documentación inicial.
+- 2026-11-12 — 0.5: tema claro inicial con alternador oscuro, escenas ambientales clara/oscura, iconos PNG Crystal y corrección de conteo de galería.
+- 2026-11-12 — 0.4: biblioteca premium navegable, sistema de superficies, interacciones locales y escena ambiental aprobada.
+- 2026-11-12 — 0.1–0.3: laboratorio y primeras muestras aisladas.
