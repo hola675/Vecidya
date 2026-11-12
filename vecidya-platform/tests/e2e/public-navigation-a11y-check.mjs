@@ -35,6 +35,11 @@ try {
     const page = await browser.newPage({ viewport: { width, height: 850 } });
     const label = `${width}px`;
     await page.goto(new URL("/", baseUrl).toString(), { waitUntil: "networkidle" });
+    const headerLayer = await page.locator("header.site-header").evaluate((header) => {
+      const style = getComputedStyle(header);
+      return { position: style.position, zIndex: Number.parseInt(style.zIndex, 10) };
+    });
+    assert(headerLayer.position !== "static" && headerLayer.zIndex > 0, `${label}: el encabezado debe quedar en una capa sobre el hero`);
     await assertNoOverflow(page, `${label} inicio`);
     await assertRoundedSurfaces(page, `${label} inicio`);
     for (const path of ["/licencias", "/servicios", "/aprende", "/contacto"]) {

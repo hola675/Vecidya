@@ -1,4 +1,8 @@
+# 2026-11-11 — UX-PREMIUM-SYSTEM-02 — fundación visual compartida
 
+- La guía canónica consolida composición, alineación, espacio negativo, paleta azul/cyan/naranja, superficies, relieve, Vico, iconografía, Vecindario, movimiento, variantes de fondo y QA. Incluye dos imágenes originales como referencias de acabado.
+- Se añade una capa común de atmósfera, superficies con niveles de opacidad y relieve, utilidades de retícula/espaciado e interacción; Card, MetricCard, JourneyGuide y ComparisonBars reutilizan el contrato. El encabezado público conserva sus menús por encima del hero al crear una capa explícita.
+- Typecheck, build, prueba unitaria focal de experiencia (6/6), navegación Playwright en 7 anchos y git diff --check PASS (RAN 2026-11-12). La capa define patrones compartidos, no certifica visualmente todas las rutas ni viewports. Sin cambios funcionales ni publicación.
 # 2026-11-11 — Aislamiento de entorno para QA local
 
 La configuración Wrangler y `envDir` de Vite del entorno demo ahora viven en `wrangler.local-demo/`, con lista de secretos requerida vacía; logs, temporales y estado quedan bajo `.wrangler/local-demo`. Esto evita cargar secretos de los archivos de entorno de la raíz de la plataforma. El arranque aislado de Wrangler se confirmó como local, con health HTTP 200 y seed 4/4 organizaciones, 8 assets y 4 borradores privados. Sin cambios en configuración productiva, gates, migraciones remotas o despliegue.

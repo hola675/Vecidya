@@ -50,6 +50,8 @@ Una comunidad digital (el Vecindario) más un diagnóstico honesto que nunca inv
 
 ## Brand Commitments
 
+La dirección visual compartida prioriza composición clara, azul/cyan con acento naranja, capas de cristal legibles, profundidad moderada y Vico como guía contextual. La [guía canónica y sus referencias](docs/design-system/VECIDYA-UI-UX.md) recogen los patrones reutilizables.
+
 - Nombre **Vecidya**; vocabulario propio: Vecindario, Aprende, licencias Cuadra · Barrio · Ciudad.
 - Precios públicos de licencias en USD/mes (`$39`, `$59`, `$89`), publicados en `/licencias` desde el 2026-09-25. Los siete complementos son categorías de capacidad: solo se cobra cuota externa real del proveedor y su recargo aprobado del 20 %, o consumo facturado + 20 % cuando corresponda. Capacidades estándar ya incluidas en el CRM no reciben cuotas inventadas; los servicios profesionales se cotizan por alcance.
 - **Voz:** español claro y directo; honesta sobre la incertidumbre; nunca alarmista ni culpabilizadora (el Diagnóstico tiene frases duras prohibidas); orientación, no auditoría ni certificación; puede decir que el negocio todavía no necesita nada.

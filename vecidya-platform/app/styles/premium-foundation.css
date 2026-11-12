@@ -25,6 +25,19 @@
   --v-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --v-duration-fast: 160ms;
   --v-duration-interaction: 220ms;
+  --v-surface-glass: rgb(255 255 255 / 88%);
+  --v-surface-glass-strong: rgb(255 255 255 / 94%);
+  --v-surface-line: rgb(255 255 255 / 72%);
+  --v-shadow-surface: 0 0.75rem 2rem rgb(7 35 77 / 6%), inset 0 1px var(--v-surface-line);
+  --v-shadow-surface-raised: 0 1.1rem 2.8rem rgb(7 35 77 / 9%), 0 0.25rem 0.8rem rgb(7 35 77 / 4%), inset 0 1px var(--v-surface-line);
+  --v-shadow-surface-floating: 0 1.75rem 4rem rgb(7 35 77 / 14%), 0 0.35rem 1rem rgb(7 35 77 / 6%), inset 0 1px var(--v-surface-line);
+  --v-space-1: 0.25rem;
+  --v-space-2: 0.5rem;
+  --v-space-3: 0.75rem;
+  --v-space-4: 1rem;
+  --v-space-5: 1.5rem;
+  --v-space-6: 2rem;
+  --v-space-7: 3rem;
 }
 
 /* Apply the interface font only to Vecidya-owned surfaces. Public business MiniWebs stay business-owned. */
