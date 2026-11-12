@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import type { ReactNode } from "react";
 
-import { Icon, type IconName } from "./ui";
+import { Card, Icon, type IconName } from "./ui";
 import { clampPercentage, formatCount, nonNegativeCount, relativeBarWidth } from "../lib/experience-metrics";
 
 export type ExperienceStep = {
@@ -27,15 +27,20 @@ export function JourneyGuide({
 }) {
   const areas = { public: "DESCUBRE VECIDYA", client: "TU RECORRIDO", admin: "GUÍA OPERATIVA" };
   return (
-    <section aria-label={title} className={`experience-journey experience-journey--${area} ${className}`}>
+    <section
+      aria-label={title}
+      className={"experience-journey experience-journey--" + area + " v-surface " + className}
+      data-depth="raised"
+      data-surface={area === "public" ? "highlight" : "glass"}
+    >
       <div className="experience-journey__heading">
         <p className="eyebrow">{areas[area]}</p>
         <h2>{title}</h2>
         <p>{description}</p>
       </div>
-      <ol className="experience-journey__steps">
+      <ol className="experience-journey__steps v-grid v-grid--3">
         {steps.map((step, index) => (
-          <li className={`experience-step experience-step--${step.state ?? "upcoming"}`} key={step.title}>
+          <li className={"experience-step experience-step--" + (step.state ?? "upcoming") + " v-surface"} data-depth="rest" data-surface="glass" key={step.title}>
             <div className="experience-step__marker" aria-hidden="true">{step.state === "complete" ? "✓" : String(index + 1).padStart(2, "0")}</div>
             <div className="experience-step__body">
               <h3>{step.title}</h3>
@@ -66,14 +71,14 @@ export function MetricCard({
   className?: string;
 }) {
   return (
-    <section className={`card experience-metric ${className}`}>
+    <Card className={"experience-metric " + className} depth="raised" surface="glass">
       {icon ? <Icon name={icon} /> : null}
       <div className="experience-metric__body">
         <strong>{typeof value === "number" ? formatCount(value) : value}</strong>
         <p>{label}</p>
         {description ? <div className="experience-metric__detail">{description}</div> : null}
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -119,12 +124,12 @@ export function ComparisonBars({
 }) {
   const largest = Math.max(0, ...values.map((item) => nonNegativeCount(item.value)));
   return (
-    <section aria-label={title} className="experience-comparison">
+    <section aria-label={title} className="experience-comparison v-surface" data-depth="raised" data-surface="glass">
       <div className="experience-comparison__intro">
         <h3>{title}</h3>
         <p>{description}</p>
       </div>
-      <ul className="experience-comparison__list">
+      <ul className="experience-comparison__list v-grid v-grid--2">
         {values.map((item) => {
           const value = nonNegativeCount(item.value);
           return (

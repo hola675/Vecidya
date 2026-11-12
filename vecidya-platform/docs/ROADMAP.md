@@ -64,6 +64,8 @@ La certificación pública integrada verifica rutas, navegación por teclado y v
 
 ## UX-PREMIUM-01 — identidad visual propia en cuatro superficies (plan por fases; 2026-10-24)
 
+**UX-PREMIUM-SYSTEM-02 (candidato local, 2026-11-11):** define el sistema visual oficial compartido a partir de las referencias aprobadas, amplía tokens y patrones de composición, y permite graduar vidrio/solidez y relieve desde Card. El acabado atmosférico se comparte entre la web pública, Mi Vecidya, Admin y pantallas propias de autenticación; el renderer público MiniWeb conserva la marca de cada negocio. Se documentan prompt maestro, negative prompt y QA. Typecheck, build y git diff --check PASS (RAN 2026-11-11); el servidor del worktree devolvió HTTP 500 y bloqueó la revisión visual de rutas, que debe completarse antes de certificar superficies. No implica certificación global ni deploy.
+
 **Actualización 2026-10-30 — alcance visual aprobado por el usuario:** aplicar de forma progresiva la guía premium a toda la plataforma: web pública, Mi Vecidya, Admin y experiencia MiniWeb V2. La base compartida comienza en `UX-PREMIUM-FOUNDATION-01`. La identidad de MiniWeb publicada sigue perteneciendo a cada negocio; no se fuerza la marca Vecidya en su renderer. Esa aprobación visual por sí sola no autorizaba cambios funcionales ni despliegue. El usuario autorizó por separado el checkpoint funcional `UX-IMPL-03` el 2026-11-02; su integración queda sujeta al PR y a los checks requeridos, sin autorización de deploy.
 
 **Aprobación de fase 0 (2026-10-30):** el usuario aprobó el baseline y el alcance de pantallas como punto de partida. Esa aprobación permite iniciar los checkpoints visuales; no certifica funcionalidad, App/Admin, React #418 ni accesibilidad integral.
