@@ -1,0 +1,49 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "vecidya-local-demo",
+	"main": "./workers/app.ts",
+	"compatibility_date": "2026-08-13",
+	"workers_dev": false,
+	"routes": [],
+	"assets": {
+		"directory": "./build/client"
+	},
+	"ratelimits": [
+		{
+			"name": "DIAGNOSTIC_PUBLIC_RATE_LIMITER",
+			"namespace_id": "99999101",
+			"simple": { "limit": 12, "period": 60 }
+		},
+		{
+			"name": "DIAGNOSTIC_IDENTIFICATION_RATE_LIMITER",
+			"namespace_id": "99999102",
+			"simple": { "limit": 6, "period": 60 }
+		}
+	],
+	"vars": {
+		"APP_URL": "http://127.0.0.1:4173",
+		"BETTER_AUTH_URL": "http://127.0.0.1:4173",
+		"APP_ENV": "local-demo",
+		"EMAIL_PROVIDER": "fake",
+		"EMAIL_FROM": "pruebas@vecidya.test",
+		"DIAGNOSTIC_REPORT_FUNNEL_ENABLED": "false",
+		"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED": "false",
+		"DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED": "false",
+		"LEARN_OPERATION_RECEIPT_PURGE_ENABLED": "false",
+		"LEARN_OPERATION_RECEIPT_PURGE_APPROVED": "false"
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "vecidya-local-demo",
+			"database_id": "00000000-0000-0000-0000-000000000001",
+			"migrations_dir": "db/migrations"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUSINESS_MEDIA",
+			"bucket_name": "vecidya-local-demo-media"
+		}
+	]
+}
