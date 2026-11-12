@@ -10,3 +10,4 @@ b5bf2e54cb654f7b/
 *.tsbuildinfo
 /Assets-Generados/
 /.worktrees/
+/.pnpm-store/
