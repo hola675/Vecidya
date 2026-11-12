@@ -1,12 +1,15 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
+	"$schema": "../node_modules/wrangler/config-schema.json",
 	"name": "vecidya-local-demo",
-	"main": "./workers/app.ts",
+	"main": "../workers/app.ts",
 	"compatibility_date": "2026-08-13",
 	"workers_dev": false,
 	"routes": [],
 	"assets": {
-		"directory": "./build/client"
+		"directory": "../build/client"
+	},
+	"secrets": {
+		"required": []
 	},
 	"ratelimits": [
 		{
@@ -37,7 +40,7 @@
 			"binding": "DB",
 			"database_name": "vecidya-local-demo",
 			"database_id": "00000000-0000-0000-0000-000000000001",
-			"migrations_dir": "db/migrations"
+			"migrations_dir": "../db/migrations"
 		}
 	],
 	"r2_buckets": [

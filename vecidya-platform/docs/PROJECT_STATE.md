@@ -1,6 +1,6 @@
 ## QA local para recorrido de plataforma (2026-11-11)
 
-Hay un entorno local aislado para recorrer perfil y MiniWeb con cuatro organizaciones sintéticas, ocho imágenes PNG y un borrador V2 privado por organización. Inicia con `pnpm run dev:local-demo`, carga datos con `pnpm run seed:local-demo` y verifica conteos con `pnpm run status:local-demo`. Usa D1/R2 local y loopback; dominios `.test` son contenido de ejemplo, no resolución ni soporte de dominio personalizado. Los borradores se mantienen sin publicar y no requieren licencias ficticias. No representa un entorno publicado; ver límites y pasos en `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
+Hay un entorno local aislado para recorrer perfil y MiniWeb con cuatro organizaciones sintéticas, ocho imágenes PNG y un borrador V2 privado por organización. Inicia con `pnpm run dev:local-demo`, carga datos con `pnpm run seed:local-demo` y verifica conteos con `pnpm run status:local-demo`. Usa D1/R2 local y loopback; Wrangler/Vite mantienen configuración y archivos de entorno separados de la raíz para no cargar sus secretos. Los dominios `.test` son contenido de ejemplo, no resolución ni soporte de dominio personalizado. Los borradores se mantienen sin publicar y no requieren licencias ficticias. No representa un entorno publicado; ver límites y pasos en `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
 
 ## MiniWeb V2 — contrato funcional canónico (decisiones del usuario, 2026-11-08)
 

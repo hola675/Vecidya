@@ -1,5 +1,5 @@
 import { deflateSync } from "node:zlib";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { dirname, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const projectDirectory = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const wranglerCli = resolve(projectDirectory, "node_modules", "wrangler", "bin", "wrangler.js");
-const configPath = resolve(projectDirectory, "wrangler.local-demo.jsonc");
+const configPath = resolve(projectDirectory, "wrangler.local-demo", "wrangler.jsonc");
 const persistPath = resolve(projectDirectory, ".wrangler", "local-demo");
 const xdgConfigPath = resolve(persistPath, "xdg-config");
 const xdgStatePath = resolve(persistPath, "xdg-state");
@@ -66,6 +66,8 @@ function sqlLiteral(value) {
 }
 
 function queryLocalD1(sql) {
+  const tempPath = resolve(persistPath, "temp");
+  for (const path of [persistPath, xdgConfigPath, xdgStatePath, tempPath]) mkdirSync(path, { recursive: true });
   const result = spawnSync(process.execPath, [
     wranglerCli,
     "d1", "execute", "DB", "--local", "--config", configPath,
@@ -75,7 +77,16 @@ function queryLocalD1(sql) {
     encoding: "utf8",
     timeout: 120_000,
     maxBuffer: 4 * 1024 * 1024,
-    env: { ...process.env, XDG_CONFIG_HOME: xdgConfigPath, XDG_STATE_HOME: xdgStatePath },
+    env: {
+      ...process.env,
+      APPDATA: xdgConfigPath,
+      LOCALAPPDATA: xdgStatePath,
+      TEMP: tempPath,
+      TMP: tempPath,
+      XDG_CONFIG_HOME: xdgConfigPath,
+      XDG_STATE_HOME: xdgStatePath,
+      CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false",
+    },
   });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`No se pudo comprobar la D1 local: ${result.stderr || result.stdout}`);

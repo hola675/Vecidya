@@ -1,7 +1,7 @@
 
 ## QA local aislado para revisión integral (2026-11-11)
 
-**LISTO LOCALMENTE:** `dev:local-demo` y el seed idempotente dejan cuatro organizaciones sintéticas con perfil, ocho assets PNG registrados en R2 local y cuatro borradores MiniWeb V2 privados, usando D1/R2 independientes en `.wrangler/local-demo`. Los hosts `.test` se muestran como contenido de prueba, sin DNS ni dominio conectado. No hay publicaciones ni licencias ficticias. El entorno facilita inspección visual/funcional, pero no es staging, no cambia la matriz de capacidades de producción y no acredita despliegue ni accesibilidad certificada. Instrucciones y límites: `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
+**LISTO LOCALMENTE:** `dev:local-demo` y el seed idempotente dejan cuatro organizaciones sintéticas con perfil, ocho assets PNG registrados en R2 local y cuatro borradores MiniWeb V2 privados, usando D1/R2 independientes en `.wrangler/local-demo`. Wrangler/Vite usan configuración y `envDir` propios en `wrangler.local-demo/`; el Worker QA no carga secretos de los archivos de entorno de la raíz. El arranque aislado confirmó Resource location local y health HTTP 200. Los hosts `.test` se muestran como contenido de prueba, sin DNS ni dominio conectado. No hay publicaciones ni licencias ficticias. El entorno facilita inspección visual/funcional, pero no es staging, no cambia la matriz de capacidades de producción y no acredita despliegue ni accesibilidad certificada. Instrucciones y límites: `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
 
 # BUSINESS-SECTOR-PROFILE-PICKER-01 — categoría asistida del perfil (2026-11-11)
 
