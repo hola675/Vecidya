@@ -1,0 +1,13 @@
+/* Vecidya Crystal Depth v0.1 — opt-in, aislado de estilos legacy */
+.vx-crystal-theme{--vx-glass-rgb:25,116,221;--vx-glass-opacity:.25;--vx-glass-blur:20px;--vx-glass-radius:24px;--vx-glass-elevation:30px;--vx-glass-light:.65;--vx-glass-border:.6;--vx-glass-scale:1;--vx-glass-angle:135deg;color:#f2f9ff}
+.vx-crystal-scene{position:relative;isolation:isolate;overflow:hidden;padding:clamp(20px,4vw,48px);border-radius:30px;background:radial-gradient(circle at 78% 16%,#41bfff55,transparent 38%),radial-gradient(circle at 8% 88%,#ffab4440,transparent 35%),linear-gradient(125deg,#061630,#104783 70%,#071c3b)}
+.vx-crystal-scene::before{content:"";position:absolute;inset:-30%;background:repeating-radial-gradient(circle at 60% 50%,transparent 0 50px,#b4eaff10 51px 52px);pointer-events:none}
+.vx-crystal-scene>*{position:relative}
+.vx-crystal-surface{position:relative;isolation:isolate;overflow:hidden;border:1px solid rgba(199,237,255,var(--vx-glass-border));border-radius:var(--vx-glass-radius);padding:calc(22px * var(--vx-glass-scale));background:linear-gradient(var(--vx-glass-angle),rgba(255,255,255,calc(var(--vx-glass-opacity)*.8)),rgba(var(--vx-glass-rgb),var(--vx-glass-opacity)) 50%,rgba(5,26,63,calc(var(--vx-glass-opacity)*.8)));-webkit-backdrop-filter:blur(var(--vx-glass-blur)) saturate(150%);backdrop-filter:blur(var(--vx-glass-blur)) saturate(150%);box-shadow:inset 0 2px 1px rgba(255,255,255,var(--vx-glass-light)),inset 0 -3px 9px #02122b66,0 calc(var(--vx-glass-elevation)*.55) var(--vx-glass-elevation) #00112877,0 0 32px rgba(var(--vx-glass-rgb),.16)}
+.vx-crystal-surface::before{content:"";position:absolute;inset:0 0 auto;height:40%;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,calc(var(--vx-glass-light)*.25)),transparent);pointer-events:none}
+.vx-crystal-surface>*{position:relative;z-index:1}
+.vx-crystal-button{font:inherit;cursor:pointer;border:1px solid #b9ebff99;border-radius:14px;padding:12px 20px;color:white;background:linear-gradient(145deg,rgba(var(--vx-glass-rgb),.88),rgba(var(--vx-glass-rgb),.45));box-shadow:inset 0 2px 1px #ffffff80,0 12px 24px #00132b66}
+.vx-crystal-button:focus-visible{outline:3px solid #ffb456;outline-offset:3px}
+.vx-crystal-button:disabled{opacity:.5;cursor:not-allowed}
+@supports not (backdrop-filter:blur(1px)){.vx-crystal-surface{background:linear-gradient(145deg,#23568fef,#0b3169ef)}}
+@media(prefers-reduced-motion:reduce){.vx-crystal-theme *{animation:none!important;transition:none!important}}
