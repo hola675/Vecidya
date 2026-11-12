@@ -1,4 +1,8 @@
 
+# 2026-11-11 — Aislamiento de entorno para QA local
+
+La configuración Wrangler y `envDir` de Vite del entorno demo ahora viven en `wrangler.local-demo/`, con lista de secretos requerida vacía; logs, temporales y estado quedan bajo `.wrangler/local-demo`. Esto evita cargar secretos de los archivos de entorno de la raíz de la plataforma. El arranque aislado de Wrangler se confirmó como local, con health HTTP 200 y seed 4/4 organizaciones, 8 assets y 4 borradores privados. Sin cambios en configuración productiva, gates, migraciones remotas o despliegue.
+
 # 2026-11-11 — Entorno QA local aislado para recorrido integral
 
 Se añadieron comandos para iniciar un Worker local aislado, cargar de manera idempotente cuatro organizaciones sintéticas, perfiles, ocho imágenes geométricas y borradores MiniWeb V2, y consultar el estado de sus datos. Los hosts `*.vecidya.test` son texto de prueba; no se conectan ni publican. La revisión visual detectó que el editor ofrecía un enlace a una página pública inexistente en borradores; ahora muestra el estado privado hasta que exista una publicación activa. No cambia el entorno de producción, sus gates ni la activación de V9. Evidencia y límites en `docs/TESTING.md`.

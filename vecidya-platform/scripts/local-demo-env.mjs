@@ -5,13 +5,32 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const projectDirectory = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const configPath = resolve(projectDirectory, "wrangler.local-demo.jsonc");
+const configDirectory = resolve(projectDirectory, "wrangler.local-demo");
+const configPath = resolve(configDirectory, "wrangler.jsonc");
 const persistPath = resolve(projectDirectory, ".wrangler", "local-demo");
 const xdgConfigPath = resolve(persistPath, "xdg-config");
 const xdgStatePath = resolve(persistPath, "xdg-state");
+const tempPath = resolve(persistPath, "temp");
 const wranglerCli = resolve(projectDirectory, "node_modules", "wrangler", "bin", "wrangler.js");
 const reactRouterCli = resolve(projectDirectory, "node_modules", "@react-router", "dev", "bin.cjs");
 const baseUrl = "http://127.0.0.1:4173";
+
+function isolatedLocalEnvironment(base = process.env) {
+  mkdirSync(persistPath, { recursive: true });
+  mkdirSync(xdgConfigPath, { recursive: true });
+  mkdirSync(xdgStatePath, { recursive: true });
+  mkdirSync(tempPath, { recursive: true });
+  return {
+    ...base,
+    APPDATA: xdgConfigPath,
+    LOCALAPPDATA: xdgStatePath,
+    TEMP: tempPath,
+    TMP: tempPath,
+    XDG_CONFIG_HOME: xdgConfigPath,
+    XDG_STATE_HOME: xdgStatePath,
+    CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false",
+  };
+}
 
 function runWrangler(args) {
   const result = spawnSync(process.execPath, [wranglerCli, ...args], {
@@ -20,14 +39,14 @@ function runWrangler(args) {
     timeout: 600_000,
     maxBuffer: 8 * 1024 * 1024,
     stdio: "inherit",
-    env: { ...process.env, XDG_CONFIG_HOME: xdgConfigPath, XDG_STATE_HOME: xdgStatePath },
+    env: isolatedLocalEnvironment(),
   });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`Wrangler local terminó con código ${result.status ?? "desconocido"}.`);
 }
 
 function localWorkerEnvironment() {
-  const env = { ...process.env };
+  const env = isolatedLocalEnvironment();
   for (const name of [
     "CLOUDFLARE_API_TOKEN",
     "CLOUDFLARE_API_KEY",
@@ -46,10 +65,16 @@ function localWorkerEnvironment() {
     BETTER_AUTH_SECRET: randomBytes(32).toString("base64url"),
     VECIDYA_LOCAL_DEMO: "1",
     VECIDYA_LOCAL_DEMO_CONFIG: configPath,
+    VECIDYA_LOCAL_DEMO_ENV_DIR: configDirectory,
     AUTHZ_D1_PERSIST_TO: persistPath,
     LOCAL_DEMO_BASE_URL: baseUrl,
     XDG_CONFIG_HOME: xdgConfigPath,
     XDG_STATE_HOME: xdgStatePath,
+    APPDATA: xdgConfigPath,
+    LOCALAPPDATA: xdgStatePath,
+    TEMP: tempPath,
+    TMP: tempPath,
+    CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV: "false",
     DIAGNOSTIC_REPORT_FUNNEL_ENABLED: "false",
     DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED: "false",
     DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED: "false",
@@ -72,6 +97,7 @@ function queryLocalD1(sql) {
     encoding: "utf8",
     timeout: 120_000,
     maxBuffer: 4 * 1024 * 1024,
+    env: isolatedLocalEnvironment(),
   });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`No se pudo consultar la D1 local: ${result.stderr || result.stdout}`);
