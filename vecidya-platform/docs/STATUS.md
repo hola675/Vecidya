@@ -1,4 +1,8 @@
 
+## QA local aislado para revisión integral (2026-11-11)
+
+**LISTO LOCALMENTE:** `dev:local-demo` y el seed idempotente dejan cuatro organizaciones sintéticas con perfil, ocho assets PNG registrados en R2 local y cuatro borradores MiniWeb V2 privados, usando D1/R2 independientes en `.wrangler/local-demo`. Los hosts `.test` se muestran como contenido de prueba, sin DNS ni dominio conectado. No hay publicaciones ni licencias ficticias. El entorno facilita inspección visual/funcional, pero no es staging, no cambia la matriz de capacidades de producción y no acredita despliegue ni accesibilidad certificada. Instrucciones y límites: `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
+
 # BUSINESS-SECTOR-PROFILE-PICKER-01 — categoría asistida del perfil (2026-11-11)
 
 El editor `/app/business-profile` usa el catálogo transversal como sugerencias buscables. Las sugerencias no asignan categoría automáticamente; una elección explícita cambia la etiqueta. Las categorías legacy desconocidas se conservan hasta que el usuario elija otra opción, y el selector se reinicia al cambiar de organización. No hay migración ni cambio de schema, no se infiere categoría o score y Diagnóstico V9 permanece separado. Sin deploy ni publicación.

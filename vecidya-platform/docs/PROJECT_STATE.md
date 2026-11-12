@@ -1,3 +1,7 @@
+## QA local para recorrido de plataforma (2026-11-11)
+
+Hay un entorno local aislado para recorrer perfil y MiniWeb con cuatro organizaciones sintéticas, ocho imágenes PNG y un borrador V2 privado por organización. Inicia con `pnpm run dev:local-demo`, carga datos con `pnpm run seed:local-demo` y verifica conteos con `pnpm run status:local-demo`. Usa D1/R2 local y loopback; dominios `.test` son contenido de ejemplo, no resolución ni soporte de dominio personalizado. Los borradores se mantienen sin publicar y no requieren licencias ficticias. No representa un entorno publicado; ver límites y pasos en `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
+
 ## MiniWeb V2 — contrato funcional canónico (decisiones del usuario, 2026-11-08)
 
 MiniWeb V2 reemplazará completamente MiniWeb V1. Cada MiniWeb pertenece a una organización; `owner` y `admin` pueden editar. El destino público final es `/vecindario/[slug]`; no se requieren dominios personalizados porque los sitios viven bajo Vecindario V2. El flujo editorial contempla `borrador → revisión → publicado`, con autoguardado y botón explícito **Guardar**. Quién puede aprobar la revisión y si owner/admin pueden publicar directamente siguen pendientes.

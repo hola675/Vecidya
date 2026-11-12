@@ -1,3 +1,9 @@
+## Entorno QA local aislado (2026-11-11)
+
+`pnpm run dev:local-demo` ejecuta la aplicación en `http://127.0.0.1:4173`, con `wrangler.local-demo.jsonc`, persistencia D1/R2 bajo `.wrangler/local-demo`, email falso y clave de autenticación aleatoria por inicio. No configura rutas públicas ni `workers.dev`; el servidor local se enlaza a loopback. Las cuatro organizaciones `qa-local-*`, sus perfiles, medios y borradores se crean con `pnpm run seed:local-demo`; consulta `docs/TESTING.md` para el recorrido y la cuenta QA.
+
+Los dominios `.test` solo son valores sintéticos de perfil/contenido. No hay resolución DNS, dominio personalizado ni publicación MiniWeb. El entorno no es staging ni producción. No se aplican migraciones remotas, no se ejecuta Wrangler remoto ni se despliega. Los flags de purga y funnel del fixture permanecen desactivados; esta configuración no cambia los gates F02/F08 ni la activación operativa de V9. No existe evidencia HTTP pública fechada para este entorno local.
+
 # Entornos y release de producción 0.9.2 (2026-10-29)
 
 PR #213 quedó integrada en `main@8ed60e51ecc295c5ef897c95ca0f6dd3ba7305a9`; `package.json` fija `0.9.2`. Incluye el refinamiento global de interfaz del PR #210 y la entrega de seguridad/accesibilidad/progreso de Aprende previamente candidata como `0.9.1`.

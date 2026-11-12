@@ -1,4 +1,8 @@
 
+# 2026-11-11 — Entorno QA local aislado para recorrido integral
+
+Se añadieron comandos para iniciar un Worker local aislado, cargar de manera idempotente cuatro organizaciones sintéticas, perfiles, ocho imágenes geométricas y borradores MiniWeb V2, y consultar el estado de sus datos. Los hosts `*.vecidya.test` son texto de prueba; no se conectan ni publican. La revisión visual detectó que el editor ofrecía un enlace a una página pública inexistente en borradores; ahora muestra el estado privado hasta que exista una publicación activa. No cambia el entorno de producción, sus gates ni la activación de V9. Evidencia y límites en `docs/TESTING.md`.
+
 # 2026-11-04 — MiniWeb V2 IMP-09/10/11 — integrada por PR #238
 
 - Integra las ampliaciones auditadas de capacidad Cuadra (+3), gestión administrativa y reserva atómica de publicaciones; reintentar una revisión activa devuelve conflicto sin cambiar el puntero.
