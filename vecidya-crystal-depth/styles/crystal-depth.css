@@ -923,15 +923,6 @@ a {
   --surface-copy: #092b60;
   --surface-muted: #31547b;
   --surface-edge: rgba(255,255,255,.9);
-  background:
-    radial-gradient(ellipse at 82% 4%, rgba(255,255,255,.94), transparent 45%),
-    linear-gradient(145deg, rgba(255,255,255,.98), rgba(215, 239, 253, .96) 42%, rgba(151, 196, 229, .86));
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.96),
-    inset 1px 0 1px rgba(255,255,255,.82),
-    inset 0 -4px 9px rgba(39, 83, 125, .22),
-    0 2px 0 rgba(255,255,255,.9),
-    0 17px 30px rgba(0, 8, 34, .25);
 }
 
 .surface-card[data-tone="orange"] {
@@ -2649,10 +2640,6 @@ a {
   .topbar,
   .sidebar {
     background-color: rgba(7, 35, 85, .97);
-  }
-
-  .surface-card[data-tone="ice"] {
-    background: linear-gradient(145deg, #fff, #d7effd 55%, #9cc5e5);
   }
 }
 
