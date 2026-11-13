@@ -1,3 +1,9 @@
+# 2026-11-13 — auditoría de higiene documental
+
+- Se actualizaron el inventario del repositorio y las deudas de ZIP/capturas con el árbol versionado y físico de `origin/main@4a64954`; los hallazgos de esos dos residuos quedaron cerrados.
+- Se registró la clasificación pendiente de 35 bitácoras/ensayos MiniWeb y se deduplicaron dos IDs repetidos en `STATUS.md`. El estado del PDF identificado queda abierto porque `TESTING.md` y la matriz no concuerdan sobre el PASS.
+- No se eliminó evidencia histórica ni se modificó código, esquema, configuración, dependencias o publicación.
+
 # 2026-11-11 — UX-PREMIUM-SYSTEM-02 — fundación visual compartida
 
 - La guía canónica consolida composición, alineación, espacio negativo, paleta azul/cyan/naranja, superficies, relieve, Vico, iconografía, Vecindario, movimiento, variantes de fondo y QA. Incluye dos imágenes originales como referencias de acabado.

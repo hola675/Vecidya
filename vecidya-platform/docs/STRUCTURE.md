@@ -104,10 +104,9 @@ D:\Proyectos\Vecidya            (raíz Git)
     ├── worker/                 durable-objects/, queues/, workflows/ vacíos
     ├── public/                 assets/selected/** + assets/catalog/** (PNG comerciales y estados diagnósticos) y brand/vecidya-app-icon.png
     ├── tests/e2e/              33 `.mjs` + 4 `.ps1` (ver TESTING.md); tests/unit/ (7 suites del Diagnóstico + 2 archivos de personas + 1 suite de slug de Business Profile + 2 hooks de resolución TS); integration/ vacío
-    ├── docs/                   15 archivos Markdown tras consolidar los seis informes de fase; 12 pertenecen al inventario canónico de GOVERNANCE.md y 3 son anexos (CRM_PORTAL_01, VECIDYA-UI-UX y APRENDE_EDITORIAL_AUDIT_04B.md)
-    ├── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
-    │   tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
-    └── vecidya-platform.zip    snapshot binario obsoleto versionado (deuda REPO-HYGIENE-001)
+    ├── docs/                   69 archivos Markdown versionados; 16 documentos canónicos según GOVERNANCE.md y 35 registros en auditorias/miniweb-v2
+    └── wrangler.jsonc, drizzle.config.ts, react-router.config.ts, vite.config.ts,
+        tsconfig*.json, better-auth.config.ts, worker-configuration.d.ts (generado)
 ```
 
 `legacy/` (ignorado por Git), `archive/` y `resources/` (eliminados del árbol en `ec79b22`) no forman parte de este clon.
