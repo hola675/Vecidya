@@ -986,9 +986,22 @@ git diff --check
 
 ## VECIDYA-LEGACY-00 — inventario y gates de compatibilidad
 
-**Resultado `LEGACY_INVENTORY_READY`; baseline `50026d00c59269554500a4f2552fe7385e35ec7f`.** Auditoría de fuentes versionadas; no se ejecutaron tests ni se reabrieron QA-03B, RESULT-UX-02 o FUNNEL-01B. Los cambios y archivos locales sin commit quedaron fuera del inventario.
+**Reconciliación local 2026-11-13 sobre `main@4a649544`:** `node tests/e2e/diagnostic-v3-qa03b-check.mjs` PASS con seis recorridos sintéticos (`open-no-clients`, `paused-history`, `institutional-funding`, `education-third-party`, `remote-physical-appointments`, `hybrid-retail-checkout`), Worker/Vite Cloudflare local y Edge. Comprobó replay del Worker, resumen allowlisted, sesión schema 8, reanudación/concurrencia, imágenes, overflow, reduced motion e informe/PDF local. ACT-04 falló en Vite DEV y `vite preview`: DEV habilita el CTA por diseño y preview heredó `DIAGNOSTIC_REPORT_FUNNEL_ENABLED=true` del config top-level. `wrangler.jsonc` declara el funnel y ambas compuertas de purga `true` top-level, staging `false`. ACT-04 pasó 3/3 en Worker Cloudflare local con overrides explícitos `false` para funnel y purga; esto valida la ruta local cerrada, no el runtime remoto/desplegado. Focales anteriores reportadas por grupos: 23/23, 14/14, 98/98 y 31/31; hay solapamiento entre grupos, no sumarlos como pruebas únicas ni suite completa. Sin D1 remota, Gmail real, deploy ni HTTP pública fechada.
 
-| Conjunto en HEAD | Conteo | Clase | Consumidor/cobertura y riesgo |
+**Resultado del inventario: `LEGACY_INVENTORY_READY`, no limpieza.** El baseline `50026d00c59269554500a4f2552fe7385e35ec7f` es histórico y no se debe usar como censo actual de consumidores. El runtime QA-03B ya está integrado; el nuevo scan de retirables debe ejecutarse sobre el SHA de un checkpoint autorizado específico. No borrar legado en este bloque.
+
+Para reproducir ACT-04 con las compuertas apagadas en local, primero ejecutar `pnpm run build`; en una terminal iniciar el Worker local y en otra lanzar Playwright. `wrangler dev --local` mantiene DB/R2 locales; los overrides solo pertenecen a ese proceso y no modifican `wrangler.jsonc`:
+
+```powershell
+pnpm wrangler dev --local --ip 127.0.0.1 --port 5173 --var DIAGNOSTIC_REPORT_FUNNEL_ENABLED:false --var DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_ENABLED:false --var DIAGNOSTIC_IDENTIFIED_REPORT_PURGE_APPROVED:false
+$env:BASE_URL = 'http://127.0.0.1:5173'
+$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
+node tests/e2e/diagnostic-act-04-check.mjs
+```
+
+La tabla de clasificación y conteos siguiente corresponde al inventario estático del baseline `50026d0`, no al HEAD actual. Es material de referencia y no autoriza retirar ninguna ruta o archivo.
+
+| Conjunto en baseline `50026d0` | Conteo | Clase histórica | Consumidor/cobertura y riesgo conocido |
 | --- | ---: | --- | --- |
 | `tests/unit/diagnostic/**` | 135 archivos, incluidos helpers/fixtures | `KEEP` / `ARCHIVE` | DIAG-002, V3, caracterización, sesión, QA-03B, ACT R3–R8, informe, privacy, FUNNEL. No asumir todos los archivos son tests ejecutables. |
 | `tests/e2e/*diagnostic*` | 16 archivos | `KEEP` | Flujo público, FUNNEL-01B, preview, sesión/ACT/QA, PDF, resultado y bundle. |
@@ -997,11 +1010,11 @@ git diff --check
 | `characterization.test.ts` + fixture | 2 | `KEEP` | Freeze semántico legacy; no rebaselinear al retirar. |
 | E2E/patch ACT-03.4B PDF | varias | `ARCHIVE` hasta decisión PDF | Gate B parcial; automation PDF no equivale a PAC/NVDA/revisión humana. |
 
-Grafo: `routes.ts` → `diagnostic.tsx` → `AnonymousDiagnosticFlow`/session key 2 → POST `/api/diagnostic/anonymous-summary` → replay `QUESTION_BANK_V2`/planner/session → `AnonymousDiagnosticSummaryV1`. QA-03B entra sólo por `dev-diagnostic-qa03b*` a `features/diagnostic/qa03b/**`; ACT root entra por `dev-diagnostic-candidate*` a `qbv2-candidate-*` raíz. Ambos comparten `DiagnosticReport` y metodología. Consultas/schema legacy no mostraron imports desde app versionada; journal/migraciones siguen vigentes localmente.
+El grafo histórico del baseline `50026d0` describía `/diagnostico` → `AnonymousDiagnosticFlow`/session key 2 → replay `QUESTION_BANK_V2`. Ya no representa el runtime: el `/diagnostico` integrado usa QA-03B/replay Worker y sesión schema/key 8. Las referencias V3/ACT aquí documentan compatibilidad y consumidores históricos; deben revalidarse por import, ruta y prueba en el SHA de cualquier retirada. Las migraciones no se borran ni reescriben.
 
-Antes de un cutover autorizado: `pnpm run test:unit`, `characterization`, suites session/anonymous-summary/diagnostic-report/readiness, QA-03B R3–R8 y ACT-01–03; E2E `diagnostic`, `funnel-01b`, candidate ACT/QA, metodología/reporte; typecheck/build; bundle, imports, routes y storage-key scans. Después de cada lote: repetir gates afectados y validar Worker local, resumen allowlist/no-store, no informe anónimo, rutas dev ausentes en build, sesión key 2 sin mutación, identidad exacta, reload/resume/edit/cross-tab y caracterización. D1 exige decisión específica, schema/journal consistente y migración compensatoria si aplica; jamás borrar/rewrite migraciones. Sin remote tests/D1 sin autorización.
+Gate previo a cualquier retirada: la habilitación de funnel/purga (`true` top-level, staging `false`) consta como aprobada en `STATUS.md` (`DIAG-IDENTIFIED-RETENTION-APPROVAL-001`); no cambiar flags como parte de este test. Verificar el entorno objetivo mediante procedimiento autorizado; ejecutar `pnpm run test:unit`, characterization, suites de sesión/resumen/reporte/readiness, QA-03B R3–R8 y ACT-01–03; E2E público, FUNNEL-01B, QA-03B, ACT-04 en Worker local con override de flag cerrado, metodología/reporte; typecheck/build; bundle/import/routes/storage-key scans. Vite DEV habilita el CTA y preview sin override hereda configuración, por lo que ninguno certifica el caso cerrado. Después de cada lote, repetir gates afectados y validar Worker local, allowlist/no-store, ausencia de informe anónimo, rutas dev ausentes en build, identidad exacta, reload/resume/edit/cross-tab y caracterización. D1 exige decisión específica, schema/journal consistente y migración compensatoria si aplica; jamás borrar/rewrite migraciones. No ejecutar E2E remoto ni D1 remota sin autorización.
 
-No se ejecutó validación de código en este checkpoint: la auditoría clasifica evidencia ya versionada y debe dejar intacto el estado local.
+La evidencia completa del orden de retirada, responsabilidades pre/post, rollback y límites se conserva en `ARCHITECTURE.md` → VECIDYA-LEGACY-00. Cualquier retirada de datos/tablas, publicación y cierre del período de rollback son gates separados y requieren autorización explícita.
 
 ## DIAG-V3-RESULT-UX-02 — aceptación visual del resultado (2026-10-12)
 
