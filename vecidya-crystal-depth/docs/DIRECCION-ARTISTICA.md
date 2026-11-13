@@ -1,6 +1,6 @@
 # Dirección artística — Crystal Depth
 
-Versión 0.4 · 2026-11-12 · Estado: biblioteca local implementada; falta confirmación interactiva y aprobación visual integral, no apta para producción.
+Versión 0.5 · 2026-11-12 · Estado: biblioteca local ampliada; falta confirmación interactiva y aprobación visual integral, no apta para producción.
 
 ## Objetivo
 
@@ -63,17 +63,18 @@ La lámina visual inicial es exploratoria: incluye un robot que NO corresponde a
 
 La biblioteca se revisó después de implementar, y se corrigieron los defectos encontrados en cada pasada:
 
-1. **Identidad:** se retiraron la tienda dibujada en CSS, el pin emoji y el muestrario de glifos genéricos. La escena principal usa Vico y el símbolo Vecidya oficiales; la galería separa ocho propuestas PNG Crystal y siete iconos del catálogo oficial. WhatsApp se rasteriza desde su SVG oficial.
-2. **Composición:** el fondo ambiental aprobado se mantiene como una capa independiente. Vico, tarjetas flotantes, controles y escenas se renderizan como elementos HTML/CSS que conservan escala propia y reflujo responsive.
+1. **Identidad:** se retiraron la tienda dibujada en CSS, el pin emoji y el muestrario de glifos genéricos. La escena principal usa Vico y el símbolo Vecidya oficiales; la galería ofrece once variantes PNG Crystal para iconos de diagnóstico/servicio/estado y conserva sus originales en el repositorio. WhatsApp se rasteriza desde su SVG oficial.
+2. **Composición:** el fondo ambiental aprobado se mantiene como una capa independiente. Vico, las 140 muestras de asset, tarjetas flotantes, controles y escenas se renderizan como elementos HTML/CSS que conservan escala propia y reflujo responsive. Las ilustraciones completas se presentan dentro de placas de catálogo y no sustituyen controles.
 3. **Materia:** las seis variantes comparten bisel, canto inferior, reflejo, transparencia y elevación. El hielo usa texto oscuro; los demás tonos mantienen texto claro.
 4. **Iluminación:** se adoptó azul eléctrico con líneas cian y naranja, horizonte reflectante y sombras por plano. Se redujo la intensidad en formularios, tablas y mensajes para proteger lectura.
 5. **Accesibilidad (revisión de código):** se añadieron salto al contenido, foco visible, etiquetas y nombres accesibles, pestañas con flechas/Home/End, diálogo nativo, validación local, estados con texto, navegación por sección, búsqueda con Escape, reglas responsive, movimiento reducido y alternativa sin blur. La comprobación visual interactiva está pendiente por bloqueo del navegador a localhost en esta sesión.
-6. **Viabilidad técnica (revisión estática):** HTML, CSS y JavaScript nativos; fondos WebP y nueve PNG separados; resto de activos oficiales referenciados desde sus rutas originales. No hay cambios de plataforma, MiniWeb2 ni dependencias nuevas. La sintaxis, rutas y diff se comprobaron localmente; controles y breakpoints aún necesitan verificación en navegador.
+6. **Viabilidad técnica (revisión estática):** HTML, CSS y JavaScript nativos; fondos WebP, 128 miniaturas WebP optimizadas, doce PNG locales (once propuestas y el PNG de WhatsApp) e índice con dimensiones de origen y vista para los 140 assets de `public/assets/`. La tarjeta abre el original separado. Búsqueda, categorías, orden y acordeón son funcionales por código. No hay cambios de plataforma, MiniWeb2 ni dependencias nuevas. La sintaxis, rutas y diff se comprobaron localmente; interacción visual y breakpoints aún necesitan verificación en navegador.
 
-La aprobación final del usuario sigue pendiente para la fuerza del vidrio, el encuadre de Vico en pantallas estrechas, la nueva escena clara y la familia de iconos PNG en el contexto de la página completa. Esta revisión no autoriza integración.
+La aprobación final del usuario sigue pendiente para la fuerza del vidrio, el encuadre de Vico en pantallas estrechas, la nueva escena clara, la familia de iconos PNG y el tratamiento general del inventario de assets. Esta revisión no autoriza integración.
 
 ## Changelog
 
-- v0.4: tema claro/oscuro y variantes de fondo; propuestas de iconos PNG; seis revisiones estáticas documentadas. Interacciones y composición responsive pendientes de comprobación en navegador.
+- v0.5: catálogo completo con filtros y metadatos, once iconos Crystal propuestos y nuevas muestras de acordeón; pendiente verificación visual en navegador.
+- v0.4: tema claro/oscuro y variantes de fondo; seis revisiones estáticas documentadas.
 - v0.3: biblioteca visual premium, fondo ambiental aprobado y activos oficiales.
 - v0.2: dirección artística, capas, materiales, revisión crítica y criterios de aprobación.

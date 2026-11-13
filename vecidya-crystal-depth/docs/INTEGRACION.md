@@ -19,13 +19,13 @@ El repositorio usa TypeScript/React y CSS. Existen vecidya-platform/app/componen
 - Añadir tokens opt-in a la base de estilos existente.
 - Construir variantes React tipadas, sin reemplazar contratos de Button y Card.
 - Auditar los módulos y el registro de MiniWeb2 antes de exponer controles de material en su editor.
-- Catalogar y optimizar assets (SVG oficial se conserva en la plataforma; esta biblioteca presenta ocho propuestas Crystal en PNG y exporta WhatsApp como PNG para su galería).
+- Catalogar y optimizar assets (SVG oficial se conserva en la plataforma; esta biblioteca presenta once propuestas Crystal en PNG y exporta WhatsApp como PNG para su galería).
 - Migrar pantallas una a una y verificar compilación, accesibilidad y regresiones.
 
 No se ha desplegado ni ejecutado la batería de pruebas de la aplicación.
 
 ## Estado de Crystal Depth — 2026-11-12
 
-Existe una biblioteca visual independiente en vecidya-crystal-depth/biblioteca.html, con estilos propios, temas claro/oscuro, muestras funcionales y activos oficiales referenciados desde el catálogo actual. Los fondos generados optimizados y PNG de iconos propuestos se conservan dentro de vecidya-crystal-depth/assets/.
+Existe una biblioteca visual independiente en vecidya-crystal-depth/biblioteca.html, con estilos propios, temas claro/oscuro, muestras funcionales y un catálogo navegable de 140 assets. Once iconos tienen propuestas Crystal en PNG; los originales permanecen intactos. Los fondos y variantes optimizados se conservan dentro de vecidya-crystal-depth/assets/.
 
 Esta entrega no modifica ni importa componentes de la plataforma o MiniWeb2. La biblioteca todavía necesita aprobación visual integral; no representa una migración, publicación o validación de producción.
