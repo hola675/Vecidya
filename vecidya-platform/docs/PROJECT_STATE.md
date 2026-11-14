@@ -1,3 +1,14 @@
+## UX-PREMIUM-SYSTEM-02 — sistema visual compartido (candidato local, 2026-11-11)
+
+La guía oficial en `docs/design-system/VECIDYA-UI-UX.md` consolida composición, retícula, espacio negativo, niveles de vidrio y relieve, paleta, tipografía, iconografía, usos de Vico, Vecindario/rutas, reglas por superficie, movimiento, prompts y QA. Incluye dos imágenes originales como referencias de acabado. En el código, `visual-system.css` aporta atmósferas, superficies reutilizables y escalas de composición; Card expone variantes de superficie y profundidad, y las tarjetas compartidas las consumen. El encabezado público usa una capa explícita para mantener navegación móvil y desplegables por encima del hero. Typecheck, build, prueba unitaria focal de experiencia (6/6) y navegación Playwright PASS (2026-11-12). El alcance es una fundación compartida, no una certificación página por página. No cambia contenido funcional, datos, permisos, rutas ni publicación.
+
+## Diagnóstico público — QA-03B y terminación legacy (2026-11-13)
+
+En `main@4a649544`, `/diagnostico` ejecuta QA-03B y el Worker replay versionado. Contrato actual: `reviewed-evidence-v8`, `qbv2-answers-v6`, sesión schema/key 8, replay v6. Seis recorridos E2E locales sintéticos PASS. ACT-04 falló en Vite DEV/preview porque DEV habilita el CTA por diseño y preview heredó el flag top-level `true`; pasó 3/3 en Worker local con funnel y switches de purga sobreescritos a `false`. `wrangler.jsonc` declara esos flags `true` top-level y staging `false`; no se confirmó configuración remota/desplegada. No se declara publicación, HTTP pública, envío Gmail ni aislamiento productivo. VECIDYA-LEGACY-00 sigue como inventario listo, sin limpieza autorizada; preservar historial V3 hasta autorización/cierre de rollback y nuevo inventario de consumidores.
+## QA local para recorrido de plataforma (2026-11-11)
+
+Hay un entorno local aislado para recorrer perfil y MiniWeb con cuatro organizaciones sintéticas, ocho imágenes PNG y un borrador V2 privado por organización. Inicia con `pnpm run dev:local-demo`, carga datos con `pnpm run seed:local-demo` y verifica conteos con `pnpm run status:local-demo`. Usa D1/R2 local y loopback; Wrangler/Vite mantienen configuración y archivos de entorno separados de la raíz para no cargar sus secretos. Los dominios `.test` son contenido de ejemplo, no resolución ni soporte de dominio personalizado. Los borradores se mantienen sin publicar y no requieren licencias ficticias. No representa un entorno publicado; ver límites y pasos en `docs/TESTING.md` y `docs/ENVIRONMENTS.md`.
+
 ## MiniWeb V2 — contrato funcional canónico (decisiones del usuario, 2026-11-08)
 
 MiniWeb V2 reemplazará completamente MiniWeb V1. Cada MiniWeb pertenece a una organización; `owner` y `admin` pueden editar. El destino público final es `/vecindario/[slug]`; no se requieren dominios personalizados porque los sitios viven bajo Vecindario V2. El flujo editorial contempla `borrador → revisión → publicado`, con autoguardado y botón explícito **Guardar**. Quién puede aprobar la revisión y si owner/admin pueden publicar directamente siguen pendientes.
@@ -713,7 +724,7 @@ Soportado y probado (`pe-b` pasa): un usuario puede pertenecer a varias organiza
 | `slug` | `0003` | `^[a-z0-9]+(-[a-z0-9]+)*$` ≤80; único global (el servidor rechaza colisiones con 400; no hay sufijo automático) | sí; sugerido en cliente desde el nombre visible (recortado a 80) solo mientras el perfil no se ha guardado con éxito y el usuario no lo ha editado; tras el primer guardado queda estable (`bc93a31` + SLUG-005B) | sí | URL | enlace | `url` | IMPL |
 | `short_description` | `0003` | ≤280; requerido para publicar | sí | sí | sí | sí | fallback | IMPL |
 | `description` | `0003` | ≤5000 | sí (input de una línea) | sí | sí | no | `description` | IMPL (editor débil) |
-| `category` | `0003` | ≤100 libre; requerido para publicar | sí | sí | sí | eyebrow | — | IMPL (sin LD; texto libre fragmenta filtros) |
+| `category` | `0003` | ≤100 libre; requerido para publicar | sí, selector asistido: busca entre 15 sectores y «Otra actividad»; una selección explícita guarda la etiqueta pública exacta; categoría legacy no reconocida se conserva | sí | sí | eyebrow | — | IMPL (sin LD; no asigna sector ni score automáticamente; no cambia el contrato textual) |
 | `city`, `country` | `0003` | ≤120 | sí | sí | sí | sí | `address` | IMPL |
 | `phone` | `0003` | ≤50 sin formato | sí | sí | `tel:` | no | `telephone` | IMPL |
 | `public_email` | `0003` | regex ≤254 | sí | sí | `mailto:` | no | `email` | IMPL |
@@ -860,4 +871,3 @@ App, Admin y editor/preview MiniWeb V2 reciben estilos premium encapsulados. El 
 ## React #418 — reproducción App/Admin (2026-11-02)
 
 PR #225 quedó integrada en `main@a457e7e4`. El checkpoint `fix/react-418-local-test-environment` añade `pnpm run test:e2e:react-418`, que provisiona una D1 temporal local con cuenta, organización, membresía, acceso de plataforma, actividad sintética y metadata `local-test-fixture`. En `origin/main@e92c10e9`, Chromium con `America/New_York` reprodujo React #418 en `/app/internal`: el espacio de `p. m.` difería (U+0020 SSR, U+00A0 navegador). Un formateador fijo UTC−5 se aplica ahora a las fechas visibles de las rutas internas identificadas. E2E focal de `/app/internal` compara SSR/hidratación y abre el listado interno de integraciones; pasa y verifica que Wrangler elimina la base. Unitarias focales 2/2; CI 1814/1814 unitarias, typecheck, build y regresión PASS. No usa proveedor real. La corrección del escenario y rutas identificadas no cierra la deuda global de App/Admin: faltan rutas y estados protegidos por certificar.
-

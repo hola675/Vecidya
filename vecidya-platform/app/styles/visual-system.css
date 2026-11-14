@@ -1,0 +1,174 @@
+/* Lenguaje de superficies y composición compartido por las experiencias propias de Vecidya. */
+:is(.public-site, .app-shell, .admin-shell, .auth-shell, .foundation-shell) {
+  position: relative;
+  isolation: isolate;
+}
+
+.public-site {
+  background-color: var(--v-canvas);
+  background-image:
+    radial-gradient(ellipse at 16% 0%, rgb(8 204 243 / 9%), transparent 29rem),
+    radial-gradient(ellipse at 88% 4%, rgb(251 131 0 / 5%), transparent 19rem),
+    radial-gradient(ellipse at 78% 76%, rgb(8 134 249 / 6%), transparent 35rem),
+    linear-gradient(164deg, #fbfdff 0%, #f7faff 43%, #fff 73%, #f8fbff 100%);
+}
+
+:is(.app-shell, .admin-shell) {
+  background-color: var(--v-canvas);
+  background-image:
+    radial-gradient(ellipse at 93% 2%, rgb(8 134 249 / 12%), transparent 29rem),
+    radial-gradient(ellipse at 0% 96%, rgb(251 131 0 / 5%), transparent 38rem),
+    radial-gradient(ellipse 62rem 28rem at 108% 16%, transparent 77%, rgb(8 204 243 / 8%) 77.3%, transparent 77.7%),
+    radial-gradient(ellipse 44rem 20rem at -12% 72%, transparent 78%, rgb(8 134 249 / 6%) 78.3%, transparent 78.7%),
+    var(--v-canvas);
+}
+
+:is(.auth-shell, .foundation-shell) {
+  background-color: var(--v-canvas);
+  background-image:
+    radial-gradient(ellipse at 90% 5%, rgb(8 204 243 / 12%), transparent 28rem),
+    radial-gradient(ellipse at 7% 93%, rgb(251 131 0 / 6%), transparent 24rem),
+    linear-gradient(145deg, #f7faff, #fff 62%, #f5f9ff);
+}
+
+.public-site .site-header {
+  position: relative;
+  z-index: 20;
+  border: 1px solid var(--v-line);
+  border-top: 0;
+  border-radius: 0 0 var(--v-radius-card) var(--v-radius-card);
+  padding-inline: clamp(1rem, 3vw, 1.5rem);
+  background: rgb(255 255 255 / 78%);
+  box-shadow: 0 0.6rem 1.7rem rgb(7 35 77 / 5%), inset 0 1px rgb(255 255 255 / 86%);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
+  backdrop-filter: blur(18px) saturate(1.12);
+}
+
+:is(.public-site, .app-shell, .admin-shell) .card {
+  border-color: color-mix(in srgb, var(--v-blue-700) 13%, transparent);
+  background-color: var(--v-surface-glass-strong);
+  box-shadow: var(--v-shadow-surface);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.v-surface {
+  border: 1px solid var(--v-line);
+  border-radius: var(--v-radius-card);
+  background: var(--v-surface-glass);
+  box-shadow: var(--v-shadow-surface);
+  -webkit-backdrop-filter: blur(16px) saturate(1.12);
+  backdrop-filter: blur(16px) saturate(1.12);
+}
+
+.v-surface[data-surface="glass"] {
+  border-color: color-mix(in srgb, var(--v-blue-700) 13%, transparent);
+  background: var(--v-surface-glass);
+}
+
+.v-surface[data-surface="solid"] {
+  border-color: var(--v-line);
+  background: rgb(255 255 255 / 97%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.v-surface[data-surface="highlight"] {
+  border-color: rgb(7 85 189 / 19%);
+  background:
+    radial-gradient(ellipse at 96% 0%, rgb(8 204 243 / 12%), transparent 20rem),
+    linear-gradient(145deg, rgb(255 255 255 / 90%), rgb(241 247 255 / 96%) 70%, rgb(255 247 236 / 90%));
+}
+
+.v-surface[data-depth="quiet"] { box-shadow: none; }
+.v-surface[data-depth="rest"] { box-shadow: var(--v-shadow-surface); }
+.v-surface[data-depth="raised"] { box-shadow: var(--v-shadow-surface-raised); }
+.v-surface[data-depth="floating"] { box-shadow: var(--v-shadow-surface-floating); }
+
+:where(.card.v-surface) {
+  border-radius: var(--v-radius-card);
+  padding: clamp(1rem, 2.2vw, 1.6rem);
+}
+
+.v-stack { display: grid; gap: var(--v-space-4); }
+.v-stack--tight { gap: var(--v-space-2); }
+.v-stack--loose { gap: var(--v-space-6); }
+
+.v-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--v-space-3);
+}
+
+.v-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--v-grid-columns, 2), minmax(0, 1fr));
+  gap: clamp(var(--v-space-3), 2vw, var(--v-space-5));
+}
+
+.v-grid--2 { --v-grid-columns: 2; }
+.v-grid--3 { --v-grid-columns: 3; }
+.v-grid--auto { grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--v-grid-min, 16rem)), 1fr)); }
+
+.v-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--v-space-4) var(--v-space-6);
+}
+
+.v-section-heading > :is(h2, h3) { max-width: 24ch; margin: 0; }
+.v-section-heading > p { max-width: 68ch; margin: 0; color: var(--v-muted); line-height: 1.6; }
+
+:is(.public-site, .app-shell, .admin-shell) :is(a.button, button.button):active:not(:disabled) {
+  transform: translateY(1px) scale(0.985);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is(.public-site, .app-shell, .admin-shell) :is(a.button, button.button):hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  :is(a, button).v-surface {
+    transition: transform var(--v-duration-interaction) var(--v-ease), box-shadow var(--v-duration-interaction) var(--v-ease), border-color var(--v-duration-fast) ease;
+  }
+
+  :is(a, button).v-surface:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--v-shadow-surface-raised);
+  }
+}
+
+@media (max-width: 760px) {
+  .v-grid--3 { --v-grid-columns: 2; }
+  .v-section-heading { grid-template-columns: minmax(0, 1fr); align-items: start; }
+}
+
+@media (max-width: 560px) {
+  .v-grid--2,
+  .v-grid--3 { --v-grid-columns: 1; }
+
+  .public-site .site-header {
+    border-radius: 0 0 1rem 1rem;
+    padding-inline: 0.75rem;
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  :is(.public-site, .app-shell, .admin-shell) .card,
+  .v-surface[data-surface="glass"] {
+    background-color: rgb(255 255 255 / 96%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.public-site, .app-shell, .admin-shell, .auth-shell, .foundation-shell) *,
+  :is(.public-site, .app-shell, .admin-shell, .auth-shell, .foundation-shell) *::before,
+  :is(.public-site, .app-shell, .admin-shell, .auth-shell, .foundation-shell) *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

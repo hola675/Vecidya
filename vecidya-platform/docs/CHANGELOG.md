@@ -1,3 +1,15 @@
+# 2026-11-11 — UX-PREMIUM-SYSTEM-02 — fundación visual compartida
+
+- La guía canónica consolida composición, alineación, espacio negativo, paleta azul/cyan/naranja, superficies, relieve, Vico, iconografía, Vecindario, movimiento, variantes de fondo y QA. Incluye dos imágenes originales como referencias de acabado.
+- Se añade una capa común de atmósfera, superficies con niveles de opacidad y relieve, utilidades de retícula/espaciado e interacción; Card, MetricCard, JourneyGuide y ComparisonBars reutilizan el contrato. El encabezado público conserva sus menús por encima del hero al crear una capa explícita.
+- Typecheck, build, prueba unitaria focal de experiencia (6/6), navegación Playwright en 7 anchos y git diff --check PASS (RAN 2026-11-12). La capa define patrones compartidos, no certifica visualmente todas las rutas ni viewports. Sin cambios funcionales ni publicación.
+# 2026-11-11 — Aislamiento de entorno para QA local
+
+La configuración Wrangler y `envDir` de Vite del entorno demo ahora viven en `wrangler.local-demo/`, con lista de secretos requerida vacía; logs, temporales y estado quedan bajo `.wrangler/local-demo`. Esto evita cargar secretos de los archivos de entorno de la raíz de la plataforma. El arranque aislado de Wrangler se confirmó como local, con health HTTP 200 y seed 4/4 organizaciones, 8 assets y 4 borradores privados. Sin cambios en configuración productiva, gates, migraciones remotas o despliegue.
+
+# 2026-11-11 — Entorno QA local aislado para recorrido integral
+
+Se añadieron comandos para iniciar un Worker local aislado, cargar de manera idempotente cuatro organizaciones sintéticas, perfiles, ocho imágenes geométricas y borradores MiniWeb V2, y consultar el estado de sus datos. Los hosts `*.vecidya.test` son texto de prueba; no se conectan ni publican. La revisión visual detectó que el editor ofrecía un enlace a una página pública inexistente en borradores; ahora muestra el estado privado hasta que exista una publicación activa. No cambia el entorno de producción, sus gates ni la activación de V9. Evidencia y límites en `docs/TESTING.md`.
 
 # 2026-11-04 — MiniWeb V2 IMP-09/10/11 — integrada por PR #238
 
@@ -2808,3 +2820,8 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - Se añade una capa visual premium para App, Admin y editor/preview MiniWeb V2 con estilos acotados y variantes por familia de MiniWeb.
 - La prueba local confirma navegación inicial y responsive de App/MiniWeb; falla en el foco del drawer Admin móvil. Validación final incompleta; ver `TESTING.md`.
 - Sin cambios funcionales, de esquema, D1 remota, merge ni despliegue. React #418 continúa independiente y sin resolver.
+## 2026-11-13 — reconciliación de QA-03B y terminación legacy
+
+- Se actualizaron las identidades QA-03B documentadas al contrato vigente del código: banco v8, respuestas v6, sesión schema/key 8 y replay v6.
+- Se registró la evidencia local de seis recorridos E2E PASS. ACT-04 falló en Vite DEV/preview con funnel heredado `true`; pasó 3/3 en Worker Cloudflare local al sobreescribir funnel y purga a `false`. La configuración top-level versionada declara esos flags `true` y staging `false`; el runtime remoto/desplegado no se consultó.
+- Se completó el plan de terminación de VECIDYA-LEGACY-00 con nuevos gates de autorización, inventario por SHA, rollback, lotes verificables y decisión de datos separada. No se retiró código ni se migraron/borraron datos; sin D1 remota, correo real, deploy o HTTP pública fechada.

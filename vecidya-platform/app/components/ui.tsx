@@ -50,13 +50,20 @@ export function Button({
   return <button className={`button button--${tone} ${className}`} type={type} {...props} />;
 }
 
+type CardProps = ComponentProps<"section"> & {
+  surface?: "glass" | "solid" | "highlight";
+  depth?: "quiet" | "rest" | "raised" | "floating";
+};
+
 export function Card({
   children,
   className = "",
+  surface = "glass",
+  depth = "rest",
   ...props
-}: ComponentProps<"section">) {
+}: CardProps) {
   return (
-    <section className={`card ${className}`} {...props}>
+    <section {...props} className={"card v-surface " + className} data-surface={surface} data-depth={depth}>
       {children}
     </section>
   );

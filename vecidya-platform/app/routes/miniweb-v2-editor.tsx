@@ -23,6 +23,10 @@ const templateCategories = [
 ] as const;
 const variantLabels = { base: "Clásico", pro: "Editorial", premium: "Impacto" } as const;
 
+export function meta() {
+  return [{ title: "Diseña tu sitio | Vecidya" }];
+}
+
 export async function loader({ context, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await requireOrganization(env, request);
@@ -182,7 +186,9 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       </Card> : <>
         <Card><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{isDirty ? "● Hay cambios sin guardar" : `✓ Borrador guardado · Revisión ${revision}`}</p>
           <p>Diseño: {MINIWEB_V2_FAMILY_CATALOG[data.state.site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}. Estilo: {variantLabels[data.state.site.visualVariant as MiniWebV2Variant] ?? "Personalizado"}.</p>
-          <p><a href={`/miniweb/${encodeURIComponent(data.state.site.id)}`} target="_blank" rel="noreferrer">Ver publicación (si existe)</a></p>
+          <p>{data.state.site.activePublicationId
+            ? <a href={`/miniweb/${encodeURIComponent(data.state.site.id)}`} target="_blank" rel="noreferrer">Ver sitio publicado</a>
+            : "Este borrador todavía no tiene una página pública."}</p>
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar cambios</Button>
             <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar sitio</Button></div>
         </Card>

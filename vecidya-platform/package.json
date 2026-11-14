@@ -16,6 +16,9 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
+    "dev:local-demo": "node scripts/local-demo-env.mjs dev",
+    "seed:local-demo": "node scripts/local-demo-seed.mjs",
+    "status:local-demo": "node scripts/local-demo-env.mjs status",
     "start": "react-router-serve ./build/server/index.js",
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",
     "test:e2e:aprende-public": "node --experimental-strip-types --import ./tests/unit/register-ts.mjs tests/e2e/aprende-public-qa-check.mjs",

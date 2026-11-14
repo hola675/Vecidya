@@ -34,7 +34,7 @@ test("los tres ámbitos usan la misma guía sin ampliar accesos", () => {
   assert.match(component, /export function MetricCard/);
   assert.match(component, /export function ProgressMeter/);
   assert.match(component, /export function ComparisonBars/);
-  assert.match(component, /<ol className="experience-journey__steps"/);
+  assert.match(component, /<ol className="experience-journey__steps v-grid v-grid--3">/);
   assert.match(component, /role="progressbar"/);
   assert.match(publicHome, /<JourneyGuide\s+area="public"/);
   assert.match(clientHome, /<JourneyGuide\s+area="client"/);

@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "qa-local-salud",
+    "organizationName": "QA local · Salud",
+    "displayName": "Vecidya QA · Perfil Salud",
+    "category": "Salud y bienestar",
+    "websiteUrl": "https://qa-salud.vecidya.test",
+    "publicEmail": "salud@vecidya.test",
+    "accent": "#147D78",
+    "background": "#DDF4EF"
+  },
+  {
+    "slug": "qa-local-comercio",
+    "organizationName": "QA local · Comercio",
+    "displayName": "Vecidya QA · Perfil Comercio",
+    "category": "Comercio y distribución",
+    "websiteUrl": "https://qa-comercio.vecidya.test",
+    "publicEmail": "comercio@vecidya.test",
+    "accent": "#C05B32",
+    "background": "#FBE9DB"
+  },
+  {
+    "slug": "qa-local-educacion",
+    "organizationName": "QA local · Educación",
+    "displayName": "Vecidya QA · Perfil Educación",
+    "category": "Educación y formación",
+    "websiteUrl": "https://qa-educacion.vecidya.test",
+    "publicEmail": "educacion@vecidya.test",
+    "accent": "#5A5EB4",
+    "background": "#E8E8FF"
+  },
+  {
+    "slug": "qa-local-tecnologia",
+    "organizationName": "QA local · Tecnología",
+    "displayName": "Vecidya QA · Perfil Tecnología",
+    "category": "Tecnología y comunicaciones",
+    "websiteUrl": "https://qa-tecnologia.vecidya.test",
+    "publicEmail": "tecnologia@vecidya.test",
+    "accent": "#2B648D",
+    "background": "#DDEFFD"
+  }
+]
