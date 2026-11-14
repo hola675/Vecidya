@@ -2826,3 +2826,8 @@ Reconciliación de trazabilidad del release ya publicado. No modifica producto: 
 - Se añade una capa visual premium para App, Admin y editor/preview MiniWeb V2 con estilos acotados y variantes por familia de MiniWeb.
 - La prueba local confirma navegación inicial y responsive de App/MiniWeb; falla en el foco del drawer Admin móvil. Validación final incompleta; ver `TESTING.md`.
 - Sin cambios funcionales, de esquema, D1 remota, merge ni despliegue. React #418 continúa independiente y sin resolver.
+## 2026-11-13 — reconciliación de QA-03B y terminación legacy
+
+- Se actualizaron las identidades QA-03B documentadas al contrato vigente del código: banco v8, respuestas v6, sesión schema/key 8 y replay v6.
+- Se registró la evidencia local de seis recorridos E2E PASS. ACT-04 falló en Vite DEV/preview con funnel heredado `true`; pasó 3/3 en Worker Cloudflare local al sobreescribir funnel y purga a `false`. La configuración top-level versionada declara esos flags `true` y staging `false`; el runtime remoto/desplegado no se consultó.
+- Se completó el plan de terminación de VECIDYA-LEGACY-00 con nuevos gates de autorización, inventario por SHA, rollback, lotes verificables y decisión de datos separada. No se retiró código ni se migraron/borraron datos; sin D1 remota, correo real, deploy o HTTP pública fechada.
