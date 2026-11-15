@@ -472,3 +472,73 @@ En la **misma subcuenta Exterminaya**, hacer clic en **«Automatización»** del
 
 ### Changelog E07
 - **2026-11-15:** etapa 06 y probabilidad 50 % verificadas, seis etapas documentadas; clasificado porcentaje por etapa y riesgos de forecast; siguiente pantalla Automatización.
+
+
+## E08 — Exterminaya > Automatización > Flujos de trabajo (lista)
+
+**Fecha:** 2026-11-15. **Evidencia:** captura aportada por usuario \`image(20261115-174456).png\`. **Alcance:** subcuenta **Exterminaya**, no Vecidya. **Estado:** inspección visual, sin modificar workflows ni ejecutar pruebas.
+
+### A. Navegación y opciones visibles
+- Sección lateral **Automatización**; pestañas **Flujos de trabajo**, **Visión general** y **Configuración global del flujo de trabajo**.
+- Página **Lista de flujos de trabajo**; pestañas «Todos los flujos ...», «Requiere revisión...», «Eliminado» y opción «Nueva lista inteligente».
+- Controles visibles: **Filtros avanzados**, **Crear carpeta**, **Cree usando IA**, **Crear flujo de trabajo**, búsqueda, diferentes vistas, ordenar/tiempo, «Personalizar lista» (atenuado), acciones por workflow, estadísticas, estado, fecha de creación/actualización, paginación **10/página**.
+- **No** se abrió el constructor, historial, triggers, filtros, acciones, errores, logs ni permisos de ninguno de los flujos.
+
+### B. Tres workflows visibles
+| ID E08 | Nombre literal en la lista | Estado UI | Total de inscritos | Inscripción activa | Última actualización mostrada | Fecha de creación mostrada |
+|---|---|---|---:|---:|---|---|
+| WF-A1 | Barrio \| A1 - Nueva oportunidad | Publicado | 1 | 0 | 2026-11-15 12:43 PM | 2026-11-02 02:41 PM |
+| WF-A2 | Barrio \| A2 - Seguimiento cotización | Publicado | 1 | 0 | 2026-11-15 12:44 PM | 2026-11-02 02:49 PM |
+| WF-A3 | Barrio \| A3 - Coordinación de servicio | Publicado | 0 | 0 | 2026-11-15 12:44 PM | 2026-11-02 02:51 PM |
+
+Los valores son los **mostrados en esta captura**: no prueban conversiones comerciales, nuevos prospectos, cumplimiento de pasos, entregabilidad, ausencia de errores ni que estén publicados en la subcuenta Vecidya.
+
+### C. Qué significa la evidencia y qué NO significa
+- **Publicado** significa susceptible de ejecución si se cumplen triggers/condiciones; sin conocer configuración, no se puede certificar que se active correctamente ni que sea seguro.
+- **Total de inscritos 1** en A1 y A2 evidencia contabilización de inscripción histórica. No confirma si corresponde a prueba, contacto real, ejecución exitosa, error, acción omitida o incluso a la misma persona.
+- **0 inscripción activa** en los tres significa que la tabla no muestra inscritos activos actualmente; podría ser funcionamiento normal o flujos que finalizan rápidamente. No inferir falla.
+- **A3 cero inscritos** tampoco prueba error; podría no haberse disparado todavía.
+- «Última actualización» solo informa cambios fechados de flujos, **no quién los hizo ni qué modificó**, ni es sinónimo de última ejecución.
+- Al estar en **Exterminaya**, no constituye evidencia de que la subcuenta **Vecidya** tenga instalada la biblioteca Barrio ni Ciudad.
+
+### D. Clasificación Vecidya (preliminar y condicionada a inspección interna)
+| Flujo | Hipótesis comercial | Verificación necesaria |
+|---|---|---|
+| A1 Nueva oportunidad | Barrio estándar comercial | ¿Trigger oportunidad/contacto/formulario? ¿Asignación? ¿Creación duplicada? ¿Tareas? |
+| A2 Seguimiento cotización | Barrio estándar comercial | ¿Cambio de etapa? ¿Esperas y condiciones? ¿Tareas internas o mensajes facturables? ¿Salida al ganar/perder? |
+| A3 Coordinación de servicio | **Pendiente de clasificar**: puede ser Barrio si solo coordina una tarea en la venta; Ciudad si inicia proceso posventa diferenciado | ¿Segundo proceso con etapas/propietarios/handoffs? ¿Solo seguimiento comercial? ¿Servicio a medida? |
+
+No cobrar A1/A2 como addons si son workflows internos del proceso comercial Barrio. No comercializar A3 como módulo Ciudad por el nombre «Coordinación» ni afirmar que está incluido en Barrio si exige postventa diferenciada. La biblioteca aprobada Ciudad (seis módulos) permanece intacta hasta una evaluación funcional real.
+
+### E. Evidencia oficial y método de certificación
+- Workflows overview, triggers, filtros, publicación y pruebas: https://help.gohighlevel.com/support/solutions/articles/155000002288-workflows-overview
+- «Published» no implica envío exitoso ni que el trigger se haya producido; guías de estados de workflow: https://help.gohighlevel.com/support/solutions/articles/155000006659-understanding-email-campaign-statuses-in-highlevel
+- Logs de ejecución e historial de inscripciones (incluyen errores y acciones omitidas): https://help.gohighlevel.com/support/solutions/articles/155000003992-execution-logs-enrolment-history-enhancements
+- Workflow Overview (totales, actividad, métricas/errores): https://help.gohighlevel.com/support/solutions/articles/155000006813-automations-overview
+- Revisión de errores en Workflow Maps y ejecución fallida, modificada 2026-10-27: https://help.gohighlevel.com/support/solutions/articles/155000009464-review-workflows-with-errors
+
+### F. Inventario ampliado
+| ID | Elemento | Evidencia E08 | Estado |
+|---|---|---|---|
+| GHL-SUB-040 | Automation > Workflows > Lista | VISIBLE | UI verificada, ejecución no probada |
+| GHL-SUB-041 | Workflow «Barrio \| A1 - Nueva oportunidad» | Publicado, 1 total, 0 activos | Publicación visible; lógica pendiente |
+| GHL-SUB-042 | Workflow «Barrio \| A2 - Seguimiento cotización» | Publicado, 1 total, 0 activos | Publicación visible; lógica pendiente |
+| GHL-SUB-043 | Workflow «Barrio \| A3 - Coordinación de servicio» | Publicado, 0 total, 0 activos | Publicación visible; lógica y clasificación pendientes |
+| GHL-SUB-044 | Historial / métricas de inscritos | Columnas visibles | Totales de tabla; sin logs |
+| GHL-SUB-045 | Workflow Overview | Pestaña visible | No inspeccionado |
+| GHL-SUB-046 | Configuración global del flujo de trabajo | Pestaña visible | No inspeccionada |
+| GHL-SUB-047 | Filtros, listas inteligentes, carpetas, búsquedas | VISIBLE | Administración de workflows; no es addon |
+| GHL-SUB-048 | Creación de workflow mediante IA | Botón visible | Disponibilidad UI, coste y requisitos NO probados |
+| GHL-SUB-049 | «Requiere revisión» | Pestaña visible | No inspeccionado; no implica errores presentes |
+
+### G. Hallazgos de control
+- La inscripción **no equivale** a acción cumplida. Certificar con trigger, filtros, acciones, condiciones de salida, logs y prueba E2E consentida.
+- Verificar prevención de duplicados, errores, reingreso, bucles y comunicaciones premium. En particular, confirmar que A1 no cree dos oportunidades por un solo lead.
+- Verificar que A2 no envía SMS/WhatsApp o IA con coste sin permiso de canal y acuerdo de facturación del cliente; Colombia como mercado principal.
+- La automatización comercial **Barrio** debe ser completa y útil; Ciudad representa procesos operativos adicionales, no un bloqueo artificial de workflows.
+
+### Próxima captura E09 (solo una)
+En **Exterminaya > Automatización > Flujos de trabajo**, abrir el flujo **«Barrio | A1 - Nueva oportunidad»** haciendo clic en su nombre. Capturar **el constructor completo visible** con disparadores y acciones; si el flujo es largo, primero la parte superior. No pulsar «Publicar», «Guardar», «Probar» ni modificar pasos. Si aparecen datos sensibles, ocultarlos. Objetivo: auditar el recorrido de nueva oportunidad antes de A2 y A3.
+
+### Changelog E08
+- **2026-11-15:** tres workflows publicados observados en Exterminaya; 1/1/0 inscritos totales, 0 activos; clasificación preliminar y procedimiento de pruebas definido.
