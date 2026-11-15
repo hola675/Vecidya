@@ -438,3 +438,37 @@ Conservar subcuenta **Exterminaya** durante el cierre de esta sección. Abrir **
 
 ### Changelog E06
 - **2026-11-15:** tres capturas Exterminaya, pipeline Barrio identificado, seis etapas visibles, dos Smart Tags, probabilidad inicial, filtros y diferencia entre oportunidad/estado; documentado en rama independiente.
+
+## E07 — Exterminaya > Clientes Potenciales > Secuencia > Etapas (revisión inferior)
+
+**Fecha:** 2026-11-15. **Evidencia:** captura aportada `image(20261115-173906).png`. Inspección visual; **sin editar, guardar o ejecutar ninguna acción en GHL**.
+
+### Datos comprobados y cierre de E06
+- La captura permanece en la subcuenta **Exterminaya**, con el pipeline **«Barrio | Proceso comercial»**. **No prueba** que dicho pipeline se encuentre implementado en la subcuenta Vecidya.
+- El desplazamiento interior muestra la etapa **«06 | Seguimiento» con probabilidad 50 %**; se observan igualmente **«02 | Contactado» 20 %, «03 | Información completa» 30 %, «04 | Evaluación / visita» 40 %, «05 | Cotización enviada» 50 %**.
+- La etapa «01 | Solicitud nueva» con **10 %** se había verificado en la captura E06. Por tanto, **seis etapas quedan documentadas, con porcentajes [10,20,30,40,50,50]**. No se observan etapas posteriores a 06 en este encuadre, pero para afirmar exhaustivamente que no existen otras dependemos de un listado completo o comprobación del final de scroll; evitar exceso de certeza.
+- El selector **«Utilice la probabilidad a nivel de oportunidad» aparece desactivado**. Texto visible: con él desactivado se toma la probabilidad de etapa. No hay prueba de cálculos reales de forecast.
+- Opciones de visualización de colores: «Por defecto (sin color)», «Punto coloreado» y «Color de fondo» (seleccionada). Hay valores visibles en las columnas «Mostrar en informes» y «Actividades», pero los iconos por sí solos **no permiten certificar su activación ni funcionamiento**.
+- No se ha modificado el nivel de probabilidad ni los colores de ninguna etapa.
+
+### Interpretación funcional y comercial
+| Punto | Resultado E07 | Consecuencia comercial |
+|---|---|---|
+| 6 etapas con porcentaje | Configuración visualmente observada | Pipeline estándar personalizable **incluido en Barrio**; Ciudad lo hereda |
+| 05 y 06 ambas 50 % | Configuración válida técnicamente, no una métrica observada | No prometer incremento de conversión por avanzar a «Seguimiento» |
+| Probabilidad por oportunidad desactivada | Configuración visual observada | Pronósticos dependen de reglas y datos; validar antes de ofrecer analítica |
+| Colores de etapa | Presentación visual configurable | No es addon ni diferenciador Barrio→Ciudad |
+| Mostrar en informes | Controles visibles, estado no probado | Exigir validación de reportes comerciales antes de entrega |
+
+**No cambiar probabilidades arbitrariamente**: primero conocer el proceso real, resultados y definición de probabilidad. El uso de una etapa denominada «Seguimiento» no implica automáticamente una tarea o un workflow de seguimiento.
+
+### Estado de cierre de esta subsección
+- **Cerrado visualmente:** nombres y probabilidades de las seis etapas observadas; color de fondo seleccionado; interruptor de probabilidad por oportunidad aparentemente apagado.
+- **Pendiente de prueba:** acciones «Mostrar en informes», estado ganado/perdido, asignaciones, actividades, permisos, workflow que cree/actualice oportunidades, etapas adicionales no visibles y comportamiento real de pronósticos.
+- **No confundir** estado de oportunidad («Abierta», «Ganada», «Perdida», etc.) con etapa de pipeline.
+
+### Próxima evidencia E08 — una captura
+En la **misma subcuenta Exterminaya**, hacer clic en **«Automatización»** del menú lateral y enviar **una captura de la pantalla inicial** mostrando pestañas, carpetas, workflows y estados si están visibles. No abrir datos de clientes, no activar workflows ni modificar configuraciones. Objetivo: comprobar qué automatizaciones existen y cómo se conectan con el pipeline Barrio; después auditar disparadores y acciones específicas.
+
+### Changelog E07
+- **2026-11-15:** etapa 06 y probabilidad 50 % verificadas, seis etapas documentadas; clasificado porcentaje por etapa y riesgos de forecast; siguiente pantalla Automatización.
