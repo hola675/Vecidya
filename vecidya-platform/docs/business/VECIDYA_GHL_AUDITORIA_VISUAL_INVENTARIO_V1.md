@@ -373,3 +373,68 @@ Subcuenta Vecidya → **Clientes Potenciales**. Enviar una captura de la pantall
 
 #### Changelog E05.3
 - **2026-11-11:** Contactos/Smart Lists auditados; capacidades base clasificadas como Barrio sin limitación artificial; inventario ampliado GHL-SUB-017 a GHL-SUB-026.
+
+
+## E06 — Subcuenta Exterminaya > Clientes Potenciales / Oportunidades / Secuencia
+
+**Fecha de evidencias:** 2026-11-15. **Estado:** auditado visualmente, verificación funcional y E2E pendientes. **Capturas de usuario:** \`image(20261115-173146).png\`, \`image(20261115-173156).png\` y \`image(20261115-173213).png\`. Solo observación; **no se han modificado oportunidades, etapas, reglas ni precios GHL**.
+
+### Control de alcance: cambio de subcuenta
+**ATENCIÓN: las tres capturas E06 pertenecen a «Exterminaya», NO a «Vecidya»**. La interfaz y la ruta visible indican el módulo nativo de GHL \`opportunities/pipeline\`. El pipeline observado «Barrio | Proceso comercial» existe visualmente **en Exterminaya**, pero **NO está acreditado** que exista en Vecidya, ni que funcione como plantilla estándar multicliente. No confundir el nombre comercial «Barrio» del pipeline con derecho de licencia confirmado ni con instalación certificada.
+
+### A. Pantallas y elementos efectivamente visibles
+- Menú subcuenta «Clientes Potenciales»: pestañas «Clientes Potenciales», «Pronóstico», «Secuencia» y «Acciones en lote». En GHL corresponde al concepto nativo **Opportunities / Pipelines**.
+- Vista de tablero: selector pipeline «Barrio | Proceso comercial», contador **«1 oportunidad»**, botones de tablero/lista, «Importar», «Añadir oportunidad», filtros avanzados **(1)**, ordenar **(1)**, búsqueda, gestionar campos. **El contador está en una vista con filtros activos**; no certificar número total de oportunidades o negocio histórico.
+- Columnas mostradas en tablero: **01 Solicitud nueva (1)**, **02 Contactado (0)**, **03 Información completa (0)**, **04 Evaluación / visita (0)**, **05 Cotización enviada (0)**, **06 Seguimiento (0)**. Puede haber otras columnas más allá del encuadre: NO afirmar que el pipeline contiene únicamente seis etapas.
+- Configuración de «Secuencia > Etapas»: muestra elección de apariencia de colores, arrastre/reordenamiento, «Añadir etapa», probabilidades por etapa, color, inclusión en informes y acciones. Opciones de «Utilice la probabilidad a nivel de oportunidad» con interruptor visual aparentemente desactivado; **no se ha probado** el impacto de ese control.
+- Probabilidades **visibles** para las primeras cinco etapas: **10, 20, 30, 40, 50 %**. La probabilidad configurada de «06 Seguimiento» **no se ve** y no debe inferirse. Estas cifras son parámetros visibles, no tasas reales de conversión.
+- El mensaje emergente «Secuencia Barrio | Proceso comercial actualizada» indica que la UI mostró confirmación de actualización; **no permite saber quién guardó ni qué elemento concreto cambió**. El auditor no efectuó ningún cambio.
+- «Secuencia > Etiquetas inteligentes»: dos definiciones visibles:
+  - **Nueva Oportunidad** (verde), descripción «Fecha de creación ≤ hace 3 días»;
+  - **Sin responsable** (roja), descripción «Oportunidad abierta sin asesor comercial asignado».
+  Ambas tienen acciones de vista, edición y borrado; **son Opportunity Smart Tags (reglas de oportunidades), NO tags estáticas de contactos**. Se observaron nombres/descripciones, pero **no se abrió el constructor para comprobar la lógica condicional exacta**, su ámbito ni visibilidad en las tarjetas.
+- Esta evidencia no acredita workflows publicados, disparadores, creación de tareas, atribución de oportunidades a responsables, calendarios conectados, políticas de acceso por rol, informes exactos ni pruebas reales de conversión.
+
+### B. Confirmaciones oficiales y dependencias técnicas
+- **Pipeline** = estructura de etapas del proceso; **Opportunity** = negocio o trato particular dentro del pipeline; la oportunidad puede crearse manualmente, por importación o por workflow. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000005062-getting-started-setup-pipelines-and-opportunities
+- GHL mantiene **estado de oportunidad** (Open / Won / Lost / Abandoned) como atributo distinto de las **etapas de pipeline**; no interpretar «Won» y «Lost» como etapas obligatorias. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000001983-understanding-opportunities-in-highlevel
+- Los **Opportunity Smart Tags** son etiquetas dinámicas para tarjetas de oportunidad, generadas por reglas; **no sustituyen workflows**, por ejemplo «Sin responsable» marca pero no asigna automáticamente un responsable. GHL documenta permisos de creación/edición, posibilidad de aplicarlas entre pipelines, y un límite real de hasta **60 etiquetas inteligentes activas por pipeline**; no transformar esto en límite comercial ficticio Vecidya. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000006642
+- Las **Opportunity Smart Lists y Smart Tags** pueden formar parte de snapshots **si se selecciona también su pipeline dependiente**; copiar no garantiza conservar permisos compartidos o asociaciones externas. Verificar función Labs y contenido real del snapshot en destino. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000008825-how-to-add-opportunity-smart-lists-and-smart-tags-to-snapshots
+
+### C. Inventario E06
+| ID | Capacidad de GHL | Evidencia | Clasificación Vecidya | Estado |
+|---|---|---|---|---|
+| GHL-SUB-027 | Opportunities / Clientes Potenciales | VISIBLE E06 Exterminaya | Barrio base / Ciudad heredado | CONFIGURADO visualmente; NO E2E |
+| GHL-SUB-028 | Pipeline «Barrio | Proceso comercial» | VISIBLE E06 Exterminaya | Barrio proceso principal | CONFIGURADO en Exterminaya; NO probado en Vecidya |
+| GHL-SUB-029 | Tablero Kanban y vista lista | VISIBLE E06 | Barrio; Ciudad heredado | VISTA DISPONIBLE |
+| GHL-SUB-030 | Etapas configurables | 6 visibles, potencialmente más | Barrio; Ciudad heredado | CONFIGURADO visualmente |
+| GHL-SUB-031 | Probabilidad por etapa | 10–50 % en 5 etapas | Reportes/forecast comerciales | CONFIGURADO visualmente; no métricas |
+| GHL-SUB-032 | Opportunity Smart Tags | Dos reglas nombradas | Barrio estándar; Ciudad heredado | DEFINICIONES VISIBLES, CONDICIONES NO ABIERTAS |
+| GHL-SUB-033 | Opportunity Smart Lists / vistas filtradas | Opción «Lista» y filtros activos | Barrio; Ciudad heredado | VISIBLE, definición de lista sin inspeccionar |
+| GHL-SUB-034 | Importar oportunidades | Botón en tablero | Puesta en marcha básica | FLUJO NO PROBADO |
+| GHL-SUB-035 | Añadir oportunidad | Botón en tablero | Operación Barrio | FLUJO NO PROBADO |
+| GHL-SUB-036 | Gestionar campos de oportunidad | Botón en tablero | Datos comerciales Barrio/Ciudad | FLUJO NO PROBADO |
+| GHL-SUB-037 | Pronóstico | Pestaña visible | Analítica comercial estándar | NO INSPECCIONADO |
+| GHL-SUB-038 | Acciones en lote de oportunidades | Pestaña visible | Gestión operativa | NO INSPECCIONADO |
+| GHL-SUB-039 | Mensaje de actualización de Secuencia | Toast visible | Control de cambios | CONFIRMACIÓN UI, NO AUDITORÍA DE ACCIÓN |
+
+### D. Recomendaciones de producto (sin cambiar contratos)
+1. **Barrio incluye pipeline configurable, oportunidades, etapas, vistas, Smart Tags, campos y tareas asociadas** cuando correspondan al proceso comercial. No imponer cupos ficticios ni vender Smart Tags como addon aparte.
+2. **Ciudad sigue diferenciándose por seis módulos estándar incluidos, activables según necesidad, coordinación entre procesos, responsables y traspasos**, no por cantidad de etapas o número de oportunidades.
+3. No duplicar «Sin responsable» como sistema de asignación real: combinar etiqueta visual con **workflow de asignación** sujeto a prueba y permisos.
+4. Tratar **estado** de oportunidad (abierta/ganada/perdida/abandonada) como dimensión separada de etapa; los informes no deben contar «Seguimiento» como «Ganado».
+5. No reutilizar automáticamente un snapshot originado en **Exterminaya** sin revisar datos particulares del cliente, dependencias y permisos; preservar aislamiento entre negocios.
+6. La localización principal de clientes **Colombia** es una condición para costes de canales y textos/formularios, pero no altera las reglas básicas de oportunidades.
+
+### E. Riesgos e incógnitas
+- **Alto:** cambio de subcuenta no documentado antes de E06. Una configuración visible en Exterminaya **no certifica** instalación en Vecidya.
+- **Medio:** los filtros (1) y ordenamiento (1) pueden afectar la vista de oportunidades.
+- **Medio:** la regla exacta de Smart Tags solo se verá al inspeccionar condiciones (descripción ≠ evidencia de condición efectiva).
+- **Medio:** falta visualizar parte inferior del listado de etapas; etapa «Seguimiento» visible en tablero pero no su probabilidad ni posible existencia de etapas adicionales.
+- **Pendiente:** comprobar workflows de captación, asignación, calendario, vencimientos, permisos, pronóstico, etapas no visibles, estado ganado/perdido y snapshot.
+
+### Próxima evidencia E07 (una captura a la vez)
+Conservar subcuenta **Exterminaya** durante el cierre de esta sección. Abrir **Clientes Potenciales > Secuencia > Barrio | Proceso comercial > Etapas** y **desplazarse hacia abajo en la lista interior** hasta mostrar «06 Seguimiento» y el final de la tabla. Capturar sin guardar/cambiar nada. Objetivo: verificar si existen otras etapas y su probabilidad, sin inferirlas de la vista Kanban.
+
+### Changelog E06
+- **2026-11-15:** tres capturas Exterminaya, pipeline Barrio identificado, seis etapas visibles, dos Smart Tags, probabilidad inicial, filtros y diferencia entre oportunidad/estado; documentado en rama independiente.
