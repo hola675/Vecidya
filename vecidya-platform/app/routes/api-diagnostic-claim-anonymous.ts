@@ -12,6 +12,7 @@ import {
 } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
+import { isV9LegacyPersistentApiAvailable, V9_LEGACY_PERSISTENCE_DISABLED_ERROR } from "../features/diagnostic/v9/legacy-persistence-gate.server";
 
 import type { Route } from "./+types/api-diagnostic-claim-anonymous";
 
@@ -29,6 +30,7 @@ export async function action({ context, request }: Route.ActionArgs) {
   if (request.method !== "POST") return failure(405, "Método no permitido.");
   if (request.headers.get("origin") !== new URL(request.url).origin) return failure(403, "Origen no permitido.");
   const { env } = context.get(cloudflareContext);
+  if (!isV9LegacyPersistentApiAvailable()) return failure(503, V9_LEGACY_PERSISTENCE_DISABLED_ERROR);
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "claim-anonymous-diagnostic")) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");

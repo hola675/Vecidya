@@ -9,6 +9,7 @@ import { readV9AnonymousIdentityCookie } from "../features/diagnostic/qa03b/anon
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
 import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
+import { isV9LegacyPersistentApiAvailable, V9_LEGACY_PERSISTENCE_DISABLED_ERROR } from "../features/diagnostic/v9/legacy-persistence-gate.server";
 
 import type { Route } from "./+types/api-diagnostic-v9-run-finalize";
 
@@ -36,6 +37,7 @@ export async function action({ context, request, params }: Route.ActionArgs) {
   if (!/^application\/json(?:\s*;|$)/i.test(request.headers.get("content-type") ?? "")) return failure(415, "Formato no permitido.");
 
   const { env } = context.get(cloudflareContext);
+  if (!isV9LegacyPersistentApiAvailable()) return failure(503, V9_LEGACY_PERSISTENCE_DISABLED_ERROR);
   const runtime = env as unknown as V9PublicRuntimeConfig;
   if (!isV9PublicRuntimeAvailable(runtime)) return failure(503, "El diagnóstico V9 aún no está habilitado con versiones certificadas.");
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");

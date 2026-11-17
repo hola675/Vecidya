@@ -17,6 +17,10 @@ export type DiagnosticV9LocalDraftWriteResult =
   | { readonly status: "invalid" }
   | { readonly status: "unavailable" };
 
+export type DiagnosticV9LocalDraftStoreReadResult =
+  | Exclude<DiagnosticV9LocalDraftReadResult, { readonly status: "expired" }>
+  | { readonly status: "expired"; readonly cleanup: "cleared" | "unavailable" };
+
 export class DiagnosticV9LocalDraftStore {
   private memoryEnvelope: DiagnosticV9LocalDraftEnvelope | null = null;
   private memoryUnavailable = false;
@@ -38,32 +42,97 @@ export class DiagnosticV9LocalDraftStore {
     return this.storage && !this.memoryUnavailable ? "local" : "memory";
   }
 
-  readResult(now = Date.now()): DiagnosticV9LocalDraftReadResult {
-    if (!this.storage) {
-      if (this.memoryEnvelope) return parseDiagnosticV9LocalDraft(JSON.stringify(this.memoryEnvelope), now);
-      return this.memoryUnavailable ? { status: "unavailable" } : { status: "empty" };
-    }
+  async readResult(now = Date.now()): Promise<DiagnosticV9LocalDraftStoreReadResult> {
+    if (!this.storage) return this.readMemory(now);
+    if (!this.locks) return this.readStored(now, false);
     try {
-      const raw = this.storage.getItem(this.key);
-      if (raw === null) return this.memoryEnvelope
-        ? parseDiagnosticV9LocalDraft(JSON.stringify(this.memoryEnvelope), now)
-        : { status: "empty" };
-      const result = parseDiagnosticV9LocalDraft(raw, now);
-      if (result.status === "found") this.memoryEnvelope = result.envelope;
-      return result;
+      return await this.locks.request(`vecidya-diagnostic-v9:${this.key}`, () => this.readStored(now, true));
+    } catch {
+      return this.readStored(now, false);
+    }
+  }
+
+  private readMemory(now: number): DiagnosticV9LocalDraftStoreReadResult {
+    if (!this.memoryEnvelope) return this.memoryUnavailable ? { status: "unavailable" } : { status: "empty" };
+    const result = parseDiagnosticV9LocalDraft(JSON.stringify(this.memoryEnvelope), now);
+    if (result.status === "expired") {
+      this.memoryEnvelope = null;
+      return { status: "expired", cleanup: "cleared" };
+    }
+    return result;
+  }
+
+  private readStored(
+    now: number,
+    mayDeleteExpired: boolean,
+    attempts = 0,
+  ): DiagnosticV9LocalDraftStoreReadResult {
+    let raw: string | null;
+    try {
+      raw = this.storage!.getItem(this.key);
     } catch {
       this.memoryUnavailable = true;
-      return this.memoryEnvelope
-        ? { status: "found", envelope: this.memoryEnvelope }
-        : { status: "unavailable" };
+      const memory = this.readMemory(now);
+      return memory.status === "expired" ? { status: "expired", cleanup: "unavailable" } : memory;
     }
+    if (raw === null) return this.readMemory(now);
+
+    const result = parseDiagnosticV9LocalDraft(raw, now);
+    if (result.status === "found") {
+      this.memoryEnvelope = result.envelope;
+      return result;
+    }
+    if (result.status !== "expired") return result;
+    if (!mayDeleteExpired || attempts >= 3) {
+      this.clearMatchingMemory(raw);
+      return { status: "expired", cleanup: "unavailable" };
+    }
+
+    try {
+      // This branch is reachable only after acquiring the shared Web Lock.
+      // Re-read before deleting; without a lock, cleanup is skipped above.
+      const current = this.storage!.getItem(this.key);
+      if (current !== raw) return this.readStored(now, true, attempts + 1);
+      this.storage!.removeItem(this.key);
+      const afterRemoval = this.storage!.getItem(this.key);
+      if (afterRemoval !== null) return this.readStored(now, true, attempts + 1);
+      this.clearMatchingMemory(raw);
+      return { status: "expired", cleanup: "cleared" };
+    } catch {
+      this.memoryUnavailable = true;
+      this.clearMatchingMemory(raw);
+      return { status: "expired", cleanup: "unavailable" };
+    }
+  }
+
+  private clearMatchingMemory(raw: string): void {
+    if (!this.memoryEnvelope) return;
+    try {
+      const stored = JSON.parse(raw) as { storageVersion?: unknown; session?: unknown };
+      const session = stored.session as Record<string, unknown> | undefined;
+      if (stored.storageVersion === this.memoryEnvelope.storageVersion &&
+        session?.sessionId === this.memoryEnvelope.session.sessionId &&
+        session?.revision === this.memoryEnvelope.session.revision &&
+        session?.updatedAt === this.memoryEnvelope.session.updatedAt) {
+        this.memoryEnvelope = null;
+      }
+    } catch {
+      // Invalid storage cannot establish that its contents match the memory copy.
+    }
+  }
+
+  private readResultForWrite(now: number): DiagnosticV9LocalDraftStoreReadResult {
+    if (!this.storage) {
+      return this.readMemory(now);
+    }
+    return this.readStored(now, false);
   }
 
   async write(session: CandidateSessionV9Prototype): Promise<DiagnosticV9LocalDraftWriteResult> {
     const envelope = buildDiagnosticV9LocalDraftEnvelope(session);
     if (!envelope) return { status: "invalid" };
     const commit = async (): Promise<DiagnosticV9LocalDraftWriteResult> => {
-      const latest = this.readResult(session.updatedAt);
+      const latest = this.readResultForWrite(session.updatedAt);
       if (latest.status === "found") {
         const current = latest.envelope.session;
         if (current.sessionId !== session.sessionId || current.revision > session.revision) {
@@ -86,7 +155,7 @@ export class DiagnosticV9LocalDraftStore {
       }
       try {
         this.storage.setItem(this.key, JSON.stringify(envelope));
-        const verified = this.readResult(session.updatedAt);
+        const verified = this.readResultForWrite(session.updatedAt);
         if (verified.status === "found" && (
           verified.envelope.session.sessionId !== session.sessionId ||
           verified.envelope.session.revision > session.revision ||
@@ -105,7 +174,8 @@ export class DiagnosticV9LocalDraftStore {
     try {
       return await this.locks.request(`vecidya-diagnostic-v9:${this.key}`, commit);
     } catch {
-      // Lock APIs may fail in restricted contexts; retain optimistic revision checks.
+      // Do not bypass a failed shared lock and race a cross-tab localStorage write.
+      this.memoryUnavailable = true;
       return commit();
     }
   }

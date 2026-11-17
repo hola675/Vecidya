@@ -1,3 +1,16 @@
+## DIAG-V9-F07-L4/L5 — política de datos y legado histórico (pendiente)
+
+**Política vigente del responsable (2026-11-16):** D1 no almacena respuestas, valores elegidos, transcript, identidad/run individual ni resultado de diagnóstico, incompleto o finalizado. Únicamente se permiten métricas agregadas/coarse-grained no reidentificables. La entrevista y su replay/finalización permanecen locales/transitorios; el resultado firmado usa TTL local de 24 horas y el borrador TTL local de siete días. Esta regla supersede el criterio documental previo que permitía almacenamiento terminal consentido.
+
+Antes de cerrar F07-L4/L5:
+
+- Definir y probar el contrato de métricas agregadas permitidas, límites contra reconstrucción/reidentificación, retención y acceso; no transportar respuestas ni identificadores individuales a D1.
+- Mantener bloqueadas las escrituras, claims y asociaciones de organización de historiales legacy V9. Preservar las filas históricas existentes; definir de forma autorizada su acceso read-only owner-only, retención y tratamiento en backups antes de cualquier migración o borrado.
+- Probar en Worker/D1 local que los nuevos flujos incompletos y finalizados no crean filas individuales, y que las lecturas históricas no cambian filas ni exponen datos a otra cuenta o visitante sin prueba de recuperación.
+- Actualizar la evaluación de privacidad y los documentos canónicos en el mismo checkpoint que cualquier implementación; no activar flags ni operar D1 remota como parte de estos gates.
+
+La validación local de DIAG-V9-PRIVACY-GATE-01 no cierra estos gates de política, retención, configuración operativa de claves F07-L3, certificación integral ni publicación.
+
 ## DIAG-V9-LEX-GRAPH-04 — plan de auditoría léxica, opciones y grafo de dependencias (2026-10-26; PLANNED, NO IMPLEMENTADO)
 
 **Objetivo:** convertir el banco V9 en un cuestionario fácil de entender, de cobertura amplia y sin preguntas inútiles: cada pregunta debe (a) producir contexto necesario, (b) obtener una observación evaluable o (c) confirmar una contradicción documentada. El grafo de preguntas determina cuándo preguntar; el sector declarado nunca constituye evidencia de capacidad digital. **Alcance de este checkpoint: diseño del plan, no cambios en el motor, ni validación ejecutada, ni activación.**

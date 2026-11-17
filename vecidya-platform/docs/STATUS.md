@@ -27,6 +27,16 @@ El checkpoint #233 corrige los tipos del grafo, registros de evidencia/calibraci
 
 PR #231 integra F07-L1/L2 en `main@cbebe22a`; PR #232 integra el ADR F07-L3 en `main@03d2ba4c`; PR #236 integra la implementación de finalización firmada en `main@4ead64a0`. Para L3 se documentaron 9/9 pruebas focales, typecheck/build PASS y smoke en Worker local con clave efímera: POST finalizable 200, firma/digest verificados y resultado sin answers. La implementación está integrada, pero la capacidad sigue **PARTIAL / fail-closed**: el registry de claves está vacío y no están provisionados `keyId` ni Worker Secret para el entorno objetivo; falta configurar el par operativo y repetir la validación allí. F05-01 no inicia hasta cerrar ese gate. V9 completo sigue sin certificación ni publicación; no hay persistencia individual D1, migración remota ni deploy.
 
+# DIAG-V9-PRIVACY-GATE-01 — candidato local validado desde `main@76fad3eb` (2026-11-17)
+
+**Política vigente (aclaración posterior del responsable, 2026-11-16):** ni los intentos incompletos ni los finalizados persisten respuestas, valores elegidos, transcript o ejecuciones individuales en D1. Se permiten únicamente métricas de uso agregadas/coarse-grained no reidentificables. La entrevista se conserva localmente y el replay/finalización es transitorio; el resultado firmado queda local hasta 24 h. Esta aclaración reemplaza el criterio documental del 2026-11-14 que permitía proponer persistencia terminal tras consentimiento.
+
+Los endpoints legacy de escritura de identidad/run/eventos/finalización/claim responden fail-closed aunque el flag V9 esté activado; tampoco se permiten asociaciones de ejecuciones a organizaciones. Las rutas no crean datos individuales nuevos. Las ejecuciones históricas completadas pueden leerse solo por su owner, en modo read-only, sin recalcular ni mutar D1 y conservando sus versiones originales. Los datos legacy existentes se preservan sin borrado ni migración. `/diagnostico` no crea una identidad anónima D1 al cargar.
+
+La expiración del borrador local solo borra bajo bloqueo compartido y confirma el valor antes de eliminar; sin lock o si el borrado falla, informa que no pudo confirmarlo. Si falla la adquisición del lock para una escritura nueva, conserva solo en memoria. En runtimes sin Web Locks queda el fallback optimista preexistente, cuya exclusión mutua entre pestañas no se certifica.
+
+**RAN 2026-11-17:** 40/40 unitarias focales, E2E Worker/D1 efímera PASS (lectura histórica owner-only, rechazo 404 a otra cuenta/401 anónimo, D1 sin cambios, escrituras legacy bloqueadas, sentinel intacto, QA-03B 200), typecheck, build y `git diff --check` PASS. La suite unitaria completa no se volvió a ejecutar; queda NO VERIFICADA. Se corrigió en el runner E2E la provisión del secreto Auth sintético a la configuración local y un mensaje de diagnóstico que antes detenía el test. Sin configuración Cloudflare, secretos del usuario, migraciones remotas, deploy o publicación. La aplicación conserva la versión `0.9.2`; este candidato aún no está integrado en `main`.
+
 
 # MiniWeb V2 — UX-IMPL-03 (candidato local, 2026-11-02)
 

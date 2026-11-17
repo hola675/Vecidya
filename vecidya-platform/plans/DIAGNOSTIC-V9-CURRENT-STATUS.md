@@ -1,10 +1,10 @@
 # Diagnostic V9 — CURRENT STATUS
 
-**Versión:** 1.6.0
-**Fecha:** 2026-11-08
-**Estado:** F07-L1/L2 Y F07-L3 IMPLEMENTADOS E INTEGRADOS · F07-L3 OPERACIÓN PARCIAL/FAIL-CLOSED, CLAVES PENDIENTES · NO PUBLICADO
+**Versión:** 1.8.0
+**Fecha:** 2026-11-17
+**Estado:** F07-L1/L2 Y F07-L3 INTEGRADOS EN MAIN · PRIVACY-GATE-01 VALIDADO LOCALMENTE, PENDIENTE PR · F07-L3 OPERACIÓN PARCIAL/FAIL-CLOSED, CLAVES PENDIENTES · NO PUBLICADO
 **Repositorio:** `hola675/Vecidya`
-**Main observado:** `origin/main@8ae0052c9dd0352ba6a44c7c5e64445356823722`; incluye PR #236 (`4ead64a0`).
+**Main observado:** `origin/main@76fad3ebc4ea1540e66d348c0f45f11c6b37e32c`; incluye PR #255 y #236. El trabajo local se inició en `cbdb73e` y requiere sincronización final antes de PR.
 
 ## 0. Estado operativo actual
 
@@ -16,6 +16,13 @@
 - **Runtime Worker RAN:** `pnpm exec react-router dev --host 127.0.0.1` escuchó tras fallback de `Request.cf`; guardas 405/403/415/503. Smoke local con clave efímera: POST finalizable 200, digest/firma verificados, sin `answers`; el runner restauró vars y registry temporales.
 - **Siguiente gate:** provisionar `keyId`/clave pública y Worker Secret emparejados en el entorno objetivo, luego repetir smoke HTTP firmado allí. F05-01 queda después de L3 PASS; este paso requiere operar en el entorno objetivo y no se ejecutó en este checkpoint.
 - **Publicación:** ninguna; cero migraciones remotas y cero deploy.
+
+### PRIVACY-GATE-01 — candidato local (no integrado)
+- **Política vigente aclarada 2026-11-16, que reemplaza el texto del 2026-11-14:** ningún diagnóstico persiste respuestas, valores elegidos, transcript, identidad/run individual ni resultado en D1, completo o incompleto. Solo se permiten métricas agregadas/coarse-grained no reidentificables. Entrevista/replay/finalización transitorios; resultado firmado local 24 h, draft local siete días.
+- El candidato bloquea fail-closed las escrituras legacy de identidad/run/eventos/finalización/claim y asociaciones a organizaciones, sin depender del flag público V9. Las lecturas de ejecuciones históricas completadas son read-only, owner-only, conservan versiones originales y no mutan/recalculan D1. Se preservan rutas, migraciones y filas existentes; no se ejecutan borrados. `/diagnostico` no crea identidad D1 al entrar.
+- La persistencia terminal consentida no está implementada: falta el contrato F07-L4 y deben definirse acceso/retención/borrado/backups para F07-L5. No reusar la API legacy que guarda evento por cada respuesta.
+- Limpieza de borrador vencido: bajo LockManager compartido se confirma el valor antes de borrar; sin LockManager o si `removeItem` falla, se informa que no pudo confirmarse el borrado. Si falla el pedido de lock para una escritura, el cambio nuevo queda solo en memoria. El fallback optimista preexistente cuando Web Locks no existe no certifica exclusión entre pestañas.
+- **RAN 2026-11-17:** 40/40 unitarias focales, E2E Worker/D1 efímera con lectura histórica owner-only y no-mutación, typecheck/build/diff-check PASS. La suite completa permanece NO VERIFICADA; no se repitió el intento previo que excedió 600000 ms. Sin cambios Cloudflare, secretos, migración remota, deploy o publicación. Aplicación sigue `0.9.2`.
 
 ## Evidencia integrada previa
 
@@ -32,7 +39,7 @@ Este archivo responde “¿dónde estamos ahora?”. Si un documento histórico 
 - DEC-B: APPROVED_WITH_FALLBACK.
 - DEC-C: APPROVED_WITH_FALLBACK.
 - DEC-D: APPROVED.
-- DEC-E: RATIFICADO; E3/E4/E5=24h/E6 personal/E8=30d objetivo/E9 possession/E-Q1-B.
+- DEC-E: política vigente 2026-11-16: incompletos y completos no persisten Q/A en D1; solo métricas agregadas no reidentificables. Replay transitorio, resultado local TTL 24 h. Esta aclaración supersede la propuesta del 2026-11-14 de persistencia terminal consentida.
 - DEC-F: APPROVED.
 - DEC-G: APPROVED.
 - DEC-H: APPROVED_WITH_FALLBACK.
@@ -109,11 +116,13 @@ Motivo del orden: L4/L5/L6 no deben cerrar persistencia de un informe hasta que 
 - 59 rewrites editoriales y 13 candidatos 82/90 siguen fuera del runtime inicial.
 - backup ≤30 días requiere certificación operativa antes de promesa pública.
 - prototipo D1 histórico requiere inventario/cleanup policy.
+- mantener prohibida la persistencia individual de respuestas/resultados; definir allowlist de métricas agregadas y su retención. Para filas legacy, definir retención, acceso read-only y efecto en backups antes de F07-L4/L5; no borrar sin gate separado.
+- verificar en entorno autorizado que el flag/gate remoto no habilite los endpoints legacy; el estado remoto no se verificó.
 - F08 debe cubrir idioma/aclaración UI, accesibilidad, seguridad, concurrencia, carga y errores.
 
 ## 9. Handoff
 
-F07-L1/L2, ADR L3 e implementación F07-L3 están integrados en `main`; PR #236 fue fusionada en `4ead64a0`. La operación de F07-L3 no alcanza PASS: faltan `keyId`/clave pública versionada y Worker Secret emparejados y smoke en el entorno objetivo. Resolver esos gates antes de avanzar a F05-01.
+F07-L1/L2, ADR L3 e implementación F07-L3 están integrados; PR #236 quedó en `main@4ead64a0`. PRIVACY-GATE-01 está validado localmente pero no integrado; sincronizar con `origin/main@76fad3eb`, abrir/revisar PR y exigir CI. F07-L3 sigue PARTIAL: faltan `keyId`/clave pública y Worker Secret emparejados y smoke autorizado. Mantener prohibición de D1 individual; los gates futuros F07-L4/L5 definirán métricas agregadas permitidas y política para registros legacy históricos, nunca storage nuevo de Q/A.
 
 ## 10. Qué significa “terminado”
 
@@ -124,6 +133,10 @@ V9 solo queda terminado después de: L1-L6 + F05/F06 + F08 PASS + cutover F09 + 
 - **1.5.0 / 2026-11-04:** PR #232 integrado en `main@03d2ba4c`; implementación candidata F07-L3 en rama, typecheck/build PASS, focal 9/9; secret/key registry y validación Worker local pendientes.
 
 - **1.6.0 / 2026-11-08:** PR #236 integró F07-L3 en `main@4ead64a0`; se actualiza el snapshot a `origin/main@8ae0052c`. Se mantiene PARTIAL/fail-closed hasta completar claves operativas y smoke en el entorno objetivo; no hubo configuración remota ni deploy.
+
+- **1.8.0 / 2026-11-17:** `origin/main` observado en `76fad3eb` tras PR #255; la aclaración 2026-11-16 prohíbe persistencia individual D1 incluso al completar. PRIVACY-GATE-01 añade lecturas históricas owner-only read-only, gatea escrituras legacy y pasa 40 focales, Worker/D1 local E2E, typecheck/build/diff-check. Pendiente PR, suite completa, claves operativas y cualquier deploy.
+
+- **1.7.0 / 2026-11-14:** se alinea snapshot con `origin/main@cbdb73e`; registra el criterio de persistencia terminal consentida y candidato local. Ese criterio queda supersedido por la aclaración humana posterior del 2026-11-16.
 
 - **1.4.0 / 2026-11-04:** F07-L1/L2 integrados por PR #231 en main@cbebe22a; ADR #232 pasó su head anterior pero fue actualizado para incluir #231 y requiere CI del nuevo head. F07-L3 sigue pendiente.
 

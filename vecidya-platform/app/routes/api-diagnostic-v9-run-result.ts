@@ -1,17 +1,9 @@
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
-import {
-  DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
-  readOwnedDiagnosticRunV9,
-  type V9IdentityDb,
-} from "../features/diagnostic/qa03b/v9-identity-repository";
-import { finalizeOwnedDiagnosticRunV9 } from "../features/diagnostic/qa03b/v9-finalization.server";
+import { DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID, type V9IdentityDb } from "../features/diagnostic/qa03b/v9-identity-repository";
+import { readOwnedDiagnosticRunResultV9 } from "../features/diagnostic/qa03b/v9-finalization.server";
 import { readV9AnonymousIdentityCookie } from "../features/diagnostic/qa03b/anonymous-identity-cookie.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { getSession } from "../../server/auth/session.server";
-import {
-  isV9PublicRuntimeAvailable,
-  type V9PublicRuntimeConfig,
-} from "../features/diagnostic/qa03b/v9-public-availability.server";
 
 import type { Route } from "./+types/api-diagnostic-v9-run-result";
 
@@ -29,8 +21,6 @@ function validUuid(value: unknown): value is string {
 /** Owner-only access to immutable, server-computed results; no regeneration. */
 export async function loader({ context, request, params }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
-  const runtime = env as unknown as V9PublicRuntimeConfig;
-  if (!isV9PublicRuntimeAvailable(runtime)) return failure(503, "El historial V9 todavía no está habilitado.");
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "diagnostic-v9-view-result")) {
     return failure(429, "Espera un momento antes de volver a intentarlo.");
@@ -51,22 +41,11 @@ export async function loader({ context, request, params }: Route.LoaderArgs) {
     }),
   };
   try {
-    const db = env.DB as unknown as V9IdentityDb;
-    const run = await readOwnedDiagnosticRunV9(db, owner);
-    if (run.status !== "completed") return failure(409, "Este diagnóstico todavía no tiene un resultado final.");
-    const result = await finalizeOwnedDiagnosticRunV9(db, {
-      ...owner,
-      expectedVersions: {
-        bank: runtime.DIAGNOSTIC_V9_BANK_VERSION!,
-        engine: runtime.DIAGNOSTIC_V9_ENGINE_VERSION!,
-        scoring: runtime.DIAGNOSTIC_V9_SCORING_VERSION!,
-        recommendations: runtime.DIAGNOSTIC_V9_RECOMMENDATION_VERSION!,
-        consent: runtime.DIAGNOSTIC_V9_CONSENT_VERSION!,
-      },
-    });
-    return Response.json({ ok: true, ...result }, { headers });
+    const result = await readOwnedDiagnosticRunResultV9(env.DB as unknown as V9IdentityDb, owner);
+    return Response.json({ ok: true, readOnly: true, runId, ...result }, { headers });
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
+    if (code === "v9_result_not_completed") return failure(409, "Este diagnóstico todavía no tiene un resultado final.");
     if (code === "v9_run_not_owned") return failure(404, "El diagnóstico no existe o no pertenece a esta identidad.");
     if (code === "v9_identity_proof_invalid") return failure(403, "No pudimos verificar tu identidad de visitante.");
     if (code === "v9_identity_already_claimed") return failure(409, "Esta identidad fue reclamada. Inicia sesión.");

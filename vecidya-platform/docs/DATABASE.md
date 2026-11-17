@@ -541,6 +541,14 @@ ORDER BY event_day, diagnostic_version, event_type;
 6. El Worker público usa `vecidya-prod` desde el cutover registrado el 2026-10-02; `vecidya-staging` es un entorno separado y no debe tratarse como el D1 público. Ver `ENVIRONMENTS.md` para la fecha y evidencia de publicación. Cualquier migración remota requiere autorización explícita.
 7. Todo recurso con `organization_id` se consulta filtrando por la organización verificada (membresía) y nunca por un identificador del cliente sin verificar.
 
+## DIAG-V9-PRIVACY-GATE-01 — frontera de persistencia (candidato, 2026-11-17)
+
+Las migraciones V9 `0038–0043` y sus tablas/guards permanecen sin cambios; el checkpoint no consultó el ledger de ningún entorno ni aplicó migraciones. El flag público V9 no habilita APIs legacy de escritura de identidad/run/eventos/finalización/claim, ni acciones de asociación a organización. Las lecturas de ejecuciones completadas existentes son owner-only y read-only; no recalculan resultados ni cambian filas. Las filas, rutas y schema existentes se conservan; no hay limpieza, backfill ni migración.
+
+**Política vigente aclarada el 2026-11-16:** ni los intentos incompletos ni los finalizados escriben respuestas, valores elegidos, transcript, identidad/run individual o resultado de diagnóstico en D1. Únicamente se admiten métricas agregadas/coarse-grained que no reconstruyan respuestas. El procesamiento final es transitorio; el resultado firmado y el borrador tienen retención local de hasta 24 h y siete días respectivamente. Las tablas `diagnostic_v9_*` aún contienen el prototipo histórico y no se consideran destino de nuevos registros individuales. Su retención, acceso futuro y efecto de backups quedan pendientes; no se autoriza migración remota ni borrado de datos existentes.
+
+Validación de este candidato: Worker Wrangler y D1 exclusivamente locales/efímeros; las lecturas históricas no mutaron las filas sintéticas y las escrituras legacy quedaron bloqueadas (ver `docs/TESTING.md`). No se ejecutó Wrangler `--remote` ni se comprobó el ledger remoto.
+
 ## MiniWeb V2 IMP-07 — reserva inicial de cupos
 
 `0036_miniweb-v2-publication-slots.sql` añade ocupación por propietario, separada de los snapshots. Capacidad base según contrato: 3 con al menos una licencia activa asociada a la billing account del owner, 0 sin licencia. No se añadieron cupos adicionales porque el schema comercial actual no representa un add-on explícito de capacidad; no se infiere desde cantidad de organizaciones ni desde plan CRM. La publicación reserva slot condicionalmente dentro del mismo batch que snapshot/puntero; re-publicar conserva el slot. Validado por generación de esquema y aplicación D1 local; concurrencia Worker todavía pendiente.
