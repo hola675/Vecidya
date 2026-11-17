@@ -373,3 +373,172 @@ Subcuenta Vecidya → **Clientes Potenciales**. Enviar una captura de la pantall
 
 #### Changelog E05.3
 - **2026-11-11:** Contactos/Smart Lists auditados; capacidades base clasificadas como Barrio sin limitación artificial; inventario ampliado GHL-SUB-017 a GHL-SUB-026.
+
+
+## E06 — Subcuenta Exterminaya > Clientes Potenciales / Oportunidades / Secuencia
+
+**Fecha de evidencias:** 2026-11-15. **Estado:** auditado visualmente, verificación funcional y E2E pendientes. **Capturas de usuario:** \`image(20261115-173146).png\`, \`image(20261115-173156).png\` y \`image(20261115-173213).png\`. Solo observación; **no se han modificado oportunidades, etapas, reglas ni precios GHL**.
+
+### Control de alcance: cambio de subcuenta
+**ATENCIÓN: las tres capturas E06 pertenecen a «Exterminaya», NO a «Vecidya»**. La interfaz y la ruta visible indican el módulo nativo de GHL \`opportunities/pipeline\`. El pipeline observado «Barrio | Proceso comercial» existe visualmente **en Exterminaya**, pero **NO está acreditado** que exista en Vecidya, ni que funcione como plantilla estándar multicliente. No confundir el nombre comercial «Barrio» del pipeline con derecho de licencia confirmado ni con instalación certificada.
+
+### A. Pantallas y elementos efectivamente visibles
+- Menú subcuenta «Clientes Potenciales»: pestañas «Clientes Potenciales», «Pronóstico», «Secuencia» y «Acciones en lote». En GHL corresponde al concepto nativo **Opportunities / Pipelines**.
+- Vista de tablero: selector pipeline «Barrio | Proceso comercial», contador **«1 oportunidad»**, botones de tablero/lista, «Importar», «Añadir oportunidad», filtros avanzados **(1)**, ordenar **(1)**, búsqueda, gestionar campos. **El contador está en una vista con filtros activos**; no certificar número total de oportunidades o negocio histórico.
+- Columnas mostradas en tablero: **01 Solicitud nueva (1)**, **02 Contactado (0)**, **03 Información completa (0)**, **04 Evaluación / visita (0)**, **05 Cotización enviada (0)**, **06 Seguimiento (0)**. Puede haber otras columnas más allá del encuadre: NO afirmar que el pipeline contiene únicamente seis etapas.
+- Configuración de «Secuencia > Etapas»: muestra elección de apariencia de colores, arrastre/reordenamiento, «Añadir etapa», probabilidades por etapa, color, inclusión en informes y acciones. Opciones de «Utilice la probabilidad a nivel de oportunidad» con interruptor visual aparentemente desactivado; **no se ha probado** el impacto de ese control.
+- Probabilidades **visibles** para las primeras cinco etapas: **10, 20, 30, 40, 50 %**. La probabilidad configurada de «06 Seguimiento» **no se ve** y no debe inferirse. Estas cifras son parámetros visibles, no tasas reales de conversión.
+- El mensaje emergente «Secuencia Barrio | Proceso comercial actualizada» indica que la UI mostró confirmación de actualización; **no permite saber quién guardó ni qué elemento concreto cambió**. El auditor no efectuó ningún cambio.
+- «Secuencia > Etiquetas inteligentes»: dos definiciones visibles:
+  - **Nueva Oportunidad** (verde), descripción «Fecha de creación ≤ hace 3 días»;
+  - **Sin responsable** (roja), descripción «Oportunidad abierta sin asesor comercial asignado».
+  Ambas tienen acciones de vista, edición y borrado; **son Opportunity Smart Tags (reglas de oportunidades), NO tags estáticas de contactos**. Se observaron nombres/descripciones, pero **no se abrió el constructor para comprobar la lógica condicional exacta**, su ámbito ni visibilidad en las tarjetas.
+- Esta evidencia no acredita workflows publicados, disparadores, creación de tareas, atribución de oportunidades a responsables, calendarios conectados, políticas de acceso por rol, informes exactos ni pruebas reales de conversión.
+
+### B. Confirmaciones oficiales y dependencias técnicas
+- **Pipeline** = estructura de etapas del proceso; **Opportunity** = negocio o trato particular dentro del pipeline; la oportunidad puede crearse manualmente, por importación o por workflow. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000005062-getting-started-setup-pipelines-and-opportunities
+- GHL mantiene **estado de oportunidad** (Open / Won / Lost / Abandoned) como atributo distinto de las **etapas de pipeline**; no interpretar «Won» y «Lost» como etapas obligatorias. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000001983-understanding-opportunities-in-highlevel
+- Los **Opportunity Smart Tags** son etiquetas dinámicas para tarjetas de oportunidad, generadas por reglas; **no sustituyen workflows**, por ejemplo «Sin responsable» marca pero no asigna automáticamente un responsable. GHL documenta permisos de creación/edición, posibilidad de aplicarlas entre pipelines, y un límite real de hasta **60 etiquetas inteligentes activas por pipeline**; no transformar esto en límite comercial ficticio Vecidya. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000006642
+- Las **Opportunity Smart Lists y Smart Tags** pueden formar parte de snapshots **si se selecciona también su pipeline dependiente**; copiar no garantiza conservar permisos compartidos o asociaciones externas. Verificar función Labs y contenido real del snapshot en destino. Fuente: https://help.gohighlevel.com/support/solutions/articles/155000008825-how-to-add-opportunity-smart-lists-and-smart-tags-to-snapshots
+
+### C. Inventario E06
+| ID | Capacidad de GHL | Evidencia | Clasificación Vecidya | Estado |
+|---|---|---|---|---|
+| GHL-SUB-027 | Opportunities / Clientes Potenciales | VISIBLE E06 Exterminaya | Barrio base / Ciudad heredado | CONFIGURADO visualmente; NO E2E |
+| GHL-SUB-028 | Pipeline «Barrio | Proceso comercial» | VISIBLE E06 Exterminaya | Barrio proceso principal | CONFIGURADO en Exterminaya; NO probado en Vecidya |
+| GHL-SUB-029 | Tablero Kanban y vista lista | VISIBLE E06 | Barrio; Ciudad heredado | VISTA DISPONIBLE |
+| GHL-SUB-030 | Etapas configurables | 6 visibles, potencialmente más | Barrio; Ciudad heredado | CONFIGURADO visualmente |
+| GHL-SUB-031 | Probabilidad por etapa | 10–50 % en 5 etapas | Reportes/forecast comerciales | CONFIGURADO visualmente; no métricas |
+| GHL-SUB-032 | Opportunity Smart Tags | Dos reglas nombradas | Barrio estándar; Ciudad heredado | DEFINICIONES VISIBLES, CONDICIONES NO ABIERTAS |
+| GHL-SUB-033 | Opportunity Smart Lists / vistas filtradas | Opción «Lista» y filtros activos | Barrio; Ciudad heredado | VISIBLE, definición de lista sin inspeccionar |
+| GHL-SUB-034 | Importar oportunidades | Botón en tablero | Puesta en marcha básica | FLUJO NO PROBADO |
+| GHL-SUB-035 | Añadir oportunidad | Botón en tablero | Operación Barrio | FLUJO NO PROBADO |
+| GHL-SUB-036 | Gestionar campos de oportunidad | Botón en tablero | Datos comerciales Barrio/Ciudad | FLUJO NO PROBADO |
+| GHL-SUB-037 | Pronóstico | Pestaña visible | Analítica comercial estándar | NO INSPECCIONADO |
+| GHL-SUB-038 | Acciones en lote de oportunidades | Pestaña visible | Gestión operativa | NO INSPECCIONADO |
+| GHL-SUB-039 | Mensaje de actualización de Secuencia | Toast visible | Control de cambios | CONFIRMACIÓN UI, NO AUDITORÍA DE ACCIÓN |
+
+### D. Recomendaciones de producto (sin cambiar contratos)
+1. **Barrio incluye pipeline configurable, oportunidades, etapas, vistas, Smart Tags, campos y tareas asociadas** cuando correspondan al proceso comercial. No imponer cupos ficticios ni vender Smart Tags como addon aparte.
+2. **Ciudad sigue diferenciándose por seis módulos estándar incluidos, activables según necesidad, coordinación entre procesos, responsables y traspasos**, no por cantidad de etapas o número de oportunidades.
+3. No duplicar «Sin responsable» como sistema de asignación real: combinar etiqueta visual con **workflow de asignación** sujeto a prueba y permisos.
+4. Tratar **estado** de oportunidad (abierta/ganada/perdida/abandonada) como dimensión separada de etapa; los informes no deben contar «Seguimiento» como «Ganado».
+5. No reutilizar automáticamente un snapshot originado en **Exterminaya** sin revisar datos particulares del cliente, dependencias y permisos; preservar aislamiento entre negocios.
+6. La localización principal de clientes **Colombia** es una condición para costes de canales y textos/formularios, pero no altera las reglas básicas de oportunidades.
+
+### E. Riesgos e incógnitas
+- **Alto:** cambio de subcuenta no documentado antes de E06. Una configuración visible en Exterminaya **no certifica** instalación en Vecidya.
+- **Medio:** los filtros (1) y ordenamiento (1) pueden afectar la vista de oportunidades.
+- **Medio:** la regla exacta de Smart Tags solo se verá al inspeccionar condiciones (descripción ≠ evidencia de condición efectiva).
+- **Medio:** falta visualizar parte inferior del listado de etapas; etapa «Seguimiento» visible en tablero pero no su probabilidad ni posible existencia de etapas adicionales.
+- **Pendiente:** comprobar workflows de captación, asignación, calendario, vencimientos, permisos, pronóstico, etapas no visibles, estado ganado/perdido y snapshot.
+
+### Próxima evidencia E07 (una captura a la vez)
+Conservar subcuenta **Exterminaya** durante el cierre de esta sección. Abrir **Clientes Potenciales > Secuencia > Barrio | Proceso comercial > Etapas** y **desplazarse hacia abajo en la lista interior** hasta mostrar «06 Seguimiento» y el final de la tabla. Capturar sin guardar/cambiar nada. Objetivo: verificar si existen otras etapas y su probabilidad, sin inferirlas de la vista Kanban.
+
+### Changelog E06
+- **2026-11-15:** tres capturas Exterminaya, pipeline Barrio identificado, seis etapas visibles, dos Smart Tags, probabilidad inicial, filtros y diferencia entre oportunidad/estado; documentado en rama independiente.
+
+## E07 — Exterminaya > Clientes Potenciales > Secuencia > Etapas (revisión inferior)
+
+**Fecha:** 2026-11-15. **Evidencia:** captura aportada `image(20261115-173906).png`. Inspección visual; **sin editar, guardar o ejecutar ninguna acción en GHL**.
+
+### Datos comprobados y cierre de E06
+- La captura permanece en la subcuenta **Exterminaya**, con el pipeline **«Barrio | Proceso comercial»**. **No prueba** que dicho pipeline se encuentre implementado en la subcuenta Vecidya.
+- El desplazamiento interior muestra la etapa **«06 | Seguimiento» con probabilidad 50 %**; se observan igualmente **«02 | Contactado» 20 %, «03 | Información completa» 30 %, «04 | Evaluación / visita» 40 %, «05 | Cotización enviada» 50 %**.
+- La etapa «01 | Solicitud nueva» con **10 %** se había verificado en la captura E06. Por tanto, **seis etapas quedan documentadas, con porcentajes [10,20,30,40,50,50]**. No se observan etapas posteriores a 06 en este encuadre, pero para afirmar exhaustivamente que no existen otras dependemos de un listado completo o comprobación del final de scroll; evitar exceso de certeza.
+- El selector **«Utilice la probabilidad a nivel de oportunidad» aparece desactivado**. Texto visible: con él desactivado se toma la probabilidad de etapa. No hay prueba de cálculos reales de forecast.
+- Opciones de visualización de colores: «Por defecto (sin color)», «Punto coloreado» y «Color de fondo» (seleccionada). Hay valores visibles en las columnas «Mostrar en informes» y «Actividades», pero los iconos por sí solos **no permiten certificar su activación ni funcionamiento**.
+- No se ha modificado el nivel de probabilidad ni los colores de ninguna etapa.
+
+### Interpretación funcional y comercial
+| Punto | Resultado E07 | Consecuencia comercial |
+|---|---|---|
+| 6 etapas con porcentaje | Configuración visualmente observada | Pipeline estándar personalizable **incluido en Barrio**; Ciudad lo hereda |
+| 05 y 06 ambas 50 % | Configuración válida técnicamente, no una métrica observada | No prometer incremento de conversión por avanzar a «Seguimiento» |
+| Probabilidad por oportunidad desactivada | Configuración visual observada | Pronósticos dependen de reglas y datos; validar antes de ofrecer analítica |
+| Colores de etapa | Presentación visual configurable | No es addon ni diferenciador Barrio→Ciudad |
+| Mostrar en informes | Controles visibles, estado no probado | Exigir validación de reportes comerciales antes de entrega |
+
+**No cambiar probabilidades arbitrariamente**: primero conocer el proceso real, resultados y definición de probabilidad. El uso de una etapa denominada «Seguimiento» no implica automáticamente una tarea o un workflow de seguimiento.
+
+### Estado de cierre de esta subsección
+- **Cerrado visualmente:** nombres y probabilidades de las seis etapas observadas; color de fondo seleccionado; interruptor de probabilidad por oportunidad aparentemente apagado.
+- **Pendiente de prueba:** acciones «Mostrar en informes», estado ganado/perdido, asignaciones, actividades, permisos, workflow que cree/actualice oportunidades, etapas adicionales no visibles y comportamiento real de pronósticos.
+- **No confundir** estado de oportunidad («Abierta», «Ganada», «Perdida», etc.) con etapa de pipeline.
+
+### Próxima evidencia E08 — una captura
+En la **misma subcuenta Exterminaya**, hacer clic en **«Automatización»** del menú lateral y enviar **una captura de la pantalla inicial** mostrando pestañas, carpetas, workflows y estados si están visibles. No abrir datos de clientes, no activar workflows ni modificar configuraciones. Objetivo: comprobar qué automatizaciones existen y cómo se conectan con el pipeline Barrio; después auditar disparadores y acciones específicas.
+
+### Changelog E07
+- **2026-11-15:** etapa 06 y probabilidad 50 % verificadas, seis etapas documentadas; clasificado porcentaje por etapa y riesgos de forecast; siguiente pantalla Automatización.
+
+
+## E08 — Exterminaya > Automatización > Flujos de trabajo (lista)
+
+**Fecha:** 2026-11-15. **Evidencia:** captura aportada por usuario \`image(20261115-174456).png\`. **Alcance:** subcuenta **Exterminaya**, no Vecidya. **Estado:** inspección visual, sin modificar workflows ni ejecutar pruebas.
+
+### A. Navegación y opciones visibles
+- Sección lateral **Automatización**; pestañas **Flujos de trabajo**, **Visión general** y **Configuración global del flujo de trabajo**.
+- Página **Lista de flujos de trabajo**; pestañas «Todos los flujos ...», «Requiere revisión...», «Eliminado» y opción «Nueva lista inteligente».
+- Controles visibles: **Filtros avanzados**, **Crear carpeta**, **Cree usando IA**, **Crear flujo de trabajo**, búsqueda, diferentes vistas, ordenar/tiempo, «Personalizar lista» (atenuado), acciones por workflow, estadísticas, estado, fecha de creación/actualización, paginación **10/página**.
+- **No** se abrió el constructor, historial, triggers, filtros, acciones, errores, logs ni permisos de ninguno de los flujos.
+
+### B. Tres workflows visibles
+| ID E08 | Nombre literal en la lista | Estado UI | Total de inscritos | Inscripción activa | Última actualización mostrada | Fecha de creación mostrada |
+|---|---|---|---:|---:|---|---|
+| WF-A1 | Barrio \| A1 - Nueva oportunidad | Publicado | 1 | 0 | 2026-11-15 12:43 PM | 2026-11-02 02:41 PM |
+| WF-A2 | Barrio \| A2 - Seguimiento cotización | Publicado | 1 | 0 | 2026-11-15 12:44 PM | 2026-11-02 02:49 PM |
+| WF-A3 | Barrio \| A3 - Coordinación de servicio | Publicado | 0 | 0 | 2026-11-15 12:44 PM | 2026-11-02 02:51 PM |
+
+Los valores son los **mostrados en esta captura**: no prueban conversiones comerciales, nuevos prospectos, cumplimiento de pasos, entregabilidad, ausencia de errores ni que estén publicados en la subcuenta Vecidya.
+
+### C. Qué significa la evidencia y qué NO significa
+- **Publicado** significa susceptible de ejecución si se cumplen triggers/condiciones; sin conocer configuración, no se puede certificar que se active correctamente ni que sea seguro.
+- **Total de inscritos 1** en A1 y A2 evidencia contabilización de inscripción histórica. No confirma si corresponde a prueba, contacto real, ejecución exitosa, error, acción omitida o incluso a la misma persona.
+- **0 inscripción activa** en los tres significa que la tabla no muestra inscritos activos actualmente; podría ser funcionamiento normal o flujos que finalizan rápidamente. No inferir falla.
+- **A3 cero inscritos** tampoco prueba error; podría no haberse disparado todavía.
+- «Última actualización» solo informa cambios fechados de flujos, **no quién los hizo ni qué modificó**, ni es sinónimo de última ejecución.
+- Al estar en **Exterminaya**, no constituye evidencia de que la subcuenta **Vecidya** tenga instalada la biblioteca Barrio ni Ciudad.
+
+### D. Clasificación Vecidya (preliminar y condicionada a inspección interna)
+| Flujo | Hipótesis comercial | Verificación necesaria |
+|---|---|---|
+| A1 Nueva oportunidad | Barrio estándar comercial | ¿Trigger oportunidad/contacto/formulario? ¿Asignación? ¿Creación duplicada? ¿Tareas? |
+| A2 Seguimiento cotización | Barrio estándar comercial | ¿Cambio de etapa? ¿Esperas y condiciones? ¿Tareas internas o mensajes facturables? ¿Salida al ganar/perder? |
+| A3 Coordinación de servicio | **Pendiente de clasificar**: puede ser Barrio si solo coordina una tarea en la venta; Ciudad si inicia proceso posventa diferenciado | ¿Segundo proceso con etapas/propietarios/handoffs? ¿Solo seguimiento comercial? ¿Servicio a medida? |
+
+No cobrar A1/A2 como addons si son workflows internos del proceso comercial Barrio. No comercializar A3 como módulo Ciudad por el nombre «Coordinación» ni afirmar que está incluido en Barrio si exige postventa diferenciada. La biblioteca aprobada Ciudad (seis módulos) permanece intacta hasta una evaluación funcional real.
+
+### E. Evidencia oficial y método de certificación
+- Workflows overview, triggers, filtros, publicación y pruebas: https://help.gohighlevel.com/support/solutions/articles/155000002288-workflows-overview
+- «Published» no implica envío exitoso ni que el trigger se haya producido; guías de estados de workflow: https://help.gohighlevel.com/support/solutions/articles/155000006659-understanding-email-campaign-statuses-in-highlevel
+- Logs de ejecución e historial de inscripciones (incluyen errores y acciones omitidas): https://help.gohighlevel.com/support/solutions/articles/155000003992-execution-logs-enrolment-history-enhancements
+- Workflow Overview (totales, actividad, métricas/errores): https://help.gohighlevel.com/support/solutions/articles/155000006813-automations-overview
+- Revisión de errores en Workflow Maps y ejecución fallida, modificada 2026-10-27: https://help.gohighlevel.com/support/solutions/articles/155000009464-review-workflows-with-errors
+
+### F. Inventario ampliado
+| ID | Elemento | Evidencia E08 | Estado |
+|---|---|---|---|
+| GHL-SUB-040 | Automation > Workflows > Lista | VISIBLE | UI verificada, ejecución no probada |
+| GHL-SUB-041 | Workflow «Barrio \| A1 - Nueva oportunidad» | Publicado, 1 total, 0 activos | Publicación visible; lógica pendiente |
+| GHL-SUB-042 | Workflow «Barrio \| A2 - Seguimiento cotización» | Publicado, 1 total, 0 activos | Publicación visible; lógica pendiente |
+| GHL-SUB-043 | Workflow «Barrio \| A3 - Coordinación de servicio» | Publicado, 0 total, 0 activos | Publicación visible; lógica y clasificación pendientes |
+| GHL-SUB-044 | Historial / métricas de inscritos | Columnas visibles | Totales de tabla; sin logs |
+| GHL-SUB-045 | Workflow Overview | Pestaña visible | No inspeccionado |
+| GHL-SUB-046 | Configuración global del flujo de trabajo | Pestaña visible | No inspeccionada |
+| GHL-SUB-047 | Filtros, listas inteligentes, carpetas, búsquedas | VISIBLE | Administración de workflows; no es addon |
+| GHL-SUB-048 | Creación de workflow mediante IA | Botón visible | Disponibilidad UI, coste y requisitos NO probados |
+| GHL-SUB-049 | «Requiere revisión» | Pestaña visible | No inspeccionado; no implica errores presentes |
+
+### G. Hallazgos de control
+- La inscripción **no equivale** a acción cumplida. Certificar con trigger, filtros, acciones, condiciones de salida, logs y prueba E2E consentida.
+- Verificar prevención de duplicados, errores, reingreso, bucles y comunicaciones premium. En particular, confirmar que A1 no cree dos oportunidades por un solo lead.
+- Verificar que A2 no envía SMS/WhatsApp o IA con coste sin permiso de canal y acuerdo de facturación del cliente; Colombia como mercado principal.
+- La automatización comercial **Barrio** debe ser completa y útil; Ciudad representa procesos operativos adicionales, no un bloqueo artificial de workflows.
+
+### Próxima captura E09 (solo una)
+En **Exterminaya > Automatización > Flujos de trabajo**, abrir el flujo **«Barrio | A1 - Nueva oportunidad»** haciendo clic en su nombre. Capturar **el constructor completo visible** con disparadores y acciones; si el flujo es largo, primero la parte superior. No pulsar «Publicar», «Guardar», «Probar» ni modificar pasos. Si aparecen datos sensibles, ocultarlos. Objetivo: auditar el recorrido de nueva oportunidad antes de A2 y A3.
+
+### Changelog E08
+- **2026-11-15:** tres workflows publicados observados en Exterminaya; 1/1/0 inscritos totales, 0 activos; clasificación preliminar y procedimiento de pruebas definido.
