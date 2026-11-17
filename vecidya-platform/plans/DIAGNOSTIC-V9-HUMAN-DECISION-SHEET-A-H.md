@@ -1,9 +1,9 @@
 # Diagnostic V9 — Hoja ejecutiva de decisión humana A–H
 
-**Versión:** 0.3.0  
-**Fecha:** 2026-11-03  
+**Versión:** 0.4.0
+**Fecha:** 2026-11-14
 **Estado:** APROBADA POR RESPONSABLE · FALLBACKS VIGENTES · W1–W5 HISTÓRICO CERRADO · RUNTIME RESTANTE PLAN_ONLY  
-**Rama:** `feat/diagnostic-v9-lex-graph-p1b`
+**Base reconciliada:** `origin/main@cbdb73e2122722231376c3201b1a240d06ff7255`
 
 ## 1. Propósito
 
@@ -31,14 +31,14 @@ Aprobación de una decisión ≠ autorización de implementación. El runtime pe
 | B | APPROVED_WITH_FALLBACK | aprobar modelo base, diferir bandas públicas y corregir binding v2/v4 antes de implementación |
 | C | APPROVED_WITH_FALLBACK | 77 baseline; 82/90 permanecen experimentales/pending |
 | D | APPROVED | adoptar correlación Opción B: constructKey global + overlapGroup estricto |
-| E | APPROVED_WITH_FALLBACK | local-only anónimo + persistencia al completar/reclamar; D1 analytics-only |
+| E | APPROVED_WITH_FALLBACK | incompletos: métricas de uso agregadas/coarse-grained, sin valores/transcript de respuestas; preguntas/respuestas solo tras completar y consentimiento explícito para auditoría/mejora, nunca marketing |
 | F | APPROVED | 24+5 consentido + multicriterio sin pesos inventados |
 | G | APPROVED | Diagnóstico→acción→Aprende→servicios→GHL opcional |
 | H | APPROVED_WITH_FALLBACK | main→V9; resolver migraciones antes de F00; V8 permanece activo |
 
 ## 3. DEC-A — taxonomía
 
-### Recomendación
+### Recomendación histórica (2026-11-14; supersedida)
 **APPROVED**
 
 Aprobar:
@@ -137,34 +137,31 @@ Aprobar la separación:
 - E-D3 resultado/informe identificado;
 - E-D4 analítica agregada.
 
-### Arquitectura recomendada
-Para el anónimo:
-- **persistencia local durante entrevista**;
-- servidor valida/procesa cuando corresponda sin mantener un ledger individual de recuperación;
-- al completar, enviar transcript/estado estructurado para replay server-side;
-- devolver resumen anónimo;
-- persistir informe/historial solo bajo política aprobada al reclamar/autenticar.
+La recomendación siguiente registra la decisión humana de 2026-11-14 y queda preservada como historia; la política vigente se actualizó después.
 
-Esto corresponde a la dirección de **Opción C**, preservando validación server-side y evitando usar D1 como backup de borrador.
+### Arquitectura recomendada (histórica)
+Para el anónimo, se recomendó persistencia local durante entrevista, procesamiento server-side al completar, resumen anónimo y storage terminal de Q/A tras consentimiento. **La parte de almacenamiento terminal quedó supersedida el 2026-11-16**; no es política vigente ni autorización de implementación.
 
-### Interpretación D1 recomendada
-**E-Q1 = Q1-A**:
-“D1 exclusivamente analítica anónima agregada” se interpreta literalmente para la arquitectura objetivo aprobada.
+### Aclaración humana vigente — 2026-11-16 (supersede la recomendación de storage terminal)
+- D1 no guarda respuestas, valores elegidos, transcript, identidad/run individual ni resultado en ningún estado, incluido diagnóstico finalizado.
+- Solo se permiten métricas de uso agregadas/coarse-grained que no permitan reconstruir o reidentificar respuestas.
+- La entrevista queda local; el replay/finalización ocurre transitoriamente; el resultado firmado permanece local con TTL de 24 horas y el borrador con TTL de siete días.
+- Las filas legacy que ya existan se preservan. Las lecturas históricas son owner-only/read-only, sin recálculo ni mutación; no se autoriza aquí borrar ni migrar registros.
+- El schema `diagnostic_v9_*` se conserva como prototipo histórico, no como destino para nuevos datos individuales.
 
-Por tanto:
-- resultados identificados/historial futuro deben tener un store separado aprobado;
-- no reutilizar D1 individual por conveniencia;
-- el schema `diagnostic_v9_*` actual se considera prototipo, no destino final.
+### Condiciones vigentes
+- No habilitar los endpoints legacy que escriben identidad/run/evento por cada respuesta.
+- El consentimiento de extensión de entrevista no autoriza almacenamiento D1 ni se infiere consentimiento para otras finalidades.
+- Ownership personal no implica pertenencia organizacional; cualquier lectura histórica requiere prueba de ownership.
+- Mantener los TTL separados: draft local siete días, resultado firmado local 24 horas.
+- Definir métricas permitidas y su retención, además de política de acceso/retención/backups para las filas legacy existentes, antes de cerrar F07-L4/L5/F08.
 
-### Condiciones
-- el claim no recalcula;
-- ownership personal ≠ organización;
-- organización requiere autorización/membership;
-- no reutilizar TTL de 7 días para resultados;
-- definir store/retención/borrado antes de F07/F08.
+### Fallback vigente
+La entrevista, replay y resultado permanecen locales/transitorios; no hay persistencia terminal de respuestas en D1 aunque exista consentimiento para otras finalidades.
 
-### Fallback
-Resumen anónimo sin historial identificado hasta cerrar persistencia final.
+### Changelog
+- **0.5.0 / 2026-11-16:** aclaración posterior del responsable: prohíbe persistir en D1 Q/A, transcript e identidad/run individual incluso después de finalizar; solo métricas agregadas, replay transitorio y resultado local TTL 24 h. Se preserva el texto de 0.4.0 como decisión histórica supersedida.
+- **0.4.0 / 2026-11-14:** se precisa DEC-E: métricas agregadas/coarse-grained para intentos incompletos, sin respuestas; el guardado de preguntas/respuestas solo se permite después de completar y consentir, para auditoría/mejora y nunca marketing. Pendientes la implementación terminal, retención, borrado y backups.
 
 ## 8. DEC-F — prioridad, presupuesto y fallbacks
 

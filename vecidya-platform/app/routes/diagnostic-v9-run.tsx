@@ -98,13 +98,15 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
       return;
     }
     setStorageMode(store.persistenceMode);
-    const result = store.readResult(Date.now());
+    const result = await store.readResult(Date.now());
     if (result.status === "found" && result.envelope.session.sessionId === runId) {
       setSession(result.envelope.session);
       return;
     }
     setSession(null);
-    if (result.status === "expired") setError("El borrador local expiró después de 7 días. Puedes iniciar un diagnóstico nuevo.");
+    if (result.status === "expired") setError(result.cleanup === "cleared"
+      ? "El borrador local expiró después de 7 días y se eliminó de este navegador. Puedes iniciar un diagnóstico nuevo."
+      : "El borrador local expiró después de 7 días, pero no se pudo confirmar su eliminación. Puedes iniciar uno nuevo y borrar los datos del sitio en tu navegador.");
     else if (result.status === "invalid") setError("El borrador local no es compatible o se modificó. Inicia un diagnóstico nuevo.");
     else if (result.status === "unavailable") {
       setStorageMode("memory");
@@ -121,22 +123,25 @@ export default function DiagnosticV9Run({ loaderData }: Route.ComponentProps) {
     if (!store) return;
     const onStorage = (event: StorageEvent) => {
       if (event.key !== "vecidya.diagnostic.v9.local-draft.1") return;
-      if (!event.newValue) {
-        void store.clear();
-        setError("El borrador se eliminó en otra pestaña.");
-        setSession(null);
-        return;
-      }
-      const result = store.readResult(Date.now());
-      if (result.status === "found" && result.envelope.session.sessionId === runId) {
-        setSession((current) => {
-          if (current && result.envelope.session.revision > current.revision) {
-            setError("Este borrador cambió en otra pestaña; mostramos la revisión más reciente.");
-            return result.envelope.session;
-          }
-          return current;
-        });
-      }
+      void store.readResult(Date.now()).then((result) => {
+        if (result.status === "found" && result.envelope.session.sessionId === runId) {
+          setSession((current) => {
+            if (current && result.envelope.session.revision > current.revision) {
+              setError("Este borrador cambió en otra pestaña; mostramos la revisión más reciente.");
+              return result.envelope.session;
+            }
+            return current;
+          });
+        } else if (result.status === "expired") {
+          setSession(null);
+          setError(result.cleanup === "cleared"
+            ? "El borrador local expiró después de 7 días y se eliminó de este navegador."
+            : "El borrador local expiró, pero no se pudo confirmar su eliminación. Borra los datos del sitio desde tu navegador.");
+        } else if (result.status === "empty") {
+          setSession(null);
+          setError("El borrador se eliminó en otra pestaña.");
+        }
+      });
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);

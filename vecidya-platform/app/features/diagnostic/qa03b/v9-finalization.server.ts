@@ -263,3 +263,31 @@ export async function finalizeOwnedDiagnosticRunV9(
     recommendations,
   };
 }
+
+/** Reads an immutable stored result for its owner without re-running scoring or writing to D1. */
+export async function readOwnedDiagnosticRunResultV9(
+  db: V9IdentityDb,
+  input: V9FinalizationOwner,
+): Promise<V9FinalizedResult & { versions: V9RunVersions }> {
+  const run = await readOwnedDiagnosticRunV9(db, input);
+  if (run.status !== "completed") throw new Error("v9_result_not_completed");
+  const saved = await db.prepare(
+    "SELECT result_version,score_json,evidence_json,recommendations_json FROM diagnostic_v9_results WHERE workspace_id=? AND run_id=? ORDER BY result_version DESC LIMIT 1",
+  ).bind(input.workspaceId, input.runId).first<{
+    result_version: number;
+    score_json: string;
+    evidence_json: string;
+    recommendations_json: string;
+  }>();
+  if (!saved) throw new Error("v9_result_integrity_failure");
+  return {
+    ...parseSavedResult(saved),
+    versions: {
+      bank: run.bank_version,
+      engine: run.engine_version,
+      scoring: run.scoring_version,
+      recommendations: run.recommendation_version,
+      consent: run.consent_version,
+    },
+  };
+}

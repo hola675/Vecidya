@@ -1,20 +1,19 @@
-import { Form, Link, redirect, useLoaderData, useSearchParams, useRevalidator } from "react-router";
-import { useState } from "react";
+import { Link, useLoaderData } from "react-router";
 
 import { cloudflareContext } from "../../server/cloudflare-context";
-import { getActiveOrganization, requireMembership, requireSession } from "../../server/auth/session.server";
+import { getActiveOrganization, requireSession } from "../../server/auth/session.server";
 import { getClientWorkspaceContext } from "../../server/auth/client-workspace.server";
-import { linkOwnedDiagnosticRunToOrganizationV9, type V9IdentityDb } from "../features/diagnostic/qa03b/v9-identity-repository";
+import type { V9IdentityDb } from "../features/diagnostic/qa03b/v9-identity-repository";
 import { isV9PublicRuntimeAvailable, type V9PublicRuntimeConfig } from "../features/diagnostic/qa03b/v9-public-availability.server";
 import { ClientAreaShell } from "../components/client-area-shell";
-import { Alert, Button, Card } from "../components/ui";
+import { Alert, Card } from "../components/ui";
 
 import type { Route } from "./+types/app-diagnostics";
 
 export function meta() {
   return [
     { title: "Mis diagnósticos | Vecidya" },
-    { name: "description", content: "Consulta tus diagnósticos y vincúlalos a las organizaciones que administras." },
+    { name: "description", content: "Consulta en privado los diagnósticos históricos asociados a tu identidad." },
     { name: "robots", content: "noindex" },
   ];
 }
@@ -58,69 +57,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 export async function action({ context, request }: Route.ActionArgs) {
   if (request.method !== "POST") throw new Response("Método no permitido", { status: 405 });
   if (request.headers.get("origin") !== new URL(request.url).origin) throw new Response("Origen no permitido", { status: 403 });
-  const { env } = context.get(cloudflareContext);
-  const session = await requireSession(env, request);
-  const form = await request.formData();
-  const workspaceId = String(form.get("workspaceId") ?? "").trim();
-  const runId = String(form.get("runId") ?? "").trim();
-  const organizationId = String(form.get("organizationId") ?? "").trim();
-  if (!workspaceId || !runId || !organizationId) throw new Response("Faltan datos para vincular el diagnóstico.", { status: 400 });
-  await requireMembership(env, request, organizationId);
-  try {
-    await linkOwnedDiagnosticRunToOrganizationV9(env.DB as unknown as V9IdentityDb, {
-      workspaceId,
-      runId,
-      organizationId,
-      linkedByUserId: session.user.id,
-      linkedAt: new Date().toISOString(),
-    });
-  } catch (error) {
-    if (error instanceof Error && error.message === "v9_run_not_owned") {
-      throw new Response("No tienes permiso para vincular este diagnóstico.", { status: 404 });
-    }
-    throw error;
-  }
-  return redirect("/app/diagnosticos?linked=1");
-}
-
-function ClaimAnonymousHistory() {
-  const { revalidate } = useRevalidator();
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage(null);
-    setError(null);
-    setSubmitting(true);
-    try {
-      const response = await fetch("/api/diagnostic/claim-anonymous", { method: "POST" });
-      const result = await response.json() as { ok?: boolean; transferredRuns?: number; error?: string };
-      if (!response.ok || !result.ok) {
-        setError(result.error ?? "No pudimos recuperar ese historial.");
-        return;
-      }
-      setMessage(`Historial recuperado. Diagnósticos asociados: ${result.transferredRuns ?? 0}.`);
-      revalidate();
-    } catch {
-      setError("No pudimos conectar con Vecidya. Inténtalo de nuevo.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  return (
-    <Card>
-      <h2>Recuperar diagnósticos de esta visita</h2>
-      <p>Si realizaste un diagnóstico como visitante en este mismo navegador, puedes asociar ese historial a tu cuenta. La prueba de propiedad se conserva en una cookie HttpOnly y no se expone al código de la página.</p>
-      <Form className="account-form" onSubmit={submit}>
-        {error ? <Alert>{error}</Alert> : null}
-        {message ? <Alert>{message}</Alert> : null}
-        <Button type="submit" disabled={submitting}>{submitting ? "Recuperando…" : "Vincular historial de visitante"}</Button>
-      </Form>
-    </Card>
-  );
+  throw new Response("La persistencia y asociación de historiales V9 está deshabilitada por la política de privacidad.", { status: 503 });
 }
 
 function formatDate(value: string) {
@@ -137,8 +74,6 @@ const statusLabels: Record<OwnedRun["status"], string> = {
 
 export default function AppDiagnosticsPage() {
   const { workspaceUser, organizations, isPlatformAdmin, activeOrganization, runs, available, v9Enabled } = useLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
-  const linked = searchParams.get("linked") === "1";
   return (
     <ClientAreaShell active="diagnostics" workspaceUser={workspaceUser} organizations={organizations} activeOrganization={activeOrganization} isPlatformAdmin={isPlatformAdmin}>
       <main className="app-main account-page" id="client-page-content">
@@ -146,18 +81,16 @@ export default function AppDiagnosticsPage() {
           <div>
             <p className="eyebrow">TU HISTORIAL PERSONAL</p>
             <h1>Mis diagnósticos</h1>
-            <p>Los diagnósticos pertenecen a tu identidad personal. Puedes vincularlos a una organización en la que tengas acceso, sin transferir su propiedad.</p>
+            <p>Los diagnósticos históricos pertenecen a tu identidad personal. El historial no se vincula ni se transfiere a organizaciones.</p>
           </div>
           <Link className="button button--primary" to={v9Enabled ? "/diagnostico/v9" : "/diagnostico"}>Nuevo diagnóstico</Link>
         </div>
-        {linked ? <Alert>La organización quedó vinculada al diagnóstico.</Alert> : null}
-        {available ? <ClaimAnonymousHistory /> : null}
         {!available ? (
           <Alert>El historial V9 todavía no está disponible en este entorno. No se han modificado ni eliminado diagnósticos.</Alert>
         ) : runs.length === 0 ? (
           <Card>
             <h2>Aún no hay diagnósticos en tu historial</h2>
-            <p>Cuando un diagnóstico se guarde asociado a tu cuenta, aparecerá aquí. También podrás vincularlo a una de tus organizaciones.</p>
+            <p>Los diagnósticos nuevos se procesan sin guardar respuestas individuales en D1. Esta pantalla solo muestra historiales existentes asociados a tu identidad.</p>
             <Link className="button button--primary" to={v9Enabled ? "/diagnostico/v9" : "/diagnostico"}>Comenzar diagnóstico</Link>
           </Card>
         ) : (
@@ -176,18 +109,7 @@ export default function AppDiagnosticsPage() {
                     ) : null}
                   </div>
                 </div>
-                {organizations.length > 0 ? (
-                  <Form method="post" className="account-form">
-                    <input type="hidden" name="workspaceId" value={run.workspace_id} />
-                    <input type="hidden" name="runId" value={run.run_id} />
-                    <label htmlFor={"organization-" + run.run_id}>Vincular a una organización</label>
-                    <select id={"organization-" + run.run_id} name="organizationId" required defaultValue="">
-                      <option value="" disabled>Selecciona una organización</option>
-                      {organizations.map((organization) => <option key={organization.id} value={organization.id}>{organization.name}</option>)}
-                    </select>
-                    <Button type="submit">Vincular organización</Button>
-                  </Form>
-                ) : <p>Para vincular este diagnóstico, primero debes pertenecer a una organización de Vecidya.</p>}
+                <p>Este historial se conserva asociado únicamente a tu identidad personal.</p>
               </Card>
             ))}
           </div>

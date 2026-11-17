@@ -1,3 +1,10 @@
+# 2026-11-17 — DIAG-V9-PRIVACY-GATE-01 — candidato local validado, aún sin PR
+
+- Política vigente aclarada el 2026-11-16: ningún diagnóstico persiste en D1 respuestas, valores elegidos, transcript, identidad/run individual ni resultado, finalizado o no. Solo se permiten métricas agregadas/coarse-grained no reidentificables; replay/finalización son transitorios, el draft local TTL es 7 días y el resultado firmado se conserva localmente hasta 24 horas. Esta política supersede el criterio documental del 2026-11-14 sobre persistencia terminal consentida.
+- Las escrituras legacy de identidad/run/eventos/finalización/claim y la asociación de historiales a organizaciones quedan fail-closed aunque el flag V9 esté activo. Las ejecuciones completadas preexistentes se preservan y se sirven read-only solo al owner autenticado o visitante con prueba de recuperación, sin recalcular, exigir versiones runtime actuales ni mutar D1; usuarios distintos obtienen 404 y anónimos sin prueba 401. No se borran rutas, tablas ni filas.
+- `/diagnostico` no crea una identidad anónima D1 al entrar; el manejo de expiración del borrador local respeta Web Locks y notifica limpieza no confirmada. 40/40 unitarias focales, E2E Worker+D1 local aislada, typecheck, build y diff-check PASS (RAN 2026-11-17). Suite unitaria completa NO VERIFICADA. El E2E usa secreto Auth efímero en configuración local y elimina su D1/config en `finally`.
+- La versión de aplicación permanece en `0.9.2`; no se modificó el paquete/versionado ni la configuración Cloudflare. Sin secretos reales, migraciones remotas, deploy, publicación ni HTTP pública. El candidato requiere sincronización/revisión CI y PR; base original `cbdb73e`, `origin/main` vigente `76fad3eb` tras PR #255.
+
 # 2026-11-13 — auditoría de higiene documental
 
 - Se actualizaron el inventario del repositorio y las deudas de ZIP/capturas con el árbol versionado y físico de `origin/main@4a64954`; los hallazgos de esos dos residuos quedaron cerrados.

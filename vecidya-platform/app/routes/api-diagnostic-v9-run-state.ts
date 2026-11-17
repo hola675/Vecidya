@@ -1,4 +1,6 @@
 import { allowRateLimitedRequest } from "../features/diagnostic/diagnostic-rate-limit.server";
+import { loadDiagnosticEventHistoryV9 } from "../features/diagnostic/qa03b/v9-audit-repository";
+import { readOwnedDiagnosticRunV9 } from "../features/diagnostic/qa03b/v9-identity-repository";
 import { readOwnedDiagnosticRunStateV9 } from "../features/diagnostic/qa03b/v9-run-state.server";
 import {
   DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
@@ -29,7 +31,6 @@ function validUuid(value: unknown): value is string {
 export async function loader({ context, request, params }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const runtime = env as unknown as V9PublicRuntimeConfig;
-  if (!isV9PublicRuntimeAvailable(runtime)) return failure(503, "El diagnóstico V9 aún no está habilitado.");
 
   if (!env.DIAGNOSTIC_PUBLIC_RATE_LIMITER) return failure(503, "El servicio no está disponible temporalmente.");
   if (!await allowRateLimitedRequest(env.DIAGNOSTIC_PUBLIC_RATE_LIMITER, request, "diagnostic-v9-resume-run")) {
@@ -51,13 +52,45 @@ export async function loader({ context, request, params }: Route.LoaderArgs) {
 
   try {
     const db = env.DB as unknown as V9IdentityDb;
-    const result = await readOwnedDiagnosticRunStateV9(db, {
+    const owner = {
       workspaceId: DIAGNOSTIC_V9_PUBLIC_WORKSPACE_ID,
       runId,
       ...(session ? { userId: session.user.id } : {
         identityId: anonymous!.identityId,
         recoveryCredential: anonymous!.recoveryCredential,
       }),
+    };
+    const run = await readOwnedDiagnosticRunV9(db, owner);
+    if (run.status === "completed") {
+      const events = await loadDiagnosticEventHistoryV9(db, owner.workspaceId, runId);
+      return Response.json({
+        ok: true,
+        readOnly: true,
+        runId,
+        status: run.status,
+        startedAt: run.started_at,
+        finishedAt: run.finished_at,
+        versions: {
+          bank: run.bank_version,
+          engine: run.engine_version,
+          scoring: run.scoring_version,
+          recommendations: run.recommendation_version,
+          consent: run.consent_version,
+        },
+        events: events.map((event) => ({
+          seq: event.seq,
+          eventId: event.event_id,
+          kind: event.kind,
+          payloadJson: event.payload_json,
+          occurredAt: event.occurred_at,
+          schemaVersion: event.schema_version,
+          actorType: event.actor_type,
+        })),
+      }, { headers });
+    }
+    if (!isV9PublicRuntimeAvailable(runtime)) return failure(503, "El diagnóstico V9 aún no está habilitado.");
+    const result = await readOwnedDiagnosticRunStateV9(db, {
+      ...owner,
       expectedVersions: {
         bank: runtime.DIAGNOSTIC_V9_BANK_VERSION!,
         engine: runtime.DIAGNOSTIC_V9_ENGINE_VERSION!,

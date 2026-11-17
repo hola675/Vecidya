@@ -34,10 +34,13 @@ export default function DiagnosticV9Start({ loaderData }: Route.ComponentProps) 
   const [draftId, setDraftId] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = createBrowserDiagnosticV9LocalDraftStore().readResult(Date.now());
-    if (stored.status === "found") setDraftId(stored.envelope.session.sessionId);
-    if (stored.status === "expired") setError("El borrador local anterior expiró. Puedes iniciar uno nuevo.");
-    if (stored.status === "unavailable") setError("El almacenamiento local no está disponible; el recorrido podrá mantenerse solo mientras esta página permanezca abierta.");
+    void createBrowserDiagnosticV9LocalDraftStore().readResult(Date.now()).then((stored) => {
+      if (stored.status === "found") setDraftId(stored.envelope.session.sessionId);
+      if (stored.status === "expired") setError(stored.cleanup === "cleared"
+        ? "El borrador local anterior expiró y se eliminó de este navegador. Puedes iniciar uno nuevo."
+        : "El borrador local expiró, pero no se pudo confirmar su eliminación. Puedes iniciar uno nuevo y borrar los datos del sitio en tu navegador.");
+      if (stored.status === "unavailable") setError("El almacenamiento local no está disponible; el recorrido podrá mantenerse solo mientras esta página permanezca abierta.");
+    });
   }, []);
 
   async function start() {

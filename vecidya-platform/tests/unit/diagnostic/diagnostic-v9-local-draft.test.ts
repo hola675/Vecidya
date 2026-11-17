@@ -47,13 +47,111 @@ test("TTL is derived from updatedAt; exact seven days is valid and older drafts 
   assert.equal(parseDiagnosticV9LocalDraft(JSON.stringify(envelope), NOW + DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS + 1).status, "expired");
 });
 
+test("expired drafts are removed only while holding the shared lock", async () => {
+  const storage = new MemoryStorage();
+  const expired = { ...createSession(), updatedAt: NOW - DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS - 1 };
+  storage.setItem("vecidya.diagnostic.v9.local-draft.1", JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(expired)));
+  const requests: string[] = [];
+  const locks = {
+    async request<T>(name: string, callback: () => T | Promise<T>) {
+      requests.push(name);
+      return callback();
+    },
+  };
+  const store = new DiagnosticV9LocalDraftStore(storage, locks);
+
+  assert.deepEqual(await store.readResult(NOW), { status: "expired", cleanup: "cleared" });
+  assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), null);
+  assert.deepEqual(requests, ["vecidya-diagnostic-v9:vecidya.diagnostic.v9.local-draft.1"]);
+});
+
+test("an expired draft remains explicitly undeleted when cross-tab locking is unavailable", async () => {
+  const storage = new MemoryStorage();
+  const expired = { ...createSession(), updatedAt: NOW - DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS - 1 };
+  const raw = JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(expired));
+  storage.setItem("vecidya.diagnostic.v9.local-draft.1", raw);
+  const store = new DiagnosticV9LocalDraftStore(storage);
+
+  assert.deepEqual(await store.readResult(NOW), { status: "expired", cleanup: "unavailable" });
+  assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), raw);
+});
+
+test("a failed cross-tab lock keeps new draft data in memory instead of racing a shared write", async () => {
+  const storage = new MemoryStorage();
+  const locks = { async request<T>(_name: string, _callback: () => T | Promise<T>): Promise<T> { throw new Error("lock unavailable"); } };
+  const store = new DiagnosticV9LocalDraftStore(storage, locks);
+
+  const written = await store.write(createSession());
+  assert.equal(written.status, "written");
+  if (written.status === "written") assert.equal(written.persistence, "memory");
+  assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), null);
+  assert.equal(store.persistenceMode, "memory");
+  assert.equal((await store.readResult(NOW)).status, "found");
+});
+
+test("expired-draft cleanup preserves a newer value observed during its guarded recheck", async () => {
+  const expired = { ...createSession(), updatedAt: NOW - DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS - 1 };
+  const replacement = { ...createSession(), sessionId: "draft-new", revision: 1, updatedAt: NOW };
+  const expiredRaw = JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(expired));
+  const replacementRaw = JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(replacement));
+  class RacingStorage extends MemoryStorage {
+    private reads = 0;
+    override getItem(key: string) {
+      this.reads += 1;
+      if (this.reads === 2) super.setItem(key, replacementRaw);
+      return super.getItem(key);
+    }
+  }
+  const storage = new RacingStorage();
+  storage.setItem("vecidya.diagnostic.v9.local-draft.1", expiredRaw);
+  const locks = {
+    async request<T>(_name: string, callback: () => T | Promise<T>) {
+      return callback();
+    },
+  };
+  const store = new DiagnosticV9LocalDraftStore(storage, locks);
+
+  const result = await store.readResult(NOW);
+  assert.equal(result.status, "found");
+  if (result.status !== "found") return;
+  assert.equal(result.envelope.session.sessionId, "draft-new");
+  assert.deepEqual(result, {
+    status: "found",
+    envelope: buildDiagnosticV9LocalDraftEnvelope(replacement),
+  });
+  assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), replacementRaw);
+});
+
+test("a failed expired-draft removal reports cleanup unavailable and preserves stored data", async () => {
+  const expired = { ...createSession(), updatedAt: NOW - DIAGNOSTIC_V9_LOCAL_DRAFT_TTL_MS - 1 };
+  const raw = JSON.stringify(buildDiagnosticV9LocalDraftEnvelope(expired));
+  const storage: DiagnosticV9StorageLike = {
+    getItem() { return raw; },
+    setItem() {},
+    removeItem() { throw new Error("blocked"); },
+  };
+  const locks = { async request<T>(_name: string, callback: () => T | Promise<T>) { return callback(); } };
+  const store = new DiagnosticV9LocalDraftStore(storage, locks);
+
+  assert.deepEqual(await store.readResult(NOW), { status: "expired", cleanup: "unavailable" });
+});
+
+test("corrupted drafts remain classified invalid rather than being reported as deleted", async () => {
+  const storage = new MemoryStorage();
+  storage.setItem("vecidya.diagnostic.v9.local-draft.1", "{");
+  const store = new DiagnosticV9LocalDraftStore(storage);
+
+  assert.deepEqual(await store.readResult(NOW), { status: "invalid" });
+  assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), "{");
+});
+
 test("reads do not renew the TTL and only a valid revision write updates updatedAt", async () => {
   const storage = new MemoryStorage();
   const store = new DiagnosticV9LocalDraftStore(storage);
   const initial = createSession();
   await store.write(initial);
   const beforeRead = storage.getItem("vecidya.diagnostic.v9.local-draft.1");
-  store.readResult(NOW + 1000);
+  await store.readResult(NOW + 1000);
   assert.equal(storage.getItem("vecidya.diagnostic.v9.local-draft.1"), beforeRead);
   const id = currentCandidateQuestionIdV9(initial)!;
   const question = bank.get(id)!;
@@ -63,7 +161,7 @@ test("reads do not renew the TTL and only a valid revision write updates updated
   if (!next.ok) return;
   const written = await store.write(next.session);
   assert.equal(written.status, "written");
-  assert.equal(store.readResult(NOW + 2000).status, "found");
+  assert.equal((await store.readResult(NOW + 2000)).status, "found");
   if (written.status === "written") assert.equal(written.envelope.session.updatedAt, NOW + 2000);
 });
 
@@ -85,12 +183,12 @@ test("storage failures keep the session in memory and report unavailable recover
     removeItem() { throw new Error("blocked"); },
   };
   const store = new DiagnosticV9LocalDraftStore(unavailable);
-  assert.equal(store.readResult(NOW).status, "unavailable");
+  assert.equal((await store.readResult(NOW)).status, "unavailable");
   const session = createSession();
   const saved = await store.write(session);
   assert.equal(saved.status, "written");
   if (saved.status === "written") assert.equal(saved.persistence, "memory");
-  assert.equal(store.readResult(NOW).status, "found");
+  assert.equal((await store.readResult(NOW)).status, "found");
   assert.equal(await store.clear(), "unavailable");
 });
 
@@ -149,7 +247,7 @@ test("clear removes only the local draft key and completed sessions are rejected
   const store = new DiagnosticV9LocalDraftStore(storage);
   await store.write(createSession());
   assert.equal(await store.clear(), "cleared");
-  assert.equal(store.readResult(NOW).status, "empty");
+  assert.equal((await store.readResult(NOW)).status, "empty");
   assert.equal(storage.getItem("other-product"), "preserve");
   const completed = { ...createSession(), status: "completed" } as CandidateSessionV9Prototype;
   assert.equal(buildDiagnosticV9LocalDraftEnvelope(completed), null);
