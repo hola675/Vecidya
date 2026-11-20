@@ -15,6 +15,21 @@ Verificar a escala real y móvil: transparencia/halo, recorte completo, brazos y
 
 Los agentes deben conservar los originales y optimizar solo derivados trazables. Cualquier rediseño de pose, accesorio o expresión exige un encargo de imagen nuevo y aprobación de identidad, distinto del trabajo de implementación CSS.
 
+### Inspección visual inicial de originales (2026-11-20)
+
+Se reabrieron los 10 archivos WebP originales y la ilustración complementaria por separado. La cabecera WebP `VP8X` declara **canal alfa presente en los diez archivos de Vico**; esto verifica una característica del formato, no que cada píxel transparente sea perfecto.
+
+| Prioridad | Original / grupo | Observación visual | Criterio de corrección |
+|---|---|---|---|
+| Alta | `vico-home.webp` | Se aprecian franjas y restos de gradiente alrededor del personaje, visibles especialmente al contrastar el fondo. | Evaluar máscara alfa y residuos sin regenerar ni alterar rasgos; derivado nuevo solo tras aprobación |
+| Alta | `vico-diagnostico.webp` | Se observan bandas rectangulares de fondo en torno al personaje y al objeto que sostiene. | Revisar bordes/halo sobre superficies oscuras y claras con píxel real |
+| Media | `vico-vecindario.webp`, `vico-licencias.webp`, `vico-servicios.webp`, `vico-addons.webp` | Composición rica en objetos pequeños: pierde detalle cuando se usa como miniatura. | Conservar hero suficiente, no imponer tamaños mínimos ficticios sin medir |
+| Media | Conjunto de 10 poses | Se observan halos luminosos y algunos bordes abruptos alrededor de silueta/accesorios en distintas piezas. | Verificar visualmente en claro/oscuro y a zoom; no asumir máscara limpia por el flag alfa |
+| Identidad conservada | Las diez poses | Coinciden en personaje de zorro naranja, chaqueta azul, acentos de Vecidya y acabado tridimensional. | Mantener coherencia de ojos, orejas, ropa y perspectiva; no sustituir por mascotas alternas |
+| Reclasificación confirmada | `home-vecidya-companion-v4.webp` | Es una infografía del ecosistema Vecidya y **no contiene al personaje**. | Categoria `Ilustraciones`, no `Vico`; sigue disponible para el Inicio |
+
+**Límite de esta revisión:** los hallazgos son observaciones visuales de los archivos originales. No se ejecutó un análisis de máscara por píxel, no se produjeron derivados limpios y no se ha certificado una composición en todas las resoluciones de producción.
+
 ### Registro de revisión
 - `CODE`: catálogo de 10 referencias originales WebP del personaje: ocho rutas con `PublicHeroArt`, Inicio y Aprende; la infografía complementaria está catalogada aparte.
 - `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
