@@ -319,3 +319,29 @@ test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CS
   assert.match(style,/pb-table-wrap/);
   assert.match(style,/overflow-x:auto/);
 });
+
+test('Vico: once originales catalogados y un único punto de entrada accesible',()=>{
+  const raw = read('assets/library-catalog.js');
+  const catalog = JSON.parse(raw.replace(/^window\.vecidyaCrystalCatalog\s*=\s*/, '').replace(/;\s*$/, ''));
+  const vico = catalog.filter((entry)=>entry.category==='Vico');
+  assert.equal(vico.length,11);
+  assert.equal(new Set(vico.map((entry)=>entry.source)).size,11);
+  for(const asset of vico){
+    assert.match(asset.source,/^\.\.\/vecidya-platform\/public\/assets\/selected\/illustrations\/.*\.webp$/);
+    assert.ok(asset.width>0 && asset.height>0 && asset.preview);
+  }
+  const script=read('assets/vico-workbench.js');
+  const styles=read('styles/vico-workbench.css');
+  assert.doesNotThrow(()=>new vm.Script(script));
+  assert.match(html,/id="vico" aria-labelledby="vico-title"/);
+  assert.match(html,/id="vico-workbench-gallery"[^>]*aria-busy="true"/);
+  assert.match(html,/href="#vico"/);
+  assert.match(html,/styles\/vico-workbench\.css/);
+  assert.match(html,/assets\/vico-workbench\.js/);
+  assert.match(script,/concept|visual-review-only-not-a-route-or-design-api/);
+  assert.doesNotMatch(script,/localStorage|sessionStorage|XMLHttpRequest|fetch\(/);
+  assert.match(styles,/prefers-reduced-motion:reduce/);
+  for (const asset of vico) {
+    assert.ok(script.includes(asset.source.split('/').pop()),'Falta registrar la variante '+asset.name);
+  }
+});
