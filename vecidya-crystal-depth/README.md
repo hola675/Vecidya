@@ -38,3 +38,36 @@ Esto no equivale a certificación WCAG, revisión con lector de pantalla/zoom 20
 - 2026-11-12 — 0.5: tema claro inicial con alternador oscuro, escenas ambientales clara/oscura e iconos PNG Crystal.
 - 2026-11-12 — 0.4: biblioteca premium navegable, sistema de superficies, interacciones locales y escena ambiental aprobada.
 - 2026-11-12 — 0.1–0.3: laboratorio y primeras muestras aisladas.
+
+
+## Despliegue aislado en Cloudflare Workers (preparado, pendiente de activación)
+
+La biblioteca puede asociarse al Worker existente `vecidya-desig` sin tocar la plataforma principal. El despliegue automatizado **no está confirmado** hasta conectar GitHub en Cloudflare, integrar estos cambios en `main` y comprobar la web publicada.
+
+En Cloudflare > Workers & Pages > `vecidya-desig` > Settings > Builds > Connect:
+
+| Campo | Valor |
+| --- | --- |
+| Cuenta / repositorio | `hola675 / Vecidya` |
+| Production branch | `main` |
+| Root directory | `vecidya-crystal-depth` |
+| Disable builds | Desactivado |
+| Build command | `node scripts/build-cloudflare.mjs` |
+| Deploy command | `npx wrangler deploy` |
+| Preview command | `npx wrangler preview` |
+
+En **Build watch paths**, incluir `vecidya-crystal-depth/*` y `vecidya-platform/public/assets/*`. Esto limita los builds a los cambios de la biblioteca y de los recursos compartidos que utiliza.
+
+`scripts/build-cloudflare.mjs` genera `dist/` desde cero, copia solo los archivos web de Crystal Depth y las referencias utilizadas de `vecidya-platform/public/assets/`, y reescribe las rutas relativas para que funcionen en la raíz del dominio. Las imágenes siguen almacenadas una sola vez en el código fuente del monorepositorio. Si falta una imagen oficial referida, el build falla. `wrangler.jsonc` configura solamente los activos estáticos del Worker `vecidya-desig`; no declara rutas ni modifica DNS.
+
+Verificación local (desde `vecidya-crystal-depth/`):
+
+```sh
+node --check scripts/build-cloudflare.mjs
+node scripts/build-cloudflare.mjs
+npx wrangler dev
+```
+
+Revisar `/` y `/biblioteca`, todos los iconos, la galería y sus enlaces. Tras el primer despliegue, verificar Cloudflare **Deployments**, el dominio existente y una comprobación HTTP pública fechada; guardar una versión anterior para reversión. Ningún push a `main` despliega automáticamente mientras la conexión Git no esté activada.
+
+**Changelog de la preparación:** 2026-11-19 — build estático aislado y configuración Wrangler para GitHub → Cloudflare; sin deploy, sin integración en la plataforma, sin cambios DNS.
