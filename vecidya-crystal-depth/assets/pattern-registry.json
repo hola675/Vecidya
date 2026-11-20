@@ -1063,7 +1063,25 @@
     "evidenceLevels": {
       "catalog": "CODE + revisión visual de originales: 10 imágenes del personaje; la pieza home-vecidya-companion-v4.webp no muestra a Vico y se reclasificó como ilustración",
       "deployment": "El uso aparece en módulos React; no sustituye comprobación HTTP y QA humana por ruta",
-      "alpha": "Revisión visual de los originales detectó halos/artefactos de borde aparentes en varias variantes; transparencia cuantitativa y limpieza aún sin certificación de píxeles"
+      "alpha": "HEADER: WebP VP8X alpha flag presente en los 10 Vico; VISUAL: franjas/residuos aparentes en vico-home y vico-diagnostico; halos de borde en varias variantes. No equivale a mascara alfa perfecta ni QA de pixels."
+    },
+    "visualFindings": {
+      "status": "observacion-visual-de-originales-no-qa-de-pixeles",
+      "high": [
+        "vico-home.webp: bandas o residuos de gradiente",
+        "vico-diagnostico.webp: franjas rectangulares de fondo"
+      ],
+      "medium": [
+        "Vico Vecindario/Licencias/Servicios/Complementos: detalles se reducen excesivamente a tamaño pequeño",
+        "Halos luminosos y bordes abruptos alrededor de algunas siluetas"
+      ],
+      "identityStrengths": [
+        "Zorro naranja consistente",
+        "Sudadera y calzado azules",
+        "Acentos gráficos Vecidya",
+        "Poses temáticas coherentes con ruta"
+      ],
+      "remediation": "No sobreescribir originales. Probar alpha y crear derivados controlados solo con aprobación de identidad y comparación lado a lado."
     }
   }
 }
