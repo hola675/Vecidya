@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "vecidya-crystal-depth/pattern-registry-r1",
   "version": "1.0.0-r1-candidate",
   "status": "candidato-en-revision-no-integrado",
@@ -318,5 +317,6 @@
       "obtener-aprobacion-antes-de-migrar"
     ],
     "doNot": "No importar CSS de este laboratorio directamente en producción ni fusionar sin autorización."
-  }
+  },
+  "schemaVersion": "1"
 }
