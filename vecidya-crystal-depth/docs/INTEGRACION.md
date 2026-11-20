@@ -1,31 +1,133 @@
-# Integración futura — Vecidya Crystal Depth
+# Guía de integración y uso por agentes — Crystal Depth R1.2
 
-## Estado verificado
+**Corte:** 2026-11-20 · **Estado:** laboratorio R1 candidato en rama de revisión, sin integración en `vecidya-platform/` ni despliegue. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
 
-El repositorio usa TypeScript/React y CSS. Existen vecidya-platform/app/components/ui.tsx, app/styles/premium-foundation.css, app/styles/home-premium.css y app/assets/public-assets.ts.
+## 1. Punto de entrada obligatorio para agentes
 
-## Principios
+Antes de intervenir una pantalla, leer en este orden:
 
-1. Mantener la identidad de Vecidya y separar material de color.
-2. El cristal debe permitir apreciar el fondo, pero preservar contraste y legibilidad.
-3. Las escenas de página deben tener planos ambientales, vidrio, controles y assets protagonistas.
-4. Mantener intactos los formularios y las preguntas del diagnóstico.
-5. No imponer la identidad Vecidya a los sitios públicos de clientes MiniWeb2.
-6. Respetar prefers-reduced-motion, foco visible y alternativas sin backdrop-filter.
+1. `AGENTS.md` (raíz), `vecidya-platform/docs/GOVERNANCE.md`, `STATUS.md` y `PROJECT_STATE.md`; comprobar estado, rama y límites del checkpoint.
+2. `vecidya-crystal-depth/docs/DIRECCION-ARTISTICA.md`: visión, jerarquía L0–L5, tres materiales, paleta y contraste.
+3. `vecidya-crystal-depth/assets/pattern-registry.json`: contrato estructurado `intentRouting`, `materials`, `tokens`, `assetRules` y `acceptance`.
+4. `vecidya-crystal-depth/biblioteca.html#guia`: ejemplos visibles e interactivos; no copiar directamente HTML/CSS a la aplicación.
+5. `vecidya-platform/docs/design-system/VECIDYA-UI-UX.md` y componentes reales de la plataforma; la guía oficial y la implementación existente prevalecen ante divergencias.
 
-## Ruta de implementación propuesta
+**Regla fundamental:** `pattern-registry.json` expresa intención visual R1, no permisos, esquema, API, derechos, contratos publicados ni servicios activados. Para esas decisiones manda el código y los documentos canónicos de plataforma y negocio.
 
-- Validar el laboratorio y la especificación de materiales.
-- Añadir tokens opt-in a la base de estilos existente.
-- Construir variantes React tipadas, sin reemplazar contratos de Button y Card.
-- Auditar los módulos y el registro de MiniWeb2 antes de exponer controles de material en su editor.
-- Catalogar y optimizar assets (SVG oficial se conserva en la plataforma; esta biblioteca presenta once propuestas Crystal en PNG y exporta WhatsApp como PNG para su galería).
-- Migrar pantallas una a una y verificar compilación, accesibilidad y regresiones.
+## 2. Protocolo para interpretar cualquier consulta
 
-No se ha desplegado ni ejecutado la batería de pruebas de la aplicación.
+```text
+PETICIÓN: "Mejora la sección X de Vecidya".
+1) Identificar destino: marketing / Vecindario / Diagnóstico / Aprende / MiniWeb / app / Admin / licencias.
+2) Identificar tarea principal: atraer / encontrar / leer / decidir / editar / operar.
+3) Buscar intención exacta o la más cercana en assets/pattern-registry.json → intentRouting.
+4) Elegir material: focal (narrativa), quiet (soporte), solid (trabajo/datos).
+5) Componer L0–L5 solo donde aporten sentido; ninguna escena debe bloquear L4.
+6) Consultar asset real y su origen, licencia, calidad, texto alternativo y tamaño.
+7) Confirmar funcionalidades/entitlements efectivas y límites de CRM GHL.
+8) Localizar componente real; adaptar tokens/variantes sin duplicar componentes.
+9) Diseñar y probar estados: default, hover, focus, active, disabled, loading, empty, error, success.
+10) Verificar accesibilidad, tamaño táctil, responsive, reduced-motion, fallback sin blur.
+11) Ejecutar QA focal + typecheck/build si cambia plataforma; documentar evidencias del SHA.
+12) Abrir PR; NO merge ni deploy sin autorización independiente.
+```
 
-## Estado de Crystal Depth — 2026-11-12
+Cuando una consulta abarque varias áreas, **dividir en checkpoints por ruta y riesgo**, no implementar simultáneamente cambios visuales, de permisos y de backend. Si la intención no figura en el registro, usar `solid` para lectura/operación por defecto, describir la nueva necesidad y solicitar evaluación de diseño; no inventar un cuarto material.
 
-Existe una biblioteca visual independiente en vecidya-crystal-depth/biblioteca.html, con estilos propios, temas claro/oscuro, muestras funcionales y un catálogo navegable de 140 assets. Once iconos tienen propuestas Crystal en PNG; los originales permanecen intactos. Los fondos y variantes optimizados se conservan dentro de vecidya-crystal-depth/assets/.
+## 3. Tabla orientadora: intención → patrón → precaución
 
-Esta entrega no modifica ni importa componentes de la plataforma o MiniWeb2. La biblioteca todavía necesita aprobación visual integral; no representa una migración, publicación o validación de producción.
+| Solicitud que puede recibir un agente | Intención `intentRouting` | Material inicial | Riesgo crítico |
+|---|---|---|---|
+| "Portada premium" / "efecto 3D" | `portada-marketing` | Focal + Quiet | El texto debe ser HTML y Vico un asset separado |
+| "Mejorar búsqueda Vecindario" | `buscar-negocios` | Quiet + Solid | No inventar datos, categorías ni resultados |
+| "Hacer más claro el diagnóstico" | `diagnosticar` | Solid | No modificar scoring, preguntas ni privacidad |
+| "Rediseñar Aprende" | `contenido-editorial` | Solid + Quiet | Lectura larga y semántica editorial dominan |
+| "Editor del MiniWeb" | `editar-miniweb` | Solid + Quiet | Borrador/revisión/publicación sin pérdida de datos |
+| "Dashboard, equipo, licencias" | `administrar-plataforma` | Solid | No saltarse permisos ni disfrazar estados |
+| "Mostrar diferencias entre planes" | `comparar-licencias` | Quiet + un único foco | Cuadra completo; no atribuir GHL no operativo |
+| "Formulario conectado a CRM" | `captacion-comercial` | Solid + CTA | GHL externo, integración real por verificar |
+
+## 4. Reglas visuales programables
+
+- `focal` → `vx-r1-focal` (solo demostración de laboratorio): fondo compositivo, bisel de mayor relieve, reflejo contenido; no para lectura densa.
+- `quiet` → `vx-r1-quiet`: superficies de apoyo y navegación.
+- `solid` → `vx-r1-solid`: campos, tablas y paneles con contraste estable.
+- El tema oscuro es el estado inicial de la biblioteca; claro es alternativo. Ambos requieren pruebas individuales y no se infieren mediante `filter: invert()`.
+- Mantener una sola receta geométrica por familia; naranja es acción de marca, verde confirmación, ámbar atención y rojo error. Un estado combina icono/texto/contexto, jamás solo color.
+- No poner controles en fondos WebP, ni mensajes dentro de escenas rasterizadas. Preservar Vico oficial y fuentes originales.
+- La ambientación L0 puede ser estacionaria; L1–L5 se componen según la sección. Reducir complejidad y paralaje en móvil o `prefers-reduced-motion`.
+
+### Selección de assets
+
+`assets/library-catalog.js` enumera 140 fuentes catalogadas de `vecidya-platform/public/assets/` con vistas previas. No confundir vista previa con original; un link `Abrir original` puede requerir el árbol del repositorio para resolver. `assets/pattern-registry.json` orienta por intención, pero la ruta concreta del asset se valida contra archivos existentes, su variante original y la página destino. Las 11 propuestas Crystal PNG no constituyen una sustitución automática de iconos.
+
+## 4.1. Movimiento R1.1: interpretación de solicitudes de animación
+
+Si el cliente solicita **transiciones, animaciones, efectos o navegación fluida**, el agente debe seleccionar un preset de `assets/pattern-registry.json → motion.presets`. Esto se evalúa después de elegir el material, nunca en vez de verificar un componente real.
+
+| Intención | Preset | Comportamiento y límite |
+| --- | --- | --- |
+| Entrar a una portada | `page-enter` | Aparición única de hero, aprox. 580 ms; no retrasa contenido ni SEO |
+| Recorrer una página | `section-reveal` | Transform y opacidad 340–480 ms al entrar en viewport; si JS falla, contenido visible |
+| Activar botones/tarjetas/pestañas | `ui-feedback` | 150–260 ms; no modificar layout, función, foco ni estado real |
+| Escena comercial o Vico | `ambient-drift` | Órbitas y halos decorativos entre 9–14 s, con pausa; evitar en datos densos |
+| Navegación entre secciones | `section-navigation` | Scroll suave opt-in en anclas; movimiento reducido usa scroll instantáneo |
+
+**Cómo consumirlo:** la sección `biblioteca.html#movimiento` contiene ejemplos interactivos, selector de intensidad, pausa/reanudación y repetición de la escena. El CSS de referencia está en `styles/motion-system.css` y su mejora JS en `assets/motion-system.js`; **no son aún componentes React adoptados por la plataforma**. Los datos, diagnósticos, MiniWeb editor y Admin usan contenido quiet/solid y evitan efectos continuos.
+
+**Accesibilidad:** `prefers-reduced-motion: reduce` prevalece sobre controles de laboratorio. El navegador sin JavaScript o sin `IntersectionObserver` presenta la página completa, sin ocultar secciones. Mantener foco visible, controles de pausa en efectos de más de 5 s, movimientos no esenciales y ausencia de scroll forzado. En móvil, eliminar órbitas costosas y reducir amplitud. Nunca simular un cambio de página que no haya ocurrido ni capturar el scroll del usuario.
+
+**Certificación obligatoria de adopción:** R2 navegador con tema claro/oscuro, 320/390/768/1366/1920 px, reduced-motion, cero overflow, estados y permiso real; antes de integrar rutas React es necesario especificar transición opt-in por ruta, compatibilidad con foco/historial, web vitals y rollback.
+
+## 4.2. Recetas de página R1.2: de la consulta a una composición concreta
+
+El catálogo `assets/pattern-registry.json → sceneRecipes` incluye **cuatro composiciones didácticas**. Visualizarlas en `biblioteca.html#composiciones` antes de seleccionar assets y movimientos. Son modelos de presentación, no rutas, editores ni funcionalidades implementadas.
+
+| Cuando la petición dice… | Receta | Superficie dominante | Movimiento permitido | Qué no hacer |
+| --- | --- | --- | --- | --- |
+| «Haz la portada más profesional» | `publico` | Focal en portada, Quiet en apoyo | Entrada única y ambiente pausado | Dibujar CTA o textos dentro de la imagen |
+| «Mejora búsqueda y negocios» | `vecindario` | Quiet + Solid | Hover/foco breve, secciones discretas | Inventar listados y mover resultados mientras se leen |
+| «Que Aprende sea comprensible» | `aprende` | Solid + Quiet | Aparición breve por sección | Movimiento permanente bajo párrafos o jerarquía ilegible |
+| «Da mejor aspecto a MiniWeb» | `miniweb` | Solid en editor, Quiet en vista previa | Respuesta breve a controles reales | Simular publicación, conceder prestaciones por plan o perder datos |
+
+**Flujo mínimo del agente:** interpretar destino → consultar `intentRouting` → elegir `sceneRecipes` → localizar imágenes oficiales → escoger `motion.presets` compatibles → comprobar permisos y rutas reales → componer React solo cuando haya autorización. Cada receta indica `status: demo-only-not-route`; ninguna puede activar un producto por sí misma.
+
+Las cuatro muestras usan pestañas seleccionables mediante ratón y teclado (flechas, Inicio y Fin), respetan movimiento reducido y muestran los cuatro contenidos sin JavaScript. Son **componentes demostrativos** en `styles/scene-composer.css` y `assets/scene-composer.js`; no exportar esos estilos como CSS global de la plataforma ni introducir un segundo router.
+
+**Empaquetado aislado:** el script `scripts/build-cloudflare.mjs` construye el sitio de demostración sin desplegar, reescribe assets y conserva los documentos didácticos referenciados por la propia página. La CI ejecuta el empaquetado y comprueba archivos, pero esa aprobación no autoriza conectar producción a Cloudflare.
+
+## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
+
+`Cuadra`: web profesional completa y editable por organización, con plantilla sectorial legible. `Barrio`: hereda Cuadra; composición orientada a captar consultas y gestionar seguimiento cuando su integración GHL esté operativa. `Ciudad`: hereda Barrio; variaciones de composiciones multiproceso cuando esos procesos estén realmente disponibles. Las diferencias deben responder al valor del producto, **no** a reducir artificialmente la calidad de Cuadra.
+
+La matriz comercial vigente en `vecidya-platform/docs/business/VECIDYA_PRODUCT_CATALOG.md` y los entitlements reales del backend mandan sobre cualquier mock visual. Cambiar de plantilla MiniWeb debe conservar contenido. No crear un CRM paralelo a GHL ni afirmar que los complementos están activos por mostrar una pantalla.
+
+## 6. Contrato de entrega y QA para agentes
+
+Entregar en cada checkpoint un resumen con `alcance`, `intención`, `patrón`, `assets verificados`, `archivos propios`, `pruebas ejecutadas`, `riesgos pendientes`, `commit/PR` y `estado de producción`. Si una prueba no se ejecuta, documentar `NO VERIFICADO`; jamás copiar un PASS anterior como propio.
+
+**Gates de R2 (pendientes):** contraste WCAG en fondos compuestos, zoom 200 %, lectores de pantalla, navegación teclado, 320/390/768/1366/1920 px, foco, estados de error, reduced-motion, ausencia de blur, compatibilidad del tema claro y validación visual humana. El laboratorio puede tener muestras funcionales sin haber pasado estas certificaciones.
+
+### Plantilla corta de instrucción para Kilo Code
+
+```text
+Antes de modificar esta pantalla de Vecidya, lee AGENTS.md, los documentos canónicos afectados,
+vecidya-crystal-depth/docs/DIRECCION-ARTISTICA.md,
+vecidya-crystal-depth/docs/INTEGRACION.md y
+vecidya-crystal-depth/assets/pattern-registry.json.
+Identifica la intención de interfaz y aplica la receta focal/quiet/solid correspondiente.
+Usa assets oficiales y los componentes React ya existentes. Preserva permisos, datos,
+contratos de diagnóstico, entitlements y separación Vecidya/GHL.
+Prueba solo lo relevante al checkpoint y documenta el SHA; abre PR sin desplegar.
+```
+
+## 7. Orden de adopción tras aprobación
+
+1. Aprobar visualmente el laboratorio R1 y su diseño de tokens (aún pendiente).
+2. R2: certificar contrastes, responsive, interacción, assets, accesibilidad y documentación.
+3. Comparar CSS guía R1 con el sistema ya implementado `visual-system.css`; incorporar nuevos tokens **opt-in**, sin duplicar ni sustituir globalmente su semántica.
+4. Crear variantes React tipadas de componentes existentes; no romper el contrato de `Button`, `Card` ni su accesibilidad.
+5. Migrar pantallas por lotes pequeños; certificar por ruta y documentar.
+6. Solo con autorización y contratos operativos, habilitar controles por licencia en MiniWeb, respetando organización y publicación.
+
+**Estado:** esta entrega no modifica `vecidya-platform/`, no crea migraciones, no altera permisos ni licencia y no despliega.

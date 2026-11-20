@@ -1,3 +1,6 @@
 # Carpeta generada por scripts/build-cloudflare.mjs
 /dist/
 /.wrangler/
+# Salidas temporales de Playwright/CI R2; nunca versionar capturas efímeras.
+/qa-artifacts/
+/.qa-artifacts/

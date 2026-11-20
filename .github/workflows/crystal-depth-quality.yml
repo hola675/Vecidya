@@ -1,0 +1,57 @@
+name: Crystal Depth contract QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "vecidya-crystal-depth/**"
+      - ".github/workflows/crystal-depth-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  library:
+    name: Biblioteca visual · contrato R1
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Comprobar temas, enrutamiento, materiales, assets y contraste
+        run: node --test vecidya-crystal-depth/tests/r1-contract.test.mjs
+
+  browser:
+    name: Biblioteca visual · R2 Chromium responsive
+    needs: library
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Instalar Playwright ya declarado por la plataforma
+        run: pnpm --dir vecidya-platform install --frozen-lockfile
+      - name: Certificar interacción y responsive en navegador real
+        run: node vecidya-crystal-depth/tests/r2-browser-qa.mjs
+      - name: Empaquetar Cloudflare sin desplegar
+        run: |
+          node vecidya-crystal-depth/scripts/build-cloudflare.mjs
+          node -e "const fs=require('node:fs');const root='vecidya-crystal-depth/dist/';const files=['biblioteca.html','styles/scene-composer.css','assets/scene-composer.js','styles/motion-system.css','assets/motion-system.js','assets/pattern-registry.json','docs/INTEGRACION.md','docs/DIRECCION-ARTISTICA.md'];for(const f of files){if(!fs.existsSync(root+f))throw Error('Falta '+f)}"
+      - name: Conservar evidencia visual del commit probado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crystal-depth-r2-capturas
+          path: vecidya-crystal-depth/qa-artifacts/
+          retention-days: 7
+          if-no-files-found: warn

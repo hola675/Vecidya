@@ -1,0 +1,500 @@
+{
+  "version": "1.0.0-r1-candidate",
+  "status": "candidato-en-revision-no-integrado",
+  "lastUpdated": "2026-11-19",
+  "purpose": "Contrato consultable por agentes: seleccionar composiciones, materiales, assets, componentes y QA antes de implementar Vecidya.",
+  "decisions": {
+    "defaultTheme": "dark",
+    "alternateTheme": "light",
+    "crystalIntensity": "focal-on-scenes-quiet-on-content-solid-on-data",
+    "libraryRole": "internal-review-laboratory",
+    "planDifferentiation": "quality-parity-with-progressive-capabilities"
+  },
+  "priority": [
+    "funcionamiento real",
+    "accesibilidad y contraste",
+    "identidad y contenido",
+    "jerarquia visual",
+    "profundidad y movimiento"
+  ],
+  "tokens": {
+    "color.background.dark": "#06172F",
+    "color.surface.dark": "#0D2E54",
+    "color.text.dark": "#F3F8FF",
+    "color.text.muted.dark": "#BDD6F0",
+    "color.background.light": "#F1F7FE",
+    "color.surface.light": "#FFFFFF",
+    "color.text.light": "#123766",
+    "color.brand.orange": "#FF9B27",
+    "color.brand.orangeInk": "#09275C",
+    "color.accent.cyan": "#51E3FF",
+    "color.focus.dark": "#FFDA8B",
+    "radius.card": "23px",
+    "radius.large": "34px",
+    "target.min": "44px",
+    "contrast.text.min": "4.5:1",
+    "contrast.large.min": "3:1"
+  },
+  "layers": [
+    {
+      "id": "L0",
+      "role": "ambiente-estacionario",
+      "interactive": false
+    },
+    {
+      "id": "L1",
+      "role": "contexto-escena",
+      "interactive": false
+    },
+    {
+      "id": "L2",
+      "role": "estructura-perspectiva",
+      "interactive": false
+    },
+    {
+      "id": "L3",
+      "role": "superficies",
+      "interactive": false
+    },
+    {
+      "id": "L4",
+      "role": "contenido-controles",
+      "interactive": true
+    },
+    {
+      "id": "L5",
+      "role": "foco-ilustracion",
+      "interactive": false
+    }
+  ],
+  "materials": [
+    {
+      "id": "focal",
+      "name": "Crystal Focal",
+      "use": [
+        "hero",
+        "escena-comercial",
+        "call-to-action-destacado"
+      ],
+      "avoid": [
+        "formulario",
+        "tabla",
+        "control-de-datos-densos"
+      ],
+      "recipe": "mayor profundidad y luz; texto sobre soporte opaco contrastado",
+      "cssClass": "vx-r1-focal"
+    },
+    {
+      "id": "quiet",
+      "name": "Crystal Quiet",
+      "use": [
+        "tarjeta",
+        "navegacion",
+        "panel-no-denso"
+      ],
+      "avoid": [
+        "texto-extenso-sobre-fotografia",
+        "campos-de-edicion-intensiva"
+      ],
+      "recipe": "bisel fino, resplandor suave, transparencia moderada",
+      "cssClass": "vx-r1-quiet"
+    },
+    {
+      "id": "solid",
+      "name": "Solid Readable",
+      "use": [
+        "formulario",
+        "tabla",
+        "editor",
+        "dashboard",
+        "estado-critico"
+      ],
+      "avoid": [
+        "hero-de-marca-como-unico-recurso"
+      ],
+      "recipe": "fondo mayormente opaco, foco visible, controles delimitados",
+      "cssClass": "vx-r1-solid"
+    }
+  ],
+  "intentRouting": [
+    {
+      "intent": "portada-marketing",
+      "examples": [
+        "inicio",
+        "landing",
+        "hero de servicios"
+      ],
+      "material": "focal",
+      "scene": "home-scene",
+      "complement": [
+        "quiet"
+      ],
+      "never": [
+        "imagen-como-texto",
+        "WebGL-obligatorio"
+      ]
+    },
+    {
+      "intent": "buscar-negocios",
+      "examples": [
+        "vecindario",
+        "filtro",
+        "ficha de negocio"
+      ],
+      "material": "quiet",
+      "scene": "neighborhood-scene",
+      "complement": [
+        "solid"
+      ],
+      "never": [
+        "tarjeta-sin-datos-reales",
+        "buscador-solo-decorativo"
+      ]
+    },
+    {
+      "intent": "diagnosticar",
+      "examples": [
+        "diagnostico",
+        "cuestionario",
+        "resultados"
+      ],
+      "material": "solid",
+      "scene": "diagnostic-scene",
+      "complement": [
+        "quiet"
+      ],
+      "never": [
+        "reescribir-scoring",
+        "brillo-detras-de-respuestas"
+      ]
+    },
+    {
+      "intent": "contenido-editorial",
+      "examples": [
+        "aprende",
+        "articulo",
+        "guia"
+      ],
+      "material": "solid",
+      "scene": "learn-journey-scene",
+      "complement": [
+        "quiet"
+      ],
+      "never": [
+        "texto-largo-en-vidrio-de-alta-transparencia"
+      ]
+    },
+    {
+      "intent": "editar-miniweb",
+      "examples": [
+        "editor",
+        "galeria",
+        "publicar miniweb"
+      ],
+      "material": "solid",
+      "scene": null,
+      "complement": [
+        "quiet",
+        "focal-only-in-preview"
+      ],
+      "never": [
+        "publicar-automaticamente",
+        "eliminar-datos-al-cambiar-plantilla"
+      ]
+    },
+    {
+      "intent": "administrar-plataforma",
+      "examples": [
+        "admin",
+        "usuarios",
+        "licencias",
+        "auditoria"
+      ],
+      "material": "solid",
+      "scene": null,
+      "complement": [
+        "quiet"
+      ],
+      "never": [
+        "priorizar-adornos-sobre-tablas",
+        "falsear-estados"
+      ]
+    },
+    {
+      "intent": "comparar-licencias",
+      "examples": [
+        "cuadra",
+        "barrio",
+        "ciudad",
+        "planes"
+      ],
+      "material": "quiet",
+      "scene": "licenses-scene",
+      "complement": [
+        "focal-one-highlight"
+      ],
+      "never": [
+        "ocultar-funciones-basicas-en-cuadra",
+        "afirmar-derechos-no-implementados"
+      ]
+    },
+    {
+      "intent": "captacion-comercial",
+      "examples": [
+        "formulario",
+        "agenda",
+        "crm"
+      ],
+      "material": "solid",
+      "scene": null,
+      "complement": [
+        "focal-on-call-to-action"
+      ],
+      "never": [
+        "atribuir-ghl-a-vecidya",
+        "prometer-integraciones-no-activas"
+      ]
+    }
+  ],
+  "licenseExperience": [
+    {
+      "id": "cuadra",
+      "value": "presencia-completa",
+      "visual": "plantillas-sectoriales-completas-y-legibles",
+      "capability": "base",
+      "status": "criterio-visual-no-cambio-de-entitlements"
+    },
+    {
+      "id": "barrio",
+      "value": "captacion-y-seguimiento",
+      "visual": "composiciones-orientadas-a-conversion",
+      "capability": "segun-integracion-ghl-real",
+      "status": "propuesta-sujeta-a-implementacion"
+    },
+    {
+      "id": "ciudad",
+      "value": "procesos-y-automatizacion",
+      "visual": "composiciones-modulares-de-mayor-profundidad",
+      "capability": "segun-integracion-ghl-real",
+      "status": "propuesta-sujeta-a-implementacion"
+    }
+  ],
+  "assetRules": {
+    "brand": "usar-solo-activos-originales-verificados",
+    "vico": "no-sustituir-mascota-ni-alterar-proporciones",
+    "images": "conservar-originales; optimizar-derivados; registrar-origen/licencia",
+    "catalog": "140-activos-indexados-no-todos-deben-publicarse",
+    "source": "vecidya-platform/public/assets",
+    "registry": "assets/library-catalog.js"
+  },
+  "acceptance": [
+    "tema-oscuro-predeterminado-y-claro-alternativo",
+    "sin-derrame-horizontal-desde-320px",
+    "contraste-4.5-texto-y-3-texto-grande-sobre-fondo-real",
+    "foco-teclado-visible",
+    "minimo-44px-en-controles-relevantes",
+    "sin-color-como-unica-senal",
+    "sin-movimiento-esencial-y-reduced-motion",
+    "sin-cambios-de-rutas-datos-permisos-ni-publicacion",
+    "capturas-en-320-390-768-1366-y-1920",
+    "verificar-rendimiento-y-auditar-con-lector-de-pantalla",
+    "animaciones pausables sin ocultar contenido",
+    "modo reduced-motion respeta estado estático",
+    "sin desbordamiento horizontal por transformaciones",
+    "selección por teclado entre demos sin reemplazar rutas reales"
+  ],
+  "implementation": {
+    "readFirst": [
+      "AGENTS.md",
+      "vecidya-platform/docs/GOVERNANCE.md",
+      "vecidya-crystal-depth/docs/DIRECCION-ARTISTICA.md",
+      "vecidya-crystal-depth/docs/INTEGRACION.md"
+    ],
+    "process": [
+      "identificar-intencion",
+      "consultar-intentRouting",
+      "elegir-material-y-capacidad-real",
+      "comprobar-assets-y-licencia",
+      "consultar sceneRecipes para composición de pantalla, asset oficial y movimiento permitido",
+      "crear-composicion",
+      "elegir motion.presets y respetar preferencias de movimiento",
+      "probar-estados-y-contraste",
+      "obtener-aprobacion-antes-de-migrar"
+    ],
+    "doNot": "No importar CSS de este laboratorio directamente en producción ni fusionar sin autorización."
+  },
+  "schemaVersion": "1",
+  "id": "vecidya-crystal-depth/pattern-registry-r1",
+  "motion": {
+    "version": "R1.1-candidate",
+    "status": "laboratorio-no-integrado",
+    "principle": "Movimiento funcional, mínimo, reversible; no sustituye contenido ni estados.",
+    "presets": [
+      {
+        "id": "page-enter",
+        "scope": "portada o inicio de escena",
+        "durationMs": 580,
+        "trigger": "first-paint",
+        "css": "hero-copy; hero-visual",
+        "avoid": [
+          "dashboard",
+          "tabla",
+          "operación crítica"
+        ]
+      },
+      {
+        "id": "section-reveal",
+        "scope": "secciones narrativas y guías",
+        "durationMs": 480,
+        "trigger": "intersección una vez",
+        "css": ".vx-motion-reveal",
+        "avoid": [
+          "mostrar datos solo tras JS",
+          "animaciones repetitivas en scroll"
+        ]
+      },
+      {
+        "id": "ui-feedback",
+        "scope": "botones, pestañas y tarjetas no densas",
+        "durationMsRange": [
+          150,
+          260
+        ],
+        "trigger": "hover/focus/estado",
+        "css": ".crystal-button; .tab-panel; .component-card",
+        "avoid": [
+          "campos editables en movimiento",
+          "shift de layout"
+        ]
+      },
+      {
+        "id": "ambient-drift",
+        "scope": "hero y escenas L0-L3",
+        "durationSecondsRange": [
+          9,
+          14
+        ],
+        "trigger": "escena visible",
+        "css": ".hero-orbit; .hero-stage-glow; .motion-stage",
+        "avoid": [
+          "detrás de tablas",
+          "contenido con movimiento obligatorio"
+        ]
+      },
+      {
+        "id": "section-navigation",
+        "scope": "anclas y navegación contextual",
+        "trigger": "click o navegación teclado",
+        "css": "scroll-behavior: smooth (solo no reduced-motion)",
+        "avoid": [
+          "alterar URL/rutas",
+          "scroll programático sin intención"
+        ]
+      }
+    ],
+    "modes": [
+      "standard",
+      "subtle",
+      "static"
+    ],
+    "preference": "prefers-reduced-motion: reduce siempre prevalece sobre controles del laboratorio",
+    "controls": [
+      "Pausar/reanudar decoraciones animadas",
+      "Repetir escena",
+      "Intensidad estándar/discreta"
+    ],
+    "performance": [
+      "priorizar opacity y transform",
+      "sin dependencias JS externas",
+      "sin layout shifts",
+      "evitar efectos costosos en móvil"
+    ],
+    "accessibility": [
+      "contenido visible sin JavaScript",
+      "nunca depender de movimiento",
+      "foco visible",
+      "evitar autoplay esencial",
+      "pausa de animación continua",
+      "desactivar al reducir movimiento"
+    ],
+    "implementation": "La app React debe envolver animaciones en componentes opcionales, sin importar este CSS en producción ni simular transiciones de rutas sin contrato de navegación y QA."
+  },
+  "sceneRecipes": [
+    {
+      "id": "publico",
+      "intent": "portada-marketing",
+      "label": "Sitio público",
+      "urlExample": "/ o /servicios",
+      "primaryMaterial": "focal",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/home-scene.webp",
+      "motion": [
+        "page-enter",
+        "section-reveal",
+        "ambient-drift"
+      ],
+      "contentRule": "Hero con propósito, CTA real y textos HTML contrastados; mascota oficial opcional, nunca obligatoria.",
+      "avoid": [
+        "texto dibujado dentro de imagen",
+        "hero con efecto sobre navegación"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "vecindario",
+      "intent": "buscar-negocios",
+      "label": "Vecindario",
+      "urlExample": "/vecindario",
+      "primaryMaterial": "quiet",
+      "secondaryMaterial": "solid",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp",
+      "motion": [
+        "section-reveal",
+        "ui-feedback"
+      ],
+      "contentRule": "Búsqueda y filtros sólidos sobre escena contextual; resultados de negocio solo desde datos reales.",
+      "avoid": [
+        "resultados inventados",
+        "animar listas durante lectura"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "aprende",
+      "intent": "contenido-editorial",
+      "label": "Aprende",
+      "urlExample": "/aprende",
+      "primaryMaterial": "solid",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/learn-journey-scene.webp",
+      "motion": [
+        "section-reveal"
+      ],
+      "contentRule": "Lectura y navegación editorial con superficie estable, tipografía accesible y énfasis contenido.",
+      "avoid": [
+        "fondos translúcidos bajo artículos largos",
+        "parallax obligatorio"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "miniweb",
+      "intent": "editar-miniweb",
+      "label": "MiniWeb V2",
+      "urlExample": "editor y vista previa",
+      "primaryMaterial": "solid",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/services-scene.webp",
+      "motion": [
+        "ui-feedback"
+      ],
+      "contentRule": "Editor estático y vista previa separada; persistencia, permisos y publicación deben ser verificadas en plataforma antes de habilitar.",
+      "avoid": [
+        "simular publicación exitosa",
+        "suponer entitlements por plan",
+        "perder contenido al cambiar estilo"
+      ],
+      "status": "demo-only-not-route"
+    }
+  ]
+}

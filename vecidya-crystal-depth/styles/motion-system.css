@@ -1,0 +1,389 @@
+/* Vecidya Crystal Depth | Motion Grammar R1.1 (2026-11-20).
+   Laboratory only. Opt-in to platform after R2. Motion is never essential for comprehension.
+   Compose from opacity/transform; avoid layout-triggering animation. */
+:root{
+  --vx-motion-fast:150ms;
+  --vx-motion-standard:260ms;
+  --vx-motion-enter:480ms;
+  --vx-motion-scene:9s;
+  --vx-motion-ease:cubic-bezier(.2,.75,.22,1);
+  --vx-motion-emphasis:cubic-bezier(.16,1,.3,1);
+  --vx-motion-shift:18px;
+}
+html[data-motion-intensity=subtle]{
+  --vx-motion-enter:340ms;
+  --vx-motion-scene:14s;
+  --vx-motion-shift:8px;
+}
+html[data-motion=enhanced] .vx-motion-reveal{
+  opacity:0;
+  transform:translate3d(0,var(--vx-motion-shift),0);
+  transition:
+    opacity var(--vx-motion-enter) var(--vx-motion-ease),
+    transform var(--vx-motion-enter) var(--vx-motion-ease);
+}
+html[data-motion=enhanced] .vx-motion-reveal.is-in-view{
+  opacity:1;
+  transform:none;
+}
+html[data-motion=enhanced] .hero-copy{
+  animation:vx-motion-arrive 580ms var(--vx-motion-emphasis) both;
+}
+html[data-motion=enhanced] .hero-visual{
+  animation:vx-motion-arrive 700ms 90ms var(--vx-motion-emphasis) both;
+}
+@keyframes vx-motion-arrive{
+  from{opacity:0;transform:translate3d(0,16px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+@keyframes vx-motion-float{
+  0%,100%{transform:translate3d(0,0,0)}
+  50%{transform:translate3d(0,-9px,0)}
+}
+@keyframes vx-motion-drift{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  50%{transform:translate3d(7px,-5px,0) rotate(3deg)}
+}
+@keyframes vx-motion-halo{
+  0%,100%{opacity:.48}
+  50%{opacity:.76}
+}
+@keyframes vx-motion-shimmer{
+  0%{transform:translateX(-120%) skewX(-12deg)}
+  100%{transform:translateX(220%) skewX(-12deg)}
+}
+/* Scenery-only ambient animation; never on dense dashboards or content blocks. */
+html[data-motion=enhanced] .hero-stage-glow{
+  animation:vx-motion-halo var(--vx-motion-scene) ease-in-out infinite;
+}
+html[data-motion=enhanced] .hero-orbit--one{
+  animation:vx-motion-drift calc(var(--vx-motion-scene) * 1.25) ease-in-out infinite;
+}
+html[data-motion=enhanced] .hero-orbit--two{
+  animation:vx-motion-drift calc(var(--vx-motion-scene) * 1.4) ease-in-out infinite reverse;
+}
+/* Feedback is brief. Elevation < 6px; no accidental page shift. */
+.motion-grammar .motion-card,
+.motion-grammar .motion-preset{
+  transition:
+    transform var(--vx-motion-standard) var(--vx-motion-ease),
+    border-color var(--vx-motion-standard) ease,
+    box-shadow var(--vx-motion-standard) ease;
+}
+@media (hover:hover) and (pointer:fine){
+  .motion-grammar .motion-card:hover{
+    transform:translate3d(0,-4px,0);
+    border-color:rgba(146,225,255,.74);
+    box-shadow:0 22px 38px rgba(2,12,35,.28);
+  }
+}
+.motion-grammar .motion-card:focus-within{
+  border-color:var(--r1-focus);
+}
+.motion-grammar{
+  color:var(--r1-ink);
+}
+.motion-lead{
+  max-width:77ch;
+  margin:0 0 18px;
+  color:var(--r1-muted);
+  line-height:1.7;
+}
+.motion-preset-list{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin:21px 0;
+}
+.motion-card{
+  min-width:0;
+  padding:18px;
+  border:1px solid var(--r1-line);
+  border-radius:var(--r1-radius);
+  background:linear-gradient(140deg,rgba(33,103,165,.31),rgba(9,36,72,.81));
+}
+.motion-card h3{
+  margin:14px 0 6px;
+  font-size:16px;
+  line-height:1.35;
+  color:var(--r1-ink);
+}
+.motion-card p{
+  margin:0;
+  color:var(--r1-muted);
+  font-size:12px;
+  line-height:1.65;
+}
+.motion-card code,.motion-timing code{
+  display:inline-block;
+  margin-top:11px;
+  padding:5px 8px;
+  border:1px solid var(--r1-line);
+  border-radius:7px;
+  color:var(--r1-ink);
+  background:rgba(2,17,43,.48);
+  font-size:11px;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.motion-mini{
+  position:relative;
+  display:grid;
+  place-items:center;
+  height:87px;
+  overflow:hidden;
+  border:1px solid rgba(150,215,248,.36);
+  border-radius:14px;
+  background:radial-gradient(ellipse at 65% 20%,rgba(64,182,255,.25),transparent 65%),rgba(7,33,72,.54);
+}
+.motion-mini span{
+  display:block;
+  width:68px;
+  height:43px;
+  border:1px solid rgba(220,245,255,.75);
+  border-radius:13px;
+  background:linear-gradient(135deg,rgba(135,219,255,.74),rgba(13,83,170,.6));
+  box-shadow:inset 0 1px 1px #ffffff7d,0 10px 20px #00173661;
+}
+.motion-mini--feedback span{
+  width:54px;
+  height:54px;
+  border-radius:16px;
+  background:linear-gradient(140deg,#ffc27c,#ff9b27);
+}
+.motion-mini--ambient span{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:radial-gradient(circle,#b8f3ff,#51a8ff55 75%,transparent);
+  border:0;
+  filter:blur(1px);
+}
+.motion-mini--morph span{
+  width:66px;
+  height:41px;
+  border-radius:20px;
+  background:linear-gradient(110deg,#9fdfff,#3e91dc);
+}
+.motion-stage{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);
+  gap:22px;
+  align-items:center;
+  min-height:256px;
+  padding:28px;
+  overflow:hidden;
+  border:1px solid var(--r1-line);
+  border-radius:var(--r1-radius);
+  background:radial-gradient(ellipse at 68% 30%,rgba(38,157,255,.22),transparent 56%),linear-gradient(145deg,#081b42,#102e60 70%,#061831);
+}
+.motion-stage::before{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  content:"";
+  opacity:.3;
+  background-image:linear-gradient(90deg,transparent 49.8%,rgba(123,215,255,.2) 50%,transparent 50.2%);
+  background-size:52px 52px;
+}
+.motion-stage-content{
+  position:relative;
+  z-index:2;
+}
+.motion-stage-content h3{
+  margin:0 0 11px;
+  color:#f7fbff;
+  font-size:clamp(20px,2.5vw,32px);
+  letter-spacing:-.04em;
+}
+.motion-stage-content p{
+  max-width:47ch;
+  margin:0;
+  color:#d0e6ff;
+  font-size:13px;
+  line-height:1.7;
+}
+.motion-stage .motion-art{
+  position:relative;
+  isolation:isolate;
+  min-height:205px;
+}
+.motion-orb{
+  position:absolute;
+  top:25%;
+  right:20%;
+  width:145px;
+  height:145px;
+  border-radius:50%;
+  opacity:.75;
+  filter:blur(12px);
+  background:radial-gradient(circle,#88eaff,rgba(43,115,231,.4),transparent 73%);
+}
+.motion-panel,.motion-panel-back{
+  position:absolute;
+  right:16%;
+  top:28%;
+  width:172px;
+  height:108px;
+  border:1px solid rgba(235,248,255,.72);
+  border-radius:23px;
+  background:linear-gradient(140deg,rgba(220,248,255,.58),rgba(29,110,210,.23));
+  box-shadow:inset 0 2px rgba(255,255,255,.66),0 14px 35px #000d306e;
+  -webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(6px);
+}
+.motion-panel-back{
+  z-index:-1;
+  transform:translate3d(18px,-19px,0);
+  opacity:.45;
+}
+.motion-stage.is-playing .motion-orb{
+  animation:vx-motion-halo var(--vx-motion-scene) ease-in-out infinite;
+}
+.motion-stage.is-playing .motion-panel{
+  animation:vx-motion-float 5s ease-in-out infinite;
+}
+.motion-stage.is-playing .motion-panel-back{
+  animation:vx-motion-drift 7s ease-in-out infinite;
+}
+.motion-controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:end;
+  margin:19px 0 11px;
+}
+.motion-controls label{
+  display:grid;
+  gap:7px;
+  color:var(--r1-ink);
+  font-size:12px;
+  font-weight:750;
+}
+.motion-controls select{
+  min-width:158px;
+  min-height:44px;
+  padding:9px 11px;
+  border:1px solid #82b4e8;
+  border-radius:11px;
+  background:#f1f8ff;
+  color:#123766;
+  font:inherit;
+}
+.motion-controls button{
+  min-height:44px;
+}
+.motion-controls button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.motion-message{
+  margin:4px 0 17px;
+  color:var(--r1-muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.motion-timing{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:11px;
+  margin-top:23px;
+}
+.motion-timing article{
+  min-width:0;
+  padding:15px;
+  border:1px solid var(--r1-line);
+  border-radius:15px;
+  background:rgba(30,99,160,.18);
+}
+.motion-timing strong{display:block;margin-bottom:5px;color:var(--r1-ink);font-size:13px}
+.motion-timing p{margin:0;color:var(--r1-muted);font-size:12px;line-height:1.6}
+/* Shared library components: context-sensitive microinteractions, no density penalties. */
+html[data-motion=enhanced] .crystal-button,
+html[data-motion=enhanced] .component-card,
+html[data-motion=enhanced] .scene-card,
+html[data-motion=enhanced] .r1-material-card{
+  transition:
+    transform var(--vx-motion-fast) var(--vx-motion-ease),
+    box-shadow var(--vx-motion-standard) ease,
+    border-color var(--vx-motion-standard) ease;
+}
+html[data-motion=enhanced] .tab-panel:not([hidden]){
+  animation:vx-motion-arrive var(--vx-motion-standard) var(--vx-motion-ease) both;
+}
+@media (hover:hover) and (pointer:fine){
+  html[data-motion=enhanced] .crystal-button:hover{transform:translate3d(0,-2px,0)}
+  html[data-motion=enhanced] :is(.component-card,.scene-card,.r1-material-card):hover{
+    transform:translate3d(0,-3px,0);
+  }
+  html[data-motion=enhanced] .motion-mini--entrance:hover span{
+    transform:translate3d(0,-8px,0);opacity:.7;
+  }
+  html[data-motion=enhanced] .motion-mini--feedback:hover span{transform:scale(1.07)}
+  html[data-motion=enhanced] .motion-mini--morph:hover span{border-radius:11px}
+}
+html[data-motion=enhanced] .motion-mini--entrance span,
+html[data-motion=enhanced] .motion-mini--feedback span,
+html[data-motion=enhanced] .motion-mini--morph span{
+  transition:transform var(--vx-motion-standard) var(--vx-motion-ease),
+             opacity var(--vx-motion-standard) ease,
+             border-radius var(--vx-motion-standard) ease;
+}
+html[data-motion=enhanced] .motion-mini--ambient span{
+  animation:vx-motion-halo var(--vx-motion-scene) ease-in-out infinite;
+}
+/* Fine-grained motion pause only applies to decorative ongoing movement. */
+html[data-motion-play=paused] .hero-stage-glow,
+html[data-motion-play=paused] .hero-orbit,
+html[data-motion-play=paused] .motion-stage *,
+html[data-motion-play=paused] .motion-mini--ambient span{
+  animation-play-state:paused!important;
+}
+html[data-theme=light] .motion-card{
+  background:linear-gradient(140deg,#fff,#d9edfc);
+}
+html[data-theme=light] .motion-mini{
+  background:linear-gradient(140deg,#d0eaff,#f6fbff);
+}
+html[data-theme=light] .motion-card code{
+  color:#123766;background:#e0f2ff;
+}
+html[data-theme=light] .motion-timing article{
+  background:#e7f4ff;
+}
+.motion-grammar :is(button,select):focus-visible{
+  outline:3px solid var(--r1-focus);outline-offset:3px;
+}
+@media (max-width:950px){
+  .motion-preset-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .motion-timing{grid-template-columns:1fr}
+}
+@media (max-width:650px){
+  .motion-preset-list{grid-template-columns:1fr}
+  .motion-stage{grid-template-columns:1fr;padding:20px;gap:5px}
+  .motion-stage .motion-art{min-height:170px}
+  .motion-orb{top:5%;right:20%;width:105px;height:105px}
+  .motion-panel,.motion-panel-back{top:15%;right:16%;width:142px;height:90px}
+  .motion-stage-content h3{font-size:23px}
+  .motion-controls select{width:100%}
+  .motion-controls label{width:100%}
+  /* Small viewport remains calm even without reduced-motion OS preference. */
+  html[data-motion=enhanced] .hero-orbit{animation:none}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important}
+  html[data-motion=enhanced] .vx-motion-reveal,
+  html[data-motion=enhanced] .hero-copy,
+  html[data-motion=enhanced] .hero-visual{
+    opacity:1!important;transform:none!important;transition:none!important;animation:none!important;
+  }
+  html[data-motion=enhanced] :is(.crystal-button,.component-card,.scene-card,.r1-material-card,.tab-panel),
+  .motion-grammar *,
+  .motion-grammar *::before,
+  .motion-grammar *::after,
+  .hero-stage-glow,
+  .hero-orbit{
+    animation:none!important;transition:none!important;transform:none!important;
+  }
+}

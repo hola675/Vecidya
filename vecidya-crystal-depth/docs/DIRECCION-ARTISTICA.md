@@ -1,6 +1,112 @@
 # Dirección artística — Crystal Depth
 
-Versión 0.6 · 2026-11-13 · Estado: biblioteca local verificada en navegador; aprobación visual integral pendiente, no apta para producción.
+Versión R1.0 (candidata) · 2026-11-19 · Decisiones rectoras aprobadas; integración y certificación visual final pendientes. No apta para producción.
+
+
+## R1 — Dirección artística consolidada (decisiones del responsable: 2026-11-19)
+
+**Aprobado:** oscuro principal con claro alternativo; protagonismo del vidrio en escenas y discreción en contenido operativo; calidad visual premium común a Cuadra/Barrio/Ciudad, con progresión por composición/capacidad real; la biblioteca funciona como laboratorio interno, revisión y aprobación. **No aprobado:** importar estilos en producción, modificar derechos de licencia, alterar datos/rutas, activar GHL ni desplegar. Esta especificación y sus muestras implementan R1 en el laboratorio; no declaran certificación WCAG.
+
+### 1. Tres ejes independientes
+
+- **Material** determina geometría, opacidad, elevación y reflejo. No determina por sí solo significado semántico.
+- **Intención** determina acción/información/éxito/aviso/error; siempre con etiqueta y estado textual. El naranja de marca no reemplaza al ámbar de advertencia.
+- **Escena** determina el ambiente L0, contexto L1/L2 y protagonista L5. Nunca debe ser necesaria para comprender el contenido L4.
+
+No crear seis sistemas de materiales por color: las seis muestras comparten receta. En lugares de lectura intensa, la superficie pasa a sólida aunque el resto de la página conserve Crystal.
+
+### 2. Semántica y tokens R1 (referencia de laboratorio, no tokens aún publicados de la plataforma)
+
+| Token | Valor | Uso / precaución |
+|---|---|---|
+| `color.background.dark` | `#06172F` | Base oscura; evitar negro puro que aplane el espacio |
+| `color.surface.dark` | `#0D2E54` | Superficie base de lectura; componentes locales pueden necesitar aún más opacidad |
+| `color.text.dark` | `#F3F8FF` | Texto principal sobre superficie oscura verificada |
+| `color.text.muted.dark` | `#BDD6F0` | Secundario solo sobre base oscura suficientemente uniforme |
+| `color.background.light` | `#F1F7FE` | Versión clara diseñada, no inversión automática |
+| `color.surface.light` | `#FFFFFF` | Formularios/tablas y contenido largo en claro |
+| `color.text.light` | `#123766` | Texto principal en claro |
+| `color.brand.orange` | `#FF9B27` | Acento/CTA principal; texto oscuro sobre naranja |
+| `color.brand.orangeInk` | `#09275C` | Texto propuesto sobre naranja sólido; verificar composición real |
+| `color.accent.cyan` | `#51E3FF` | Luz/énfasis, no texto pequeño sin comprobación |
+| `color.focus.dark` | `#FFDA8B` | Foco visible en superficies oscuras |
+| `radius.card` | `23px` | Tarjetas; los controles tienen sus radios propios |
+| `radius.large` | `34px` | Escenarios o contenedores de gran escala |
+
+Los tokens canónicos para lectura automatizada viven en `../assets/pattern-registry.json`. CSS funcional del laboratorio: `../styles/r1-guidance.css`. No atribuirles condición de biblioteca de React lista para publicar.
+
+**Contraste:** texto normal ≥ 4,5:1, texto grande ≥ 3:1, componentes no textuales relevantes ≥ 3:1 en su estado visual real. Probar el fondo compuesto *después* de aplicar alfa, gradiente, fotografía y blur. Nunca deducir contraste por el color hexadecimal nominal si la superficie es translúcida.
+
+### 3. Escala de material, no una escala de precio
+
+| Material | Roles | Iluminación | Contextos |
+|---|---|---|---|
+| `focal` · Crystal Focal | Narrativa, entrada, escena, CTA destacado | Reflexión y profundidad visibles | Hero, beneficios, páginas de licencias |
+| `quiet` · Crystal Quiet | Soporte e interacción frecuente | Bisel suave, desenfoque moderado | Cards, navegación, resumen no denso |
+| `solid` · Solid Readable | Trabajo y lectura | Prácticamente sin efecto | Formularios, tablas, diagnóstico, edición, admin |
+
+**Cuadra:** una web completa, bonita y útil, sin barreras artificiales de calidad. **Barrio:** hereda calidad y añade narrativa de captación acorde con las funciones realmente configuradas. **Ciudad:** hereda calidad y puede componer flujos multiproceso cuando estén implementados. No prometer ampliaciones de plantilla o CRM como desplegadas por el mero hecho de mostrar esta propuesta.
+
+### 4. Gramática de escena
+
+1. L0 ambiente estacionario: gradiente de baja frecuencia, sin recuadros de contenido ni texto rasterizado; no desplazar el fondo de forma que impida lectura.
+2. L1 contexto: una ilustración oficial pertinente al propósito, no la misma mascota en todas las secciones.
+3. L2 estructura: plataformas/contornos/líneas que enlazan elementos dentro de la misma perspectiva.
+4. L3 material: contenedores que separan el contenido del contexto.
+5. L4 contenido: título, texto, botones, datos, estados, foco y navegación; siempre legibles sin fondo.
+6. L5 foco: Vico o ilustración destacada con tamaño/perspectiva coherentes; no superponer sobre formularios.
+
+Una página puede compartir L0 estacionario, pero cada sección usa su propia composición de L1–L5, alternando respiros editoriales con escenas focales. Los fondos ambientales no llevan texto, botones ni capturas de componentes que deban ser interactivos. En móvil simplificar L1/L2, limitar efectos costosos y preservar el orden semántico DOM.
+
+### 4.1. Dirección de movimiento — R1.1 (2026-11-20)
+
+**Principio:** la profundidad puede tener movimiento, pero el contenido nunca debe depender de él. La ambientación L0–L3 admite deriva lenta y pausa; el contenido L4, formularios, tablas y editores no se desplaza de forma continua. Vico L5 puede tener una entrada corta en portada, pero no saltar repetidamente durante la lectura.
+
+- `page-enter`: hero en 580–700 ms, entrada única con opacidad y desplazamiento moderado; no bloquear interacción ni SEO.
+- `section-reveal`: elementos editoriales en 340–480 ms al ingresar en viewport, con activación progresiva solo si el navegador lo admite. Sin JavaScript, todo visible.
+- `ui-feedback`: 150–260 ms; estados de botones, pestañas y tarjetas con elevación máxima recomendada 2–4 px. Sin efectos engañosos de carga.
+- `ambient-drift`: escenas de luz, órbitas, reflejos; ciclo de 9–14 s, pausa visible y sin movimiento en datos densos o móvil cuando resulte costoso.
+- `section-navigation`: enlaces de ancla preservan navegación, historial, foco y scroll; `prefers-reduced-motion` elimina suavizado.
+
+Familias `standard`, `subtle` y `static`. Un ajuste de usuario no puede desactivar el movimiento reducido del SO. La escena no incluye información textual solo en imagen, evita flash/parpadeo y no cambia el tamaño de bloques mediante animaciones. Transición entre rutas React queda como especificación futura opt-in; no se implementa todavía en la plataforma.
+
+**Archivos de referencia:** `styles/motion-system.css`, `assets/motion-system.js`, `assets/pattern-registry.json → motion` y sección `biblioteca.html#movimiento`. Certificar en navegador real, no mediante capturas históricas ni prueba exclusivamente estática.
+
+### 4.2. Composición de páginas — R1.2 (2026-11-20)
+
+La identidad premium se mantiene al pasar entre cuatro tareas distintas; cambia la función visual del cristal, no la calidad general de la experiencia:
+
+| Contexto | Material protagonista | Jerarquía y asset oficial | Movimiento |
+| --- | --- | --- | --- |
+| Sitio público | Focal en el hero, Quiet en paneles | Narrativa, CTA HTML y escena `home-scene.webp` | Entrada única, fondo ambiental pausado |
+| Vecindario | Quiet + Solid | Filtros y datos reales sobre `neighborhood-scene.webp` | Feedback breve, resultados inmóviles |
+| Aprende | Solid + Quiet | Lectura clara y `learn-journey-scene.webp` subordinada | Revelado leve de secciones, sin parallax de texto |
+| MiniWeb V2 | Solid en edición, Quiet en previsualización | Estados reales de edición, escena de contexto `services-scene.webp` | Sin movimientos continuos en el editor |
+
+**Demostración interactiva:** `biblioteca.html#composiciones`. Navegación de cuatro tabs con selección por teclado, soporte de preferencia de movimiento reducido, tema claro/oscuro y degradación legible sin JavaScript. El selector de contexto `#r1-intent` solo enlaza a uno de esos cuatro ejemplos cuando la intención coincide exactamente. Diagnóstico, Admin, licencias y GHL conservan su guía de materiales, pero no reciben escenas inventadas.
+
+**Contrato legible por agentes:** `assets/pattern-registry.json → sceneRecipes`; esquema funcional en `styles/scene-composer.css` y `assets/scene-composer.js`. Las composiciones no crean rutas, no conceden prestaciones de planes, no gestionan publicación MiniWeb ni reemplazan componentes React. Su adopción productiva exige una tarea específica de integración después de la revisión de laboratorio.
+
+### 5. Tipografía, espacio y forma
+
+Usar la familia existente (Inter → Segoe UI → system-ui) sin introducir una nueva dependencia. Jerarquía: titular corto y reconocible, subtítulo útil, párrafos legibles (línea ideal ~55–75 caracteres), microcopy contextual. No usar mayúsculas espaciadas para bloques de lectura. Mantener retícula y ritmo coherentes por secciones, evitando tarjetas anidadas sin función; usar grupos visuales con un propósito por bloque. Estado `disabled`, validación, tooltip y aviso han de expresarse con texto y foco accesibles.
+
+### 6. Assets y Vico
+
+Solo fuentes oficiales de `vecidya-platform/public/assets/` y sus derivados controlados: no generar un Vico alternativo, no inventar fotografías de clientes, no descargar iconos de terceros sin derechos. Las 11 vistas Crystal de iconos son *propuestas*, no sustituciones oficiales. Las 140 entradas de catálogo son inventario de consulta, no autorización para usarlas todas en producción. Preservar originales, verificar resolución, formato, texto alternativo, licencia y peso de los derivados.
+
+### 7. Matriz mínima de aceptación R1→R2
+
+- [ ] Escritorio/móvil: 320, 390, 768, 1366 y 1920 px; cero desbordamientos imprevistos.
+- [ ] Oscuro por defecto y claro alternativo sin estados invisibles.
+- [ ] Contraste por composición real; no solo cálculo de tokens aislados.
+- [ ] Navegación por teclado, etiqueta, foco, diálogo, validación y mensajes correctos.
+- [ ] Controles táctiles de 44 px cuando corresponda; zoom al 200 % y lector de pantalla en R2.
+- [ ] `prefers-reduced-motion`, modo sin `backdrop-filter`, carga con imágenes fallidas.
+- [ ] No introducir cambios funcionales, entitlements, datos, permisos, rutas ni CRM en una migración visual.
+- [ ] Validación fechada y aprobaciones explícitas antes de cualquier despliegue.
+
+**Pendiente de aprobación:** visual final de R1 y certificación R2 con capturas/comprobaciones reales. Documentar hallazgos contra el commit exacto, no arrastrar el PASS de v0.7 a esta revisión.
 
 ## Objetivo
 
@@ -79,3 +185,5 @@ La aprobación final del usuario sigue pendiente para la fuerza del vidrio en am
 - v0.4: tema claro/oscuro y variantes de fondo; seis revisiones estáticas documentadas.
 - v0.3: biblioteca visual premium, fondo ambiental aprobado y activos oficiales.
 - v0.2: dirección artística, capas, materiales, revisión crítica y criterios de aprobación.
+
+- R1.0 (2026-11-19): decisiones aprobadas, gramática de materiales, tokens, escena, contraste, reglas de licencias y gates de aceptación para agentes. Biblioteca aún no integrada.
