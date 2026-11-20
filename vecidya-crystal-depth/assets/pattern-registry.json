@@ -623,7 +623,7 @@
   },
   "platformCompatibility": {
     "version": "1.1.0-agent-bridge",
-    "status": "verified-source-crosswalk-no-product-migration",
+    "status": "compatible-con-frontend-r1.6-a-r3-requiere-qa-visual",
     "verifiedScope": "vecidya-platform/app en main al 2026-11-20; exact source selectors and exports checked by focal tests",
     "authority": [
       "vecidya-platform/app/components/ui.tsx",
@@ -914,44 +914,44 @@
       {
         "name": "PageHeading",
         "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "eyebrow, título, explicación y acción contextual; usar v-section-heading hasta decidir."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "eyebrow, título, explicación y acción contextual; usar v-section-heading hasta decidir. Composición visual; no ejecuta permisos, operaciones o persistencia."
       },
       {
         "name": "AdminFilterBar",
         "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "filtros GET, reset, paginación coherente y estado legible."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "filtros GET, reset, paginación coherente y estado legible. Composición visual; no ejecuta permisos, operaciones o persistencia."
       },
       {
         "name": "ConsentStatus",
         "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "estado explícito de consentimiento, nunca inferido del registro."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "estado explícito de consentimiento, nunca inferido del registro. Composición visual; no ejecuta permisos, operaciones o persistencia."
       },
       {
         "name": "DiagnosticMetricCard",
         "priority": "P2",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "valor con fuente, periodo, unidad y vacío real."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "valor con fuente, periodo, unidad y vacío real. Composición visual; no ejecuta permisos, operaciones o persistencia."
       },
       {
         "name": "DiagnosticTrend",
         "priority": "P2",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "serie diaria con eje, tabla alternativa y denominadores justificados."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "serie diaria con eje, tabla alternativa y denominadores justificados. Composición visual; no ejecuta permisos, operaciones o persistencia."
       },
       {
         "name": "SharedStatusPanel",
         "priority": "P2",
-        "source": "vecidya-crystal-depth/assets/pattern-registry.json",
-        "status": "propuesta-r1.5-a-validar",
-        "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert."
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
+        "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert. Composición visual; no ejecuta permisos, operaciones o persistencia."
       }
     ],
     "stateParity": {
