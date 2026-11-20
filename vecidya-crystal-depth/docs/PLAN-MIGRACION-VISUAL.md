@@ -1,3 +1,17 @@
+## R1.2 — Composición de páginas, enrutamiento y empaquetado (2026-11-20)
+
+**Implementado únicamente en PR #257 (rama de laboratorio):** sección `#composiciones` con cuatro previews, tabs accesibles, claro/oscuro, transiciones ligeras, `prefers-reduced-motion` y fallback sin JS. El enrutador de ocho intenciones enlaza solo las cuatro composiciones con correspondencia exacta; para Diagnóstico, Admin, licencias y CRM informa que no existe preview propia.
+
+- **Contrato agente:** `assets/pattern-registry.json → sceneRecipes`, `docs/INTEGRACION.md`, `docs/DIRECCION-ARTISTICA.md`. El diseño es referencia, no permisos, licencia ni ruta publicada.
+- **Cloudflare aislado:** cambios de `main` sincronizados **dentro de la rama R1.2** mediante commit de dos padres; PR #257 de nuevo fusionable. El build conserva guías didácticas enlazadas y copia assets oficiales; ejecutarlo en CI no es un deploy.
+- **QA ejecutada:** [R2 Chromium run 44765171200](https://github.com/hola675/Vecidya/actions/runs/44765171200) **46 PASS, 0 fallos** en versión previa a enlace directo; [R2 Chromium run 44765610916](https://github.com/hola675/Vecidya/actions/runs/44765610916) **47 PASS, 0 fallos** y empaquetado estático con **140 assets**. No heredar esos resultados al último HEAD: se reejecuta CI para las mejoras del enrutador y documentación.
+- **Documentación consolidada:** README, dirección artística, integración y este plan; no se crean informes de QA nuevos por cada ejecución. Las capturas se conservan como artifact temporal de GitHub.
+- **Pendiente no bloqueante para seguir iterando laboratorio:** revisión humana de capturas, zoom 200 %, lector de pantalla, contrastes sobre gradientes/transparencias y rendimiento en hardware lento. No declarar R2 visual integral aprobado ni fusionar/publicar sin la decisión del responsable.
+
+**Siguiente checkpoint:** expandir patrones comunes a más pantallas **solo después de estabilizar** el contrato y mantener sincronización con `main`; integración React de una ruta específica requiere aprobación separada y pruebas sobre esa ruta.
+
+---
+
 ## R1.1 / R2 — Movimiento y navegador real (20-11-2026)
 
 **Estado de laboratorio:** implementado en la rama del PR #257, sin merge ni despliegue. Cinco presets para agentes (`page-enter`, `section-reveal`, `ui-feedback`, `ambient-drift`, `section-navigation`) con muestras, intensidad, pausa, repetición y degradación estática. No modifica componentes productivos React.
