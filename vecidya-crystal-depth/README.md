@@ -1,6 +1,6 @@
 # Vecidya Crystal Depth
 
-**Estado:** dirección artística R1 candidata (2026-11-19), en revisión. No integrada en Vecidya ni MiniWeb2.
+**Estado:** dirección artística R1.2 candidata (2026-11-20), en revisión. No integrada ni desplegada. No integrada en Vecidya ni MiniWeb2.
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 
@@ -26,6 +26,15 @@ La sección `biblioteca.html#movimiento` muestra **cinco recetas** reutilizables
 - `tests/r2-browser-qa.mjs`: Chromium real, captura de cinco tamaños, temas, teclado, selector, controles de movimiento y modo reducido. El pipeline publica capturas como artifact solo al ejecutar la CI.
 
 **Los cambios R1.1 no migran componentes de React, no alteran operaciones de MiniWeb, CRM ni Admin y no autorizan deploy.**
+
+## Páginas y composiciones R1.2 (laboratorio)
+
+La sección `biblioteca.html#composiciones` ofrece cuatro escenas de pantalla interactivas y aisladas: sitio público, Vecindario, Aprende y MiniWeb V2. Cada una usa material y transición pertinentes. Los tabs soportan teclado y sin JavaScript las cuatro composiciones siguen legibles. Los ejemplos no publican rutas, modifican datos ni conceden prestaciones de licencia.
+
+- `styles/scene-composer.css`: composición responsive, claro/oscuro y transición breve.
+- `assets/scene-composer.js`: selector de escenas con foco y movimiento reducido.
+- `assets/pattern-registry.json → sceneRecipes`: referencias y restricciones oficiales.
+- `tests/r2-browser-qa.mjs`: batería Chromium y capturas visuales.
 
 ## Abrir
 
@@ -68,6 +77,8 @@ Esto no equivale a certificación WCAG, revisión con lector de pantalla/zoom 20
 
 ## Changelog
 
+- 2026-11-20 — R1.2: cuatro composiciones de página, transición y navegación de muestras, contrato de agentes y QA focal; solo biblioteca.
+
 - 2026-11-19 — R1 candidata: oscuro predeterminado, materiales por función, guía visual para agentes, registro JSON de patrones y reglas de calidad; no integrado ni desplegado.
 
 - 2026-11-13 — 0.7: interacciones y responsive revisados en Chromium; tono hielo unificado con sombras/material; favicon oficial.
@@ -75,3 +86,35 @@ Esto no equivale a certificación WCAG, revisión con lector de pantalla/zoom 20
 - 2026-11-12 — 0.5: tema claro inicial con alternador oscuro, escenas ambientales clara/oscura e iconos PNG Crystal.
 - 2026-11-12 — 0.4: biblioteca premium navegable, sistema de superficies, interacciones locales y escena ambiental aprobada.
 - 2026-11-12 — 0.1–0.3: laboratorio y primeras muestras aisladas.
+
+## Despliegue aislado en Cloudflare Workers (preparado, pendiente de activación)
+
+La biblioteca puede asociarse al Worker existente `vecidya-desig` sin tocar la plataforma principal. El despliegue automatizado **no está confirmado** hasta conectar GitHub en Cloudflare, integrar estos cambios en `main` y comprobar la web publicada.
+
+En Cloudflare > Workers & Pages > `vecidya-desig` > Settings > Builds > Connect:
+
+| Campo | Valor |
+| --- | --- |
+| Cuenta / repositorio | `hola675 / Vecidya` |
+| Production branch | `main` |
+| Root directory | `vecidya-crystal-depth` |
+| Disable builds | Desactivado |
+| Build command | `node scripts/build-cloudflare.mjs` |
+| Deploy command | `npx wrangler deploy` |
+| Preview command | `npx wrangler preview` |
+
+En **Build watch paths**, incluir `vecidya-crystal-depth/*` y `vecidya-platform/public/assets/*`. Esto limita los builds a los cambios de la biblioteca y de los recursos compartidos que utiliza.
+
+`scripts/build-cloudflare.mjs` genera `dist/` desde cero, copia solo los archivos web de Crystal Depth y las referencias utilizadas de `vecidya-platform/public/assets/`, y reescribe las rutas relativas para que funcionen en la raíz del dominio. Las imágenes siguen almacenadas una sola vez en el código fuente del monorepositorio. Si falta una imagen oficial referida, el build falla. `wrangler.jsonc` configura solamente los activos estáticos del Worker `vecidya-desig`; no declara rutas ni modifica DNS.
+
+Verificación local (desde `vecidya-crystal-depth/`):
+
+```sh
+node --check scripts/build-cloudflare.mjs
+node scripts/build-cloudflare.mjs
+npx wrangler dev
+```
+
+Revisar `/` y `/biblioteca`, todos los iconos, la galería y sus enlaces. Tras el primer despliegue, verificar Cloudflare **Deployments**, el dominio existente y una comprobación HTTP pública fechada; guardar una versión anterior para reversión. Ningún push a `main` despliega automáticamente mientras la conexión Git no esté activada.
+
+**Changelog de la preparación:** 2026-11-19 — build estático aislado y configuración Wrangler para GitHub → Cloudflare; sin deploy, sin integración en la plataforma, sin cambios DNS.
