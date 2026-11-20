@@ -4,6 +4,18 @@
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 
+## Vico — explorador de identidad y originales (2026-11-20)
+
+La sección `biblioteca.html#vico` reúne las **11 imágenes oficiales de Vico** ya incluidas entre los 140 assets, sin copiar ni generar archivos adicionales. Permite seleccionar imagen, comparar fondo oscuro/claro/cuadrícula de transparencia, escala, posición y escena contextual independiente; muestra propósito, dimensiones y enlace directo al original.
+
+- `assets/vico-workbench.js`: selección desde `window.vecidyaCrystalCatalog`, once destinos por ruta, copia de ficha JSON para agentes (orientación; no API).
+- `styles/vico-workbench.css`: visor responsive, foco de teclado, estado seleccionado y movimiento reducido.
+- `assets/pattern-registry.json → vicoVisualIdentity`: inventario y restricciones interpretables.
+- `docs/DIRECCION-ARTISTICA.md → Vico`: carácter, composición y QA requerida.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: suites ya existentes, ampliadas con inventario y comparación en Chromium.
+
+**Límites:** conserva originales, no genera ni redibuja a Vico, no aplica Vico como marca de los MiniWeb de clientes, no realiza despliegues y no certifica calidad artística o transparencia sin inspección de capturas. El catálogo sigue en 140 entradas.
+
 ## Entrada didáctica para agentes
 
 La biblioteca es un **manual de decisiones visuales**, no solo una galería. Antes de modificar una pantalla de Vecidya:
