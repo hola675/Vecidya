@@ -186,3 +186,41 @@ test('estados R1.3: cinco patrones, accesibilidad y demostración no operativa',
   assert.match(script,/no se envió información ni se guardó ningún cambio/i);
   assert.doesNotMatch(script, /fetch\(|XMLHttpRequest|localStorage/);
 });
+
+
+test('R1.4: briefing especializado derivado del JSON y fallback sin promesas',()=>{
+  const js=read('assets/agent-brief.js');
+  assert.doesNotThrow(()=>new vm.Script(js));
+  const win={};
+  const doc={readyState:'loading',addEventListener(){}};
+  vm.runInNewContext(js,{window:win,document:doc});
+  const build=win.vecidyaCrystalBrief?.buildBrief;
+  assert.equal(typeof build,'function');
+  const option={
+    value:'contenido-editorial',textContent:'Aprende y contenidos',
+    dataset:{material:'Solid Readable + Quiet',scene:'learn-journey-scene',
+      rule:'Prioriza longitud de línea, legibilidad y navegación editorial.',preview:'aprende'}
+  };
+  const editorial=build({option,role:'editorial',registry});
+  assert.match(editorial,/Colaborador editorial/);
+  assert.match(editorial,/cualquier persona/);
+  assert.match(editorial,/aprende\/contenidos|Aprende y contenidos/);
+  assert.match(editorial,/learn-journey-scene\.webp/);
+  assert.match(editorial,/section-reveal/);
+  assert.match(editorial,/No inventes prestaciones ni resultados/);
+  const quality=build({option,role:'quality',registry});
+  assert.match(quality,/pruebas deterministas/);
+  assert.notEqual(quality,editorial);
+  const admin=build({option:{value:'administrar-plataforma',textContent:'Admin',dataset:{
+    material:'Solid Readable',scene:'Sin escena detrás de tablas',rule:'No falsear estados'
+  }},role:'frontend',registry});
+  assert.match(admin,/No existe una muestra R1\.4 específica/);
+  assert.doesNotMatch(admin,/Asset oficial:/);
+  assert.match(build({option,role:'ux'}),/Consulta AGENTS\.md/);
+  for(const id of ['r1-brief-role','r1-brief-preview','r1-brief-status'])
+    assert.ok(html.includes('id="'+id+'"'));
+  assert.match(html,/src="assets\/agent-brief.js"/);
+  assert.match(html,/id="r1-brief-preview"[^>]*readonly/);
+  assert.match(html,/Copiar borrador para el subagente/);
+  assert.doesNotMatch(js,/localStorage|XMLHttpRequest|fetch\(\s*["']https?:/);
+});
