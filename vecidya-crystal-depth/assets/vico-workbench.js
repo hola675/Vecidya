@@ -80,7 +80,10 @@
       stage.dataset.position = position.value;
       stage.style.setProperty("--vico-scale", String(Number(size.value) / 100));
       sizeLabel.textContent = size.value + " %";
-      stage.style.setProperty("--vico-stage-scene", scene.checked ? 'url("' + sceneBase + rule.scene + '")' : "none");
+      // URLs in CSS custom properties are resolved relative to the consuming stylesheet.
+      // Emit an absolute URL so both repository preview and packaged Cloudflare work.
+      const sceneUrl = new URL(sceneBase + rule.scene, document.baseURI).href;
+      stage.style.setProperty("--vico-stage-scene", scene.checked ? 'url("' + sceneUrl + '")' : "none");
       stage.dataset.scene = scene.checked ? "on" : "off";
       buttons.forEach((button, index) => button.setAttribute("aria-pressed", String(safeEntries[index] === selected)));
     };
