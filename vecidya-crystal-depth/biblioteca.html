@@ -12,8 +12,10 @@
   <link rel="stylesheet" href="styles/r1-guidance.css">
   <link rel="stylesheet" href="styles/motion-system.css">
   <link rel="stylesheet" href="styles/scene-composer.css">
+  <link rel="stylesheet" href="styles/interaction-flows.css">
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
+  <script defer src="assets/interaction-flows.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -39,6 +41,7 @@
         <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
         <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
         <a class="nav-link" href="#composiciones"><span>10</span> Páginas y composición</a>
+        <a class="nav-link" href="#flujos"><span>11</span> Estados y flujos</a>
       </nav>
 
       <div class="sidebar-foot">
@@ -634,9 +637,49 @@
           <p class="r1-caption">Consulta <a href="assets/pattern-registry.json">el contrato de escenas</a> y <a href="docs/INTEGRACION.md">el protocolo para agentes</a> antes de trasladar un patrón a React. Esta biblioteca no implementa routing real ni edita un MiniWeb.</p>
         </section>
 
+
+        <section class="content-section section-anchor flow-lab" id="flujos" aria-labelledby="flows-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>11 / Interacciones reales · guía R1.3</p>
+              <h2 id="flows-title">Cada estado tiene que explicar lo que ocurre.</h2>
+              <p>Mensajes comprensibles, superficies estables y un siguiente paso visible. Un efecto no puede reemplazar una operación comprobada.</p>
+            </div>
+            <span class="section-count">05 <small>estados</small></span>
+          </div>
+          <p class="flow-lead">Elige un estado para consultar el patrón visual y la regla de implementación que debe aplicar el agente. Esta simulación no ejecuta búsquedas, guarda formularios ni confirma cambios reales.</p>
+          <div class="flow-layout">
+            <div class="flow-panel">
+              <h3>Simulador de estados</h3>
+              <p>Selecciona la situación que necesitas representar en una pantalla de Vecidya.</p>
+              <label for="flow-state">Estado de la interfaz</label>
+              <select id="flow-state" aria-controls="flow-result">
+                <option value="idle">Inicial · listo para actuar</option>
+                <option value="loading">Procesando · espera controlada</option>
+                <option value="empty">Vacío · sin resultados</option>
+                <option value="error">Error · acción recuperable</option>
+                <option value="success">Confirmación · operación verificada</option>
+              </select>
+              <p class="flow-note">Demostración local de UI. Una confirmación real exige evidencia del backend o del servicio externo.</p>
+            </div>
+            <article class="flow-result" id="flow-result" data-state="idle" aria-labelledby="flow-title">
+              <div class="flow-indicator" aria-hidden="true"><i id="flow-icon">○</i><b id="flow-name">IDLE</b></div>
+              <h3 id="flow-title">Listo para comenzar</h3>
+              <p id="flow-description">La acción está disponible. La persona sabe qué ocurrirá antes de continuar.</p>
+              <small id="flow-rule">Estado inicial: etiqueta precisa, acción identificable y texto de apoyo cuando sea necesario.</small>
+            </article>
+          </div>
+          <div class="flow-guidelines">
+            <article><h3>Acciones y formularios</h3><p>Confirmar solo después de respuesta real. Bloquear duplicados durante el envío; conservar la entrada al fallar.</p></article>
+            <article><h3>Listados y búsquedas</h3><p>Un estado vacío ofrece filtros o salida útil. No inventa negocios, consultas ni cifras.</p></article>
+            <article><h3>Movimiento y lectura</h3><p>Estados con texto permanente, contraste sólido y cambio breve; sin color como única señal ni animación obligatoria.</p></article>
+          </div>
+          <p class="r1-caption">Para los agentes: consultar <a href="assets/pattern-registry.json">interactionRecipes</a> y <a href="docs/INTEGRACION.md">guía de integración</a>. Este laboratorio no envía formularios ni modifica permisos, licencias o CRM.</p>
+        </section>
+
         <footer class="site-footer">
           <div class="footer-brand"><img src="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" alt=""><span>Vecidya Crystal Depth</span></div>
-          <p>Laboratorio interno · R1 19 nov 2026 · sin integración ni despliegue de la plataforma.</p>
+          <p>Laboratorio interno · R1.3 20 nov 2026 · sin integración funcional en la plataforma.</p>
           <a href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
         </footer>
       </main>
