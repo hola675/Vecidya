@@ -1,3 +1,13 @@
+## R1.4 — Encargos para los subagentes (2026-11-20)
+
+**Checkpoint en rama de trabajo:** a partir del merge verificado de PR #259 en `main`. Borradores de instrucciones por especialidad generados desde el registro de patrones, no de prompts duplicados. Se incorporan al selector existente de ocho intenciones, sin página adicional ni automatización de operaciones.
+
+**QA focal:** misma batería Node + Chromium. Validar roles, opción sin escena, lectura del registro, copia de un texto revisable y degradación básica cuando el JSON esté indisponible. Adjuntar evidencias del SHA del nuevo PR.
+
+**Límite:** no se modifica `vecidya-platform/`, no se instalan ni activan agentes, no se cambia jerarquía del equipo; el editorial continúa bajo liderazgo general. Sin deploy implícito.
+
+---
+
 ## R1.3 — Biblioteca de estados de UI (2026-11-20)
 
 **En implementación aislada:** explorador de cinco estados de interfaz (`idle/loading/empty/error/success`), `interactionRecipes` y pruebas focales. Rama de trabajo reutilizada tras la integración verificada de R1.2 en `main` mediante PR #257. La R1.3 no modifica rutas ni backend.

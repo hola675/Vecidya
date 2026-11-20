@@ -86,3 +86,29 @@ html[data-theme=light] .r1-plans article>span{color:#a44b00}
 .r1-preview-linking .r1-caption{margin:0;flex:1 1 220px;min-width:0}
 .r1-preview-action[hidden]{display:none!important}
 .r1-preview-action:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+
+/* Crystal Depth R1.4 · encargo de subagente accesible, solo laboratorio. */
+.r1-brief-builder{
+  min-width:0;
+  display:grid;
+  gap:12px;
+  padding:19px;
+  margin:17px 0;
+  border:1px solid var(--r1-line);
+  border-radius:17px;
+  background:rgba(34,102,158,.15);
+}
+.r1-brief-builder h4{color:var(--r1-ink);font-size:17px;margin:0}
+.r1-brief-builder>p{max-width:76ch;margin:0;color:var(--r1-muted);font-size:12px;line-height:1.65}
+.r1-brief-builder label{color:var(--r1-ink);font-size:12px;font-weight:750}
+.r1-brief-builder #r1-brief-role{width:100%;min-height:44px}
+.r1-brief-builder textarea{
+  width:100%;min-width:0;min-height:235px;max-height:510px;resize:vertical;
+  border:1px solid #90b4de;border-radius:13px;
+  padding:15px;color:#143965;background:#edf7ff;
+  font:500 12px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;
+  overflow-wrap:anywhere;white-space:pre-wrap;
+}
+.r1-brief-builder textarea:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+html[data-theme=light] .r1-brief-builder{background:#e8f4ff}
+@media(max-width:650px){.r1-brief-builder{padding:13px}.r1-brief-builder textarea{font-size:11px;min-height:210px}}

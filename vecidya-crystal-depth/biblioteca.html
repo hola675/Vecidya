@@ -16,6 +16,7 @@
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
   <script defer src="assets/interaction-flows.js"></script>
+  <script defer src="assets/agent-brief.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -461,7 +462,21 @@
               <p id="r1-preview-note" class="r1-caption" role="status" aria-live="polite">Disponible: sitio público, escena y material de referencia.</p>
             </div>
             <p id="r1-routing-note" class="r1-caption">Contrato legible por máquinas: <a href="assets/pattern-registry.json">pattern-registry.json</a>. Guía de agentes: <a href="docs/INTEGRACION.md">INTEGRACION.md</a>.</p>
-            <button type="button" class="crystal-button crystal-button--secondary" id="r1-copy">Copiar instrucciones para el agente</button>
+            <div class="r1-brief-builder" aria-labelledby="r1-brief-heading">
+              <h4 id="r1-brief-heading">Instrucciones reutilizables para el equipo</h4>
+              <p>El agente líder asigna la tarea; cada colaborador recibe solo las reglas pertinentes. El borrador puede revisarse antes de copiarlo.</p>
+              <label for="r1-brief-role">Especialidad del subagente</label>
+              <select id="r1-brief-role" class="crystal-input" aria-controls="r1-brief-preview">
+                <option value="frontend">Implementación frontend</option>
+                <option value="editorial">Revisión editorial y claridad</option>
+                <option value="ux">Diseño UX/UI</option>
+                <option value="quality">Calidad y pruebas focales</option>
+              </select>
+              <label for="r1-brief-preview">Borrador de instrucciones para revisar y copiar</label>
+              <textarea id="r1-brief-preview" rows="11" readonly spellcheck="false" aria-describedby="r1-brief-status">Consulta primero los contratos reales de Vecidya, selecciona materiales y verifica accesibilidad. Este laboratorio no autoriza cambios productivos.</textarea>
+              <p id="r1-brief-status" class="r1-caption" role="status" aria-live="polite">Preparando el borrador de referencia…</p>
+            </div>
+            <button type="button" class="crystal-button crystal-button--secondary" id="r1-copy">Copiar borrador para el subagente</button>
             <p class="r1-caption" id="r1-copy-status" aria-live="polite">La copia solo contiene reglas de diseño, nunca datos del cliente.</p>
           </div>
 
@@ -739,11 +754,13 @@
           "\nComposición: " + (current.dataset.preview || "sin muestra específica; usar el material recomendado") +
           "\nAntes de implementar: consultar assets/pattern-registry.json, docs/INTEGRACION.md y los contratos reales de la plataforma; verificar accesibilidad, permisos y pruebas focales. R1 no autoriza deploy.";
         const status = document.getElementById("r1-copy-status");
+        const previewText = document.getElementById("r1-brief-preview")?.value?.trim();
+        const instructions = previewText || message;
         if (!navigator.clipboard || !window.isSecureContext) {
           status.textContent = "La copia requiere HTTPS o localhost. Selecciona las instrucciones visibles para copiarlas.";
           return;
         }
-        try { await navigator.clipboard.writeText(message); status.textContent = "Instrucciones copiadas para este patrón."; }
+        try { await navigator.clipboard.writeText(instructions); status.textContent = "Borrador de instrucciones copiado para este patrón."; }
         catch { status.textContent = "El navegador bloqueó la copia; consulta las reglas visibles."; }
       });
       const toast = document.getElementById("toast");

@@ -108,6 +108,31 @@ try{
           assert.ok(missingPreview);
           assert.match(explanatoryNote,/no tiene composición de página/);
         });
+        await page.waitForFunction(()=>document.getElementById('r1-brief-status')?.textContent.includes('registro vigente'),{timeout:7000});
+        await page.locator('#r1-intent').selectOption('contenido-editorial');
+        await page.locator('#r1-brief-role').selectOption('editorial');
+        const editorial=await page.locator('#r1-brief-preview').inputValue();
+        assertStep('brief-editorial-registro-'+width,()=>{
+          assert.match(editorial,/Colaborador editorial/);
+          assert.match(editorial,/cualquier persona/);
+          assert.match(editorial,/learn-journey-scene\.webp/);
+          assert.match(editorial,/No inventes prestaciones ni resultados/);
+        });
+        await page.locator('#r1-brief-role').selectOption('quality');
+        const quality=await page.locator('#r1-brief-preview').inputValue();
+        assertStep('brief-subagente-calidad-'+width,()=>{
+          assert.match(quality,/Calidad y certificación focal/);
+          assert.match(quality,/pruebas deterministas/);
+          assert.notEqual(quality,editorial);
+        });
+        await page.locator('#r1-intent').selectOption('administrar-plataforma');
+        const fallbackBrief=await page.locator('#r1-brief-preview').inputValue();
+        assertStep('brief-sin-escena-implícita-'+width,()=>{
+          assert.match(fallbackBrief,/No existe una muestra R1\.4 específica/);
+          assert.doesNotMatch(fallbackBrief,/Asset oficial:/);
+        });
+        await page.locator('#r1-intent').selectOption('diagnosticar');
+        await page.locator('#r1-brief-role').selectOption('frontend');
         await page.locator('#r1-intent').scrollIntoViewIfNeeded();
         await page.screenshot({path:join(artifacts,'r2-390-guide.png'),animations:'disabled'});
 
