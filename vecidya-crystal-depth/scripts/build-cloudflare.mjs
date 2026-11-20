@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Vecidya Crystal Depth — build Cloudflare Workers.
-// Versión: 1.0.0 · 2026-11-19
-// Publica solo HTML, CSS, JS y las imágenes que consume esta biblioteca.
+// Versión: 1.1.0 · 2026-11-20
+// Publica HTML, CSS, JS, guías didácticas y los assets que consume la biblioteca.
 import { copyFile, cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,6 +37,8 @@ await rm(distDir, { recursive: true, force: true });
 await mkdir(distDir, { recursive: true });
 await cp(join(projectDir, 'styles'), join(distDir, 'styles'), { recursive: true });
 await cp(join(projectDir, 'assets'), join(distDir, 'assets'), { recursive: true });
+// La guía de integración forma parte de los enlaces didácticos de la biblioteca.
+await cp(join(projectDir, 'docs'), join(distDir, 'docs'), { recursive: true });
 await copyFile(join(projectDir, 'index.html'), join(distDir, 'index.html'));
 
 for (const { filename, content } of documentContents) {
