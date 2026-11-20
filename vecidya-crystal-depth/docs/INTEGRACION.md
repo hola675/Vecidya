@@ -177,3 +177,16 @@ Prueba solo lo relevante al checkpoint y documenta el SHA; abre PR sin desplegar
 6. Solo con autorización y contratos operativos, habilitar controles por licencia en MiniWeb, respetando organización y publicación.
 
 **Estado:** esta entrega no modifica `vecidya-platform/`, no crea migraciones, no altera permisos ni licencia y no despliega.
+
+## Vico — selección y ubicación de imágenes oficiales (checkpoint 2026-11-20)
+
+Cuando la tarea requiera Vico o una de sus escenas, el subagente deberá:
+1. Consultar `assets/pattern-registry.json → vicoVisualIdentity` y `biblioteca.html#vico`, donde los once recursos de la categoría Vico proceden del catálogo original.
+2. Identificar ruta y función visual reales. No seleccionar `vico-home.webp` como equivalente automático de la composición horizontal `home-vecidya-companion-v4.webp`.
+3. Leer el registro de la imagen original y su uso en `vecidya-platform/app/assets/public-assets.ts`, `app/components/public-hero-art.tsx`, Inicio o Aprende, según corresponda. La vista previa WebP de 240 px no reemplaza el recurso original.
+4. Componer Vico (L5) y la escena (L1) como capas independientes, sin incrustar texto, datos, CTAs o estado comercial. Mantener proporciones y no estirar ni invertir imágenes.
+5. Verificar fondo oscuro/claro, cuadro de transparencia, recorte móvil, tamaño real, `alt` contextual o decorativo, movimiento reducido y rendimiento. No presumir alpha ni acabado perfecto solo por tener un archivo WebP.
+6. Entregar ruta, fuente, intención, composición, captura del mismo SHA, fallos y estado de aprobación humana. Sin evidencia, marcar `NO_VERIFICADO`, nunca `PASS`.
+
+**Separación de marca:** Vico identifica a Vecidya; no se inserta como marca del sitio de los negocios ni se ofrece por defecto como personaje de las MiniWeb. Las once imágenes se mantienen originales, y ninguna modificación del visor constituye una migración a React.
+
