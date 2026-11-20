@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="styles/crystal-depth.css">
   <link rel="stylesheet" href="styles/themes.css">
   <link rel="stylesheet" href="styles/r1-guidance.css">
+  <link rel="stylesheet" href="styles/motion-system.css">
+  <script defer src="assets/motion-system.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -33,6 +35,7 @@
         <a class="nav-link" href="#activos"><span>06</span> Activos e iconos</a>
         <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
         <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
+        <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
       </nav>
 
       <div class="sidebar-foot">
@@ -464,6 +467,83 @@
             <p>Verificar 320–1920 px · contraste de texto 4,5:1 y texto grande 3:1 sobre fondos reales · foco visible · controles táctiles de 44 px cuando aplique · teclado · movimiento reducido · prueba sin blur · assets oficiales · permisos y comportamientos intactos.</p>
             <p>R1 es una <strong>dirección artística implementada en este laboratorio</strong>, no una certificación WCAG ni autorización para migrar o desplegar el diseño en la aplicación real.</p>
           </div>
+        </section>
+
+
+        <section class="content-section section-anchor motion-grammar" id="movimiento" aria-labelledby="motion-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>09 / Movimiento y transiciones · R1.1</p>
+              <h2 id="motion-heading">La profundidad también tiene un ritmo.</h2>
+              <p>Animaciones funcionales y ambientales para dar continuidad entre páginas, secciones y componentes. El movimiento aporta orientación, no sustituye el contenido.</p>
+            </div>
+            <span class="section-count">09 <small>motion</small></span>
+          </div>
+          <p class="motion-lead">Usa movimiento protagonista en escenas de portada, microinteracciones cortas en botones y tarjetas, y transiciones discretas cuando una persona cambia de sección. Las pantallas de datos y el editor MiniWeb permanecen estables. Todos los ejemplos respetan movimiento reducido y pueden pausarse.</p>
+          <div class="motion-preset-list" aria-label="Cuatro familias de movimiento">
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--entrance" aria-hidden="true"><span></span></div>
+              <h3>Aparición de sección</h3>
+              <p>La nueva sección entra una vez al hacerse visible. Sin ocultar contenido cuando no hay JavaScript.</p>
+              <code>section-reveal · 480 ms</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--feedback" aria-hidden="true"><span></span></div>
+              <h3>Respuesta de componente</h3>
+              <p>Botón, pestaña o tarjeta muestra una respuesta breve a hover, foco o selección, sin animar formularios.</p>
+              <code>ui-feedback · 150–260 ms</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--ambient" aria-hidden="true"><span></span></div>
+              <h3>Ambiente vivo</h3>
+              <p>Órbitas y luz respirando lentamente detrás de la escena; nunca detrás de tablas densas.</p>
+              <code>ambient-drift · 9–14 s</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--morph" aria-hidden="true"><span></span></div>
+              <h3>Continuidad de navegación</h3>
+              <p>Desplazamiento entre secciones con anclas y lectura continua. En React, transiciones de ruta solo opt-in.</p>
+              <code>section-navigation · nativa</code>
+            </article>
+          </div>
+          <div class="motion-stage" id="motion-stage" aria-label="Demostración de escena ambiental en capas">
+            <div class="motion-stage-content">
+              <p class="r1-kicker">Escena L0–L5 · demostración</p>
+              <h3>Una escena que acompaña, no distrae.</h3>
+              <p>Los planos de luz y cristal se mueven suavemente. El texto y los controles se mantienen inmóviles, con contraste y foco propios.</p>
+            </div>
+            <div class="motion-art" aria-hidden="true">
+              <div class="motion-orb"></div>
+              <div class="motion-panel-back"></div>
+              <div class="motion-panel"></div>
+            </div>
+          </div>
+          <div class="motion-controls" aria-label="Controles de movimiento del laboratorio">
+            <label for="motion-intensity">Intensidad
+              <select id="motion-intensity">
+                <option value="standard">Estándar · escenas narrativas</option>
+                <option value="subtle">Discreta · secciones de producto</option>
+              </select>
+            </label>
+            <button type="button" class="crystal-button crystal-button--quiet" id="motion-play" aria-pressed="false">Pausar animación</button>
+            <button type="button" class="crystal-button crystal-button--quiet" id="motion-replay">Repetir escena</button>
+          </div>
+          <p class="motion-message" id="motion-message" role="status" aria-live="polite">Los efectos son opcionales y nunca bloquean acciones.</p>
+          <div class="motion-timing" aria-label="Parámetros temporales para agentes">
+            <article>
+              <strong>Componentes</strong>
+              <p>Microinteracciones de 150–260 ms. Animar <code>transform</code> y <code>opacity</code>; conservar siempre el foco y los estados de carga.</p>
+            </article>
+            <article>
+              <strong>Páginas y secciones</strong>
+              <p>Entrada de 340–480 ms, una sola vez. Nunca ocultar respuestas ni navegación esperando un efecto.</p>
+            </article>
+            <article>
+              <strong>Escenas</strong>
+              <p>Movimiento lento entre 9–14 s con pausa disponible. En móvil, reduce capas y evita órbitas permanentes.</p>
+            </article>
+          </div>
+          <p class="r1-caption"><strong>Para los agentes:</strong> consulta <a href="assets/pattern-registry.json">pattern-registry.json</a> y <a href="docs/INTEGRACION.md">la guía de integración</a>. Las transiciones entre rutas de la plataforma son una especificación para adopción futura, no una migración realizada.</p>
         </section>
 
         <footer class="site-footer">
