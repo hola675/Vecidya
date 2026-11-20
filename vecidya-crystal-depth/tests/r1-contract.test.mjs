@@ -115,3 +115,33 @@ test('movimiento R1.1: presets, controles, fallback y reducción',()=>{
   assert.match(motionJs,/is-in-view/);
   assert.match(motionJs,/addEventListener\("change", applyPreference\)/);
 });
+
+
+test('composición de páginas R1.2: cuatro escenas oficiales y alternativa sin JavaScript',()=>{
+  const sceneCss=read('styles/scene-composer.css');
+  const sceneJs=read('assets/scene-composer.js');
+  assert.doesNotThrow(()=>new vm.Script(sceneJs));
+  assert.equal(registry.sceneRecipes.length,4);
+  assert.deepEqual(registry.sceneRecipes.map(x=>x.id),['publico','vecindario','aprende','miniweb']);
+  assert.match(html,/href="#composiciones"/);
+  assert.match(html,/id="composer"/);
+  assert.match(html,/id="composer-tabs"[^>]*role="tablist"[^>]*hidden/);
+  assert.match(html,/href="styles\/scene-composer.css"/);
+  assert.match(html,/src="assets\/scene-composer.js"/);
+  for(const scene of registry.sceneRecipes){
+    assert.ok(html.includes('id="composer-tab-'+scene.id+'"'));
+    assert.ok(html.includes('id="composer-panel-'+scene.id+'"'));
+    assert.ok(html.includes('data-scene="'+scene.id+'"'));
+    assert.ok(html.includes(scene.asset.replace('vecidya-platform/public/assets','../vecidya-platform/public/assets')));
+    assert.equal(scene.status,'demo-only-not-route');
+    assert.ok(scene.primaryMaterial&&scene.secondaryMaterial&&scene.motion.length&&scene.contentRule);
+  }
+  assert.match(sceneCss,/\.composer-tablist\[hidden\]/);
+  assert.match(sceneCss,/\.composer-panel\[hidden\]/);
+  assert.match(sceneCss,/prefers-reduced-motion\s*:\s*reduce/);
+  assert.match(sceneJs,/ArrowRight/);
+  assert.match(sceneJs,/ArrowLeft/);
+  assert.match(sceneJs,/event\.preventDefault\(\)/);
+  assert.match(sceneJs,/root\.classList\.add\("is-interactive"\)/);
+  assert.match(sceneJs,/panel\.hidden = !current/);
+});
