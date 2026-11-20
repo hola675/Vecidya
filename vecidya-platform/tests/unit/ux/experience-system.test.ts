@@ -75,3 +75,36 @@ test("los tokens son compartidos y las composiciones móviles no dependen solo d
   assert.match(components, /Siguiente paso/);
   assert.match(components, /aria-hidden="true" className="experience-comparison__track"/);
 });
+
+
+test("R1.6 reutiliza los componentes existentes sin inferir derechos ni éxitos", () => {
+  const components = source("app/components/visual-contract.tsx");
+  for (const name of ["PageHeading", "SharedStatusPanel", "ConsentStatus", "AdminFilterBar", "DiagnosticMetricCard", "DiagnosticTrend"]) {
+    assert.match(components, new RegExp("export function " + name + "\\("));
+  }
+  assert.match(components, /import \{ Card \} from "\.\/ui"/);
+  assert.match(components, /surface="solid"/);
+  assert.match(components, /data-state=\{state\}/);
+  assert.match(components, /state === "access-denied"/);
+  assert.match(components, /role=\{urgent \? "alert" : "status"\}/);
+  assert.match(components, /"not-authorized": "Consentimiento no autorizado"/);
+  assert.match(components, /unknown: "Consentimiento sin confirmar"/);
+  assert.match(components, /method="get" role="search"/);
+  assert.match(components, /<Link className="button button--secondary" to=\{resetTo\}>Limpiar filtros<\/Link>/);
+  assert.match(components, /value === null \? emptyLabel/);
+  assert.match(components, /point\.value === null \? "Sin dato"/);
+  assert.match(components, /role="region" aria-label=\{title \+ " en tabla"\}/);
+  assert.doesNotMatch(components, /fetch\(|localStorage|Math\.random|useEffect\(/);
+});
+
+test("R1.6 superficies, foco y tablas del contrato usan tokens productivos y responsive", () => {
+  const css = source("app/styles/visual-system.css");
+  assert.match(css, /\.v-page-heading\{/);
+  assert.match(css, /\.v-status-panel\[data-state="access-denied"\]/);
+  assert.match(css, /\.v-admin-filterbar\{/);
+  assert.match(css, /\.v-diagnostic-trend__table-wrap\{/);
+  assert.match(css, /var\(--v-radius-card\)/);
+  assert.match(css, /var\(--v-orange-500\)/);
+  assert.match(css, /@media\(max-width:560px\)/);
+  assert.match(css, /overflow:auto/);
+});

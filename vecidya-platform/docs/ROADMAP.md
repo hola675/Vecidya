@@ -1,3 +1,16 @@
+## UX-CRYSTAL-R1.6 → R3 — adopción controlada del lenguaje compartido
+
+- **R1.5**: biblioteca de patrones cruzada con componentes y tokens reales de Vecidya; PR #261 integrado en main (evidencia Git).
+- **R1.6**: seis componentes compartidos tipados y CSS aditivo productivo, sin cambios de negocio. QA focal + typecheck + build antes de fusionar. Contratos de frontend en `docs/design-system/VECIDYA-UI-UX.md`.
+- **R1.7**: adopción limitada en web pública (inicio/servicios/Vecindario/Aprende), manteniendo tono, tokens y rutas canónicas sin reescritura masiva.
+- **R1.8**: consolidación de encabezados, filtros, denegaciones y estados en Mi Vecidya/Admin; cada estado se alimenta de la autorización y consultas reales.
+- **R1.9**: armonizar editor MiniWeb y vista previa sin imponer marca Vecidya a los sitios de los negocios; verificar planes reales y no crear CRM GHL paralelo.
+- **R2**: QA visual/accesibilidad y rendimiento por superficie y por ruta, con zoom 200%, lector de pantalla, reducción de movimiento, teclado y evidencia reproducible. La CI por sí sola no equivale a WCAG completa.
+- **R3**: adopción opt-in con rollback por ruta, conciliación de CSS duplicado y validación HTTP fechada de entornos. Cualquier despliegue y cambio D1 remoto requieren autorización independiente y no se deducen de un merge.
+
+No declarar R1.6–R3 cerrados solo por disponer de componentes o un PR. No fusionar nuevos tokens con valores hex de la biblioteca: la autoridad es `--v-*`.
+
+---
 ## DIAG-V9-F07-L4/L5 — política de datos y legado histórico (pendiente)
 
 **Política vigente del responsable (2026-11-16):** D1 no almacena respuestas, valores elegidos, transcript, identidad/run individual ni resultado de diagnóstico, incompleto o finalizado. Únicamente se permiten métricas agregadas/coarse-grained no reidentificables. La entrevista y su replay/finalización permanecen locales/transitorios; el resultado firmado usa TTL local de 24 horas y el borrador TTL local de siete días. Esta regla supersede el criterio documental previo que permitía almacenamiento terminal consentido.

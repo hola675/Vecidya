@@ -1,3 +1,8 @@
+## UX-CRYSTAL-R1.6 — QA focal del contrato visual compartido
+
+En `vecidya-platform/`, ejecutar `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/ux/experience-system.test.ts`. Cubre ausencia de métricas ficticias, exportaciones de estado, consentimiento explícito, GET/reset, series nulas/cero, CSS compartido, foco y responsive por inspección de código. Typecheck y build son gates adicionales. No se presenta esta prueba como verificación de lector de pantalla, zoom 200%, autorización server-side ni capturas de rutas reales.
+
+---
 ## Entorno QA local con cuatro organizaciones (2026-11-11)
 
 Desde `vecidya-platform/`, inicia `pnpm run dev:local-demo`; en otra terminal ejecuta `pnpm run seed:local-demo` y `pnpm run status:local-demo`. La aplicación escucha solo en `http://127.0.0.1:4173`. El entorno aplica migraciones únicamente a D1 local y usa el bucket R2 local `vecidya-local-demo-media`, persistido bajo `.wrangler/local-demo`. Wrangler usa configuración propia y Vite un `envDir` aislado en `wrangler.local-demo/`; el Worker demo no carga secretos de `.dev.vars` ni `.env` de la raíz. Los archivos runtime de Wrangler quedan bajo `.wrangler/local-demo`. El email usa el adaptador falso. Cada inicio genera una clave de sesión efímera, por lo que hay que volver a iniciar sesión después de reiniciar el Worker.

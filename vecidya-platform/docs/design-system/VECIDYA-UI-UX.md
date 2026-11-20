@@ -1,3 +1,17 @@
+## UX-CRYSTAL-R1.6 — componentes productivos del lenguaje compartido (candidato en PR)
+
+La fuente de verdad continúa siendo `app/components/ui.tsx` y `app/styles/premium-foundation.css` / `visual-system.css`. El checkpoint R1.6 añade `app/components/visual-contract.tsx`: `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `SharedStatusPanel`, `DiagnosticMetricCard` y `DiagnosticTrend`. Los seis son composiciones presentacionales; no reemplazan `Card`, `Alert`, `EmptyState`, `MetricCard`, la autorización del servidor ni el motor de Diagnóstico.
+
+- **Componente de estado:** `idle/loading/empty/error/access-denied/success`; los errores y denegaciones se anuncian con `role="alert"`; el éxito solo se muestra si la ruta recibió evidencia real.
+- **Consentimiento:** `authorized/not-authorized/unknown` se recibe explícitamente de origen autorizado. No se infiere por estar registrado.
+- **Filtros Admin:** `GET` explícito, etiquetas, submit y reset mediante ruta; la ruta propietaria decide paginación, params y acceso.
+- **Métricas/series:** nulo distinto de cero, unidad, fuente, periodo y tabla legible; la gráfica no es una conversión de personas únicas.
+- **Encabezados:** niveles H1/H2, contexto, acción opcional y `v-page-heading` sin obligar a todas las rutas a adoptar el patrón al mismo tiempo.
+- **Estilos:** solo clases `v-*` aditivas; sin cambio de tema y con responsive. Crystal Depth sigue siendo laboratorio y no se importa su CSS.
+
+**Evidencia:** TypeScript, build y test focal `tests/unit/ux/experience-system.test.ts` deben aprobarse sobre el SHA del PR; el contrato visual completo por ruta queda en R1.7–R1.9 y R2.
+
+---
 # Vecidya — sistema visual y de experiencia compartido (v0.2, 2026-11-11)
 
 ## Referencias investigadas
