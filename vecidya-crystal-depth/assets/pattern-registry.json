@@ -300,7 +300,8 @@
     "verificar-rendimiento-y-auditar-con-lector-de-pantalla",
     "animaciones pausables sin ocultar contenido",
     "modo reduced-motion respeta estado estático",
-    "sin desbordamiento horizontal por transformaciones"
+    "sin desbordamiento horizontal por transformaciones",
+    "selección por teclado entre demos sin reemplazar rutas reales"
   ],
   "implementation": {
     "readFirst": [
@@ -314,6 +315,7 @@
       "consultar-intentRouting",
       "elegir-material-y-capacidad-real",
       "comprobar-assets-y-licencia",
+      "consultar sceneRecipes para composición de pantalla, asset oficial y movimiento permitido",
       "crear-composicion",
       "elegir motion.presets y respetar preferencias de movimiento",
       "probar-estados-y-contraste",
@@ -416,5 +418,83 @@
       "desactivar al reducir movimiento"
     ],
     "implementation": "La app React debe envolver animaciones en componentes opcionales, sin importar este CSS en producción ni simular transiciones de rutas sin contrato de navegación y QA."
-  }
+  },
+  "sceneRecipes": [
+    {
+      "id": "publico",
+      "intent": "portada-marketing",
+      "label": "Sitio público",
+      "urlExample": "/ o /servicios",
+      "primaryMaterial": "focal",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/home-scene.webp",
+      "motion": [
+        "page-enter",
+        "section-reveal",
+        "ambient-drift"
+      ],
+      "contentRule": "Hero con propósito, CTA real y textos HTML contrastados; mascota oficial opcional, nunca obligatoria.",
+      "avoid": [
+        "texto dibujado dentro de imagen",
+        "hero con efecto sobre navegación"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "vecindario",
+      "intent": "buscar-negocios",
+      "label": "Vecindario",
+      "urlExample": "/vecindario",
+      "primaryMaterial": "quiet",
+      "secondaryMaterial": "solid",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp",
+      "motion": [
+        "section-reveal",
+        "ui-feedback"
+      ],
+      "contentRule": "Búsqueda y filtros sólidos sobre escena contextual; resultados de negocio solo desde datos reales.",
+      "avoid": [
+        "resultados inventados",
+        "animar listas durante lectura"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "aprende",
+      "intent": "contenido-editorial",
+      "label": "Aprende",
+      "urlExample": "/aprende",
+      "primaryMaterial": "solid",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/learn-journey-scene.webp",
+      "motion": [
+        "section-reveal"
+      ],
+      "contentRule": "Lectura y navegación editorial con superficie estable, tipografía accesible y énfasis contenido.",
+      "avoid": [
+        "fondos translúcidos bajo artículos largos",
+        "parallax obligatorio"
+      ],
+      "status": "demo-only-not-route"
+    },
+    {
+      "id": "miniweb",
+      "intent": "editar-miniweb",
+      "label": "MiniWeb V2",
+      "urlExample": "editor y vista previa",
+      "primaryMaterial": "solid",
+      "secondaryMaterial": "quiet",
+      "asset": "vecidya-platform/public/assets/selected/illustrations/services-scene.webp",
+      "motion": [
+        "ui-feedback"
+      ],
+      "contentRule": "Editor estático y vista previa separada; persistencia, permisos y publicación deben ser verificadas en plataforma antes de habilitar.",
+      "avoid": [
+        "simular publicación exitosa",
+        "suponer entitlements por plan",
+        "perder contenido al cambiar estilo"
+      ],
+      "status": "demo-only-not-route"
+    }
+  ]
 }
