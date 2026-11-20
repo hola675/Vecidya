@@ -29,6 +29,15 @@
     titleSize: [26, 60], bodySize: [14, 20],
     spacing: [12, 42], radius: [0, 34], heroHeight: [260, 480]
   });
+  const luminance = (hex) => {
+    const channels = [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255);
+    const linear = channels.map((v) => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4);
+    return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+  };
+  const contrast = (a, b) => {
+    const x = luminance(a), y = luminance(b);
+    return (Math.max(x, y) + .05) / (Math.min(x, y) + .05);
+  };
   const tierText = Object.freeze({
     base: "Cuadra · Presencia profesional completa",
     pro: "Barrio · Composición editorial orientada a consultas",
@@ -83,7 +92,9 @@
         const label = $("miniweb-custom-" + key + "-value");
         if (label) label.textContent = state[key] + " px";
       }
-      if (announce) status.textContent = "Vista previa actualizada. Los cambios no se guardan ni modifican una MiniWeb real.";
+      const lowContrast = contrast(ink, state.canvasColor) < 4.5 || contrast("#FFFFFF", state.primaryColor) < 4.5;
+      if (lowContrast) status.textContent = "Atención: la combinación de colores podría tener contraste insuficiente (menos de 4,5:1). Ajusta la paleta antes de implementarla.";
+      else if (announce) status.textContent = "Vista previa actualizada. Los cambios no se guardan ni modifican una MiniWeb real.";
       return state;
     };
     for (const control of controls) {
