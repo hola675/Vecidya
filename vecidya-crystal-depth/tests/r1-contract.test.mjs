@@ -320,12 +320,15 @@ test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CS
   assert.match(style,/overflow-x:auto/);
 });
 
-test('Vico: once originales catalogados y un único punto de entrada accesible',()=>{
+test('Vico: diez personajes catalogados y una infografía separada y un único punto de entrada accesible',()=>{
   const raw = read('assets/library-catalog.js');
   const catalog = JSON.parse(raw.replace(/^window\.vecidyaCrystalCatalog\s*=\s*/, '').replace(/;\s*$/, ''));
   const vico = catalog.filter((entry)=>entry.category==='Vico');
-  assert.equal(vico.length,11);
-  assert.equal(new Set(vico.map((entry)=>entry.source)).size,11);
+  assert.equal(vico.length,10);
+  assert.equal(new Set(vico.map((entry)=>entry.source)).size,10);
+  const companion=catalog.find((entry)=>entry.source.endsWith('/home-vecidya-companion-v4.webp'));
+  assert.equal(companion?.category,'Ilustraciones');
+  assert.doesNotMatch(companion?.name??'',/Vico/i);
   for(const asset of vico){
     assert.match(asset.source,/^\.\.\/vecidya-platform\/public\/assets\/selected\/illustrations\/.*\.webp$/);
     assert.ok(asset.width>0 && asset.height>0 && asset.preview);
