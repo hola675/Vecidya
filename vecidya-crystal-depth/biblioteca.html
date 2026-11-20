@@ -11,7 +11,9 @@
   <link rel="stylesheet" href="styles/themes.css">
   <link rel="stylesheet" href="styles/r1-guidance.css">
   <link rel="stylesheet" href="styles/motion-system.css">
+  <link rel="stylesheet" href="styles/scene-composer.css">
   <script defer src="assets/motion-system.js"></script>
+  <script defer src="assets/scene-composer.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -36,6 +38,7 @@
         <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
         <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
         <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
+        <a class="nav-link" href="#composiciones"><span>10</span> Páginas y composición</a>
       </nav>
 
       <div class="sidebar-foot">
@@ -544,6 +547,87 @@
             </article>
           </div>
           <p class="r1-caption"><strong>Para los agentes:</strong> consulta <a href="assets/pattern-registry.json">pattern-registry.json</a> y <a href="docs/INTEGRACION.md">la guía de integración</a>. Las transiciones entre rutas de la plataforma son una especificación para adopción futura, no una migración realizada.</p>
+        </section>
+
+
+        <section class="content-section section-anchor scene-composer" id="composiciones" aria-labelledby="composer-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>10 / Composiciones · páginas y contexto</p>
+              <h2 id="composer-title">Un lenguaje, cuatro experiencias.</h2>
+              <p>Las mismas reglas de Vecidya resuelven portadas, descubrimiento, lectura y edición. Cambia de escena para comprobar cómo varía el material sin perder identidad.</p>
+            </div>
+            <span class="section-count">04 <small>contextos</small></span>
+          </div>
+          <p class="composer-intro">Una demostración de dirección artística, no cuatro rutas publicadas. Con JavaScript, los botones presentan la transición entre vistas; sin JavaScript, las cuatro composiciones siguen visibles para lectura y consulta.</p>
+          <div class="composer" id="composer">
+            <div class="composer-tablist" id="composer-tabs" role="tablist" aria-label="Cambiar composición visual" hidden>
+              <button type="button" class="composer-tab" id="composer-tab-publico" role="tab" aria-controls="composer-panel-publico" aria-selected="true" tabindex="0" data-description="Sitio público: material focal en el hero y material quiet en el resto.">Sitio público</button>
+              <button type="button" class="composer-tab" id="composer-tab-vecindario" role="tab" aria-controls="composer-panel-vecindario" aria-selected="false" tabindex="-1" data-description="Vecindario: tarjetas quiet y filtros solid para resultados verificables.">Vecindario</button>
+              <button type="button" class="composer-tab" id="composer-tab-aprende" role="tab" aria-controls="composer-panel-aprende" aria-selected="false" tabindex="-1" data-description="Aprende: contenido sólido, sin efectos continuos en párrafos.">Aprende</button>
+              <button type="button" class="composer-tab" id="composer-tab-miniweb" role="tab" aria-controls="composer-panel-miniweb" aria-selected="false" tabindex="-1" data-description="MiniWeb: edición sólida, vista previa contextual y capacidades reales por licencia.">MiniWeb V2</button>
+            </div>
+            <div class="composer-stage" id="composer-stage">
+            <article class="composer-panel" data-scene="publico" id="composer-panel-publico" role="tabpanel" aria-labelledby="composer-tab-publico" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">01 / Marketing · Crystal Focal</span>
+                <h3>Una presencia que se recuerda.</h3>
+                <p>Una portada con narrativa visual, identidad oficial y llamadas a la acción claras. La escena acompaña; el contenido conserva el protagonismo.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía del sitio público: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/home-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Foco de marca · Material Focal</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="vecindario" id="composer-panel-vecindario" role="tabpanel" aria-labelledby="composer-tab-vecindario" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">02 / Descubrimiento · Crystal Quiet</span>
+                <h3>Descubre lo que hay cerca.</h3>
+                <p>Composición para buscar y explorar negocios sin inventar resultados ni convertir las tarjetas en fondos decorativos.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía de Vecindario: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Filtros y resultados · Quiet + Solid</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="aprende" id="composer-panel-aprende" role="tabpanel" aria-labelledby="composer-tab-aprende" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">03 / Lectura · Solid Readable</span>
+                <h3>Aprender con claridad también es premium.</h3>
+                <p>Escena editorial en segundo plano, jerarquía de títulos y textos largos sobre superficies estables, sin reflejos que dificulten la lectura.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía editorial: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/learn-journey-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Lectura prolongada · Material Solid</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="miniweb" id="composer-panel-miniweb" role="tabpanel" aria-labelledby="composer-tab-miniweb" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">04 / Edición · Solid + Quiet</span>
+                <h3>Diseño profesional en todos los planes.</h3>
+                <p>Vista conceptual del sistema MiniWeb. Cuadra, Barrio y Ciudad comparten calidad; las composiciones y funciones avanzan solo cuando sus permisos e integraciones existen.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía de MiniWeb: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/services-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Editor · Borrador / Revisión / Publicación</span>
+              </div>
+            </article>
+            </div>
+          </div>
+          <div class="composer-note">
+            <strong id="composer-status" role="status" aria-live="polite">Sitio público: material focal en el hero y material quiet en el resto.</strong>
+            <span>Vista conceptual · no altera la navegación ni datos de producción</span>
+          </div>
+          <div class="composer-spec">
+            <article><strong>Capas con contexto</strong><p>Ambientación L0, escena L1, estructura L2, superficie L3 y contenido L4. Vico L5 solo cuando aporta significado.</p></article>
+            <article><strong>Movimiento por propósito</strong><p>Transición breve de página simulada; sin autoplay obligatorio ni bloqueo de interacción. Respeta movimiento reducido.</p></article>
+            <article><strong>Calidad consistente</strong><p>Una sola identidad para todos los niveles. El acceso a funciones depende del contrato de producto real, nunca del mockup.</p></article>
+          </div>
+          <p class="r1-caption">Consulta <a href="assets/pattern-registry.json">el contrato de escenas</a> y <a href="docs/INTEGRACION.md">el protocolo para agentes</a> antes de trasladar un patrón a React. Esta biblioteca no implementa routing real ni edita un MiniWeb.</p>
         </section>
 
         <footer class="site-footer">
