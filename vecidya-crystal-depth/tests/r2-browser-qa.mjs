@@ -14,7 +14,7 @@ const root=resolve(fileURLToPath(new URL('../../',import.meta.url)));
 const library=join(root,'vecidya-crystal-depth');
 const require=createRequire(join(root,'vecidya-platform/package.json'));
 const {chromium}=require('playwright');
-const artifacts=join(library,'.qa-artifacts');
+const artifacts=join(library,'qa-artifacts');
 mkdirSync(artifacts,{recursive:true});
 const MIME={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'application/javascript; charset=utf-8','.json':'application/json; charset=utf-8','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'};
 const failures=[],results=[],pageErrors=[],badResponses=[];
@@ -45,7 +45,7 @@ try{
     try{
       await page.goto(addr,{waitUntil:'load',timeout:45000});
       await page.locator('#asset-grid .asset-card').first().waitFor({timeout:15000});
-      const state=await page.evaluate(()=>({theme:document.documentElement.dataset.theme,checked:document.getElementById('theme-toggle').getAttribute('aria-checked'),assets:document.querySelectorAll('#asset-grid .asset-card').length,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,focusable:document.querySelectorAll('button,select,input,a[href]').length}));
+      const state=await page.evaluate(()=>({theme:document.documentElement.dataset.theme,checked:document.getElementById('theme-toggle').getAttribute('aria-checked'),assets:document.querySelectorAll('#asset-grid .asset-card').length,scrollWidth:document.documentElement.scrollWidth,clientWidth:document.documentElement.clientWidth,focusable:document.querySelectorAll('button,select,input,a[href]').length,overflowNodes:[...document.querySelectorAll('body *')].map(e=>({tag:e.tagName,className:String(e.className?.baseVal??e.className??'').slice(0,70),left:Math.round(e.getBoundingClientRect().left),right:Math.round(e.getBoundingClientRect().right),scroll:e.scrollWidth,client:e.clientWidth})).filter(e=>e.right>innerWidth+2&&e.left<innerWidth+8).slice(0,14)}));
       assertStep('viewport-'+width,()=>{
         assert.equal(state.theme,'dark');
         assert.equal(state.checked,'true');
