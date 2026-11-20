@@ -1,3 +1,28 @@
+## Vico — identidad y once imágenes originales (actualización 2026-11-20)
+
+**Contrato de uso verificable:** `assets/pattern-registry.json → vicoVisualIdentity`. En `biblioteca.html#vico` existe un explorador de los **11 registros Vico** ya catalogados en `assets/library-catalog.js`, sin duplicar imágenes. El visor muestra el original, sus dimensiones, destino recomendado y sus límites, permite simular fondos oscuros/claros/cuadrícula, posición, escala y escena contextual independiente. No cambia arte ni plataformas y no es un generador de imágenes.
+
+### Gramática de identidad
+- **Vico personaje (L5):** una pieza individual apropiada al tema. Mantener rasgos, silueta, colores, perspectiva y proporción original. Jamás estirar, reflejar, cortar partes esenciales o recolorear por programa sin una nueva variante aprobada.
+- **Escena ambiental (L1):** imagen contextual independiente, subordinada a título y CTA. Vico puede acompañar la escena, pero no queda soldado a ella como screenshot. Permite recolocar/ocultar cada imagen en pantallas pequeñas.
+- **Composición de bienvenida:** `home-vecidya-companion-v4.webp` es una pieza horizontal compuesta distinta de `vico-home.webp`. No intercambiar sin rediseñar el encuadre.
+- **Variante por propósito:** Inicio (bienvenida + personaje), Vecindario (descubrimiento), Diagnóstico (orientación), Servicios (explicación), Licencias (comparación), Complementos (capacidades), Aprende (guía), Contacto (bienvenida), Nosotros (historia) y Únete (incorporación). No elegir al azar por color o agrado.
+- **MiniWeb de clientes:** Vico identifica a Vecidya, no a la empresa que contrata MiniWeb; el negocio conserva su propia marca. El editor puede enlazar a ayuda Vecidya, pero no insertar Vico como hero automático del sitio del cliente.
+- **Semántica:** no convertir expresiones de Vico en resultados de diagnóstico, aprobaciones, permisos, estado comercial ni confirmación de guardado. No incrustar texto, formularios, acciones o marcas de terceros dentro del archivo rasterizado.
+
+### Controles para revisar cada imagen
+Verificar a escala real y móvil: transparencia/halo, recorte completo, brazos y accesorios, bordes en claro/oscuro, profundidad coherente, peso visual, contraste del contenido independiente, `object-fit:contain`, ausencia de píxeles transparentes usados como margen que reduzca excesivamente el tamaño del personaje, `width/height` proporcionados, `loading` adecuado, texto alternativo contextual (decorativa `alt=""` si el mismo concepto ya está explicado) y `prefers-reduced-motion`. **Dimensiones WebP catalogadas no certifican transparencia, ausencia de defectos ni calidad subjetiva:** esos resultados requieren abrir los originales o revisar capturas del navegador.
+
+Los agentes deben conservar los originales y optimizar solo derivados trazables. Cualquier rediseño de pose, accesorio o expresión exige un encargo de imagen nuevo y aprobación de identidad, distinto del trabajo de implementación CSS.
+
+### Registro de revisión
+- `CODE`: catálogo de 11 referencias originales WebP, nueve usos de personaje asociados a las rutas públicas, una variante Aprende y una composición de bienvenida.
+- `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
+- `PENDIENTE`: inspección artística individual de los 11 originales, validación humana sobre captura, diferencias en 320/390/768/1366/1920, zoom 200 % y revisión en móvil real. No declarar esos controles PASS sin evidencia.
+- **Changelog 2026-11-20:** nueva matriz de selección, visor comparativo y restricciones para agentes; ningún asset sustituido.
+
+---
+
 # Dirección artística — Crystal Depth
 
 Dirección original R1.0 (2026-11-19); ampliación R1.5 de compatibilidad (2026-11-20). R1.2–R1.4 integradas como biblioteca; migración del frontend y certificación visual integral pendientes.
