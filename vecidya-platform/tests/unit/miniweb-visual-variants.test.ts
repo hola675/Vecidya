@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import {
   getMiniWebVisualVariant,
@@ -28,4 +29,15 @@ test("V2A: comparación de niveles visuales", () => {
   assert.equal(isMiniWebVisualTierSufficient("barrio", "ciudad"), false);
   assert.equal(isMiniWebVisualTierSufficient("ciudad", "barrio"), true);
   assert.equal(isMiniWebVisualTierSufficient("ciudad", "cuadra"), true);
+});
+
+test("R1.9: editor MiniWeb usa superficies sólidas sin alterar variantes, permisos o vista previa", () => {
+  const editor = readFileSync(new URL("../../app/routes/miniweb-v2-editor.tsx", import.meta.url), "utf8");
+  assert.equal((editor.match(/<Card surface="solid">/g) ?? []).length, 6);
+  assert.match(editor, /<Card key=\{section\.id\} surface="solid">/);
+  assert.match(editor, /<Card className="miniweb-v2-editor__guides">/);
+  assert.match(editor, /requireOrganizationPermission\(env, request, organization\.id, "business-profile:read"\)/);
+  assert.match(editor, /disabled=\{!data\.canEdit/);
+  assert.match(editor, /<MiniWebV2Renderer/);
+  assert.match(editor, /expectedRevision: revision/);
 });
