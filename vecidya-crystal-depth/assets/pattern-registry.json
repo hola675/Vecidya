@@ -297,7 +297,10 @@
     "sin-movimiento-esencial-y-reduced-motion",
     "sin-cambios-de-rutas-datos-permisos-ni-publicacion",
     "capturas-en-320-390-768-1366-y-1920",
-    "verificar-rendimiento-y-auditar-con-lector-de-pantalla"
+    "verificar-rendimiento-y-auditar-con-lector-de-pantalla",
+    "animaciones pausables sin ocultar contenido",
+    "modo reduced-motion respeta estado estático",
+    "sin desbordamiento horizontal por transformaciones"
   ],
   "implementation": {
     "readFirst": [
@@ -312,11 +315,106 @@
       "elegir-material-y-capacidad-real",
       "comprobar-assets-y-licencia",
       "crear-composicion",
+      "elegir motion.presets y respetar preferencias de movimiento",
       "probar-estados-y-contraste",
       "obtener-aprobacion-antes-de-migrar"
     ],
     "doNot": "No importar CSS de este laboratorio directamente en producción ni fusionar sin autorización."
   },
   "schemaVersion": "1",
-  "id": "vecidya-crystal-depth/pattern-registry-r1"
+  "id": "vecidya-crystal-depth/pattern-registry-r1",
+  "motion": {
+    "version": "R1.1-candidate",
+    "status": "laboratorio-no-integrado",
+    "principle": "Movimiento funcional, mínimo, reversible; no sustituye contenido ni estados.",
+    "presets": [
+      {
+        "id": "page-enter",
+        "scope": "portada o inicio de escena",
+        "durationMs": 580,
+        "trigger": "first-paint",
+        "css": "hero-copy; hero-visual",
+        "avoid": [
+          "dashboard",
+          "tabla",
+          "operación crítica"
+        ]
+      },
+      {
+        "id": "section-reveal",
+        "scope": "secciones narrativas y guías",
+        "durationMs": 480,
+        "trigger": "intersección una vez",
+        "css": ".vx-motion-reveal",
+        "avoid": [
+          "mostrar datos solo tras JS",
+          "animaciones repetitivas en scroll"
+        ]
+      },
+      {
+        "id": "ui-feedback",
+        "scope": "botones, pestañas y tarjetas no densas",
+        "durationMsRange": [
+          150,
+          260
+        ],
+        "trigger": "hover/focus/estado",
+        "css": ".crystal-button; .tab-panel; .component-card",
+        "avoid": [
+          "campos editables en movimiento",
+          "shift de layout"
+        ]
+      },
+      {
+        "id": "ambient-drift",
+        "scope": "hero y escenas L0-L3",
+        "durationSecondsRange": [
+          9,
+          14
+        ],
+        "trigger": "escena visible",
+        "css": ".hero-orbit; .hero-stage-glow; .motion-stage",
+        "avoid": [
+          "detrás de tablas",
+          "contenido con movimiento obligatorio"
+        ]
+      },
+      {
+        "id": "section-navigation",
+        "scope": "anclas y navegación contextual",
+        "trigger": "click o navegación teclado",
+        "css": "scroll-behavior: smooth (solo no reduced-motion)",
+        "avoid": [
+          "alterar URL/rutas",
+          "scroll programático sin intención"
+        ]
+      }
+    ],
+    "modes": [
+      "standard",
+      "subtle",
+      "static"
+    ],
+    "preference": "prefers-reduced-motion: reduce siempre prevalece sobre controles del laboratorio",
+    "controls": [
+      "Pausar/reanudar decoraciones animadas",
+      "Repetir escena",
+      "Intensidad estándar/discreta"
+    ],
+    "performance": [
+      "priorizar opacity y transform",
+      "sin dependencias JS externas",
+      "sin layout shifts",
+      "evitar efectos costosos en móvil"
+    ],
+    "accessibility": [
+      "contenido visible sin JavaScript",
+      "nunca depender de movimiento",
+      "foco visible",
+      "evitar autoplay esencial",
+      "pausa de animación continua",
+      "desactivar al reducir movimiento"
+    ],
+    "implementation": "La app React debe envolver animaciones en componentes opcionales, sin importar este CSS en producción ni simular transiciones de rutas sin contrato de navegación y QA."
+  }
 }
