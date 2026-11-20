@@ -1,16 +1,16 @@
-# Guía de integración y uso por agentes — Crystal Depth R1.2
+# Guía de integración y uso por agentes — Crystal Depth R1.5
 
-**Corte:** 2026-11-20 · **Estado:** laboratorio R1 candidato en rama de revisión, sin integración en `vecidya-platform/` ni despliegue. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
+**Corte:** 2026-11-20 · **Estado:** R1.2–R1.4 integrados en `main`; R1.5 es compatibilidad de laboratorio en rama. Sin migración automática del frontend ni despliegue comprobado. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
 
 ## 1. Punto de entrada obligatorio para agentes
 
 Antes de intervenir una pantalla, leer en este orden:
 
 1. `AGENTS.md` (raíz), `vecidya-platform/docs/GOVERNANCE.md`, `STATUS.md` y `PROJECT_STATE.md`; comprobar estado, rama y límites del checkpoint.
-2. `vecidya-crystal-depth/docs/DIRECCION-ARTISTICA.md`: visión, jerarquía L0–L5, tres materiales, paleta y contraste.
-3. `vecidya-crystal-depth/assets/pattern-registry.json`: contrato estructurado `intentRouting`, `materials`, `tokens`, `assetRules` y `acceptance`.
-4. `vecidya-crystal-depth/biblioteca.html#guia`: ejemplos visibles e interactivos; no copiar directamente HTML/CSS a la aplicación.
-5. `vecidya-platform/docs/design-system/VECIDYA-UI-UX.md` y componentes reales de la plataforma; la guía oficial y la implementación existente prevalecen ante divergencias.
+2. **Fuente de verdad del producto:** `vecidya-platform/docs/design-system/VECIDYA-UI-UX.md`, `app/styles/premium-foundation.css`, `app/styles/visual-system.css` y componentes React actuales.
+3. `vecidya-crystal-depth/assets/pattern-registry.json → platformCompatibility`: comprobar primero que el material y componente sugeridos ya existen y coinciden con sus exportaciones.
+4. `vecidya-crystal-depth/docs/DIRECCION-ARTISTICA.md`: intención visual, materiales y composición L0–L5; no sustituye tokens de producción.
+5. `vecidya-crystal-depth/biblioteca.html#guia` y `#idioma`: demostraciones para comparar; no copiar directamente HTML/CSS a React.
 
 **Regla fundamental:** `pattern-registry.json` expresa intención visual R1, no permisos, esquema, API, derechos, contratos publicados ni servicios activados. Para esas decisiones manda el código y los documentos canónicos de plataforma y negocio.
 
@@ -119,6 +119,26 @@ El brief se construye desde `pattern-registry.json` (rutas `intentRouting`, `sce
 **Rol editorial:** corregir redacción y estructura para que una persona sin experiencia técnica comprenda qué se le pregunta, qué hará cada acción y qué pasará después. Evitar enunciados vagos, tecnicismos y expresiones que admitan varias interpretaciones; jamás cambiar una prestación o una regla de negocio para hacer atractivo el texto. El agente editorial no decide permisos, arquitectura ni priorización del equipo.
 
 **Seguridad editorial y técnica:** no inventar datos de clientes, resultados, integraciones GHL o publicación de MiniWeb. Los permisos reales y los componentes de la plataforma son la fuente canónica. Revisar y adaptar el borrador antes de pegarlo en Kilo Code; copiar no significa ejecutar acciones.
+
+## 4.5. Traductor de material a frontend existente — R1.5
+
+**Jerarquía de autoridad:** código y contratos de `vecidya-platform/app/` → sistema visual aprobado de plataforma → `platformCompatibility` como mapeo de consulta → demos de Crystal Depth. Una sugerencia del laboratorio **nunca reemplaza** un token o componente real.
+
+| Crystal Depth | Selección React orientadora | Profundidad recomendada | Restricción |
+| --- | --- | --- | --- |
+| **Focal** | `Card surface="highlight"` | `depth="raised"` | Solo contexto editorial corto; heroes pueden usar `PublicHeroArt` en vez de Card. |
+| **Quiet** | `Card surface="glass"` | `depth="quiet"` o `"rest"` | Panel secundario con semántica real de navegación o acción. |
+| **Solid** | `Card surface="solid"` | `depth="rest"` | Formularios, tablas, editores, administración y contenido largo. |
+
+**Contratos que ya existen:** `Button(tone)`, `Card(surface,depth)`, `Badge(tone)`, `Alert(role="alert")`, `Icon(name)`, `JourneyGuide(area)`, `MetricCard(value)`, `ProgressMeter(value)`, `ComparisonBars(values)`, además de `EmptyState` y `SearchFilters` públicos. Los shells son `PublicLayout`, `ClientAreaShell` y `AdminShell`. Antes de crear una variante, localizar sus consumidores para no duplicar funciones.
+
+**Tokens:** `--v-blue-950`, `--v-blue-700`, `--v-cyan-500`, `--v-orange-500`, `--v-ink`, `--v-muted`, `--v-radius-card`, `--v-space-4`, `--v-duration-fast`, `--v-duration-interaction`. Ver valores vigentes en `premium-foundation.css`; los de `pattern-registry.json` son una instantánea comprobada por test, no una segunda hoja CSS. El foco naranja y los estados semánticos de React prevalecen sobre amber y sombras de la demo.
+
+**Reglas de marca y navegación:** `PUBLIC_NAVIGATION_LINKS` decide nombres y destinos de la web pública. El HTML de Crystal no introduce rutas ni modifica el menú React. La plataforma está actualmente en modo claro; cambiar toda Vecidya a oscuro requiere contrato opt-in por shell y aceptación por pantalla. La fuente de MiniWeb pública es la identidad del negocio; no imponer el tema Vecidya a su página.
+
+**Pendientes (NO IMPLEMENTADOS como primitivos compartidos):** `PageHeading` P1, `AdminFilterBar` P1, `ConsentStatus` P1, `DiagnosticMetricCard` P2 y `DiagnosticTrend` P2 son candidatos de la guía oficial. `SharedStatusPanel` es propuesta adicional para unificar loading/empty/error/success, pero debe partir de `EmptyState` y `Alert` existentes sin duplicarlos. Los contratos de datos, consentimiento y métricas siguen bajo el backend existente.
+
+**Trabajo de un agente:** leer la ruta y shell actual → seleccionar componente existente → usar tokens `--v-*` → verificar interfaz y variantes tipadas → adaptar únicamente los estilos necesarios → QA focal y evidencia del SHA → revisión y PR. La sección 12 es una referencia operativa, no una migración realizada.
 
 ## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
 
