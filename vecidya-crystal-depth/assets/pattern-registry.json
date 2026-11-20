@@ -623,7 +623,7 @@
   },
   "platformCompatibility": {
     "version": "1.1.0-agent-bridge",
-    "status": "compatible-con-frontend-r1.6-a-r3-requiere-qa-visual",
+    "status": "verified-source-crosswalk-no-product-migration",
     "verifiedScope": "vecidya-platform/app en main al 2026-11-20; exact source selectors and exports checked by focal tests",
     "authority": [
       "vecidya-platform/app/components/ui.tsx",
@@ -970,9 +970,9 @@
         "success"
       ],
       "labMissing": [
-        "access-denied (ausente solo en la demo R1.3; existe como estado de SharedStatusPanel en React)"
+        "access-denied"
       ],
-      "rule": "El laboratorio R1.3 no muestra access-denied; la plataforma React R1.6 sí dispone del componente presentacional. La autorización sigue en servidor, no en la apariencia."
+      "rule": "La demo R1.3 no muestra access-denied; React R1.6 sí lo representa en SharedStatusPanel. La autorización server-side sigue siendo fuente única de verdad; nunca inferir denegación desde aspecto, rol simulado o falta de datos."
     }
   },
   "agentHandoff": {
