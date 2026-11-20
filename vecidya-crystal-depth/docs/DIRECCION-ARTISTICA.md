@@ -72,6 +72,21 @@ Familias `standard`, `subtle` y `static`. Un ajuste de usuario no puede desactiv
 
 **Archivos de referencia:** `styles/motion-system.css`, `assets/motion-system.js`, `assets/pattern-registry.json → motion` y sección `biblioteca.html#movimiento`. Certificar en navegador real, no mediante capturas históricas ni prueba exclusivamente estática.
 
+### 4.2. Composición de páginas — R1.2 (2026-11-20)
+
+La identidad premium se mantiene al pasar entre cuatro tareas distintas; cambia la función visual del cristal, no la calidad general de la experiencia:
+
+| Contexto | Material protagonista | Jerarquía y asset oficial | Movimiento |
+| --- | --- | --- | --- |
+| Sitio público | Focal en el hero, Quiet en paneles | Narrativa, CTA HTML y escena `home-scene.webp` | Entrada única, fondo ambiental pausado |
+| Vecindario | Quiet + Solid | Filtros y datos reales sobre `neighborhood-scene.webp` | Feedback breve, resultados inmóviles |
+| Aprende | Solid + Quiet | Lectura clara y `learn-journey-scene.webp` subordinada | Revelado leve de secciones, sin parallax de texto |
+| MiniWeb V2 | Solid en edición, Quiet en previsualización | Estados reales de edición, escena de contexto `services-scene.webp` | Sin movimientos continuos en el editor |
+
+**Demostración interactiva:** `biblioteca.html#composiciones`. Navegación de cuatro tabs con selección por teclado, soporte de preferencia de movimiento reducido, tema claro/oscuro y degradación legible sin JavaScript. El selector de contexto `#r1-intent` solo enlaza a uno de esos cuatro ejemplos cuando la intención coincide exactamente. Diagnóstico, Admin, licencias y GHL conservan su guía de materiales, pero no reciben escenas inventadas.
+
+**Contrato legible por agentes:** `assets/pattern-registry.json → sceneRecipes`; esquema funcional en `styles/scene-composer.css` y `assets/scene-composer.js`. Las composiciones no crean rutas, no conceden prestaciones de planes, no gestionan publicación MiniWeb ni reemplazan componentes React. Su adopción productiva exige una tarea específica de integración después de la revisión de laboratorio.
+
 ### 5. Tipografía, espacio y forma
 
 Usar la familia existente (Inter → Segoe UI → system-ui) sin introducir una nueva dependencia. Jerarquía: titular corto y reconocible, subtítulo útil, párrafos legibles (línea ideal ~55–75 caracteres), microcopy contextual. No usar mayúsculas espaciadas para bloques de lectura. Mantener retícula y ritmo coherentes por secciones, evitando tarjetas anidadas sin función; usar grupos visuales con un propósito por bloque. Estado `disabled`, validación, tooltip y aviso han de expresarse con texto y foco accesibles.
