@@ -1,3 +1,4 @@
+import { miniWebV2DesignStyle } from "../features/miniweb-v2/visual-design";
 import type { MiniWebV2Document, MiniWebV2Section, V2Image } from "../features/miniweb-v2/sections";
 
 const dayNames = { monday: "Lunes", tuesday: "Martes", wednesday: "Miércoles", thursday: "Jueves", friday: "Viernes", saturday: "Sábado", sunday: "Domingo" } as const;
@@ -28,10 +29,12 @@ function SectionView({ section, mediaUrl, contactAnchor }: { section: MiniWebV2S
 }
 
 export function MiniWebV2Renderer({ document, familyKey, variant, preview = false, mediaUrl }: { document: MiniWebV2Document; familyKey: string; variant: string; preview?: boolean; mediaUrl?: (assetId: string) => string }) {
+  const visual = document.design;
+  const designAttributes = { style: miniWebV2DesignStyle(visual), "data-layout": visual?.layout, "data-align": visual?.align, "data-image-position": visual?.imagePosition };
   const orderedSections = [...document.sections].sort((a,b) => a.order-b.order || a.id.localeCompare(b.id));
   const firstContactId = orderedSections.find((section) => section.type === "contact" && section.visible)?.id;
   const sections = orderedSections.map(section => <SectionView key={section.id} section={section} mediaUrl={mediaUrl} contactAnchor={section.type === "contact" && section.id === firstContactId}/>);
   return preview
-    ? <div className="miniweb-v2 miniweb-v2--editor-preview" data-family={familyKey} data-variant={variant}>{sections}</div>
-    : <main className="miniweb-v2" data-family={familyKey} data-variant={variant}>{sections}</main>;
+    ? <div className="miniweb-v2 miniweb-v2--editor-preview" data-family={familyKey} data-variant={variant} {...designAttributes}>{sections}</div>
+    : <main className="miniweb-v2" data-family={familyKey} data-variant={variant} {...designAttributes}>{sections}</main>;
 }
