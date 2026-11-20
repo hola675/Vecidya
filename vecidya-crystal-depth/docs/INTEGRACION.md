@@ -110,6 +110,16 @@ Cuando se soliciten formularios, búsquedas, paneles o flujos con cambios de dat
 
 Los textos del laboratorio declaran su naturaleza simulada; nunca copiar literalmente `Acción confirmada` a una implementación sin completar el contrato de persistencia. Conservar estados de foco, etiquetas y región viva accesible; respetar `prefers-reduced-motion`. No usar efectos decorativos como indicadores de envío real.
 
+## 4.4. Encargo reutilizable por subagente — R1.4
+
+El asistente de `biblioteca.html#guia` ofrece cuatro especialidades: **frontend**, **editorial**, **UX/UI** y **calidad**. La selección de una especialidad **no elige al líder**: este asigna y coordina el trabajo, y el colaborador recibe un borrador con la intención, el material, la escena si está documentada, restricciones y criterios de verificación.
+
+El brief se construye desde `pattern-registry.json` (rutas `intentRouting`, `sceneRecipes`, `motion.presets` e `interactionRecipes`). Si el registro no puede cargarse, se genera solo la orientación básica derivada de las opciones visibles; no se asegura que esté completa y se debe consultar la fuente antes de implementar.
+
+**Rol editorial:** corregir redacción y estructura para que una persona sin experiencia técnica comprenda qué se le pregunta, qué hará cada acción y qué pasará después. Evitar enunciados vagos, tecnicismos y expresiones que admitan varias interpretaciones; jamás cambiar una prestación o una regla de negocio para hacer atractivo el texto. El agente editorial no decide permisos, arquitectura ni priorización del equipo.
+
+**Seguridad editorial y técnica:** no inventar datos de clientes, resultados, integraciones GHL o publicación de MiniWeb. Los permisos reales y los componentes de la plataforma son la fuente canónica. Revisar y adaptar el borrador antes de pegarlo en Kilo Code; copiar no significa ejecutar acciones.
+
 ## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
 
 `Cuadra`: web profesional completa y editable por organización, con plantilla sectorial legible. `Barrio`: hereda Cuadra; composición orientada a captar consultas y gestionar seguimiento cuando su integración GHL esté operativa. `Ciudad`: hereda Barrio; variaciones de composiciones multiproceso cuando esos procesos estén realmente disponibles. Las diferencias deben responder al valor del producto, **no** a reducir artificialmente la calidad de Cuadra.
