@@ -346,6 +346,13 @@ try{
         });
         await page.locator('#miniweb-customizer').scrollIntoViewIfNeeded();
         await page.screenshot({path:join(artifacts,'r2-'+width+'-miniweb-personalizada.png'),animations:'disabled'});
+        await page.locator('#miniweb-custom-primaryColor').evaluate(node=>{node.value='#FFFFFF';node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));});
+        const colorWarning=await page.locator('#miniweb-custom-status').textContent();
+        const customColor=await page.locator('#miniweb-custom-preview').evaluate(node=>node.style.getPropertyValue('--mw-primary'));
+        assertStep('miniweb-color-contrast-'+width,()=>{
+          assert.equal(customColor,'#FFFFFF');
+          assert.match(colorWarning,/contraste insuficiente/);
+        });
         await page.locator('#miniweb-custom-reset').click();
         const restored=await page.locator('#miniweb-custom-preview').evaluate(node=>({
           tier:node.dataset.tier,
