@@ -1,3 +1,18 @@
+## R2 — Certificación focal y evidencia reproducible (2026-11-20)
+
+**Estado:** QA de contratos R1 validado; **R2 visual integral ABIERTO**. El PR #257 permanece en borrador, sin integración ni despliegue.
+
+- **CODE/TEST:** añadido test focal sin dependencias en `tests/r1-contract.test.mjs` y workflow condicionado a cambios de la biblioteca. Comprueba atributos de tema, ejecuta la alternancia claro/oscuro, recorre 8/8 casos del enrutador y sus tres salidas, materiales/capas/IDs, cuatro pares de contraste sólido, foco/reduced-motion declarados y catálogo de 140 assets en 17 categorías.
+- **RAN/CI:** [Crystal Depth contract QA · run 44672412869](https://github.com/hola675/Vecidya/actions/runs/44672412869) **PASS** sobre `fc0d7961`.
+- **RAN/estático:** enrutador ejecutado 8/8 PASS; oscuro → claro → oscuro y `aria-checked` PASS. Contraste de texto oscuro principal sobre sólido ≈12,81:1 y texto azul de marca sobre naranja sólido ≈6,85:1; **no extrapolar a fondos con alfa o gradientes**.
+- **Browser de preview externa:** carga de biblioteca R1, las tres intensidades, guía y galería visibles. No se certificaron DevTools, responsive preciso, zoom, contrastes compuestos ni lectores de pantalla. Un reporte automático discrepó con atributos y resultados que constan en código y ejecución determinista; se priorizó esta última evidencia.
+- **RAN/Chromium local de referencia:** el HTML **0.7**, sin nuevos bloques R1, no mostró desbordamiento global a 320, 390, 768, 1366 y 1920 px, mostró 140 tarjetas y no registró errores JS. Navegación por Tab con foco de 3 px y skip-link visible. **Esto NO certifica R1 completa.**
+- **R2 pendiente:** capturas reales R1 en cinco anchos, contraste efectivo en transparencia, zoom 200 %, lector de pantalla, teclado R1, fallos de assets, rendimiento y revisión humana.
+
+**Regla:** tras un nuevo commit se exige PASS y evidencia del HEAD actualizado; no heredar un PASS anterior. No fusionar ni desplegar hasta nueva autorización y gates satisfechos.
+
+---
+
 ## R1 — Implementación aislada en la biblioteca (2026-11-19)
 
 **Hecho en rama de revisión:** tema oscuro predeterminado, claro alternativo, tres materiales Focal/Quiet/Solid; sección didáctica con selector de intención y copia de instrucciones; contrato JSON para agentes; dirección artística y guía de integración ampliadas.
