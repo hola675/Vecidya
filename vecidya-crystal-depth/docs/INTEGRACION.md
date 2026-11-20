@@ -61,6 +61,24 @@ Cuando una consulta abarque varias áreas, **dividir en checkpoints por ruta y r
 
 `assets/library-catalog.js` enumera 140 fuentes catalogadas de `vecidya-platform/public/assets/` con vistas previas. No confundir vista previa con original; un link `Abrir original` puede requerir el árbol del repositorio para resolver. `assets/pattern-registry.json` orienta por intención, pero la ruta concreta del asset se valida contra archivos existentes, su variante original y la página destino. Las 11 propuestas Crystal PNG no constituyen una sustitución automática de iconos.
 
+## 4.1. Movimiento R1.1: interpretación de solicitudes de animación
+
+Si el cliente solicita **transiciones, animaciones, efectos o navegación fluida**, el agente debe seleccionar un preset de `assets/pattern-registry.json → motion.presets`. Esto se evalúa después de elegir el material, nunca en vez de verificar un componente real.
+
+| Intención | Preset | Comportamiento y límite |
+| --- | --- | --- |
+| Entrar a una portada | `page-enter` | Aparición única de hero, aprox. 580 ms; no retrasa contenido ni SEO |
+| Recorrer una página | `section-reveal` | Transform y opacidad 340–480 ms al entrar en viewport; si JS falla, contenido visible |
+| Activar botones/tarjetas/pestañas | `ui-feedback` | 150–260 ms; no modificar layout, función, foco ni estado real |
+| Escena comercial o Vico | `ambient-drift` | Órbitas y halos decorativos entre 9–14 s, con pausa; evitar en datos densos |
+| Navegación entre secciones | `section-navigation` | Scroll suave opt-in en anclas; movimiento reducido usa scroll instantáneo |
+
+**Cómo consumirlo:** la sección `biblioteca.html#movimiento` contiene ejemplos interactivos, selector de intensidad, pausa/reanudación y repetición de la escena. El CSS de referencia está en `styles/motion-system.css` y su mejora JS en `assets/motion-system.js`; **no son aún componentes React adoptados por la plataforma**. Los datos, diagnósticos, MiniWeb editor y Admin usan contenido quiet/solid y evitan efectos continuos.
+
+**Accesibilidad:** `prefers-reduced-motion: reduce` prevalece sobre controles de laboratorio. El navegador sin JavaScript o sin `IntersectionObserver` presenta la página completa, sin ocultar secciones. Mantener foco visible, controles de pausa en efectos de más de 5 s, movimientos no esenciales y ausencia de scroll forzado. En móvil, eliminar órbitas costosas y reducir amplitud. Nunca simular un cambio de página que no haya ocurrido ni capturar el scroll del usuario.
+
+**Certificación obligatoria de adopción:** R2 navegador con tema claro/oscuro, 320/390/768/1366/1920 px, reduced-motion, cero overflow, estados y permiso real; antes de integrar rutas React es necesario especificar transición opt-in por ruta, compatibilidad con foco/historial, web vitals y rollback.
+
 ## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
 
 `Cuadra`: web profesional completa y editable por organización, con plantilla sectorial legible. `Barrio`: hereda Cuadra; composición orientada a captar consultas y gestionar seguimiento cuando su integración GHL esté operativa. `Ciudad`: hereda Barrio; variaciones de composiciones multiproceso cuando esos procesos estén realmente disponibles. Las diferencias deben responder al valor del producto, **no** a reducir artificialmente la calidad de Cuadra.
