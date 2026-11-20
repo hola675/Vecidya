@@ -274,6 +274,7 @@ try{
           components:document.querySelectorAll('#platform-bridge-components li').length,
           tokens:document.querySelectorAll('#platform-bridge-tokens tr').length,
           gaps:document.querySelectorAll('#platform-bridge-gaps li').length,
+          stateNote:document.querySelector('#platform-bridge-state')?.textContent,
           status:document.querySelector('#platform-bridge-status').textContent,
           theme:document.documentElement.dataset.theme
         }));
@@ -283,6 +284,7 @@ try{
           assert.equal(bridge.tokens,10);
           assert.equal(bridge.gaps,6);
           assert.match(bridge.status,/plataforma real sigue siendo la autoridad/);
+          assert.match(bridge.stateNote,/acceso denegado/);
           assert.equal(bridge.theme,'dark');
         });
         await page.locator('#idioma').scrollIntoViewIfNeeded();
