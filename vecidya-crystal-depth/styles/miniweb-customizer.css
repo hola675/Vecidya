@@ -12,6 +12,7 @@
 .mw-lab__field label{font-size:12px;font-weight:750;color:var(--r1-ink)}
 .mw-lab__field select,.mw-lab__field input[type=range]{width:100%;max-width:100%;box-sizing:border-box}
 .mw-lab__field select{border:1px solid var(--r1-line);border-radius:10px;padding:10px;min-height:44px;background:#eff8ff;color:#143458;font:inherit;font-size:13px}
+.mw-lab__field input[type=color]{width:100%;height:44px;min-height:44px;padding:4px;border-radius:10px;border:1px solid var(--r1-line);background:#eff8ff;cursor:pointer}
 .mw-lab__field input[type=range]{accent-color:#fa9e37;min-height:30px;cursor:pointer}
 .mw-lab__value{font-size:11px;color:var(--r1-muted)}
 .mw-lab__actions{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
