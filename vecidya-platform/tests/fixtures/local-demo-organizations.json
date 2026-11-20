@@ -12,7 +12,7 @@
     "description": "Atención por cita con equipo multidisciplinario y acompañamiento claro para cada etapa de la vida.",
     "city": "Medellín",
     "country": "Colombia",
-    "serviceMode": "presential"
+    "serviceMode": "in_person"
   },
   {
     "slug": "qa-local-comercio",
@@ -63,7 +63,7 @@
     "slug": "qa-local-gastronomia",
     "organizationName": "Fogón de Barrio",
     "displayName": "Gastronomía y alimentos",
-    "category": "Gastronomía y alimentos",
+    "category": "Gastronomía y alimentación",
     "websiteUrl": "https://gastronomia.vecidya.test",
     "publicEmail": "gastronomia@vecidya.test",
     "accent": "#A64232",
@@ -72,13 +72,13 @@
     "description": "Cocina de temporada con opciones familiares y menú rotativo.",
     "city": "Barranquilla",
     "country": "Colombia",
-    "serviceMode": "presential"
+    "serviceMode": "in_person"
   },
   {
     "slug": "qa-local-belleza",
     "organizationName": "Estudio Luma",
     "displayName": "Belleza y cuidado personal",
-    "category": "Belleza y cuidado personal",
+    "category": "Servicios personales y mantenimiento",
     "websiteUrl": "https://belleza.vecidya.test",
     "publicEmail": "belleza@vecidya.test",
     "accent": "#965B82",
@@ -87,13 +87,13 @@
     "description": "Espacio de belleza con reservas por mensaje y atención especializada.",
     "city": "Medellín",
     "country": "Colombia",
-    "serviceMode": "presential"
+    "serviceMode": "in_person"
   },
   {
     "slug": "qa-local-automotriz",
     "organizationName": "Ruta 27 Taller",
     "displayName": "Automotriz y transporte",
-    "category": "Automotriz y transporte",
+    "category": "Servicios personales y mantenimiento",
     "websiteUrl": "https://automotriz.vecidya.test",
     "publicEmail": "automotriz@vecidya.test",
     "accent": "#4C6872",
@@ -102,13 +102,13 @@
     "description": "Taller independiente que explica cada reparación antes de realizarla.",
     "city": "Bogotá",
     "country": "Colombia",
-    "serviceMode": "presential"
+    "serviceMode": "in_person"
   },
   {
     "slug": "qa-local-hogar",
     "organizationName": "Casa Viva Reparaciones",
     "displayName": "Hogar y mantenimiento",
-    "category": "Hogar y mantenimiento",
+    "category": "Servicios personales y mantenimiento",
     "websiteUrl": "https://hogar.vecidya.test",
     "publicEmail": "hogar@vecidya.test",
     "accent": "#6A7951",
@@ -117,13 +117,13 @@
     "description": "Servicio programado para viviendas y pequeños locales con orientación clara.",
     "city": "Pereira",
     "country": "Colombia",
-    "serviceMode": "onsite"
+    "serviceMode": "in_person"
   },
   {
     "slug": "qa-local-profesionales",
     "organizationName": "Norte Contable",
     "displayName": "Servicios profesionales",
-    "category": "Servicios profesionales",
+    "category": "Finanzas, contabilidad y seguros",
     "websiteUrl": "https://profesionales.vecidya.test",
     "publicEmail": "profesionales@vecidya.test",
     "accent": "#4A6496",
@@ -138,7 +138,7 @@
     "slug": "qa-local-creativos",
     "organizationName": "Taller Marea Diseño",
     "displayName": "Marketing y creatividad",
-    "category": "Marketing y creatividad",
+    "category": "Servicios profesionales y legales",
     "websiteUrl": "https://creativos.vecidya.test",
     "publicEmail": "creativos@vecidya.test",
     "accent": "#976D3E",
