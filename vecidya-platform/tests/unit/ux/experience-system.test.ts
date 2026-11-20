@@ -88,7 +88,7 @@ test("R1.6 reutiliza los componentes existentes sin inferir derechos ni éxitos"
   assert.match(components, /state === "access-denied"/);
   assert.match(components, /role=\{urgent \? "alert" : "status"\}/);
   assert.match(components, /"not-authorized": "Consentimiento no autorizado"/);
-  assert.match(components, /"unknown": "Consentimiento sin confirmar"/);
+  assert.match(components, /unknown: "Consentimiento sin confirmar"/);
   assert.match(components, /method="get" role="search"/);
   assert.match(components, /<Link className="button button--secondary" to=\{resetTo\}>Limpiar filtros<\/Link>/);
   assert.match(components, /value === null \? emptyLabel/);
