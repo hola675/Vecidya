@@ -1,3 +1,12 @@
+## UX-CRYSTAL-R3 — preflight HTTP y publicación separada
+
+El verificador `pnpm ux:verify-http` no tiene URL por defecto y rechaza destinos fuera de loopback, el Worker staging `vecidya-platform-staging.*.workers.dev` y `vecidya.com`/`www.vecidya.com`. Producción exige `UX_PRODUCTION_READONLY_APPROVED=1`, que autoriza **solo cuatro GET anónimos** y nunca modifica Cloudflare o D1. El resultado no confirma el SHA desplegado.
+
+La política de flags `app/lib/visual-rollout.ts` es estática e idéntica en SSR e hidratación. Cambiarla requiere PR, CI y release explícito. Ninguna variable `UX_*` activa una característica productiva: son parámetros del verificador local.
+
+**Preflight release:** confirmar destino, permisos de publicación, copia del Version ID anterior, esquema/migraciones actuales, rollback del Worker y evidencia del commit. El contrato visual no autoriza `wrangler deploy`, `d1 migrations apply --remote`, subida de medios ni edición de secretos. Staging y producción se mantienen como gates independientes.
+
+---
 ## Entorno QA local aislado (2026-11-11)
 
 `pnpm run dev:local-demo` ejecuta la aplicación en `http://127.0.0.1:4173`, con `wrangler.local-demo/wrangler.jsonc`, persistencia D1/R2 bajo `.wrangler/local-demo`, email falso y clave de autenticación aleatoria por inicio. Wrangler y Vite aíslan sus directorios de entorno en `wrangler.local-demo/`; el Worker local no carga secretos de `.dev.vars` ni `.env` desde la raíz de la plataforma. Logs, temporales y caché quedan bajo `.wrangler/local-demo`. No configura rutas públicas ni `workers.dev`; el servidor local se enlaza a loopback. Las cuatro organizaciones `qa-local-*`, sus perfiles, medios y borradores se crean con `pnpm run seed:local-demo`; consulta `docs/TESTING.md` para el recorrido y la cuenta QA.
