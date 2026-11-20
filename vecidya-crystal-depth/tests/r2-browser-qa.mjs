@@ -89,6 +89,8 @@ try{
         await page.screenshot({path:join(artifacts,'r2-390-guide.png'),animations:'disabled'});
       }
       if(width===1366){
+        // Restablecer foco tras los dos clics del tema; Tab debe empezar en el skip-link.
+        await page.goto(addr,{waitUntil:'load',timeout:45000});
         await page.keyboard.press('Tab');
         const focus=await page.evaluate(()=>{
           const e=document.activeElement;
