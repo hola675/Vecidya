@@ -1,3 +1,33 @@
+## R1.5 — Roadmap para un solo lenguaje de diseño (2026-11-20)
+
+**Situación verificada:** R1.2 (PR #257), R1.3 (PR #259) y R1.4 (PR #260) están fusionadas en `main`. En `vecidya-platform/` ya existen los tokens `--v-*`, las superficies y profundidades `v-surface`, los componentes React compartidos, la navegación pública canónica y los shells público/cliente/Admin. La plataforma sigue clara como base; Crystal Depth oscuro es laboratorio. No se ha publicado una migración visual React derivada de la biblioteca.
+
+**R1.5 (este checkpoint) — contrato de compatibilidad, sin mutación de producto:** `assets/pattern-registry.json → platformCompatibility`, visor `#idioma`, documentación orientada a la fuente de verdad y pruebas focales que consultan `app/components/ui.tsx`, `experience-system.tsx`, `public-v2.tsx`, `premium-foundation.css`, `visual-system.css`, navegación y shells. Resultado exigido: que ninguna receta llame componente existente a una propuesta, y que los tokens coincidan con la plataforma. Estado actual: implementado en rama, sujeto a CI y revisión PR; no inferir publicación.
+
+### Próximos bloques y dependencias
+
+| Checkpoint | Trabajo que falta | Entrega esperada | Límite / gate |
+| --- | --- | --- | --- |
+| **R1.6** | Diseñar contratos mínimos para `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `DiagnosticMetricCard` y `DiagnosticTrend`; decidir si `SharedStatusPanel` amplía `EmptyState` y `Alert` | Variantes tipadas de los componentes existentes, evitando duplicaciones | API concreta, accesibilidad, datos verídicos y propietarios de ruta |
+| **R1.7** | Aplicación pública: Inicio/Servicios, Vecindario, Aprende y Licencias; reconciliar `app.css` heredado con `--v-*` sin regresión visual | Un PR por familia de pantalla con variantes de Card, Button, iconografía, textos y estados coherentes | No rediseñar todas las rutas de golpe; QA por 320/390/768/1366/1920 y tema claro |
+| **R1.8** | Shell de Mi Vecidya y Admin, tablas, filtros, navegación y métricas | Un contrato operativo más denso y legible con filtros, empty/error/loading reales | Permisos y privacidad, GET/reset/paginación, sin métricas inventadas |
+| **R1.9** | Editor y página pública MiniWeb, planes y límites Vecidya/GHL | Materiales en editor/vista previa y reglas de marca que respeten personalización del negocio | No asumir entitlements, no aplicar estilo Vecidya global a MiniWeb pública, no crear CRM paralelo |
+| **R2** | Certificación visual integral, AA en superficies reales, zoom 200 %, lector de pantalla, modo reducido, teclado y rendimiento | Evidencia por pantalla y aceptación humana antes de despliegue | PASS del contrato no equivale a WCAG completa |
+| **R3** | Adopción opt-in, verificación de despliegue y retirada controlada de duplicaciones históricas | Migración progresiva, rollback por ruta y estado del entorno público verificado | Deploy y cambios de producción requieren aprobación independiente |
+
+### Decisiones todavía no cerradas
+
+1. **Tema global:** por ahora no forzar oscuro en la plataforma; validar si se requiere por shell, si es opt-in y su persistencia.
+2. **Variantes de superficie:** Focal ≈ highlight, Quiet ≈ glass y Solid ≈ solid; la profundidad es independiente y el hero puede no ser una Card.
+3. **Propiedad de componentes:** no recrear controles ya exportados; los componentes propuestos por la guía no se declaran disponibles antes de implementarlos.
+4. **Estados y mensajes:** identidad editorial, etiquetas, error/éxito, consentimiento y mensajes vacíos; mostrar estados solo con evidencia real.
+5. **MiniWeb y GHL:** no aplicar el tema de Vecidya a páginas de negocios ni atribuir funciones CRM externas a la plataforma.
+6. **CSS heredado:** inventariar overrides `app.css`, `*-premium.css` y reglas `--v-*` antes de cualquier sustitución global.
+
+**Regla de cierre:** la única autoridad de componentes/tokens productivos es el código y la guía de `vecidya-platform/`. El JSON R1.5 documenta equivalencias verificables y la biblioteca las ejemplifica; no se importan estilos de laboratorio a producción. Mantener el PR focal y la CI sobre el HEAD exacto.
+
+---
+
 ## R1.4 — Encargos para los subagentes (2026-11-20)
 
 **Checkpoint en rama de trabajo:** a partir del merge verificado de PR #259 en `main`. Borradores de instrucciones por especialidad generados desde el registro de patrones, no de prompts duplicados. Se incorporan al selector existente de ocho intenciones, sin página adicional ni automatización de operaciones.
