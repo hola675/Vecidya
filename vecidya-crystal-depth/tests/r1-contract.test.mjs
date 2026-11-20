@@ -319,3 +319,28 @@ test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CS
   assert.match(style,/pb-table-wrap/);
   assert.match(style,/overflow-x:auto/);
 });
+
+test('R1.6: personalizador MiniWeb aislado, semántico y sin publicación',()=>{
+  const customJs=read('assets/miniweb-customizer.js');
+  const customCss=read('styles/miniweb-customizer.css');
+  assert.doesNotThrow(()=>new vm.Script(customJs));
+  assert.match(html,/id="miniweb-customizer"/);
+  assert.match(html,/id="miniweb-custom-preview"/);
+  assert.match(html,/id="miniweb-custom-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(html,/href="styles\/miniweb-customizer\.css"/);
+  assert.match(html,/src="assets\/miniweb-customizer\.js"/);
+  assert.match(html,/id="miniweb-custom-copy"/);
+  assert.match(html,/id="miniweb-custom-reset"/);
+  for (const field of ['tier','palette','font','layout','align','heroPosition','titleSize','bodySize','spacing','radius','heroHeight']) {
+    assert.ok(html.includes('data-mw-field="'+field+'"'),'Control ausente: '+field);
+    assert.ok(html.includes('for="miniweb-custom-'+field+'"'),'Etiqueta ausente: '+field);
+  }
+  for(const tier of ['base','pro','premium']) assert.ok(html.includes('<option value="'+tier+'">'));
+  assert.match(customJs,/concept-only-not-a-product-configuration/);
+  assert.match(customJs,/navigator\.clipboard/);
+  assert.doesNotMatch(customJs,/fetch\(|localStorage|sessionStorage|XMLHttpRequest/);
+  assert.match(customCss,/#?[.]mw-lab__preview\[data-tier=premium\]/);
+  assert.match(customCss,/@media \(prefers-reduced-motion:reduce\)/);
+  assert.match(customCss,/:focus-visible/);
+});
+
