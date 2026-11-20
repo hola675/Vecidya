@@ -9,11 +9,11 @@
 .vico-workbench__stage{--vico-scale:1;--vico-stage-scene:none;position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:360px;border-radius:20px;border:1px solid #7195bc; background:#102844}
 .vico-workbench__stage[data-background=light]{background:#edf5ff}
 .vico-workbench__stage[data-background=checker]{background-color:#dce6f2;background-image:linear-gradient(45deg,#b6c9db 25%,transparent 25%),linear-gradient(-45deg,#b6c9db 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#b6c9db 75%),linear-gradient(-45deg,transparent 75%,#b6c9db 75%);background-size:30px 30px;background-position:0 0,0 15px,15px -15px,-15px 0}
-.vico-workbench__stage:before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--vico-stage-scene);background-repeat:no-repeat;background-size:cover;background-position:center;opacity:.32;pointer-events:none}
+.vico-workbench__stage:before{content:"";position:absolute;inset:0;z-index:0;background-image:var(--vico-stage-scene);background-repeat:no-repeat;background-size:cover;background-position:center;opacity:.32;pointer-events:none}
 .vico-workbench__stage[data-background=light]:before,.vico-workbench__stage[data-background=checker]:before{opacity:.18}
 .vico-workbench__stage[data-position=left]{justify-content:flex-start}
 .vico-workbench__stage[data-position=right]{justify-content:flex-end}
-.vico-workbench__stage img{display:block;object-fit:contain;width:min(90%,370px);max-height:380px;height:auto;transform:scale(var(--vico-scale));transform-origin:center;filter:drop-shadow(0 12px 25px #03152955)}
+.vico-workbench__stage img{position:relative;z-index:1;display:block;object-fit:contain;width:min(90%,370px);max-height:380px;height:auto;transform:scale(var(--vico-scale));transform-origin:center;filter:drop-shadow(0 12px 25px #03152955)}
 .vico-workbench__stage[data-position=left] img{margin-left:4%}
 .vico-workbench__stage[data-position=right] img{margin-right:4%}
 .vico-workbench__detail{margin:13px 0 0;padding:0;line-height:1.65}
