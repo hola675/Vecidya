@@ -164,3 +164,25 @@ test('enrutador enlaza cuatro escenas reales y explica los contextos sin vista',
   assert.match(read('assets/scene-composer.js'),/suggested\.addEventListener\("click"/);
   assert.match(read('styles/r1-guidance.css'),/\.r1-preview-action\[hidden\]/);
 });
+
+test('estados R1.3: cinco patrones, accesibilidad y demostración no operativa',()=>{
+  const script=read('assets/interaction-flows.js');
+  const css=read('styles/interaction-flows.css');
+  assert.doesNotThrow(()=>new vm.Script(script));
+  assert.deepEqual(registry.interactionRecipes.map(x=>x.id),['idle','loading','empty','error','success']);
+  for(const x of registry.interactionRecipes){
+    assert.equal(x.material,'solid');
+    assert.ok(x.purpose&&x.required.length&&x.avoid.length);
+    assert.match(script,new RegExp(x.id+':\\s*\\{'));
+  }
+  for(const id of ['flujos','flow-state','flow-result','flow-title','flow-description','flow-rule']){
+    assert.ok(html.includes('id="'+id+'"'),'Falta control '+id);
+  }
+  assert.match(html,/href="#flujos"/);
+  assert.match(html,/href="styles\/interaction-flows.css"/);
+  assert.match(html,/src="assets\/interaction-flows.js"/);
+  assert.match(html,/id="flow-result"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(css,/prefers-reduced-motion\s*:\s*reduce/);
+  assert.match(script,/no se envió información ni se guardó ningún cambio/i);
+  assert.doesNotMatch(script, /fetch\(|XMLHttpRequest|localStorage/);
+});
