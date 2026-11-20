@@ -1,3 +1,20 @@
+## R1.1 / R2 — Movimiento y navegador real (20-11-2026)
+
+**Estado de laboratorio:** implementado en la rama del PR #257, sin merge ni despliegue. Cinco presets para agentes (`page-enter`, `section-reveal`, `ui-feedback`, `ambient-drift`, `section-navigation`) con muestras, intensidad, pausa, repetición y degradación estática. No modifica componentes productivos React.
+
+**Evidencia ejecutada:**
+- **RAN/CI:** [Crystal Depth contract QA · 44674472281](https://github.com/hola675/Vecidya/actions/runs/44674472281), PASS: prueba Node de contrato y **30 pruebas de Chromium sin fallos**. Se verificaron 320, 390, 768, 1366, 1920 px, tema alternativo, enrutador de MiniWeb/Diagnóstico, búsqueda y estado vacío, diálogo/Escape, teclado, controles de movimiento y `prefers-reduced-motion`.
+- **Corrección:** desbordamiento horizontal de 5 px a 320/390 debido a texto largo de insignias; CSS limita el ancho del `small` y permite su ajuste. Repetido en Chromium y PASS en los cinco anchos.
+- **CAPTURAS:** [artifact de Chromium en GitHub](https://github.com/hola675/Vecidya/actions/runs/44674472281/artifacts/14601034734), diez archivos subidos de la ejecución; caduca según política de retención CI.
+- **PRUEBAS EN CÓDIGO:** `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`; CI dedicada `.github/workflows/crystal-depth-quality.yml`. No acumulamos capturas en el árbol: se guardan como artifacts temporales.
+- **Ajustes:** `styles/motion-system.css`, `assets/motion-system.js`, sección de demostración `#movimiento` y contrato `assets/pattern-registry.json → motion`. Las animaciones son opt-in y no ocultan contenido sin JS.
+
+**R2 todavía no certifica:** revisión humana del acabado de todas las capturas, prueba con lector de pantalla, zoom 200 %, contraste en gradientes/transparencias reales y rendimiento en dispositivos lentos. No etiquetar como WCAG completa ni habilitar integración/deploy.
+
+**Regla de SHA:** comprobar nuevamente el estado de CI después del último commit del PR; los resultados anteriores son evidencia de su ejecución concreta, no certificación automática de modificaciones futuras.
+
+---
+
 ## R2 — Certificación focal y evidencia reproducible (2026-11-20)
 
 **Estado:** QA de contratos R1 validado; **R2 visual integral ABIERTO**. El PR #257 permanece en borrador, sin integración ni despliegue.
