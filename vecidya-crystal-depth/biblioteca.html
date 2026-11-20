@@ -514,10 +514,10 @@
       document.getElementById("r1-copy").addEventListener("click", async () => {
         const current = r1Selection();
         const message = "Vecidya Crystal Depth R1 — " + current.textContent.trim() +
-          "\\nMaterial: " + current.dataset.material +
-          "\\nEscena: " + current.dataset.scene +
-          "\\nRegla crítica: " + current.dataset.rule +
-          "\\nAntes de implementar: consultar assets/pattern-registry.json, docs/INTEGRACION.md y los contratos reales de la plataforma; verificar accesibilidad, permisos y pruebas focales. R1 no autoriza deploy.";
+          "\nMaterial: " + current.dataset.material +
+          "\nEscena: " + current.dataset.scene +
+          "\nRegla crítica: " + current.dataset.rule +
+          "\nAntes de implementar: consultar assets/pattern-registry.json, docs/INTEGRACION.md y los contratos reales de la plataforma; verificar accesibilidad, permisos y pruebas focales. R1 no autoriza deploy.";
         const status = document.getElementById("r1-copy-status");
         if (!navigator.clipboard || !window.isSecureContext) {
           status.textContent = "La copia requiere HTTPS o localhost. Selecciona las instrucciones visibles para copiarlas.";
