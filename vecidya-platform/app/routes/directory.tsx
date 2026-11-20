@@ -83,7 +83,7 @@ export default function DirectoryPage() {
             </nav>
           ) : null}
 
-          <div aria-live="polite" className="directory-results-heading">
+          <div aria-live="polite" className="directory-results-heading v-section-heading">
             <div>
               <p className="eyebrow">RESULTADOS</p>
               <h2>{profiles.length ? resultLabel : hasFilters ? "Sin coincidencias" : "El Vecindario está empezando"}</h2>

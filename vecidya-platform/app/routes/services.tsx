@@ -45,7 +45,7 @@ export default function Services() {
         </section>
 
         <section className="services-process" aria-labelledby="services-process-title">
-          <div className="services-section-heading">
+          <div className="services-section-heading v-section-heading">
             <h2 id="services-process-title">De la necesidad al siguiente paso.</h2>
             <p>Explora lo que quieres resolver, revisa el alcance y conversa sobre la opción que tenga sentido.</p>
           </div>
@@ -83,7 +83,7 @@ export default function Services() {
         </nav>
 
         <section className="services-core" aria-labelledby="services-core-title">
-          <div className="services-section-heading">
+          <div className="services-section-heading v-section-heading">
             <h2 id="services-core-title">Un alcance claro para cada necesidad.</h2>
             <p>Son trabajos profesionales con entregables acordados; no todos requieren licencia. Las funciones estándar incluidas en Barrio o en los seis módulos de la biblioteca Ciudad no se cobran nuevamente como servicio. La cuota de addons y sus consumos reales se facturan aparte; los servicios profesionales requieren presupuesto aceptado.</p>
           </div>
