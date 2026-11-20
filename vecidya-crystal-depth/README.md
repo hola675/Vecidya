@@ -1,6 +1,6 @@
 # Vecidya Crystal Depth
 
-**Estado:** R1.2 y R1.3 integradas en main; R1.4 (encargos de subagentes) en revisión. El laboratorio no implementa procesos productivos. No integrada en Vecidya ni MiniWeb2.
+**Estado:** R1.2, R1.3 y R1.4 integradas en `main` (PR #257, #259 y #260). R1.5 es el contrato de compatibilidad entre la biblioteca y el frontend real; en rama de revisión. La biblioteca no se importa como código React ni certifica despliegue.
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 
@@ -56,6 +56,20 @@ El subagente **editorial es un colaborador del agente líder**, responsable de t
 - `assets/agent-brief.js`: composición de instrucciones por especialidad, sin llamadas a APIs de producto.
 - `assets/pattern-registry.json → agentBrief`: roles y límites de actuación.
 - `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: QA focal reutilizando la batería ya existente.
+
+## Un solo lenguaje con el frontend React — R1.5
+
+La sección `biblioteca.html#idioma` muestra correspondencias **verificadas sobre el código** y generadas desde `assets/pattern-registry.json → platformCompatibility`, evitando una segunda fuente de componentes.
+
+- Fuente canónica de tokens: `vecidya-platform/app/styles/premium-foundation.css` (variables `--v-*`).
+- Superficies, profundidad y retícula reales: `vecidya-platform/app/styles/visual-system.css`.
+- Componentes existentes: `app/components/ui.tsx`, `experience-system.tsx` y patrones públicos de `public-v2.tsx`. La plataforma posee los shells y los destinos de navegación.
+- Correspondencia orientadora: **Focal → Card highlight**, **Quiet → Card glass**, **Solid → Card solid**. La profundidad es independiente. No sustituye el diseño real de una ruta ni crea componentes nuevos.
+- **Tema:** la plataforma actual usa claro; oscuro de Crystal Depth sigue siendo exploración artística. El naranja, radios, focus y tiempos de la plataforma prevalecen.
+- **Faltantes:** `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `DiagnosticMetricCard`, `DiagnosticTrend` están propuestos en la guía oficial pero no exportados como primitivos compartidos; `SharedStatusPanel` es propuesta por evaluar, no implementada.
+- **Fronteras:** nunca aplicar estilos globales a MiniWeb pública de negocios, no duplicar GHL/CRM ni alterar scoring, permisos, publicaciones o licencias.
+
+La CI focal contrasta el registro con archivos reales de la plataforma. Las pruebas muestran coincidencia estructural, **no equivalencia visual certificada**.
 
 ## Abrir
 

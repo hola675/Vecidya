@@ -13,10 +13,12 @@
   <link rel="stylesheet" href="styles/motion-system.css">
   <link rel="stylesheet" href="styles/scene-composer.css">
   <link rel="stylesheet" href="styles/interaction-flows.css">
+  <link rel="stylesheet" href="styles/platform-bridge.css">
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
   <script defer src="assets/interaction-flows.js"></script>
   <script defer src="assets/agent-brief.js"></script>
+  <script defer src="assets/platform-bridge.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -43,6 +45,7 @@
         <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
         <a class="nav-link" href="#composiciones"><span>10</span> Páginas y composición</a>
         <a class="nav-link" href="#flujos"><span>11</span> Estados y flujos</a>
+        <a class="nav-link" href="#idioma"><span>12</span> Lenguaje compartido</a>
       </nav>
 
       <div class="sidebar-foot">
@@ -692,9 +695,44 @@
           <p class="r1-caption">Para los agentes: consultar <a href="assets/pattern-registry.json">interactionRecipes</a> y <a href="docs/INTEGRACION.md">guía de integración</a>. Este laboratorio no envía formularios ni modifica permisos, licencias o CRM.</p>
         </section>
 
+
+        <section class="content-section section-anchor platform-bridge" id="idioma" aria-labelledby="bridge-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>12 / Lenguaje compartido · R1.5</p>
+              <h2 id="bridge-heading">Un solo idioma para el diseño y el código.</h2>
+              <p>Crystal Depth propone la dirección visual, pero el frontend React de Vecidya tiene los tokens y componentes que deben gobernar su implementación.</p>
+            </div>
+            <span class="section-count">R1.5 <small>puente</small></span>
+          </div>
+          <p class="pb-lead">Antes de diseñar una nueva pantalla, el agente consulta la intención, determina el material y busca el componente existente. Nunca copia indiscriminadamente las clases de la biblioteca a la plataforma.</p>
+          <div class="pb-warning">
+            <strong>Diferencia importante de tema</strong>
+            La aplicación real utiliza actualmente tema claro como base. La biblioteca tiene oscuro predeterminado para explorar la dirección artística. El modo oscuro productivo requiere especificación, adopción voluntaria y revisión de sus pantallas, no un cambio global de CSS.
+          </div>
+          <p class="pb-status" id="platform-bridge-status" role="status" aria-live="polite">El mapa se genera a partir de <a href="assets/pattern-registry.json">pattern-registry.json</a>. Si no hay JavaScript, consulta la guía de integración.</p>
+          <div id="platform-bridge-content" hidden>
+            <h3 class="pb-heading">Material artístico → superficie real</h3>
+            <div class="pb-surfaces" id="platform-bridge-surfaces"></div>
+            <h3 class="pb-heading">Componentes ya existentes</h3>
+            <ul class="pb-inventory" id="platform-bridge-components"></ul>
+            <h3 class="pb-heading">Tokens canónicos: no duplicarlos</h3>
+            <div class="pb-table-wrap" role="region" tabindex="0" aria-label="Tabla de tokens del frontend con desplazamiento horizontal">
+              <table>
+                <thead><tr><th scope="col">Función</th><th scope="col">Token React</th><th scope="col">Valor actual</th><th scope="col">Regla de adopción</th></tr></thead>
+                <tbody id="platform-bridge-tokens"></tbody>
+              </table>
+            </div>
+            <p class="pb-warning" id="platform-bridge-state"></p>
+            <h3 class="pb-heading">Componentes que requieren contrato</h3>
+            <ul class="pb-inventory" id="platform-bridge-gaps"></ul>
+          </div>
+          <p class="pb-source-note">Fuentes: <a href="docs/INTEGRACION.md">guía de agentes</a>, <a href="assets/pattern-registry.json">contrato estructurado</a> y código real de <code>vecidya-platform/app/components/</code> y <code>vecidya-platform/app/styles/</code>. No modificar el tema, los permisos, los flujos de MiniWeb ni el CRM por interpretar una muestra.</p>
+        </section>
+
         <footer class="site-footer">
           <div class="footer-brand"><img src="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" alt=""><span>Vecidya Crystal Depth</span></div>
-          <p>Laboratorio interno · R1.3 20 nov 2026 · sin integración funcional en la plataforma.</p>
+          <p>Laboratorio interno · R1.5 · diseño y plataforma sincronizados por contrato, no por importación CSS.</p>
           <a href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
         </footer>
       </main>

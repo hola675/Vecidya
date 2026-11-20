@@ -302,7 +302,8 @@
     "modo reduced-motion respeta estado estático",
     "sin desbordamiento horizontal por transformaciones",
     "selección por teclado entre demos sin reemplazar rutas reales",
-    "no anunciar éxito sin resultado backend verificable y conservar información al fallar"
+    "no anunciar éxito sin resultado backend verificable y conservar información al fallar",
+    "contrato de compatibilidad contrastado con componentes y tokens reales, sin asumir tema oscuro productivo"
   ],
   "implementation": {
     "readFirst": [
@@ -312,6 +313,7 @@
       "vecidya-crystal-depth/docs/INTEGRACION.md"
     ],
     "process": [
+      "leer platformCompatibility antes de reutilizar CSS o proponer nuevos componentes React",
       "identificar-intencion",
       "consultar-intentRouting",
       "elegir-material-y-capacidad-real",
@@ -618,5 +620,359 @@
       "Conservar alternativas sin JSON cuando no haya red",
       "El usuario debe revisar el texto antes de copiar y asignarlo al subagente"
     ]
+  },
+  "platformCompatibility": {
+    "version": "R1.5",
+    "status": "verified-source-crosswalk-no-product-migration",
+    "verifiedScope": "vecidya-platform/app en main al 2026-11-20; exact source selectors and exports checked by focal tests",
+    "authority": [
+      "vecidya-platform/app/components/ui.tsx",
+      "vecidya-platform/app/components/experience-system.tsx",
+      "vecidya-platform/app/styles/premium-foundation.css",
+      "vecidya-platform/app/styles/visual-system.css",
+      "vecidya-platform/app/components/public-navigation.ts",
+      "vecidya-platform/app/root.tsx",
+      "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md"
+    ],
+    "theme": {
+      "currentPlatform": "light",
+      "libraryDefault": "dark",
+      "rule": "El oscuro de Crystal Depth es una propuesta de laboratorio; la plataforma permanece clara mientras no exista contrato de tema, adopción opt-in y QA por ruta.",
+      "platformSource": "vecidya-platform/app/styles/premium-foundation.css",
+      "platformEvidence": "color-scheme: light"
+    },
+    "surfaces": [
+      {
+        "design": "focal",
+        "platformSurface": "highlight",
+        "platformDepth": "raised",
+        "component": "Card",
+        "context": "Hero y énfasis editorial breve, con texto HTML de contraste estable",
+        "boundary": "Un hero con ilustración puede usar PublicHeroArt; highlight es solo una correspondencia orientadora, no sustitución universal."
+      },
+      {
+        "design": "quiet",
+        "platformSurface": "glass",
+        "platformDepth": "quiet",
+        "component": "Card",
+        "context": "Paneles secundarios, navegación y tarjetas de apoyo",
+        "boundary": "En acciones clicables conservar semántica de Link/Button; ajustar a depth rest cuando el contexto requiera separación."
+      },
+      {
+        "design": "solid",
+        "platformSurface": "solid",
+        "platformDepth": "rest",
+        "component": "Card",
+        "context": "Formulario, editor, tabla, texto extenso, permisos y estados",
+        "boundary": "La solidez prima sobre desenfoque/transparencia; no alterar esquema o persistencia."
+      }
+    ],
+    "tokens": [
+      {
+        "purpose": "azul base",
+        "platform": "--v-blue-950",
+        "value": "#071c43",
+        "library": "color.background.dark",
+        "adoption": "No reemplazar por el azul de la biblioteca."
+      },
+      {
+        "purpose": "acción azul",
+        "platform": "--v-blue-700",
+        "value": "#0755bd",
+        "library": null,
+        "adoption": "Usar el azul de la plataforma en botones y vínculos."
+      },
+      {
+        "purpose": "cyan",
+        "platform": "--v-cyan-500",
+        "value": "#08ccf3",
+        "library": "color.accent.cyan",
+        "adoption": "Mantener token propio; no copiar el hex Crystal."
+      },
+      {
+        "purpose": "naranja marca",
+        "platform": "--v-orange-500",
+        "value": "#fb8300",
+        "library": "color.brand.orange",
+        "adoption": "El naranja de la biblioteca no reemplaza acciones, estados ni foco productivos."
+      },
+      {
+        "purpose": "tinta",
+        "platform": "--v-ink",
+        "value": "#102648",
+        "library": "color.text.light",
+        "adoption": "La plataforma usa texto oscuro sobre superficies claras."
+      },
+      {
+        "purpose": "texto secundario",
+        "platform": "--v-muted",
+        "value": "#60728d",
+        "library": "color.text.muted.dark",
+        "adoption": "No reutilizar tokens oscuros del laboratorio."
+      },
+      {
+        "purpose": "radio tarjeta",
+        "platform": "--v-radius-card",
+        "value": "1.25rem",
+        "library": "radius.card",
+        "adoption": "No sustituir radios globales por 23px."
+      },
+      {
+        "purpose": "espacio base",
+        "platform": "--v-space-4",
+        "value": "1rem",
+        "library": null,
+        "adoption": "v-stack, v-cluster y v-grid deben referir a esta escala."
+      },
+      {
+        "purpose": "transición rápida",
+        "platform": "--v-duration-fast",
+        "value": "160ms",
+        "library": "motion.presets.ui-feedback",
+        "adoption": "El token de plataforma prevalece sobre el tiempo de demo."
+      },
+      {
+        "purpose": "interacción",
+        "platform": "--v-duration-interaction",
+        "value": "220ms",
+        "library": "motion.presets.ui-feedback",
+        "adoption": "El token de plataforma prevalece sobre 260ms de demo."
+      }
+    ],
+    "primitives": [
+      {
+        "name": "Button",
+        "source": "vecidya-platform/app/components/ui.tsx",
+        "interface": "tone",
+        "values": [
+          "primary",
+          "secondary",
+          "ghost"
+        ],
+        "rule": "Acciones reales; nunca usar botón de muestra como si persistiera."
+      },
+      {
+        "name": "Card",
+        "source": "vecidya-platform/app/components/ui.tsx",
+        "interface": "surface",
+        "values": [
+          "glass",
+          "solid",
+          "highlight"
+        ],
+        "secondaryInterface": "depth",
+        "secondaryValues": [
+          "quiet",
+          "rest",
+          "raised",
+          "floating"
+        ],
+        "rule": "Reutilizar componente; material y profundidad son dimensiones distintas."
+      },
+      {
+        "name": "Badge",
+        "source": "vecidya-platform/app/components/ui.tsx",
+        "interface": "tone",
+        "values": [
+          "neutral",
+          "brand",
+          "success",
+          "danger",
+          "warning"
+        ],
+        "rule": "No representar estado solo mediante color."
+      },
+      {
+        "name": "Alert",
+        "source": "vecidya-platform/app/components/ui.tsx",
+        "interface": "role",
+        "values": [
+          "alert"
+        ],
+        "rule": "Comunicar error/alerta verdadera. No usar Alert para decorar."
+      },
+      {
+        "name": "Icon",
+        "source": "vecidya-platform/app/components/ui.tsx",
+        "interface": "name",
+        "values": [
+          "home",
+          "building",
+          "shield",
+          "spark",
+          "user",
+          "menu",
+          "admin",
+          "organizations",
+          "integrations",
+          "audit",
+          "eye",
+          "team"
+        ],
+        "rule": "Solo iconos exportados; catálogo de assets Crystal no altera el contrato."
+      },
+      {
+        "name": "JourneyGuide",
+        "source": "vecidya-platform/app/components/experience-system.tsx",
+        "interface": "area",
+        "values": [
+          "public",
+          "client",
+          "admin"
+        ],
+        "rule": "Pasos con significado, links reales y estados derivados de datos."
+      },
+      {
+        "name": "MetricCard",
+        "source": "vecidya-platform/app/components/experience-system.tsx",
+        "interface": "value",
+        "values": [
+          "string",
+          "number"
+        ],
+        "rule": "Valor auténtico con procedencia, periodo y unidad cuando corresponda."
+      },
+      {
+        "name": "ProgressMeter",
+        "source": "vecidya-platform/app/components/experience-system.tsx",
+        "interface": "value",
+        "values": [
+          "number"
+        ],
+        "rule": "Porcentaje solo con numerador/denominador reales; no animar datos ficticios."
+      },
+      {
+        "name": "ComparisonBars",
+        "source": "vecidya-platform/app/components/experience-system.tsx",
+        "interface": "values",
+        "values": [
+          "label",
+          "value",
+          "detail"
+        ],
+        "rule": "Barras descriptivas, no embudo de usuarios únicos ni conversión inventada."
+      },
+      {
+        "name": "EmptyState",
+        "source": "vecidya-platform/app/components/public-v2.tsx",
+        "interface": "public-component",
+        "values": [
+          "public"
+        ],
+        "rule": "Existe ejemplo público; antes de generalizar, revisar requisitos para admin/cliente."
+      },
+      {
+        "name": "SearchFilters",
+        "source": "vecidya-platform/app/components/public-v2.tsx",
+        "interface": "public-component",
+        "values": [
+          "public"
+        ],
+        "rule": "Filtros reales del Vecindario, sin función simulada."
+      }
+    ],
+    "navigation": {
+      "source": "vecidya-platform/app/components/public-navigation.ts",
+      "registry": "PUBLIC_NAVIGATION_LINKS",
+      "validatedRoutes": [
+        "/",
+        "/vecindario",
+        "/aprende",
+        "/diagnostico",
+        "/licencias",
+        "/servicios",
+        "/contacto",
+        "/unete"
+      ],
+      "rule": "No duplicar las URL o etiquetas públicas en Crystal ni construir rutas desde nombre comercial. Usar React Router y el catálogo de enlaces en la aplicación."
+    },
+    "shells": [
+      {
+        "component": "PublicLayout",
+        "source": "vecidya-platform/app/components/public-layout.tsx",
+        "role": "marketing y vecindario"
+      },
+      {
+        "component": "ClientAreaShell",
+        "source": "vecidya-platform/app/components/client-area-shell.tsx",
+        "role": "Mi Vecidya"
+      },
+      {
+        "component": "AdminShell",
+        "source": "vecidya-platform/app/components/admin-shell.tsx",
+        "role": "control interno"
+      }
+    ],
+    "boundaries": [
+      "premium-foundation.css es la base canónica de tokens de la plataforma y visual-system.css la base de superficies/layout.",
+      "La biblioteca Crystal es una guía visual aislada; no importar sus CSS ni JavaScript directamente en React.",
+      "Las MiniWeb públicas de negocios son business-owned; no imponer tipografía ni tema de Vecidya a sus plantillas.",
+      "GHL es un servicio externo; no fusionar su CRM con componentes de Vecidya ni prometer capacidades no conectadas.",
+      "No alterar Diagnóstico V9, scoring, permisos, licencias, publicación, D1 ni procesos por cambios visuales."
+    ],
+    "proposedNotYetShared": [
+      {
+        "name": "PageHeading",
+        "priority": "P1",
+        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
+        "status": "propuesto-no-exportado",
+        "responsibility": "eyebrow, título, explicación y acción contextual; usar v-section-heading hasta decidir."
+      },
+      {
+        "name": "AdminFilterBar",
+        "priority": "P1",
+        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
+        "status": "propuesto-no-exportado",
+        "responsibility": "filtros GET, reset, paginación coherente y estado legible."
+      },
+      {
+        "name": "ConsentStatus",
+        "priority": "P1",
+        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
+        "status": "propuesto-no-exportado",
+        "responsibility": "estado explícito de consentimiento, nunca inferido del registro."
+      },
+      {
+        "name": "DiagnosticMetricCard",
+        "priority": "P2",
+        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
+        "status": "propuesto-no-exportado",
+        "responsibility": "valor con fuente, periodo, unidad y vacío real."
+      },
+      {
+        "name": "DiagnosticTrend",
+        "priority": "P2",
+        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
+        "status": "propuesto-no-exportado",
+        "responsibility": "serie diaria con eje, tabla alternativa y denominadores justificados."
+      },
+      {
+        "name": "SharedStatusPanel",
+        "priority": "P2",
+        "source": "vecidya-crystal-depth/assets/pattern-registry.json",
+        "status": "propuesta-r1.5-a-validar",
+        "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert."
+      }
+    ],
+    "stateParity": {
+      "platformRequired": [
+        "loading",
+        "empty",
+        "error",
+        "access-denied",
+        "success"
+      ],
+      "labExamples": [
+        "idle",
+        "loading",
+        "empty",
+        "error",
+        "success"
+      ],
+      "labMissing": [
+        "access-denied"
+      ],
+      "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
+    }
   }
 }

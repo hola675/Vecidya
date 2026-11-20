@@ -267,6 +267,29 @@ try{
         assertStep('flujo-movimiento-reducido-'+width,()=>assert.equal(noMotion,'none'));
         await page.emulateMedia({reducedMotion:'no-preference'});
       }
+      if(width===390||width===1366){
+        await page.waitForFunction(()=>document.getElementById('platform-bridge-content')?.hidden===false,{timeout:8000});
+        const bridge=await page.evaluate(()=>({
+          materials:document.querySelectorAll('#platform-bridge-surfaces article').length,
+          components:document.querySelectorAll('#platform-bridge-components li').length,
+          tokens:document.querySelectorAll('#platform-bridge-tokens tr').length,
+          gaps:document.querySelectorAll('#platform-bridge-gaps li').length,
+          stateNote:document.querySelector('#platform-bridge-state')?.textContent,
+          status:document.querySelector('#platform-bridge-status').textContent,
+          theme:document.documentElement.dataset.theme
+        }));
+        assertStep('idioma-compartido-'+width,()=>{
+          assert.equal(bridge.materials,3);
+          assert.equal(bridge.components,11);
+          assert.equal(bridge.tokens,10);
+          assert.equal(bridge.gaps,6);
+          assert.match(bridge.status,/plataforma real sigue siendo la autoridad/);
+          assert.match(bridge.stateNote,/acceso denegado/);
+          assert.equal(bridge.theme,'dark');
+        });
+        await page.locator('#idioma').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-idioma.png'),animations:'disabled'});
+      }
       if(width===1366){
         // Restablecer foco tras los dos clics del tema; Tab debe empezar en el skip-link.
         await page.goto(addr,{waitUntil:'load',timeout:45000});
@@ -315,6 +338,12 @@ try{
       assert.equal(noJsPanels,4);
       assert.equal(noJsScenes.length,4);
       assert.ok(noJsScenes.every(x=>x.trim().length>10));
+    });
+    const fallbackBridge=await noScript.locator('#platform-bridge-status').textContent();
+    const hiddenBridge=await noScript.locator('#platform-bridge-content').isHidden();
+    assertStep('idioma-sin-js',()=>{
+      assert.match(fallbackBridge,/guía de integración/);
+      assert.equal(hiddenBridge,true);
     });
     await noScript.locator('#composer').scrollIntoViewIfNeeded();
     await noScript.screenshot({path:join(artifacts,'r2-390-nojs.png'),animations:'disabled'});

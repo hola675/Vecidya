@@ -1,0 +1,30 @@
+/* Crystal Depth R1.5 · puente didáctico con los componentes canónicos del frontend. */
+.platform-bridge{color:var(--r1-ink);min-width:0}
+.platform-bridge .pb-lead{max-width:76ch;margin:0 0 18px;color:var(--r1-muted);font-size:14px;line-height:1.7}
+.platform-bridge .pb-warning{margin:0 0 18px;padding:16px 18px;border:1px solid var(--r1-line);border-radius:16px;background:rgba(38,102,156,.15);color:var(--r1-ink);font-size:13px;line-height:1.6}
+.platform-bridge .pb-warning strong{display:block;margin-bottom:5px}
+.platform-bridge .pb-status{margin:12px 0 18px;color:var(--r1-muted);font-size:13px;line-height:1.6}
+.platform-bridge #platform-bridge-content[hidden]{display:none!important}
+.platform-bridge .pb-heading{margin:22px 0 12px;font-size:clamp(17px,2vw,23px);color:var(--r1-ink);letter-spacing:-.02em}
+.platform-bridge .pb-surfaces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.platform-bridge .pb-surfaces article{min-width:0;padding:18px;border:1px solid var(--r1-line);border-radius:18px;background:rgba(28,91,147,.2)}
+.platform-bridge .pb-surfaces strong{display:block;color:var(--r1-ink);font-size:14px;line-height:1.45}
+.platform-bridge .pb-surfaces p{margin:9px 0 7px;color:var(--r1-ink);font-size:12px;line-height:1.6}
+.platform-bridge .pb-surfaces small{display:block;color:var(--r1-muted);font-size:11px;line-height:1.6}
+.platform-bridge .pb-table-wrap{max-width:100%;min-width:0;overflow-x:auto;border:1px solid var(--r1-line);border-radius:15px;overscroll-behavior-x:contain}
+.platform-bridge .pb-table-wrap:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+.platform-bridge table{width:100%;min-width:660px;border-collapse:collapse;text-align:left;font-size:12px;line-height:1.55}
+.platform-bridge th{padding:12px;background:#10487d;color:#f6fbff;font-weight:800}
+.platform-bridge td{padding:12px 11px;color:var(--r1-ink);border-top:1px solid var(--r1-line);vertical-align:top;overflow-wrap:anywhere}
+.platform-bridge tbody tr:nth-child(odd){background:rgba(24,96,160,.12)}
+.platform-bridge .pb-inventory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;list-style:none;padding:0;margin:0}
+.platform-bridge .pb-inventory li{min-width:0;padding:13px;border:1px solid var(--r1-line);border-radius:13px;background:rgba(25,86,145,.14)}
+.platform-bridge .pb-inventory strong{display:block;color:var(--r1-ink);font-size:12px;margin-bottom:5px}
+.platform-bridge .pb-inventory span{display:block;color:var(--r1-muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.platform-bridge .pb-source-note{margin:15px 0 4px;font-size:12px;line-height:1.6;color:var(--r1-muted)}
+.platform-bridge .pb-source-note a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+html[data-theme=light] .platform-bridge .pb-surfaces article,
+html[data-theme=light] .platform-bridge .pb-inventory li,
+html[data-theme=light] .platform-bridge .pb-warning{background:#eaf5ff}
+@media(max-width:850px){.platform-bridge .pb-surfaces{grid-template-columns:1fr}.platform-bridge .pb-inventory{grid-template-columns:1fr}}
+@media(max-width:500px){.platform-bridge .pb-warning{padding:13px}.platform-bridge .pb-surfaces article{padding:14px}}
