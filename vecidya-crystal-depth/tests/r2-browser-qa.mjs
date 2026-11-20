@@ -87,6 +87,56 @@ try{
         });
         await page.locator('#r1-intent').scrollIntoViewIfNeeded();
         await page.screenshot({path:join(artifacts,'r2-390-guide.png'),animations:'disabled'});
+
+        const motionInitial=await page.evaluate(()=>({
+          mode:document.documentElement.dataset.motion,
+          intensity:document.documentElement.dataset.motionIntensity,
+          demo:!!document.querySelector('#movimiento'),
+          stage:!!document.querySelector('#motion-stage.is-playing')
+        }));
+        assertStep('motion-inicial-390',()=>{
+          assert.equal(motionInitial.mode,'enhanced');
+          assert.equal(motionInitial.intensity,'standard');
+          assert.ok(motionInitial.demo&&motionInitial.stage);
+        });
+        await page.locator('#motion-intensity').selectOption('subtle');
+        const subtle=await page.evaluate(()=>document.documentElement.dataset.motionIntensity);
+        assertStep('motion-intensidad-discreta',()=>assert.equal(subtle,'subtle'));
+        await page.locator('#motion-play').click();
+        const paused=await page.evaluate(()=>({
+          state:document.documentElement.dataset.motionPlay,
+          pressed:document.querySelector('#motion-play').getAttribute('aria-pressed')
+        }));
+        assertStep('motion-pausa',()=>assert.deepEqual(paused,{state:'paused',pressed:'true'}));
+        await page.locator('#motion-play').click();
+        const playing=await page.evaluate(()=>({
+          state:document.documentElement.dataset.motionPlay,
+          pressed:document.querySelector('#motion-play').getAttribute('aria-pressed')
+        }));
+        assertStep('motion-reanudar',()=>assert.deepEqual(playing,{state:'playing',pressed:'false'}));
+        await page.locator('#motion-replay').click();
+        assertStep('motion-replay',()=>assert.ok(true));
+        await page.locator('#motion-stage').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-390-motion.png'),animations:'disabled'});
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await page.waitForFunction(()=>document.documentElement.dataset.motion==='static',{timeout:5000});
+        const reduced=await page.evaluate(()=>({
+          mode:document.documentElement.dataset.motion,
+          playDisabled:document.querySelector('#motion-play').disabled,
+          replayDisabled:document.querySelector('#motion-replay').disabled,
+          scroll:getComputedStyle(document.documentElement).scrollBehavior,
+          hiddenSections:[...document.querySelectorAll('.vx-motion-reveal')].filter(x=>getComputedStyle(x).opacity==='0').length
+        }));
+        assertStep('motion-reducido',()=>{
+          assert.equal(reduced.mode,'static');
+          assert.equal(reduced.playDisabled,true);
+          assert.equal(reduced.replayDisabled,true);
+          assert.equal(reduced.scroll,'auto');
+          assert.equal(reduced.hiddenSections,0);
+        });
+        await page.emulateMedia({reducedMotion:'no-preference'});
+        await page.waitForFunction(()=>document.documentElement.dataset.motion==='enhanced',{timeout:5000});
+
       }
       if(width===1366){
         // Restablecer foco tras los dos clics del tema; Tab debe empezar en el skip-link.
