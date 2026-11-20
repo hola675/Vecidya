@@ -1,3 +1,13 @@
+## UX-CRYSTAL-R3 — snapshot del contrato visual (candidato; no desplegado)
+
+**Fuente CODE/GIT:** PR #261 integra R1.5 (correspondencias del laboratorio con React); PR #262 implementa seis primitivos presentacionales; #263 retícula pública; #264 superficie Admin; #265 editor MiniWeb. No hubo cambio al renderer público de negocios, permisos, scoring, licencias, persistencia ni CRM.
+
+**R3 en revisión:** `app/lib/visual-rollout.ts` ofrece reversión independiente de cinco familias de rutas ya integradas y mantiene dos futuras apagadas. `scripts/ux-verify-http.mjs` aporta GET anónimo limitado a destinos explícitos. Es un mecanismo **versionado en código**, sin flag runtime externo, sin rollback en caliente, sin relación con derechos comerciales.
+
+**Pendiente:** CI sobre HEAD R3, R2 visual completo y gate de release autorizado. Sin comprobación pública HTTP de la versión actual: no inferir que estos commits estén desplegados por estar en `main`. No declarar fase cerrada solo con contrato o tests.
+
+---
+
 ## UX-CRYSTAL-R1.7 — adopción focal pública de retícula (candidato de revisión)
 
 El checkpoint utiliza `v-section-heading` ya existente en `visual-system.css` sin importar CSS de Crystal Depth ni cambiar componentes de negocio: cuatro encabezados de Inicio, el encabezado de resultados de Vecindario y dos secciones informativas de Servicios. Conserva H2, atributos `id`, enlaces reales, etiquetas y datos publicados. La validación base es el contrato focal en `tests/unit/public-navigation.test.ts` y la CI general; no se declara revisión visual integral ni cambio de diseño de Aprende.
