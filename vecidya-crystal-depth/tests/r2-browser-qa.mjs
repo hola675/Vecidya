@@ -216,6 +216,32 @@ try{
         });
         await page.emulateMedia({reducedMotion:'no-preference'});
       }
+      if(width===390||width===1366){
+        for(const stateName of ['idle','loading','empty','error','success']){
+          await page.locator('#flow-state').selectOption(stateName);
+          const flow=await page.evaluate(()=>({
+            state:document.querySelector('#flow-result').dataset.state,
+            title:document.querySelector('#flow-title').textContent,
+            description:document.querySelector('#flow-description').textContent,
+            rule:document.querySelector('#flow-rule').textContent,
+            live:document.querySelector('#flow-result').getAttribute('aria-live')
+          }));
+          assertStep('flujo-'+stateName+'-'+width,()=>{
+            assert.equal(flow.state,stateName);
+            assert.equal(flow.live,'polite');
+            assert.ok(flow.title.length>10&&flow.description.length>30&&flow.rule.length>30);
+            if(stateName==='success')assert.match(flow.description,/No se envió información/);
+          });
+        }
+        await page.locator('#flow-state').selectOption('idle');
+        await page.locator('#flujos').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-flujos.png'),animations:'disabled'});
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await page.locator('#flow-state').selectOption('error');
+        const noMotion=await page.locator('#flow-result').evaluate(el=>getComputedStyle(el).animationName);
+        assertStep('flujo-movimiento-reducido-'+width,()=>assert.equal(noMotion,'none'));
+        await page.emulateMedia({reducedMotion:'no-preference'});
+      }
       if(width===1366){
         // Restablecer foco tras los dos clics del tema; Tab debe empezar en el skip-link.
         await page.goto(addr,{waitUntil:'load',timeout:45000});

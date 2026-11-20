@@ -1,3 +1,13 @@
+## R1.3 — Biblioteca de estados de UI (2026-11-20)
+
+**En implementación aislada:** explorador de cinco estados de interfaz (`idle/loading/empty/error/success`), `interactionRecipes` y pruebas focales. Rama de trabajo reutilizada tras la integración verificada de R1.2 en `main` mediante PR #257. La R1.3 no modifica rutas ni backend.
+
+**Regla de integración:** el estado de éxito solo responde a evidencia real, y loading/error/empty deben explicar la situación sin inventar información. Mantener los mismos tests Node y Chromium; no crear arneses históricos adicionales.
+
+**Pendiente:** comprobar CI final y revisión visual opcional. No autoriza deploy ni integración en componentes React de producción.
+
+---
+
 ## R1.2 — Composición de páginas, enrutamiento y empaquetado (2026-11-20)
 
 **Implementado únicamente en PR #257 (rama de laboratorio):** sección `#composiciones` con cuatro previews, tabs accesibles, claro/oscuro, transiciones ligeras, `prefers-reduced-motion` y fallback sin JS. El enrutador de ocho intenciones enlaza solo las cuatro composiciones con correspondencia exacta; para Diagnóstico, Admin, licencias y CRM informa que no existe preview propia.
