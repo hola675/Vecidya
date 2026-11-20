@@ -1,6 +1,6 @@
-# Guía de integración y uso por agentes — Crystal Depth R1
+# Guía de integración y uso por agentes — Crystal Depth R1.2
 
-**Corte:** 2026-11-19 · **Estado:** laboratorio R1 candidato en rama de revisión, sin integración en `vecidya-platform/` ni despliegue. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
+**Corte:** 2026-11-20 · **Estado:** laboratorio R1 candidato en rama de revisión, sin integración en `vecidya-platform/` ni despliegue. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
 
 ## 1. Punto de entrada obligatorio para agentes
 
@@ -78,6 +78,23 @@ Si el cliente solicita **transiciones, animaciones, efectos o navegación fluida
 **Accesibilidad:** `prefers-reduced-motion: reduce` prevalece sobre controles de laboratorio. El navegador sin JavaScript o sin `IntersectionObserver` presenta la página completa, sin ocultar secciones. Mantener foco visible, controles de pausa en efectos de más de 5 s, movimientos no esenciales y ausencia de scroll forzado. En móvil, eliminar órbitas costosas y reducir amplitud. Nunca simular un cambio de página que no haya ocurrido ni capturar el scroll del usuario.
 
 **Certificación obligatoria de adopción:** R2 navegador con tema claro/oscuro, 320/390/768/1366/1920 px, reduced-motion, cero overflow, estados y permiso real; antes de integrar rutas React es necesario especificar transición opt-in por ruta, compatibilidad con foco/historial, web vitals y rollback.
+
+## 4.2. Recetas de página R1.2: de la consulta a una composición concreta
+
+El catálogo `assets/pattern-registry.json → sceneRecipes` incluye **cuatro composiciones didácticas**. Visualizarlas en `biblioteca.html#composiciones` antes de seleccionar assets y movimientos. Son modelos de presentación, no rutas, editores ni funcionalidades implementadas.
+
+| Cuando la petición dice… | Receta | Superficie dominante | Movimiento permitido | Qué no hacer |
+| --- | --- | --- | --- | --- |
+| «Haz la portada más profesional» | `publico` | Focal en portada, Quiet en apoyo | Entrada única y ambiente pausado | Dibujar CTA o textos dentro de la imagen |
+| «Mejora búsqueda y negocios» | `vecindario` | Quiet + Solid | Hover/foco breve, secciones discretas | Inventar listados y mover resultados mientras se leen |
+| «Que Aprende sea comprensible» | `aprende` | Solid + Quiet | Aparición breve por sección | Movimiento permanente bajo párrafos o jerarquía ilegible |
+| «Da mejor aspecto a MiniWeb» | `miniweb` | Solid en editor, Quiet en vista previa | Respuesta breve a controles reales | Simular publicación, conceder prestaciones por plan o perder datos |
+
+**Flujo mínimo del agente:** interpretar destino → consultar `intentRouting` → elegir `sceneRecipes` → localizar imágenes oficiales → escoger `motion.presets` compatibles → comprobar permisos y rutas reales → componer React solo cuando haya autorización. Cada receta indica `status: demo-only-not-route`; ninguna puede activar un producto por sí misma.
+
+Las cuatro muestras usan pestañas seleccionables mediante ratón y teclado (flechas, Inicio y Fin), respetan movimiento reducido y muestran los cuatro contenidos sin JavaScript. Son **componentes demostrativos** en `styles/scene-composer.css` y `assets/scene-composer.js`; no exportar esos estilos como CSS global de la plataforma ni introducir un segundo router.
+
+**Empaquetado aislado:** el script `scripts/build-cloudflare.mjs` construye el sitio de demostración sin desplegar, reescribe assets y conserva los documentos didácticos referenciados por la propia página. La CI ejecuta el empaquetado y comprueba archivos, pero esa aprobación no autoriza conectar producción a Cloudflare.
 
 ## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
 
