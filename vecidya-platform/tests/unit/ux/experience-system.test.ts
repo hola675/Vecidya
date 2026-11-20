@@ -6,6 +6,18 @@ import { clampPercentage, formatCount, nonNegativeCount, relativeBarWidth } from
 
 const source = (file: string) => readFileSync(new URL(`../../../${file}`, import.meta.url), "utf8");
 
+test("R1.8: superficies Admin reutilizan lenguaje v-surface sin cambiar acceso ni filtros", () => {
+  const route = source("app/routes/internal-businesses.tsx");
+  assert.match(route, /requirePlatformAdmin\(env, request\)/);
+  assert.match(route, /listPlatformBusinessProfiles\(createDatabase\(env\.DB\)\)/);
+  assert.match(route, /className="admin-toolbar v-surface" data-surface="glass" data-depth="quiet"/);
+  assert.match(route, /className="admin-table-wrap v-surface" data-surface="solid" data-depth="rest"/);
+  assert.equal((route.match(/className="empty-state card v-surface" data-surface="solid" data-depth="rest"/g) ?? []).length, 2);
+  assert.match(route, /profile\.platformStatus === "suspended"/);
+  assert.match(route, /setStatusFilter/);
+});
+
+
 test("el porcentaje visual nunca excede el rango ni crea valores indefinidos", () => {
   assert.equal(clampPercentage(42.5), 42.5);
   assert.equal(clampPercentage(-10), 0);

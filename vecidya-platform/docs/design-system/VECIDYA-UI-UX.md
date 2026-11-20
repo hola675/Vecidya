@@ -182,3 +182,7 @@ Diseñar una composición vertical o adaptable al recorte disponible. Mantener d
 - [ ] MiniWeb pública conserva todas las decisiones de identidad de su negocio y el contenido real publicado.
 
 **Alcance del checkpoint:** la guía define la política oficial y la capa compartida de superficies, composición, interacción y tokens. Las rutas individuales mantienen su contenido y diseño propio; una guía o un build no certifican por sí solos cada viewport, lector de pantalla ni superficie privada.
+
+## UX-CRYSTAL-R1.8 — adopción de superficies en Admin (candidato)
+
+La vista `/app/internal/businesses` reutiliza `v-surface` con `data-surface="glass"` y `depth=quiet` en filtros, y `data-surface="solid"` y `depth=rest` en tablas y vacíos. Mantiene los datos reales, `requirePlatformAdmin` y la búsqueda local existente; **no** la convierte silenciosamente en GET ni modifica permisos. El componente `AdminFilterBar` de R1.6 queda disponible para una migración de filtros con contrato de URL independiente. Debe verificarse enfoque, lectura de tabla, zoom y contraste antes de certificar visualmente.
