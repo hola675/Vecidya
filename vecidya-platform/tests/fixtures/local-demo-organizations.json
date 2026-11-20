@@ -15,7 +15,16 @@
     "city": "Medellín",
     "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "perfil completo"
+    "qaScenario": "perfil completo",
+    "services": [
+      "Consulta preventiva",
+      "Orientación familiar",
+      "Seguimiento de bienestar"
+    ],
+    "faqs": [
+      "¿Cómo solicitar una consulta?",
+      "¿Qué llevar a la primera cita?"
+    ]
   },
   {
     "slug": "qa-local-comercio",
@@ -33,7 +42,21 @@
     "city": "Bogotá",
     "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Bogotá, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "catálogo"
+    "qaScenario": "catálogo",
+    "services": [
+      "Atención en tienda",
+      "Selección de productos",
+      "Consultas de disponibilidad"
+    ],
+    "products": [
+      "Artículos de hogar",
+      "Productos de uso diario",
+      "Accesorios prácticos"
+    ],
+    "faqs": [
+      "¿Se puede consultar la disponibilidad?",
+      "¿Atienden pedidos especiales?"
+    ]
   },
   {
     "slug": "qa-local-educacion",
@@ -51,7 +74,16 @@
     "city": "Cali",
     "serviceMode": "hybrid",
     "serviceArea": "Área de demostración: Cali, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "formación"
+    "qaScenario": "formación",
+    "services": [
+      "Curso de herramientas digitales",
+      "Capacitación para equipos",
+      "Tutorías prácticas"
+    ],
+    "faqs": [
+      "¿Hay modalidades virtuales?",
+      "¿Se requiere experiencia previa?"
+    ]
   },
   {
     "slug": "qa-local-tecnologia",
@@ -69,7 +101,16 @@
     "city": "Medellín",
     "serviceMode": "hybrid",
     "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "soporte"
+    "qaScenario": "soporte",
+    "services": [
+      "Diagnóstico de equipos",
+      "Mantenimiento preventivo",
+      "Configuración de redes"
+    ],
+    "faqs": [
+      "¿Atienden empresas pequeñas?",
+      "¿Cómo solicitar soporte?"
+    ]
   },
   {
     "slug": "qa-local-gastronomia",
@@ -87,7 +128,21 @@
     "city": "Cartagena",
     "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Cartagena, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "gastronomía"
+    "qaScenario": "gastronomía",
+    "services": [
+      "Almuerzos de temporada",
+      "Menú para reuniones",
+      "Atención en local"
+    ],
+    "products": [
+      "Plato de temporada",
+      "Menú para compartir",
+      "Bebidas artesanales"
+    ],
+    "faqs": [
+      "¿Dónde consultar el menú?",
+      "¿Se atienden grupos?"
+    ]
   },
   {
     "slug": "qa-local-automotriz",
@@ -105,7 +160,16 @@
     "city": "Barranquilla",
     "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Barranquilla, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "servicios técnicos"
+    "qaScenario": "servicios técnicos",
+    "services": [
+      "Revisión de frenos",
+      "Mantenimiento programado",
+      "Diagnóstico básico"
+    ],
+    "faqs": [
+      "¿Qué datos se necesitan para una revisión?",
+      "¿Cómo solicitar presupuesto?"
+    ]
   },
   {
     "slug": "qa-local-belleza",
@@ -123,7 +187,16 @@
     "city": "Medellín",
     "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "cuidado personal"
+    "qaScenario": "cuidado personal",
+    "services": [
+      "Corte y estilismo",
+      "Tratamientos capilares",
+      "Asesoría de imagen"
+    ],
+    "faqs": [
+      "¿Se necesita cita previa?",
+      "¿Cómo elegir un tratamiento?"
+    ]
   },
   {
     "slug": "qa-local-profesionales",
@@ -141,7 +214,16 @@
     "city": "Bogotá",
     "serviceMode": "remote",
     "serviceArea": "Área de demostración: Bogotá, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "asesoría"
+    "qaScenario": "asesoría",
+    "services": [
+      "Organización administrativa",
+      "Control de gastos",
+      "Asesoría de procesos"
+    ],
+    "faqs": [
+      "¿Trabajan con negocios nuevos?",
+      "¿La asesoría puede ser remota?"
+    ]
   },
   {
     "slug": "qa-local-hogar",
@@ -159,7 +241,16 @@
     "city": "Cali",
     "serviceMode": "hybrid",
     "serviceArea": "Área de demostración: Cali, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "mantenimiento"
+    "qaScenario": "mantenimiento",
+    "services": [
+      "Pintura interior",
+      "Reparaciones menores",
+      "Mantenimiento planificado"
+    ],
+    "faqs": [
+      "¿Cómo solicitar una evaluación?",
+      "¿Atienden espacios comerciales?"
+    ]
   },
   {
     "slug": "qa-local-creativos",
@@ -177,6 +268,15 @@
     "city": "Pereira",
     "serviceMode": "remote",
     "serviceArea": "Área de demostración: Pereira, Colombia. Información ficticia para revisión de diseño.",
-    "qaScenario": "portafolio"
+    "qaScenario": "portafolio",
+    "services": [
+      "Identidad de marca",
+      "Fotografía de producto",
+      "Diseño promocional"
+    ],
+    "faqs": [
+      "¿Cómo comienza un proyecto?",
+      "¿Qué materiales recibe el cliente?"
+    ]
   }
 ]
