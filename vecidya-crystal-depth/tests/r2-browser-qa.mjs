@@ -138,6 +138,61 @@ try{
         await page.waitForFunction(()=>document.documentElement.dataset.motion==='enhanced',{timeout:5000});
 
       }
+      if(width===390||width===1366){
+        const scenes=['publico','vecindario','aprende','miniweb'];
+        const initial=await page.evaluate(()=>({
+          tabs:document.querySelectorAll('#composer-tabs [role="tab"]').length,
+          panels:document.querySelectorAll('#composer [role="tabpanel"]').length,
+          selected:document.querySelector('#composer-tabs [aria-selected="true"]')?.id,
+          open:[...document.querySelectorAll('#composer [role="tabpanel"]')].filter(x=>!x.hidden).map(x=>x.id)
+        }));
+        assertStep('compositor-inicial-'+width,()=>{
+          assert.equal(initial.tabs,4);assert.equal(initial.panels,4);
+          assert.equal(initial.selected,'composer-tab-publico');
+          assert.deepEqual(initial.open,['composer-panel-publico']);
+        });
+        for(const scene of scenes){
+          await page.locator('#composer-tab-'+scene).click();
+          const state=await page.evaluate(()=>({
+            id:document.querySelector('#composer-tabs [aria-selected="true"]')?.id,
+            visible:[...document.querySelectorAll('#composer [role="tabpanel"]')].filter(x=>!x.hidden).map(x=>x.id),
+            cta:document.querySelector('#composer [role="tabpanel"]:not([hidden]) .composer-cta')?.getAttribute('href')
+          }));
+          assertStep('compositor-'+scene+'-'+width,()=>{
+            assert.equal(state.id,'composer-tab-'+scene);
+            assert.deepEqual(state.visible,['composer-panel-'+scene]);
+            assert.equal(state.cta,'#guia');
+          });
+        }
+        await page.locator('#composer-tab-vecindario').focus();
+        await page.keyboard.press('ArrowRight');
+        const fromKeyboard=await page.evaluate(()=>({
+          selected:document.querySelector('#composer-tabs [aria-selected="true"]')?.id,
+          focused:document.activeElement?.id
+        }));
+        assertStep('compositor-teclado-'+width,()=>{
+          assert.equal(fromKeyboard.selected,'composer-tab-aprende');
+          assert.equal(fromKeyboard.focused,'composer-tab-aprende');
+        });
+        await page.keyboard.press('Home');
+        const home=await page.evaluate(()=>document.activeElement?.id);
+        assertStep('compositor-home-foco-'+width,()=>assert.equal(home,'composer-tab-publico'));
+        await page.locator('#composer-panel-publico').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-composiciones.png'),animations:'disabled'});
+        await page.emulateMedia({reducedMotion:'reduce'});
+        await page.locator('#composer-tab-vecindario').click();
+        const reducedScene=await page.evaluate(()=>({
+          selected:document.querySelector('#composer-tabs [aria-selected="true"]')?.id,
+          effect:document.querySelector('#composer-panel-vecindario')?.dataset.transition,
+          visible:!document.querySelector('#composer-panel-vecindario')?.hidden
+        }));
+        assertStep('compositor-reduced-motion-'+width,()=>{
+          assert.equal(reducedScene.selected,'composer-tab-vecindario');
+          assert.equal(reducedScene.effect,'');
+          assert.ok(reducedScene.visible);
+        });
+        await page.emulateMedia({reducedMotion:'no-preference'});
+      }
       if(width===1366){
         // Restablecer foco tras los dos clics del tema; Tab debe empezar en el skip-link.
         await page.goto(addr,{waitUntil:'load',timeout:45000});
