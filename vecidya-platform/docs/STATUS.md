@@ -1,3 +1,8 @@
+## UX-CRYSTAL-R1.6 — componentes visuales (candidato de PR, sin publicación verificada)
+
+`visual-contract.tsx` y CSS `v-*` introducen encabezado, filtro GET, consentimiento explícito, estado con acceso denegado, métrica con dato nulo distinto de cero y tendencia tabular. Son componentes presentacionales; toda garantía sobre permisos, consentimientos, eventos o confirmaciones depende de la ruta/servidor. Estado **EN PROGRESO** hasta CI y adopción. R1.5 de la biblioteca está integrada como contrato de diseño, no como tema oscuro productivo.
+
+---
 ## UX-PREMIUM-SYSTEM-02 — sistema visual compartido (candidato local, 2026-11-11)
 
 La capa común define atmósfera azul/cyan con acentos naranja, superficies de cristal y sólidas, profundidad por nivel, retículas y microinteracciones con movimiento reducido. Se aplica a los shells Vecidya y a Card, MetricCard, JourneyGuide y ComparisonBars. El encabezado público mantiene los menús por encima del hero mediante una capa explícita. La guía canónica recoge composición, Vico, iconografía, MiniWeb, prompts, QA e imágenes originales. Typecheck, build, prueba unitaria focal (6/6), navegación Playwright en siete anchos y diff-check PASS (2026-11-12). No equivale a certificación integral; sin cambios de función, datos, rutas, permisos, D1 ni deploy.
