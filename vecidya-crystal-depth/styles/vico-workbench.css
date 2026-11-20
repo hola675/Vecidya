@@ -1,0 +1,42 @@
+/* Crystal Depth · Vico workbench, scoped. 2026-11-20 */
+.vico-workbench{margin-top:1.25rem;padding:clamp(16px,2.7vw,27px);border-radius:24px;border:1px solid var(--r1-line);background:rgba(18,64,115,.17);color:var(--r1-ink)}
+.vico-workbench__heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.vico-workbench__heading h3{font-size:clamp(22px,2.8vw,30px);margin:0 0 .5rem}
+.vico-workbench__heading p,.vico-workbench__intro{max-width:75ch;color:var(--r1-muted);line-height:1.65;font-size:13px;margin:0 0 18px}
+.vico-workbench__mark{font-size:12px;border-radius:100px;padding:8px 12px;border:1px solid var(--r1-line);color:var(--r1-ink)}
+.vico-workbench__body{display:grid;grid-template-columns:minmax(0,1.32fr) minmax(210px,.68fr);gap:18px;align-items:start}
+.vico-workbench__viewer{min-width:0}
+.vico-workbench__stage{--vico-scale:1;--vico-stage-scene:none;position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:360px;border-radius:20px;border:1px solid #7195bc; background:#102844}
+.vico-workbench__stage[data-background=light]{background:#edf5ff}
+.vico-workbench__stage[data-background=checker]{background-color:#dce6f2;background-image:linear-gradient(45deg,#b6c9db 25%,transparent 25%),linear-gradient(-45deg,#b6c9db 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#b6c9db 75%),linear-gradient(-45deg,transparent 75%,#b6c9db 75%);background-size:30px 30px;background-position:0 0,0 15px,15px -15px,-15px 0}
+.vico-workbench__stage:before{content:"";position:absolute;inset:0;z-index:-1;background-image:var(--vico-stage-scene);background-repeat:no-repeat;background-size:cover;background-position:center;opacity:.32;pointer-events:none}
+.vico-workbench__stage[data-background=light]:before,.vico-workbench__stage[data-background=checker]:before{opacity:.18}
+.vico-workbench__stage[data-position=left]{justify-content:flex-start}
+.vico-workbench__stage[data-position=right]{justify-content:flex-end}
+.vico-workbench__stage img{display:block;object-fit:contain;width:min(90%,370px);max-height:380px;height:auto;transform:scale(var(--vico-scale));transform-origin:center;filter:drop-shadow(0 12px 25px #03152955)}
+.vico-workbench__stage[data-position=left] img{margin-left:4%}
+.vico-workbench__stage[data-position=right] img{margin-right:4%}
+.vico-workbench__detail{margin:13px 0 0;padding:0;line-height:1.65}
+.vico-workbench__detail strong{display:block;color:var(--r1-ink);margin-bottom:5px}
+.vico-workbench__detail p{color:var(--r1-muted);font-size:13px;margin:0 0 8px}
+.vico-workbench__detail a{color:var(--r1-ink);text-underline-offset:3px}
+.vico-workbench__controls{min-width:0;display:grid;gap:14px;padding:15px;border:1px solid var(--r1-line);border-radius:17px;background:rgba(27,87,141,.16)}
+.vico-workbench__controls label{display:grid;gap:6px;font-weight:750;font-size:12px}
+.vico-workbench__controls label:has(input[type=checkbox]){display:flex;align-items:center;gap:9px;font-size:13px}
+.vico-workbench__controls select{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--r1-line);background:#eff8ff;color:#12365b;font:inherit;padding:9px}
+.vico-workbench__controls input[type=range]{width:100%;accent-color:#f39c37;min-height:30px}
+.vico-workbench__controls input[type=checkbox]{width:20px;height:20px;accent-color:#f39c37}
+.vico-workbench__controls button{cursor:pointer;padding:11px 15px;min-height:44px;background:#155181;color:white;border:1px solid #9cd9fa;border-radius:11px;font-weight:800}
+.vico-workbench__controls :is(button,select,input):focus-visible,.vico-workbench__item:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+.vico-workbench__controls p{margin:0;color:var(--r1-muted);font-size:12px;line-height:1.6}
+.vico-workbench__gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,137px),1fr));gap:10px;margin-top:18px}
+.vico-workbench__item{display:grid;gap:7px;align-content:start;min-width:0;min-height:155px;border-radius:14px;padding:9px;border:1px solid var(--r1-line);background:rgba(23,76,127,.22);color:var(--r1-ink);text-align:left;font:inherit;font-size:12px;line-height:1.45;cursor:pointer}
+.vico-workbench__item[aria-pressed=true]{border-color:#90dfff;box-shadow:inset 0 0 0 2px #90dfff88;background:rgba(24,114,182,.32)}
+.vico-workbench__item img{display:block;width:100%;height:112px;object-fit:contain;border-radius:9px;background:rgba(220,238,255,.11)}
+.vico-workbench__item span{overflow-wrap:anywhere}
+.vico-workbench__status{min-height:1.5rem;font-size:12px;color:var(--r1-muted);line-height:1.6}
+.vico-workbench__fallback{font-size:13px;line-height:1.6;color:var(--r1-muted)}
+.vico-workbench[data-ready=true] .vico-workbench__fallback{display:none}
+@media(max-width:800px){.vico-workbench__body{grid-template-columns:1fr}.vico-workbench__controls{grid-template-columns:repeat(2,minmax(0,1fr))}.vico-workbench__controls button,.vico-workbench__controls p{grid-column:1/-1}}
+@media(max-width:520px){.vico-workbench__controls{grid-template-columns:1fr}.vico-workbench__controls button,.vico-workbench__controls p{grid-column:auto}.vico-workbench__stage{min-height:300px}.vico-workbench__stage img{max-height:300px}.vico-workbench__gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.vico-workbench *{animation:none!important;transition:none!important}}
