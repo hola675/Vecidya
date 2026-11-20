@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import { clampPercentage, formatCount, nonNegativeCount, relativeBarWidth } from "../../../app/lib/experience-metrics.ts";
+import { resolveUxTarget, UX_HTTP_ROUTES } from "../../../scripts/ux-verify-http.mjs";
 
 const source = (file: string) => readFileSync(new URL(`../../../${file}`, import.meta.url), "utf8");
 
@@ -122,4 +123,28 @@ test("R1.6 superficies, foco y tablas del contrato usan tokens productivos y res
   assert.match(css, /var\(--v-orange-500\)/);
   assert.match(css, /@media\(max-width:560px\)/);
   assert.match(css, /overflow:auto/);
+});
+
+test("R3: comprobador HTTP es anónimo y deniega destinos o acciones no autorizadas", () => {
+  assert.deepEqual([...UX_HTTP_ROUTES], ["/", "/vecindario", "/servicios", "/aprende"]);
+  assert.equal(resolveUxTarget("http://127.0.0.1:4173/").type, "local");
+  assert.equal(resolveUxTarget("https://vecidya-platform-staging.soporte-8a1.workers.dev/").type, "staging");
+  assert.throws(() => resolveUxTarget("https://vecidya.com/"), /Destino bloqueado/);
+  assert.equal(resolveUxTarget("https://vecidya.com/", true).type, "production");
+  for (const target of [
+    "https://vecidya.com/?auth=secret",
+    "https://vecidya.com/private",
+    "https://example.com/",
+    "http://169.254.169.254/",
+    "http://127.0.0.1:3000/",
+    "https://vecidya-platform-staging.fake.workers.dev.evil.example/",
+    "https://admin:password@vecidya.com/",
+  ]) {
+    assert.throws(() => resolveUxTarget(target, true), "Destino debía rechazarse: " + target);
+  }
+  const source = readFileSync(new URL("../../../scripts/ux-verify-http.mjs", import.meta.url), "utf8");
+  assert.match(source, /method: "GET"/);
+  assert.match(source, /redirect: "manual"/);
+  assert.match(source, /verifiesDeployedSha: false/);
+  assert.doesNotMatch(source, /method: "POST"|cookies:|Authorization:/);
 });
