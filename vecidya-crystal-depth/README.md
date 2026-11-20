@@ -36,6 +36,17 @@ La sección `biblioteca.html#composiciones` ofrece cuatro escenas de pantalla in
 - `assets/pattern-registry.json → sceneRecipes`: referencias y restricciones oficiales.
 - `tests/r2-browser-qa.mjs`: batería Chromium y capturas visuales.
 
+## Estados y flujos R1.3 (laboratorio)
+
+La sección `biblioteca.html#flujos` simula cinco estados sin red ni mutaciones: `idle`, `loading`, `empty`, `error` y `success`. El ejemplo distingue explícitamente la confirmación visual de una operación verdadera. Proporciona textos de ayuda, estado accesible, color no exclusivo y movimiento reducido.
+
+- `assets/interaction-flows.js`: simulación local sin API, sin almacenamiento y sin envíos.
+- `styles/interaction-flows.css`: superficies `solid` y composición responsive.
+- `assets/pattern-registry.json → interactionRecipes`: contrato de cinco estados para agentes.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: QA focal sobre la misma batería existente.
+
+La guía no promete que una acción está guardada ni que un CRM está conectado. Integrar un estado de éxito en producción requiere una respuesta real y verificable de la operación.
+
 ## Abrir
 
 - Abrir `biblioteca.html` directamente en el navegador.
