@@ -90,3 +90,28 @@ test('catálogo oficial de activos y estado no productivo',()=>{
   assert.equal(registry.decisions.libraryRole,'internal-review-laboratory');
   assert.match(registry.implementation.doNot,/producci[oó]n/i);
 });
+
+
+test('movimiento R1.1: presets, controles, fallback y reducción',()=>{
+  const motionJs=read('assets/motion-system.js');
+  const motionCss=read('styles/motion-system.css');
+  assert.doesNotThrow(()=>new vm.Script(motionJs));
+  assert.equal(registry.motion.presets.length,5);
+  assert.deepEqual(registry.motion.modes,['standard','subtle','static']);
+  for(const mode of ['page-enter','section-reveal','ui-feedback','ambient-drift','section-navigation']){
+    assert.ok(registry.motion.presets.some(x=>x.id===mode),'Falta preset: '+mode);
+  }
+  for(const id of ['movimiento','motion-stage','motion-intensity','motion-play','motion-replay','motion-message']){
+    assert.ok(html.includes('id="'+id+'"'),'Falta demo/control: '+id);
+  }
+  assert.match(html,/href="#movimiento"/);
+  assert.match(html,/href="styles\/motion-system.css"/);
+  assert.match(html,/src="assets\/motion-system.js"/);
+  assert.match(motionCss,/prefers-reduced-motion\s*:\s*reduce/);
+  assert.match(motionCss,/data-motion-play=paused/);
+  assert.match(motionCss,/transform/);
+  assert.match(motionJs,/IntersectionObserver/);
+  assert.match(motionJs,/matchMedia/);
+  assert.match(motionJs,/is-in-view/);
+  assert.match(motionJs,/addEventListener\("change", applyPreference\)/);
+});
