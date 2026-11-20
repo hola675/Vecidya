@@ -291,6 +291,17 @@ test('R1.5: componentes exportados, navegación canónica y pendientes no invent
   assert.ok(compat.boundaries.some(x=>x.includes('GHL')));
 });
 
+test('R1.5: estado de acceso denegado documentado como brecha y no simulado',()=>{
+  const parity=registry.platformCompatibility.stateParity;
+  const guide=read('../vecidya-platform/docs/design-system/VECIDYA-UI-UX.md');
+  assert.match(guide,/Estados obligatorios: sin datos, cargando, error, acceso denegado y éxito/);
+  assert.deepEqual(parity.labExamples,registry.interactionRecipes.map(x=>x.id));
+  assert.deepEqual(parity.labMissing,['access-denied']);
+  assert.ok(parity.platformRequired.includes('access-denied'));
+  assert.match(parity.rule,/autorización server-side/);
+  assert.ok(html.includes('id="platform-bridge-state"'));
+});
+
 test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CSS productivo',()=>{
   const bridge=read('assets/platform-bridge.js');
   const style=read('styles/platform-bridge.css');
