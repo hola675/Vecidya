@@ -1,3 +1,19 @@
+## UX-CRYSTAL-R2 — puertas de certificación (candidato de PR)
+
+| Gate | Entrega y fuente | Estado |
+| --- | --- | --- |
+| R2-A: QA automatizada pública | Chromium contra localhost, siete viewports, foco básico, `prefers-reduced-motion`, CTA y capturas, **test existente ampliado** | Implementada; CI por confirmar |
+| R2-B: revisión visual humana | Inspección manual de capturas a tamaños móvil/escritorio, jerarquía, truncamientos, foco, contraste sobre vidrio/gradientes | Pendiente |
+| R2-C: accesibilidad manual | Zoom real 200 %, lector de pantalla, orden de lectura, formularios y diálogos en superficies públicas e internas | Pendiente |
+| R2-D: superficies autenticadas | Mi Vecidya/Admin/MiniWeb en fixtures locales autorizados, roles y `access-denied` reales | Pendiente |
+| R2-E: calidad en hardware lento | Rendimiento, transiciones y ausencia de bloqueos con opciones de movimiento reducido | Pendiente |
+
+**Cierre R2:** requiere evidencia `RAN` por ruta y aceptación humana; la automatización R2-A por sí sola **no** permite marcar la fase cerrada.
+
+**Dependencia R3:** puede prepararse la política de activación y rollback de forma inactiva antes del cierre R2, pero no activar nuevas superficies en producción ni declarar `HTTP` publicado sin comprobar su entorno real.
+
+---
+
 ## UX-CRYSTAL-R1.6 → R3 — adopción controlada del lenguaje compartido
 
 - **R1.5**: biblioteca de patrones cruzada con componentes y tokens reales de Vecidya; PR #261 integrado en main (evidencia Git).
