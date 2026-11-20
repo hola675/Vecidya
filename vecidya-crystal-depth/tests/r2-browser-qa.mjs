@@ -350,7 +350,7 @@ try{
         const colorWarning=await page.locator('#miniweb-custom-status').textContent();
         const customColor=await page.locator('#miniweb-custom-preview').evaluate(node=>node.style.getPropertyValue('--mw-primary'));
         assertStep('miniweb-color-contrast-'+width,()=>{
-          assert.equal(customColor,'#FFFFFF');
+          assert.equal(customColor.toLowerCase(),'#ffffff');
           assert.match(colorWarning,/contraste insuficiente/);
         });
         await page.locator('#miniweb-custom-reset').click();
