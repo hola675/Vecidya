@@ -11,7 +11,7 @@ import { ensureMiniWebV2Hero, miniWebV2EditorKey } from "../features/miniweb-v2/
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Button, Card } from "../components/ui";
 import { MiniWebV2DesignControls } from "../components/miniweb-v2-design-controls";
-import { MINIWEB_V2_DEFAULT_DESIGN, type MiniWebV2Design } from "../features/miniweb-v2/visual-design";
+import { MINIWEB_V2_DEFAULT_DESIGN, validateMiniWebV2Design, type MiniWebV2Design } from "../features/miniweb-v2/visual-design";
 import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
 import { MiniWebV2SectionForm, MINIWEB_V2_SECTION_LABELS } from "../components/miniweb-v2-section-form";
 import { createEmptyMiniWebV2Document, MINIWEB_V2_SECTION_TYPES, validateMiniWebV2Document, validateMiniWebV2Section, type MiniWebV2Document, type MiniWebV2Section, type MiniWebV2SectionType } from "../features/miniweb-v2/sections";
@@ -187,8 +187,9 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
         </fieldset>)}</div>
         <label>Estilo visual<select value={variant} disabled={!data.canEdit} onChange={(event) => setVariant(event.currentTarget.value as MiniWebV2Variant)}>{MINIWEB_V2_VARIANTS.map((value) => <option key={value} value={value}>{variantLabels[value]}</option>)}</select></label>
         <MiniWebV2DesignControls value={createDesign} onChange={setCreateDesign} disabled={!data.canEdit}/>
-        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing} onClick={() => submit("create", { familyKey: family, visualVariant: variant, design: createDesign })}>Crear mi sitio</Button>
-          <Button tone="secondary" disabled={!data.canEdit || editing} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
+        <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setCreateDesign({ ...MINIWEB_V2_DEFAULT_DESIGN })}>Restaurar estilo inicial</Button>
+        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={() => submit("create", { familyKey: family, visualVariant: variant, design: createDesign })}>Crear mi sitio</Button>
+          <Button tone="secondary" disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
       </Card> : <>
         <Card surface={editorSurface}><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{isDirty ? "● Hay cambios sin guardar" : `✓ Borrador guardado · Revisión ${revision}`}</p>
           <p>Diseño: {MINIWEB_V2_FAMILY_CATALOG[data.state.site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}. Estilo: {variantLabels[data.state.site.visualVariant as MiniWebV2Variant] ?? "Personalizado"}.</p>
@@ -201,7 +202,10 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
         <Card surface={editorSurface}><h2>Diseño y personalización</h2><p>Ajusta la identidad visual de tu negocio. La vista previa se actualiza inmediatamente; guarda los cambios para conservarlos.</p>
           <MiniWebV2DesignControls value={document.design ?? { ...MINIWEB_V2_DEFAULT_DESIGN }} disabled={!data.canEdit || editing}
             onChange={(next) => { setDocument((current) => ({ ...current, design: next })); setServerErrors([]); }}/>
-          <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar estilo y contenido</Button></div>
+          <div className="miniweb-v2-editor__actions">
+            <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setDocument((current) => ({ ...current, design: { ...MINIWEB_V2_DEFAULT_DESIGN } }))}>Restaurar estilo inicial</Button>
+            <Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar estilo y contenido</Button>
+          </div>
         </Card>
         {data.state.site.conversionReportJson ? <Card surface={editorSurface}><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
         <Card surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
