@@ -14,6 +14,7 @@ import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
 import { MiniWebV2SectionForm, MINIWEB_V2_SECTION_LABELS } from "../components/miniweb-v2-section-form";
 import { createEmptyMiniWebV2Document, MINIWEB_V2_SECTION_TYPES, validateMiniWebV2Document, validateMiniWebV2Section, type MiniWebV2Document, type MiniWebV2Section, type MiniWebV2SectionType } from "../features/miniweb-v2/sections";
 import { MINIWEB_V2_FAMILY_CATALOG, MINIWEB_V2_VARIANTS, type MiniWebV2Family, type MiniWebV2Variant } from "../features/miniweb-v2/visual-families";
+import { isVisualFeatureEnabled } from "../lib/visual-rollout";
 import type { Route } from "./+types/miniweb-v2-editor";
 
 const templateCategories = [
@@ -49,6 +50,7 @@ export default function MiniWebV2Editor() {
 }
 
 function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
+  const editorSurface = isVisualFeatureEnabled("miniWebEditorSolid") ? "solid" : "glass";
   const fetcher = useFetcher();
   const { revalidate } = useRevalidator();
   const initialDocument = () => ensureMiniWebV2Hero(data.state?.document);
@@ -175,8 +177,8 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       {data.sites.length > 1 ? <nav aria-label="Elegir sitio web" className="miniweb-v2-editor__sites">
         <strong>Mis sitios</strong>{data.sites.map((site, index) => <Link key={site.id} to={`/app/miniweb-v2?site=${encodeURIComponent(site.id)}`} aria-current={data.state?.site.id === site.id ? "page" : undefined}>Sitio {index + 1} · {MINIWEB_V2_FAMILY_CATALOG[site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}</Link>)}
       </nav> : null}
-      {!data.canEdit ? <Card surface="solid"><p>Tienes permiso para consultar este sitio, pero no para cambiarlo.</p></Card> : null}
-      {!data.state ? <Card surface="solid"><h2>Elige un punto de partida</h2><p>Selecciona un diseño para tu actividad. Todos pueden adaptarse después.</p>
+      {!data.canEdit ? <Card surface={editorSurface}><p>Tienes permiso para consultar este sitio, pero no para cambiarlo.</p></Card> : null}
+      {!data.state ? <Card surface={editorSurface}><h2>Elige un punto de partida</h2><p>Selecciona un diseño para tu actividad. Todos pueden adaptarse después.</p>
         <div className="miniweb-v2-editor__template-grid">{templateCategories.map((group) => <fieldset key={group.label}><legend>{group.label}</legend>
           {group.families.map((key) => <label key={key} className={`miniweb-v2-editor__template${family === key ? " is-selected" : ""}`}><input type="radio" name="family" checked={family === key} disabled={!data.canEdit} onChange={() => setFamily(key)}/><strong>{MINIWEB_V2_FAMILY_CATALOG[key].label}</strong><small>{MINIWEB_V2_FAMILY_CATALOG[key].description}</small></label>)}
         </fieldset>)}</div>
@@ -184,7 +186,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
         <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing} onClick={() => submit("create", { familyKey: family, visualVariant: variant })}>Crear mi sitio</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
       </Card> : <>
-        <Card surface="solid"><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{isDirty ? "● Hay cambios sin guardar" : `✓ Borrador guardado · Revisión ${revision}`}</p>
+        <Card surface={editorSurface}><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{isDirty ? "● Hay cambios sin guardar" : `✓ Borrador guardado · Revisión ${revision}`}</p>
           <p>Diseño: {MINIWEB_V2_FAMILY_CATALOG[data.state.site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}. Estilo: {variantLabels[data.state.site.visualVariant as MiniWebV2Variant] ?? "Personalizado"}.</p>
           <p>{data.state.site.activePublicationId
             ? <a href={`/miniweb/${encodeURIComponent(data.state.site.id)}`} target="_blank" rel="noreferrer">Ver sitio publicado</a>
@@ -192,13 +194,13 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar cambios</Button>
             <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar sitio</Button></div>
         </Card>
-        {data.state.site.conversionReportJson ? <Card surface="solid"><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
-        <Card surface="solid"><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
+        {data.state.site.conversionReportJson ? <Card surface={editorSurface}><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
+        <Card surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
           <div className="miniweb-v2-editor__actions"><label>Nueva sección<select value={sectionToAdd} disabled={!data.canEdit} onChange={(event) => setSectionToAdd(event.currentTarget.value as MiniWebV2SectionType)}>
             {MINIWEB_V2_SECTION_TYPES.map((type) => <option key={type} value={type}>{MINIWEB_V2_SECTION_LABELS[type]}</option>)}
           </select></label><Button disabled={!data.canEdit || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))} onClick={addSection}>Añadir sección</Button></div>
         </Card>
-        {document.sections.slice().sort((a,b) => a.order-b.order).map((section, index) => <Card key={section.id} surface="solid">
+        {document.sections.slice().sort((a,b) => a.order-b.order).map((section, index) => <Card key={section.id} surface={editorSurface}>
           <div className="miniweb-v2-editor__section-head"><h2>{index + 1}. {MINIWEB_V2_SECTION_LABELS[section.type]}</h2>
             <label><input type="checkbox" checked={section.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...section, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
           </div>
@@ -208,7 +210,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
             <Button tone="secondary" disabled={!data.canEdit || index === document.sections.length - 1} onClick={() => moveSection(section.id, 1)}>Bajar</Button>
             <Button tone="secondary" disabled={!data.canEdit || section.type === "hero"} onClick={() => removeSection(section.id)}>Quitar sección</Button></div>
         </Card>)}
-        <Card surface="solid"><h2>Revisar y publicar</h2><p>{isDirty ? "Primero guarda los cambios. Esta vista previa muestra tu trabajo local." : "Revisa el contenido guardado y publica esta revisión cuando esté lista."}</p>
+        <Card surface={editorSurface}><h2>Revisar y publicar</h2><p>{isDirty ? "Primero guarda los cambios. Esta vista previa muestra tu trabajo local." : "Revisa el contenido guardado y publica esta revisión cuando esté lista."}</p>
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar cambios</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar revisión {revision}</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing || isDirty} onClick={importPublishedV1}>Crear otro sitio importando el anterior</Button></div>

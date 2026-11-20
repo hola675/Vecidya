@@ -1,3 +1,20 @@
+## UX-CRYSTAL-R3 — rollout por ruta y rollback (candidato técnico)
+
+**Implementado en rama:** `app/lib/visual-rollout.ts` centraliza cinco adopciones previamente integradas en R1.7–R1.9. No habilita nuevas pantallas automáticamente. La reversión se realiza bajando un booleano por ruta en un PR pequeño y ejecutando CI; es una **reversión de código** que aún requiere deploy autorizado, no un interruptor en Cloudflare. Dos posibles superficies posteriores (Aprende y Mi Vecidya) quedan desactivadas por defecto.
+
+**Verificador HTTP R3:** `scripts/ux-verify-http.mjs` consulta únicamente las cuatro rutas públicas permitidas mediante GET, sin autenticación y con allowlist de origen. No verifica SHA desplegado, estado de D1, APIs privadas ni funciones de negocio.
+
+### Gates restantes para declarar R3 cerrada
+1. **R2**: cumplir la revisión humana de capturas y las pruebas manuales (zoom 200 %, lector de pantalla, contrastes sobre gradientes, hardware lento y rutas autenticadas).
+2. **CSS heredado**: inventariar colisiones de especificidad entre `app.css`, `home-premium.css`, `visual-system.css` y estilos de MiniWeb; retirar solo reglas redundantes demostradas por evidencia visual de antes/después.
+3. **Staging**: desplegar un candidato **solo con autorización independiente**, verificar bindings y entorno seguro, guardar versión/SHA de Worker y completar smoke HTTP fechado.
+4. **Rollback simulado**: en un PR o entorno local, apagar un flag, comprobar el fallback exacto de su ruta y restaurarlo antes de promoción.
+5. **Producción**: aprobación explícita de release; deploy controlado y `HTTP` fechado, vinculado al SHA/Version ID. Un merge en `main` no demuestra publicación.
+6. **Gobierno**: reconciliar `STATUS.md`, `PROJECT_STATE.md`, `ENVIRONMENTS.md` y `CHANGELOG.md` con evidencia real. Cierre únicamente tras aceptación.
+
+**Límites invariantes:** ningún flag concede derechos de MiniWeb, GHL, permisos internos, licencia, publicación o historial de Diagnóstico. La marca de cada negocio continúa independiente de Vecidya.
+
+---
 ## UX-CRYSTAL-R2 — puertas de certificación (candidato de PR)
 
 | Gate | Entrega y fuente | Estado |

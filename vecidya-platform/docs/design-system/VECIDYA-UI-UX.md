@@ -1,3 +1,22 @@
+## UX-CRYSTAL-R3 — activación reversible de los cambios visuales ya integrados
+
+`app/lib/visual-rollout.ts` contiene el catálogo **único** de flags visuales por familia de ruta. Sus cinco opciones activas corresponden a cambios ya integrados por R1.7–R1.9; las dos superficies futuras están **desactivadas por defecto**. No son flags de permisos ni de licencias y no deben usarse para modificar autorización del servidor.
+
+| Flag | Ruta | Mejora visible si está activo | Reversión en código |
+| --- | --- | --- | --- |
+| `publicHomeHeadings` | `/` | Cuatro encabezados `v-section-heading` | Recuperar solo `home-section-heading` |
+| `publicDirectoryResults` | `/vecindario` | Retícula de resultados compartida | Recuperar `directory-results-heading` |
+| `publicServicesHeadings` | `/servicios` | Dos encabezados compartidos | Mantener solo `services-section-heading` |
+| `adminBusinessSurfaces` | `/app/internal/businesses` | Contenedores `v-surface` discretos/sólidos | Volver a clases previas sin atributos `data-surface/depth` |
+| `miniWebEditorSolid` | `/app/miniweb-v2` | Superficie `Card solid` del editor | Volver a `Card glass` sin alterar el renderer del negocio |
+
+**Comportamiento:** los flags se evalúan de forma determinista en SSR e hidratación. No dependen de cookies, querystrings ni identidad; para revertir se cambia **solo** el booleano correspondiente, se ejecutan las pruebas del área afectada y se solicita el release habitual. No hay activación/desactivación remota ni despliegue instantáneo.
+
+**CSS legado:** `app.css` contiene reglas históricas para `.home-section-heading`, `.services-section-heading`, tarjetas y otros patrones; `home-premium.css` y `visual-system.css` también intervienen. No se eliminan por nombre coincidente: es necesario inventariar especificidad y capturas antes de retirar una regla, o una página podría perder jerarquía.
+
+**Cierre:** los controles de código ayudan a desplegar y revertir de manera controlada, pero no sustituyen revisión humana R2, pruebas de roles ni evidencia HTTP posterior a cada release.
+
+---
 ## UX-CRYSTAL-R1.6 — componentes productivos del lenguaje compartido (candidato en PR)
 
 La fuente de verdad continúa siendo `app/components/ui.tsx` y `app/styles/premium-foundation.css` / `visual-system.css`. El checkpoint R1.6 añade `app/components/visual-contract.tsx`: `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `SharedStatusPanel`, `DiagnosticMetricCard` y `DiagnosticTrend`. Los seis son composiciones presentacionales; no reemplazan `Card`, `Alert`, `EmptyState`, `MetricCard`, la autorización del servidor ni el motor de Diagnóstico.

@@ -1,3 +1,17 @@
+## UX-CRYSTAL-R3 — regresión de flags y verificación HTTP anónima
+
+Se amplió **la suite existente**, sin añadir tests históricos, para comprobar `VISUAL_ROLLOUT`, composición de clases, fallbacks de Admin/MiniWeb y límites de la consulta remota.
+
+Comandos desde `vecidya-platform/`:
+- `pnpm typecheck`, `pnpm build`, `pnpm test:unit`: gates técnicos generales.
+- `UX_HTTP_CHECK_TARGET=https://vecidya-platform-staging.soporte-8a1.workers.dev/ pnpm ux:verify-http`: smoke **anónimo y de solo lectura** contra staging, solo si el entorno de destino está preparado.
+- Para producción, además `UX_PRODUCTION_READONLY_APPROVED=1` y `UX_HTTP_CHECK_TARGET=https://vecidya.com/`; consultar sin sesión no constituye autorización de deploy.
+
+`scripts/ux-verify-http.mjs` restringe el destino a loopback 4173/5173, staging `vecidya-platform-staging.*.workers.dev`, o dominio Vecidya con opt-in explícito de lectura. Solo ejecuta GET a `/`, `/vecindario`, `/servicios` y `/aprende`, sin seguir redirecciones, sin cookies, auth, mutaciones o bases de datos. Registra fecha UTC, estado HTTP y presencia de H1; **no demuestra que el SHA de GitHub coincida con el Worker desplegado**. Para eso se necesita evidencia de release o de versión publicada independiente.
+
+La reversión es un cambio por PR del flag de una ruta, no una operación en caliente. Después de revertir, repetir tipo/build/regresión, E2E visual de esa ruta y smoke HTTP post-deploy. La CI de contrato no prueba accesibilidad manual ni datos internos.
+
+---
 ## UX-CRYSTAL-R2 — QA en navegador real, alcance y evidencia
 
 Se amplió **el test E2E existente** `tests/e2e/public-navigation-a11y-check.mjs` para comprobar las superficies públicas afectadas por R1.7 (Inicio, Servicios y Vecindario) y guardar capturas de 390/1366 px. La CI R2 inicia el Worker local-demo **solo en loopback**, con D1 local aislada, email falso y Playwright Chromium. No usa D1 remota ni ejecuta comandos de publicación.

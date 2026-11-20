@@ -11,6 +11,8 @@ import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 import { MINIWEB_MODULE_REGISTRY, SUPPORTED_MINIWEB_MODULE_TYPES, type MiniWebModuleType } from "../features/miniweb/registry";
 import type { NeighborhoodFilters } from "../features/miniweb/neighborhood";
 
+import { visualClassName } from "../lib/visual-rollout";
+
 import type { Route } from "./+types/directory";
 
 export function meta({ location }: Route.MetaArgs) {
@@ -83,7 +85,7 @@ export default function DirectoryPage() {
             </nav>
           ) : null}
 
-          <div aria-live="polite" className="directory-results-heading v-section-heading">
+          <div aria-live="polite" className={visualClassName("directory-results-heading", "publicDirectoryResults", "v-section-heading")}>
             <div>
               <p className="eyebrow">RESULTADOS</p>
               <h2>{profiles.length ? resultLabel : hasFilters ? "Sin coincidencias" : "El Vecindario está empezando"}</h2>

@@ -1,3 +1,10 @@
+## UX-CRYSTAL-R3 — preparación de rollout, no publicación
+
+R1.5–R1.9 están integrados en `main` (PR #261–#265). R2 aporta la QA de navegador pública y encontró una animación residual bajo `prefers-reduced-motion`, corregida en la rama R2 y pendiente de verificar/merge. R3 añade flags de reversión por ruta y un smoke HTTP anónimo de solo lectura, pero **no demuestra ni ejecuta release**.
+
+**Estado de R3:** `EN PROGRESO` hasta CI de su PR, gates R2 manuales, staging autorizado, rollout verificable por Version ID y aceptación. Los cinco pilotos reflejan clases que ya estaban integradas; los dos futuros están apagados. Sin cambios de D1/CRM/licencias ni activación del tema oscuro productivo.
+
+---
 ## UX-CRYSTAL-R2 — certificación integral pendiente
 
 Tras merges R1.5–R1.9, el contrato de diseño y adopciones focales están en `main` (evidencia Git). La prueba R2-A añade comprobaciones de navegador contra un servidor local aislado y capturas públicas; hasta completar la CI y revisión, no atribuir `RAN PASS`.
