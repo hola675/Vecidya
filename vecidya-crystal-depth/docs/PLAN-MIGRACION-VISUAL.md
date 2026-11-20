@@ -24,6 +24,8 @@
 5. **MiniWeb y GHL:** no aplicar el tema de Vecidya a páginas de negocios ni atribuir funciones CRM externas a la plataforma.
 6. **CSS heredado:** inventariar overrides `app.css`, `*-premium.css` y reglas `--v-*` antes de cualquier sustitución global.
 
+**Brecha explícita de estados:** la guía React exige también acceso denegado; el laboratorio R1.3 representa cinco estados pero no uno específico de autorización. Registrar en `platformCompatibility.stateParity` y definir su componente/patrón en R1.6 sin simular privilegios.
+
 **Regla de cierre:** la única autoridad de componentes/tokens productivos es el código y la guía de `vecidya-platform/`. El JSON R1.5 documenta equivalencias verificables y la biblioteca las ejemplifica; no se importan estilos de laboratorio a producción. Mantener el PR focal y la CI sobre el HEAD exacto.
 
 ---
