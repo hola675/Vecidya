@@ -5,9 +5,9 @@
  */
 (() => {
   const definitions = Object.freeze({
-    "vico-home.webp": { purpose: "Presentación de Vecidya", placement: "Inicio · personaje separado", route: "/", role: "personaje", scene: "home-scene.webp", caution: "Preservar área despejada junto al título y el CTA." },
-    "vico-vecindario.webp": { purpose: "Descubrir negocios", placement: "Vecindario y búsqueda", route: "/vecindario", role: "personaje", scene: "neighborhood-scene.webp", caution: "No superponer sobre tarjetas ni filtros de búsqueda." },
-    "vico-diagnostico.webp": { purpose: "Orientar el diagnóstico", placement: "Diagnóstico público", route: "/diagnostico", role: "personaje", scene: "diagnostic-scene.webp", caution: "No usar la pose como indicador de la puntuación o del resultado." },
+    "vico-home.webp": { purpose: "Presentación de Vecidya", placement: "Inicio · personaje separado", route: "/", role: "personaje", scene: "home-scene.webp", caution: "Revisión visual: restos de gradiente y franjas aparentes en el recorte. Revisar sobre claro y oscuro antes de publicar; dejar espacio para título y CTA." },
+    "vico-vecindario.webp": { purpose: "Descubrir negocios", placement: "Vecindario y búsqueda", route: "/vecindario", role: "personaje", scene: "neighborhood-scene.webp", caution: "Ilustración con mapa y mini locales: evitar reducirla tanto que los detalles se conviertan en ruido; no superponer filtros." },
+    "vico-diagnostico.webp": { purpose: "Orientar el diagnóstico", placement: "Diagnóstico público", route: "/diagnostico", role: "personaje", scene: "diagnostic-scene.webp", caution: "Revisión visual: bandas de fondo aparentes. No usar la pose como indicador de puntuación; comprobar halo y contraste antes de publicar." },
     "vico-servicios.webp": { purpose: "Explicar servicios", placement: "Servicios de Vecidya", route: "/servicios", role: "personaje", scene: "services-scene.webp", caution: "Mantener los servicios y sus acciones como HTML real." },
     "vico-licencias.webp": { purpose: "Acompañar la elección", placement: "Planes y licencias", route: "/licencias", role: "personaje", scene: "licenses-scene.webp", caution: "No sugerir que Vico activa derechos de un plan." },
     "vico-addons.webp": { purpose: "Presentar complementos", placement: "Complementos", route: "/addons", role: "personaje", scene: "addons-scene.webp", caution: "No presentar integraciones aún no activadas como operativas." },
