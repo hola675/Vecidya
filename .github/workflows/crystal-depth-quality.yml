@@ -48,6 +48,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: crystal-depth-r2-capturas
-          path: vecidya-crystal-depth/.qa-artifacts/
+          path: vecidya-crystal-depth/qa-artifacts/
           retention-days: 7
           if-no-files-found: warn
