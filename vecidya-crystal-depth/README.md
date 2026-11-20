@@ -39,6 +39,16 @@ Para revisar en un navegador Chromium con todos los assets relativos disponibles
 - `docs/DIRECCION-ARTISTICA.md`: dirección artística y seis revisiones críticas.
 - `docs/PLAN-MIGRACION-VISUAL.md` y `docs/INTEGRACION.md`: límites de integración.
 
+## Pruebas de contrato automatizadas R1
+
+```bash
+node --test vecidya-crystal-depth/tests/r1-contract.test.mjs
+```
+
+Ejecutar desde la raíz del repositorio con Node.js 22 o superior. Este test focal **sin dependencias** comprueba tema oscuro inicial, alternancia reversible, `aria-checked`, ocho intenciones del guía, uso/antiuso de los tres materiales, unicidad de IDs, tokens sólidos con contraste ≥4,5:1, presencia de foco y `reduced-motion` en el CSS, y el catálogo de 140 assets y 17 categorías. La CI dedicada `.github/workflows/crystal-depth-quality.yml` se activa en PR que modifiquen esta biblioteca.
+
+**Alcance de evidencia:** estas comprobaciones no verifican visualmente el render de todos los estados, contrastes sobre fondos compuestos, zoom 200 %, lector de pantalla, performance ni UX móvil. Continúan pendientes del gate R2.
+
 ## Verificación y límites
 
 **Los cambios R1 requieren una nueva certificación y no heredan la validación de 0.7.** El 2026-11-13, Chromium local comprobó navegación, pestañas con teclado, alternador de tema, búsqueda y filtros, orden, estado vacío, validación del formulario, diálogo/Escape y enlaces internos. Se revisaron 320, 360, 390, 768, 1024, 1366 y 1920 px; la tabla conserva un scroller horizontal propio en móvil. La carga final no registró errores de consola. `node --check assets/library-catalog.js` y `git diff --check` pasan. Las seis revisiones críticas están en `docs/DIRECCION-ARTISTICA.md`.
