@@ -1005,6 +1005,21 @@
         "meaning": "paleta de ejemplo; identidad real pertenece al negocio"
       },
       {
+        "key": "primaryColor",
+        "format": "#RRGGBB",
+        "meaning": "color principal editable; verificar contraste del CTA"
+      },
+      {
+        "key": "accentColor",
+        "format": "#RRGGBB",
+        "meaning": "acento visual, no sustituye estados semánticos"
+      },
+      {
+        "key": "canvasColor",
+        "format": "#RRGGBB",
+        "meaning": "fondo editable; garantizar contraste del texto"
+      },
+      {
         "key": "font",
         "values": [
           "moderna",
@@ -1077,7 +1092,8 @@
       "sin-tema-global-miniweb-publica",
       "legible-sin-javascript",
       "teclado-focus-visible",
-      "reduced-motion"
+      "reduced-motion",
+      "advertir-contraste-inferior-a-4.5"
     ],
     "adoption": "Proponer controles en el editor real solo con schema versionado, preview fiel y pruebas de persistencia, autorización, seguridad, accesibilidad y publicación"
   }
