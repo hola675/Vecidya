@@ -974,5 +974,101 @@
       ],
       "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
     }
+  },
+  "vicoVisualIdentity": {
+    "version": "1.0.0",
+    "status": "library-workbench-candidate",
+    "workbench": "biblioteca.html#vico",
+    "catalogue": "assets/library-catalog.js → category Vico (11 oficiales)",
+    "canonicalPlatformAssets": "vecidya-platform/app/assets/public-assets.ts",
+    "useInPlatform": "vecidya-platform/app/components/public-hero-art.tsx; app/routes/home.tsx; app/routes/knowledge.tsx",
+    "semantics": {
+      "character": "Vico separado, preferentemente L5, con proporción original intacta",
+      "ambientScene": "Ilustración contextual independiente L1, nunca contenido de lectura",
+      "composition": "home-vecidya-companion-v4.webp es recurso horizontal compuesto, no sustituto intercambiable de vico-home.webp"
+    },
+    "variants": [
+      {
+        "original": "home-vecidya-companion-v4.webp",
+        "route": "/",
+        "intent": "bienvenida_compuesta",
+        "type": "composition"
+      },
+      {
+        "original": "vico-home.webp",
+        "route": "/",
+        "intent": "presentacion_marca",
+        "type": "character"
+      },
+      {
+        "original": "vico-vecindario.webp",
+        "route": "/vecindario",
+        "intent": "descubrir_negocios",
+        "type": "character"
+      },
+      {
+        "original": "vico-diagnostico.webp",
+        "route": "/diagnostico",
+        "intent": "orientacion_diagnostico",
+        "type": "character"
+      },
+      {
+        "original": "vico-servicios.webp",
+        "route": "/servicios",
+        "intent": "explicar_servicios",
+        "type": "character"
+      },
+      {
+        "original": "vico-licencias.webp",
+        "route": "/licencias",
+        "intent": "acompanar_comparacion",
+        "type": "character"
+      },
+      {
+        "original": "vico-addons.webp",
+        "route": "/addons",
+        "intent": "presentar_complementos",
+        "type": "character"
+      },
+      {
+        "original": "vico-aprende.webp",
+        "route": "/aprende",
+        "intent": "acompanar_aprendizaje",
+        "type": "character"
+      },
+      {
+        "original": "vico-contacto.webp",
+        "route": "/contacto",
+        "intent": "orientar_contacto",
+        "type": "character"
+      },
+      {
+        "original": "vico-nosotros.webp",
+        "route": "/sobre-nosotros",
+        "intent": "historia_equipo",
+        "type": "character"
+      },
+      {
+        "original": "vico-unete.webp",
+        "route": "/unete",
+        "intent": "incorporacion",
+        "type": "character"
+      }
+    ],
+    "constraints": [
+      "No reconstruir ni redibujar personajes: mantener proporciones, identidad y colores de originales oficiales",
+      "No interpretar la presencia de Vico como aprobación de licencias, CRM o estado de negocio",
+      "No introducir Vico como marca del cliente en MiniWeb de terceros",
+      "Mantener escena y personaje como assets separados, salvo composición oficial horizontal de bienvenida",
+      "No rasterizar texto, botones o estados junto al personaje",
+      "Verificar bordes, recorte, relación de aspecto y fondo oscuro/claro/cuadrícula antes de seleccionar",
+      "Si se requiere icono compacto o una nueva pose, registrar brecha y exigir nueva aprobación artística",
+      "Las previews pequeñas del catálogo no se usan como imagen de producción; recuperar su original"
+    ],
+    "evidenceLevels": {
+      "catalog": "CODE: 11 registros WebP con dimensiones y preview",
+      "deployment": "El uso aparece en módulos React; no sustituye comprobación HTTP y QA humana por ruta",
+      "alpha": "Transparencia real, fidelidad visual y recorte por dispositivo requieren revisión de imágenes originales o capturas; metadatos solos no lo certifican"
+    }
   }
 }
