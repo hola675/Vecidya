@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
 import {
@@ -50,4 +51,22 @@ test("las familias visuales del footer y Soluciones preservan la clasificación 
     ["/vecindario", "/aprende", "/diagnostico"],
   );
   assert.equal(PUBLIC_NAVIGATION_LINKS.complementos.label, "Complementos");
+});
+
+test("R1.7 reutiliza retícula v-section-heading sin cambiar datos, enlaces ni encabezados", () => {
+  const read = (path: string) => readFileSync(new URL("../../" + path, import.meta.url), "utf8");
+  const home = read("app/routes/home.tsx");
+  const directory = read("app/routes/directory.tsx");
+  const services = read("app/routes/services.tsx");
+  const css = read("app/styles/visual-system.css");
+  assert.equal((home.match(/home-section-heading v-section-heading/g) ?? []).length, 4);
+  assert.equal((directory.match(/directory-results-heading v-section-heading/g) ?? []).length, 1);
+  assert.equal((services.match(/services-section-heading v-section-heading/g) ?? []).length, 2);
+  for (const id of ["home-neighborhood-title", "home-diagnostic-title", "home-services-title", "home-learn-contact-title"])
+    assert.ok(home.includes('id="' + id + '"'));
+  assert.ok(directory.includes('id="directory-title"'));
+  assert.ok(services.includes('id="services-process-title"'));
+  assert.match(css, /\.v-section-heading\s*\{/);
+  assert.match(css, /@media \(max-width: 760px\)/);
+  assert.match(home, /PUBLIC_ACTION_LABELS/);
 });
