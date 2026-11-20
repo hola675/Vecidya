@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0-r1-candidate",
-  "status": "candidato-en-revision-no-integrado",
-  "lastUpdated": "2026-11-19",
+  "version": "1.1.0-agent-bridge",
+  "status": "laboratorio-integrado-como-referencia-no-importado-a-react",
+  "lastUpdated": "2026-11-20",
   "purpose": "Contrato consultable por agentes: seleccionar composiciones, materiales, assets, componentes y QA antes de implementar Vecidya.",
   "decisions": {
     "defaultTheme": "dark",
@@ -622,7 +622,7 @@
     ]
   },
   "platformCompatibility": {
-    "version": "R1.5",
+    "version": "1.1.0-agent-bridge",
     "status": "verified-source-crosswalk-no-product-migration",
     "verifiedScope": "vecidya-platform/app en main al 2026-11-20; exact source selectors and exports checked by focal tests",
     "authority": [
@@ -970,9 +970,40 @@
         "success"
       ],
       "labMissing": [
-        "access-denied"
+        "access-denied (ausente solo en la demo R1.3; existe como estado de SharedStatusPanel en React)"
       ],
-      "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
+      "rule": "El laboratorio R1.3 no muestra access-denied; la plataforma React R1.6 sí dispone del componente presentacional. La autorización sigue en servidor, no en la apariencia."
     }
+  },
+  "agentHandoff": {
+    "version": "1.0.0",
+    "status": "contracto-documental",
+    "scope": "Adopción visual progresiva; no despliegue ni mutación de contratos",
+    "authority": [
+      "AGENTS.md",
+      "vecidya-platform/docs/GOVERNANCE.md",
+      "vecidya-platform/app/components",
+      "vecidya-platform/app/styles",
+      "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md"
+    ],
+    "routeOrder": [
+      "public",
+      "directory",
+      "learn",
+      "diagnostic",
+      "client",
+      "internal",
+      "miniweb"
+    ],
+    "delivery": "Ruta, objetivo de usuario, intención del registry, composición L0–L5, componente exportado y props comprobadas, assets originales verificados, test focal + build + typecheck, captura y PR",
+    "guardrails": [
+      "No importar CSS de laboratorio a React",
+      "No imponer tema Vecidya a MiniWeb públicas",
+      "No inferir licencias o GHL de maquetas",
+      "No dar estado success sin confirmación",
+      "No marcar QA humana, lector o zoom como PASS si no se ejecutan",
+      "No cambiar D1, permisos, publicación ni scoring para adoptar estilos"
+    ],
+    "reference": "vecidya-crystal-depth/docs/INTEGRACION.md"
   }
 }
