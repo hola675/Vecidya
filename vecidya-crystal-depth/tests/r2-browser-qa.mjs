@@ -326,7 +326,7 @@ try{
         await page.locator('#miniweb-custom-tier').selectOption('pro');
         await page.locator('#miniweb-custom-font').selectOption('editorial');
         await page.locator('#miniweb-custom-palette').selectOption('bosque');
-        await page.locator('#miniweb-custom-titleSize').fill('52');
+        await page.locator('#miniweb-custom-titleSize').evaluate(node=>{node.value='52';node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));});
         await page.locator('#miniweb-custom-heroPosition').selectOption('left');
         const personalization=await page.locator('#miniweb-custom-preview').evaluate(node=>({
           tier:node.dataset.tier,
