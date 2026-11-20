@@ -1,0 +1,25 @@
+name: Crystal Depth contract QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "vecidya-crystal-depth/**"
+      - ".github/workflows/crystal-depth-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  library:
+    name: Biblioteca visual · contrato R1
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Comprobar temas, enrutamiento, materiales, assets y contraste
+        run: node --test vecidya-crystal-depth/tests/r1-contract.test.mjs
