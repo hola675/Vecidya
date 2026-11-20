@@ -199,10 +199,10 @@ function ensureFixtureOrganizations() {
   });
 }
 
-async function authenticate(client, invitationId, account = { name: account.name, email: account.email, password: account.password }) {
+async function authenticate(client, invitationId, account = { name: ownerName, email: ownerEmail, password: ownerPassword }) {
   let response;
   if (invitationId) {
-    response = await client.json("/api/auth/sign-up/email", { name: ownerName, email: ownerEmail, password: ownerPassword }, "POST", { "X-Vecidya-Invitation": invitationId });
+    response = await client.json("/api/auth/sign-up/email", { name: account.name, email: account.email, password: account.password }, "POST", { "X-Vecidya-Invitation": invitationId });
   }
   if (!response?.ok) response = await client.json("/api/auth/sign-in/email", { email: account.email, password: account.password });
   await readJson(response, "Autenticación de la cuenta local");
