@@ -340,6 +340,7 @@ test('Vico: once originales catalogados y un único punto de entrada accesible',
   assert.match(html,/assets\/vico-workbench\.js/);
   assert.match(script,/concept|visual-review-only-not-a-route-or-design-api/);
   assert.match(script,/const sceneBase = safeEntries\.length/);
+  assert.match(script,/new URL\(sceneBase \+ rule\.scene, document\.baseURI\)/);
   assert.doesNotMatch(script,/const sceneBase = "\.\.\/vecidya-platform/);
   assert.doesNotMatch(script,/localStorage|sessionStorage|XMLHttpRequest|fetch\(/);
   assert.match(styles,/prefers-reduced-motion:reduce/);
