@@ -45,6 +45,12 @@
       });
     });
 
+    const suggested=document.getElementById("r1-preview-link");
+    if (suggested) suggested.addEventListener("click", () => {
+      const index=buttons.findIndex(button=>button.id==="composer-tab-"+suggested.dataset.preview);
+      if (index>=0) activate(index);
+    });
+
     root.classList.add("is-interactive");
     tabs.hidden = false;
     // On JavaScript failure, every panel remains visible as standalone content.
