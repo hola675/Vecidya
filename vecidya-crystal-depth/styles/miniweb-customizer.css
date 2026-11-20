@@ -46,6 +46,8 @@
 .mw-lab__preview[data-align=center] .mw-lab__copy,.mw-lab__preview[data-align=center] .mw-lab__services{text-align:center}
 .mw-lab__preview[data-tier=pro] .mw-lab__hero{grid-template-columns:1fr 1.28fr}
 .mw-lab__preview[data-tier=pro] .mw-lab__cards{grid-template-columns:1.3fr 1fr 1fr}
+.mw-lab__preview[data-tier=pro][data-layout=stacked] .mw-lab__hero{grid-template-columns:1fr}
+.mw-lab__preview[data-tier=pro][data-layout=stacked] .mw-lab__picture,.mw-lab__preview[data-tier=pro][data-layout=stacked] .mw-lab__copy{grid-column:auto;grid-row:auto}
 .mw-lab__preview[data-tier=premium] .mw-lab__hero{grid-template-columns:1fr;position:relative;min-height:var(--mw-hero-height);background:var(--mw-primary)}
 .mw-lab__preview[data-tier=premium] .mw-lab__picture{position:absolute;inset:0;border-radius:0;opacity:.27;pointer-events:none}
 .mw-lab__preview[data-tier=premium] .mw-lab__copy{position:relative;z-index:1;max-width:610px;grid-column:1;grid-row:1;padding:clamp(14px,2vw,25px);border-radius:var(--mw-radius);background:#fff}
