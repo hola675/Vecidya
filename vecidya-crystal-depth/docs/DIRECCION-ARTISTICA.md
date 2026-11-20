@@ -1,6 +1,6 @@
 # Dirección artística — Crystal Depth
 
-Versión R1.0 (candidata) · 2026-11-19 · Decisiones rectoras aprobadas; integración y certificación visual final pendientes. No apta para producción.
+Dirección original R1.0 (2026-11-19); ampliación R1.5 de compatibilidad (2026-11-20). R1.2–R1.4 integradas como biblioteca; migración del frontend y certificación visual integral pendientes.
 
 
 ## R1 — Dirección artística consolidada (decisiones del responsable: 2026-11-19)
@@ -86,6 +86,16 @@ La identidad premium se mantiene al pasar entre cuatro tareas distintas; cambia 
 **Demostración interactiva:** `biblioteca.html#composiciones`. Navegación de cuatro tabs con selección por teclado, soporte de preferencia de movimiento reducido, tema claro/oscuro y degradación legible sin JavaScript. El selector de contexto `#r1-intent` solo enlaza a uno de esos cuatro ejemplos cuando la intención coincide exactamente. Diagnóstico, Admin, licencias y GHL conservan su guía de materiales, pero no reciben escenas inventadas.
 
 **Contrato legible por agentes:** `assets/pattern-registry.json → sceneRecipes`; esquema funcional en `styles/scene-composer.css` y `assets/scene-composer.js`. Las composiciones no crean rutas, no conceden prestaciones de planes, no gestionan publicación MiniWeb ni reemplazan componentes React. Su adopción productiva exige una tarea específica de integración después de la revisión de laboratorio.
+
+### 4.3. Un único lenguaje entre biblioteca y plataforma — R1.5 (2026-11-20)
+
+La decisión artística **no añade otro juego de tokens React**. `premium-foundation.css` aporta la paleta y escala de `--v-*`; `visual-system.css` define `v-surface`, `data-surface`, `data-depth`, `v-stack`, `v-cluster`, `v-grid` y `v-section-heading`. Crystal Depth traduce Focal→highlight, Quiet→glass y Solid→solid **solo como orientación de composición**; cada superficie React conserva su semántica y profundidad independiente.
+
+**Diferencias explícitas:** React usa tema claro, foco naranja `--v-orange-500`, `--v-radius-card: 1.25rem` y movimiento `--v-duration-fast: 160ms` / `--v-duration-interaction: 220ms`. Crystal Depth muestra oscuro de base, foco y radios de laboratorio, y entradas narrativas más lentas. No homologar por renombrar ni intercambiar valores hex; primero definir variaciones por shell y estado. La MiniWeb pública pertenece visualmente al negocio.
+
+**Biblioteca viva, no framework nuevo:** `pattern-registry.json → platformCompatibility` cruza materiales, tokens, componentes, rutas y componentes aún pendientes; `biblioteca.html#idioma` hace visible el mapeo. Para que el sistema sea único, los agentes deben consumir primero componentes React y evitar crear nuevos `Button`, `Card`, `Badge`, `Alert` o estilos globales redundantes.
+
+**Decisiones abiertas:** si habrá tema oscuro en la plataforma; contrato de encabezados compartidos; filtro/paginación Admin; estados de consentimiento; métricas/series con evidencia; composición MiniWeb por planes reales; y reconciliación futura de reglas CSS heredadas con `--v-*`. Todas requieren adopción pequeña por ruta y QA. No tienen permiso automático de publicación.
 
 ### 5. Tipografía, espacio y forma
 
