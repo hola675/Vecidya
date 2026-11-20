@@ -321,6 +321,41 @@ try{
         assertStep('estado-vacio',()=>assert.ok(empty));
         await page.locator('#asset-search').fill('');
       }
+      // R1.6: personalizador aislado, controles reales y vista visible.
+      if(width===390||width===1366){
+        await page.locator('#miniweb-custom-tier').selectOption('pro');
+        await page.locator('#miniweb-custom-font').selectOption('editorial');
+        await page.locator('#miniweb-custom-palette').selectOption('bosque');
+        await page.locator('#miniweb-custom-titleSize').fill('52');
+        await page.locator('#miniweb-custom-heroPosition').selectOption('left');
+        const personalization=await page.locator('#miniweb-custom-preview').evaluate(node=>({
+          tier:node.dataset.tier,
+          imagePosition:node.dataset.imagePosition,
+          primary:node.style.getPropertyValue('--mw-primary'),
+          title:node.style.getPropertyValue('--mw-title-size'),
+          font:node.style.getPropertyValue('--mw-font'),
+          visible:node.getBoundingClientRect().height>0
+        }));
+        assertStep('miniweb-personalizacion-'+width,()=>{
+          assert.equal(personalization.tier,'pro');
+          assert.equal(personalization.imagePosition,'left');
+          assert.equal(personalization.primary,'#236354');
+          assert.equal(personalization.title,'52px');
+          assert.match(personalization.font,/Georgia/);
+          assert.equal(personalization.visible,true);
+        });
+        await page.locator('#miniweb-customizer').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-miniweb-personalizada.png'),animations:'disabled'});
+        await page.locator('#miniweb-custom-reset').click();
+        const restored=await page.locator('#miniweb-custom-preview').evaluate(node=>({
+          tier:node.dataset.tier,
+          title:node.style.getPropertyValue('--mw-title-size')
+        }));
+        assertStep('miniweb-reset-'+width,()=>{
+          assert.equal(restored.tier,'base');
+          assert.equal(restored.title,'40px');
+        });
+      }
       const images=await page.locator('.hero-visual img').evaluateAll(imgs=>imgs.filter(img=>img.complete&&!img.naturalWidth).map(img=>img.src));
       assertStep('hero-assets-'+width,()=>assert.equal(images.length,0,'Imágenes rotas: '+images.join(', ')));
     }catch(e){failures.push({name:'error-vista-'+width,error:String(e)});}
