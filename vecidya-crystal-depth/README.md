@@ -18,7 +18,7 @@ La biblioteca es un **manual de decisiones visuales**, no solo una galería. Ant
 
 ## Laboratorio de personalización MiniWeb R1.6 (2026-11-20)
 
-Dentro de `biblioteca.html#miniweb-customizer` se puede **cambiar en vivo** la composición Base/Pro/Premium, cuatro paletas, tres tipografías locales, hero apilado o dividido, posición de imagen, alineación de texto y deslizadores de tamaño de título/texto, márgenes, radios y altura de portada. La maqueta usa un negocio ficticio, soporta teclado, restaura valores y permite copiar un brief JSON **solo de intención visual** para agentes.
+Dentro de `biblioteca.html#miniweb-customizer` se puede **cambiar en vivo** la composición Base/Pro/Premium, cuatro paletas con ajuste individual de color principal, acento y fondo (con advertencia de contraste), tres tipografías locales, hero apilado o dividido, posición de imagen, alineación de texto y deslizadores de tamaño de título/texto, márgenes, radios y altura de portada. La maqueta usa un negocio ficticio, soporta teclado, restaura valores y permite copiar un brief JSON **solo de intención visual** para agentes.
 
 - Implementación: `styles/miniweb-customizer.css` y `assets/miniweb-customizer.js`, aislados del resto de la biblioteca.
 - Registro interpretativo: `assets/pattern-registry.json → miniwebCustomizationLab`.
