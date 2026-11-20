@@ -14,7 +14,7 @@
     "vico-addons.webp": { purpose: "Presentar complementos", placement: "Complementos", route: "/addons", role: "personaje", scene: "addons-scene.webp", caution: "No presentar integraciones aún no activadas como operativas." },
     "vico-aprende.webp": { purpose: "Guiar el aprendizaje", placement: "Aprende", route: "/aprende", role: "personaje", scene: "learn-journey-scene.webp", caution: "Conservar Vico fuera de los párrafos de lectura prolongada." },
     "vico-contacto.webp": { purpose: "Dar la bienvenida", placement: "Contacto", route: "/contacto", role: "personaje", scene: "contact-scene.webp", caution: "No tapar el formulario ni el foco de teclado." },
-    "vico-nosotros.webp": { purpose: "Presentar al equipo", placement: "Nosotros", route: "/nosotros", role: "personaje", scene: "about-scene.webp", caution: "No representar al personaje como un miembro humano del equipo." },
+    "vico-nosotros.webp": { purpose: "Presentar al equipo", placement: "Nosotros", route: "/sobre-nosotros", role: "personaje", scene: "about-scene.webp", caution: "No representar al personaje como un miembro humano del equipo." },
     "vico-unete.webp": { purpose: "Acompañar la incorporación", placement: "Únete", route: "/unete", role: "personaje", scene: "join-scene.webp", caution: "La ilustración no sustituye pasos, instrucciones ni confirmaciones reales." },
   });
   const $ = (id) => document.getElementById(id);
