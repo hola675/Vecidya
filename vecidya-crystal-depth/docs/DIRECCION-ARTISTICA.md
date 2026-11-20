@@ -58,6 +58,20 @@ Los tokens canónicos para lectura automatizada viven en `../assets/pattern-regi
 
 Una página puede compartir L0 estacionario, pero cada sección usa su propia composición de L1–L5, alternando respiros editoriales con escenas focales. Los fondos ambientales no llevan texto, botones ni capturas de componentes que deban ser interactivos. En móvil simplificar L1/L2, limitar efectos costosos y preservar el orden semántico DOM.
 
+### 4.1. Dirección de movimiento — R1.1 (2026-11-20)
+
+**Principio:** la profundidad puede tener movimiento, pero el contenido nunca debe depender de él. La ambientación L0–L3 admite deriva lenta y pausa; el contenido L4, formularios, tablas y editores no se desplaza de forma continua. Vico L5 puede tener una entrada corta en portada, pero no saltar repetidamente durante la lectura.
+
+- `page-enter`: hero en 580–700 ms, entrada única con opacidad y desplazamiento moderado; no bloquear interacción ni SEO.
+- `section-reveal`: elementos editoriales en 340–480 ms al ingresar en viewport, con activación progresiva solo si el navegador lo admite. Sin JavaScript, todo visible.
+- `ui-feedback`: 150–260 ms; estados de botones, pestañas y tarjetas con elevación máxima recomendada 2–4 px. Sin efectos engañosos de carga.
+- `ambient-drift`: escenas de luz, órbitas, reflejos; ciclo de 9–14 s, pausa visible y sin movimiento en datos densos o móvil cuando resulte costoso.
+- `section-navigation`: enlaces de ancla preservan navegación, historial, foco y scroll; `prefers-reduced-motion` elimina suavizado.
+
+Familias `standard`, `subtle` y `static`. Un ajuste de usuario no puede desactivar el movimiento reducido del SO. La escena no incluye información textual solo en imagen, evita flash/parpadeo y no cambia el tamaño de bloques mediante animaciones. Transición entre rutas React queda como especificación futura opt-in; no se implementa todavía en la plataforma.
+
+**Archivos de referencia:** `styles/motion-system.css`, `assets/motion-system.js`, `assets/pattern-registry.json → motion` y sección `biblioteca.html#movimiento`. Certificar en navegador real, no mediante capturas históricas ni prueba exclusivamente estática.
+
 ### 5. Tipografía, espacio y forma
 
 Usar la familia existente (Inter → Segoe UI → system-ui) sin introducir una nueva dependencia. Jerarquía: titular corto y reconocible, subtítulo útil, párrafos legibles (línea ideal ~55–75 caracteres), microcopy contextual. No usar mayúsculas espaciadas para bloques de lectura. Mantener retícula y ritmo coherentes por secciones, evitando tarjetas anidadas sin función; usar grupos visuales con un propósito por bloque. Estado `disabled`, validación, tooltip y aviso han de expresarse con texto y foco accesibles.
