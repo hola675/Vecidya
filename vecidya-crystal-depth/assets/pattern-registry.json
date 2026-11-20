@@ -583,5 +583,40 @@
         "hacer pasar demo por operación real"
       ]
     }
-  ]
+  ],
+  "agentBrief": {
+    "version": "R1.4",
+    "mode": "laboratory-only",
+    "source": "intentRouting + sceneRecipes + motion.presets + interactionRecipes",
+    "collaboration": "El agente líder asigna la tarea; el rol editorial es un colaborador y no toma decisiones de coordinación.",
+    "roles": [
+      {
+        "id": "frontend",
+        "label": "Implementación frontend",
+        "responsibility": "Código, componentes, semántica, responsive y pruebas focales"
+      },
+      {
+        "id": "editorial",
+        "label": "Revisión editorial y claridad",
+        "responsibility": "Texto comprensible, inequívoco, humano y ajustado a prestaciones verificadas"
+      },
+      {
+        "id": "ux",
+        "label": "Diseño UX/UI",
+        "responsibility": "Flujos, jerarquía, composición, foco, interacción y claridad"
+      },
+      {
+        "id": "quality",
+        "label": "Calidad y pruebas focales",
+        "responsibility": "Pruebas proporcionadas al cambio, evidencia real y control de riesgos"
+      }
+    ],
+    "guardrails": [
+      "El borrador es una guía; no modifica código ni concede derechos",
+      "No inferir funciones del mockup o de un nivel comercial",
+      "No inventar escena para intención sin recipe",
+      "Conservar alternativas sin JSON cuando no haya red",
+      "El usuario debe revisar el texto antes de copiar y asignarlo al subagente"
+    ]
+  }
 }
