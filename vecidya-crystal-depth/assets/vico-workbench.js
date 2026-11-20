@@ -44,7 +44,8 @@
       status.textContent = "Revisa el registro: hay imágenes de Vico sin clasificación o una variante sin fuente en el catálogo.";
     }
     let selected = safeEntries[0] ?? null;
-    const sceneBase = "../vecidya-platform/public/assets/selected/illustrations/";
+    // Derive from the catalog: the Cloudflare build rewrites original URLs in library-catalog.js.
+    const sceneBase = safeEntries.length ? safeEntries[0].source.slice(0, safeEntries[0].source.lastIndexOf("/") + 1) : "";
     const buttons = safeEntries.map((asset) => {
       const button = document.createElement("button");
       button.type = "button";
