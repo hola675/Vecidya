@@ -1,3 +1,11 @@
+## UX-CRYSTAL-R2 — certificación integral pendiente
+
+Tras merges R1.5–R1.9, el contrato de diseño y adopciones focales están en `main` (evidencia Git). La prueba R2-A añade comprobaciones de navegador contra un servidor local aislado y capturas públicas; hasta completar la CI y revisión, no atribuir `RAN PASS`.
+
+**Open Debt:** faltan lectura con lector de pantalla, zoom real 200 %, contraste de fondos compuestos, rendimiento en dispositivos lentos, inspección de capturas y certificación específica del shell autenticado y MiniWeb. No se afirma que el tema oscuro Crystal esté activado en la plataforma ni que haya deploy público.
+
+---
+
 ## UX-CRYSTAL-R1.6 — componentes visuales (candidato de PR, sin publicación verificada)
 
 `visual-contract.tsx` y CSS `v-*` introducen encabezado, filtro GET, consentimiento explícito, estado con acceso denegado, métrica con dato nulo distinto de cero y tendencia tabular. Son componentes presentacionales; toda garantía sobre permisos, consentimientos, eventos o confirmaciones depende de la ruta/servidor. Estado **EN PROGRESO** hasta CI y adopción. R1.5 de la biblioteca está integrada como contrato de diseño, no como tema oscuro productivo.
