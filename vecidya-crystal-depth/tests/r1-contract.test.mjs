@@ -331,13 +331,15 @@ test('R1.6: personalizador MiniWeb aislado, semántico y sin publicación',()=>{
   assert.match(html,/src="assets\/miniweb-customizer\.js"/);
   assert.match(html,/id="miniweb-custom-copy"/);
   assert.match(html,/id="miniweb-custom-reset"/);
-  for (const field of ['tier','palette','font','layout','align','heroPosition','titleSize','bodySize','spacing','radius','heroHeight']) {
+  for (const field of ['tier','palette','primaryColor','accentColor','canvasColor','font','layout','align','heroPosition','titleSize','bodySize','spacing','radius','heroHeight']) {
     assert.ok(html.includes('data-mw-field="'+field+'"'),'Control ausente: '+field);
     assert.ok(html.includes('for="miniweb-custom-'+field+'"'),'Etiqueta ausente: '+field);
   }
   for(const tier of ['base','pro','premium']) assert.ok(html.includes('<option value="'+tier+'">'));
   assert.match(customJs,/concept-only-not-a-product-configuration/);
   assert.match(customJs,/navigator\.clipboard/);
+  assert.match(customJs,/const contrast =/);
+  assert.match(customJs,/contraste insuficiente/);
   assert.doesNotMatch(customJs,/fetch\(|localStorage|sessionStorage|XMLHttpRequest/);
   assert.match(customCss,/#?[.]mw-lab__preview\[data-tier=premium\]/);
   assert.match(customCss,/@media \(prefers-reduced-motion:reduce\)/);
