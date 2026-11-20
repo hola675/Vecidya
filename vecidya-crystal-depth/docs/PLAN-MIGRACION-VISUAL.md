@@ -1,3 +1,23 @@
+## R1 — Implementación aislada en la biblioteca (2026-11-19)
+
+**Hecho en rama de revisión:** tema oscuro predeterminado, claro alternativo, tres materiales Focal/Quiet/Solid; sección didáctica con selector de intención y copia de instrucciones; contrato JSON para agentes; dirección artística y guía de integración ampliadas.
+
+**No certificado en R1:** contraste WCAG sobre fondos compuestos, captura visual de la rama, zoom 200 %, lector de pantalla, CI y nuevas pruebas responsivas. No reutilizar pruebas de v0.7 como si validaran los cambios R1.
+
+**Sin autorización ni cambio:** plataforma, MiniWeb V2, rutas productivas, datos, licencias efectivas, GHL, migraciones, despliegue o merge.
+
+### Gates siguientes, independientes y por orden
+
+1. **R1 revisión humana:** aprobar composición, claridad, materiales, Vico, iconos y variantes claro/oscuro.
+2. **R2 certificación de biblioteca:** comprobar 320/390/768/1366/1920 px, contrastes reales, foco y teclado, zoom 200 %, lector de pantalla, reduced-motion, alternativa sin blur y rendimiento; corregir y repetir pruebas sobre SHA final.
+3. **R3 integración mínima opt-in:** reconciliar tokens R1 con `vecidya-platform/docs/design-system/VECIDYA-UI-UX.md` y `visual-system.css`, no importar CSS del laboratorio globalmente; preparar variantes tipadas React.
+4. **R4 migración por páginas:** inicio, servicios, licencias, aprende, diagnóstico y Vecindario; cada grupo con QA propio. No mezclar cambio visual y semántica del diagnóstico.
+5. **R5 aplicación interna y MiniWeb V2:** editor, preview, assets, publicación y permisos conservados; adaptar plantillas sectoriales sin pérdida de contenido.
+6. **R6 progresión por licencia:** adoptar diferencias Cuadra/Barrio/Ciudad solo tras contrato comercial, backend de derechos e integraciones efectivas, sin duplicar GHL.
+7. **R7 despliegue:** únicamente por autorización específica, con evidencia HTTP fechada y rollback.
+
+---
+
 # Plan de cambios visuales — sin modificación prematura de producción
 
 Versión 0.6 · Estado: biblioteca visual local verificada en navegador; integración de la plataforma no iniciada ni autorizada.
