@@ -224,3 +224,87 @@ test('R1.4: briefing especializado derivado del JSON y fallback sin promesas',()
   assert.match(html,/Copiar borrador para el subagente/);
   assert.doesNotMatch(js,/localStorage|XMLHttpRequest|fetch\(\s*["']https?:/);
 });
+
+
+test('R1.5: mapeo de materiales contra Card, superficies y CSS de la plataforma',()=>{
+  const compat=registry.platformCompatibility;
+  const ui=read('../vecidya-platform/app/components/ui.tsx');
+  const surfaces=read('../vecidya-platform/app/styles/visual-system.css');
+  const premium=read('../vecidya-platform/app/styles/premium-foundation.css');
+  const root=read('../vecidya-platform/app/root.tsx');
+  assert.equal(compat.version,'R1.5');
+  assert.equal(compat.status,'verified-source-crosswalk-no-product-migration');
+  assert.equal(compat.theme.currentPlatform,'light');
+  assert.equal(compat.theme.libraryDefault,'dark');
+  assert.match(premium,/color-scheme:\s*light/);
+  assert.match(root,/import "\.\/styles\/premium-foundation\.css"/);
+  assert.match(root,/import "\.\/styles\/visual-system\.css"/);
+  assert.match(ui,/export function Card\(/);
+  assert.match(ui,/surface\?: "glass" \| "solid" \| "highlight"/);
+  assert.match(ui,/depth\?: "quiet" \| "rest" \| "raised" \| "floating"/);
+  assert.deepEqual(compat.surfaces.map(x=>x.design),registry.materials.map(x=>x.id));
+  for(const material of compat.surfaces){
+    assert.match(surfaces,new RegExp('data-surface="'+material.platformSurface+'"'));
+    assert.match(surfaces,new RegExp('data-depth="'+material.platformDepth+'"'));
+    assert.equal(material.component,'Card');
+    assert.ok(material.context&&material.boundary);
+  }
+  for(const token of compat.tokens){
+    assert.ok(premium.includes(token.platform+': '+token.value+';'),
+      'Token desincronizado '+token.platform);
+    assert.ok(token.adoption);
+  }
+});
+
+test('R1.5: componentes exportados, navegación canónica y pendientes no inventados',()=>{
+  const compat=registry.platformCompatibility;
+  const sources={
+    'vecidya-platform/app/components/ui.tsx':read('../vecidya-platform/app/components/ui.tsx'),
+    'vecidya-platform/app/components/experience-system.tsx':read('../vecidya-platform/app/components/experience-system.tsx'),
+    'vecidya-platform/app/components/public-v2.tsx':read('../vecidya-platform/app/components/public-v2.tsx')
+  };
+  assert.equal(compat.primitives.length,11);
+  for(const primitive of compat.primitives){
+    assert.ok(sources[primitive.source]?.includes('export function '+primitive.name+'('),
+      'Falta export real: '+primitive.name);
+    assert.ok(primitive.rule&&primitive.values.length);
+  }
+  const ui=sources['vecidya-platform/app/components/ui.tsx'];
+  for(const surface of ['glass','solid','highlight'])assert.ok(ui.includes('"'+surface+'"'));
+  for(const depth of ['quiet','rest','raised','floating'])assert.ok(ui.includes('"'+depth+'"'));
+  const nav=read('../vecidya-platform/app/components/public-navigation.ts');
+  assert.match(nav,/export const PUBLIC_NAVIGATION_LINKS/);
+  for(const route of compat.navigation.validatedRoutes)
+    assert.ok(nav.includes('to: "'+route+'"'),'Ruta pública no canónica: '+route);
+  for(const shell of compat.shells){
+    const source=read('../'+shell.source);
+    assert.ok(source.includes('export function '+shell.component+'('));
+  }
+  const guide=read('../vecidya-platform/docs/design-system/VECIDYA-UI-UX.md');
+  for(const item of compat.proposedNotYetShared){
+    if(item.source.startsWith('vecidya-platform/'))assert.ok(guide.includes(item.name));
+    assert.ok(!ui.includes('export function '+item.name+'(')&&
+      !sources['vecidya-platform/app/components/experience-system.tsx'].includes('export function '+item.name+'('),
+      'Componente ya exportado; revisar condición de pendiente: '+item.name);
+  }
+  assert.ok(compat.boundaries.some(x=>x.includes('business-owned')));
+  assert.ok(compat.boundaries.some(x=>x.includes('GHL')));
+});
+
+test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CSS productivo',()=>{
+  const bridge=read('assets/platform-bridge.js');
+  const style=read('styles/platform-bridge.css');
+  assert.doesNotThrow(()=>new vm.Script(bridge));
+  assert.match(html,/href="#idioma"/);
+  assert.match(html,/id="idioma"/);
+  assert.match(html,/id="platform-bridge-content" hidden/);
+  assert.match(html,/src="assets\/platform-bridge.js"/);
+  assert.match(html,/href="styles\/platform-bridge.css"/);
+  for(const id of ['platform-bridge-status','platform-bridge-surfaces','platform-bridge-components','platform-bridge-tokens','platform-bridge-gaps'])
+    assert.ok(html.includes('id="'+id+'"'));
+  assert.match(bridge,/fetch\("assets\/pattern-registry\.json"/);
+  assert.match(bridge,/document\.createElement/);
+  assert.doesNotMatch(bridge,/innerHTML|localStorage|XMLHttpRequest/);
+  assert.match(style,/pb-table-wrap/);
+  assert.match(style,/overflow-x:auto/);
+});
