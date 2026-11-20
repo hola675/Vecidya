@@ -1,0 +1,9 @@
+{
+  // Worker existente: debe coincidir exactamente con el nombre de Cloudflare.
+  "name": "vecidya-desig",
+  "compatibility_date": "2026-11-19",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash"
+  }
+}
