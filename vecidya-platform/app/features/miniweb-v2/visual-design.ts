@@ -73,6 +73,7 @@ export function validateMiniWebV2Design(value: unknown): value is MiniWebV2Desig
   }
   // La página nunca debe publicar una combinación ilegible: texto normal y CTA.
   return miniWebV2Contrast(value.textColor as string, value.backgroundColor as string) >= 4.5 &&
+    miniWebV2Contrast(value.textColor as string, "#ffffff") >= 4.5 &&
     miniWebV2Contrast("#ffffff", value.accentColor as string) >= 4.5;
 }
 
