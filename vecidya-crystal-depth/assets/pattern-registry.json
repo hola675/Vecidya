@@ -301,7 +301,8 @@
     "animaciones pausables sin ocultar contenido",
     "modo reduced-motion respeta estado estático",
     "sin desbordamiento horizontal por transformaciones",
-    "selección por teclado entre demos sin reemplazar rutas reales"
+    "selección por teclado entre demos sin reemplazar rutas reales",
+    "no anunciar éxito sin resultado backend verificable y conservar información al fallar"
   ],
   "implementation": {
     "readFirst": [
@@ -319,7 +320,8 @@
       "crear-composicion",
       "elegir motion.presets y respetar preferencias de movimiento",
       "probar-estados-y-contraste",
-      "obtener-aprobacion-antes-de-migrar"
+      "obtener-aprobacion-antes-de-migrar",
+      "comprobar interactionRecipes cuando la petición incluya formularios, búsquedas, errores, esperas o confirmaciones"
     ],
     "doNot": "No importar CSS de este laboratorio directamente en producción ni fusionar sin autorización."
   },
@@ -495,6 +497,91 @@
         "perder contenido al cambiar estilo"
       ],
       "status": "demo-only-not-route"
+    }
+  ],
+  "interactionRecipes": [
+    {
+      "id": "idle",
+      "label": "Inicial",
+      "icon": "○",
+      "material": "solid",
+      "purpose": "Explicar qué puede hacer la persona y qué sucederá.",
+      "required": [
+        "acción identificable",
+        "etiqueta precisa",
+        "información contextual"
+      ],
+      "avoid": [
+        "CTA ambiguo",
+        "bloquear interacción sin motivo"
+      ]
+    },
+    {
+      "id": "loading",
+      "label": "Procesando",
+      "icon": "◷",
+      "material": "solid",
+      "purpose": "Representar una acción realmente pendiente.",
+      "required": [
+        "estado textual de espera",
+        "prevención de envíos duplicados",
+        "preservar contexto"
+      ],
+      "avoid": [
+        "porcentajes inventados",
+        "espera infinita sin salida",
+        "simular envío sin API"
+      ]
+    },
+    {
+      "id": "empty",
+      "label": "Sin resultados",
+      "icon": "□",
+      "material": "solid",
+      "purpose": "Explicar que no hay datos para el filtro o consulta actual.",
+      "required": [
+        "explicación",
+        "siguiente paso útil",
+        "filtros o navegación disponibles"
+      ],
+      "avoid": [
+        "fabricar resultados",
+        "culpar al usuario",
+        "solo icono decorativo"
+      ]
+    },
+    {
+      "id": "error",
+      "label": "Error",
+      "icon": "!",
+      "material": "solid",
+      "purpose": "Permitir comprender y recuperarse de un fallo confirmado.",
+      "required": [
+        "mensaje accionable",
+        "conservar entrada",
+        "reintento seguro cuando corresponda"
+      ],
+      "avoid": [
+        "revelar secretos",
+        "borrar el formulario",
+        "confirmar éxito sin respuesta"
+      ]
+    },
+    {
+      "id": "success",
+      "label": "Confirmación",
+      "icon": "✓",
+      "material": "solid",
+      "purpose": "Confirmar únicamente cuando el backend o servicio haya reconocido la operación.",
+      "required": [
+        "evidencia verificable de resultado",
+        "detalle útil del siguiente paso",
+        "feedback accesible"
+      ],
+      "avoid": [
+        "éxito optimista sin contrato",
+        "hacer pasar demo por operación real"
+      ]
     }
   ]
 }
