@@ -299,10 +299,45 @@ html[data-motion=enhanced] .hero-orbit--two{
 }
 .motion-timing strong{display:block;margin-bottom:5px;color:var(--r1-ink);font-size:13px}
 .motion-timing p{margin:0;color:var(--r1-muted);font-size:12px;line-height:1.6}
+/* Shared library components: context-sensitive microinteractions, no density penalties. */
+html[data-motion=enhanced] .crystal-button,
+html[data-motion=enhanced] .component-card,
+html[data-motion=enhanced] .scene-card,
+html[data-motion=enhanced] .r1-material-card{
+  transition:
+    transform var(--vx-motion-fast) var(--vx-motion-ease),
+    box-shadow var(--vx-motion-standard) ease,
+    border-color var(--vx-motion-standard) ease;
+}
+html[data-motion=enhanced] .tab-panel:not([hidden]){
+  animation:vx-motion-arrive var(--vx-motion-standard) var(--vx-motion-ease) both;
+}
+@media (hover:hover) and (pointer:fine){
+  html[data-motion=enhanced] .crystal-button:hover{transform:translate3d(0,-2px,0)}
+  html[data-motion=enhanced] :is(.component-card,.scene-card,.r1-material-card):hover{
+    transform:translate3d(0,-3px,0);
+  }
+  html[data-motion=enhanced] .motion-mini--entrance:hover span{
+    transform:translate3d(0,-8px,0);opacity:.7;
+  }
+  html[data-motion=enhanced] .motion-mini--feedback:hover span{transform:scale(1.07)}
+  html[data-motion=enhanced] .motion-mini--morph:hover span{border-radius:11px}
+}
+html[data-motion=enhanced] .motion-mini--entrance span,
+html[data-motion=enhanced] .motion-mini--feedback span,
+html[data-motion=enhanced] .motion-mini--morph span{
+  transition:transform var(--vx-motion-standard) var(--vx-motion-ease),
+             opacity var(--vx-motion-standard) ease,
+             border-radius var(--vx-motion-standard) ease;
+}
+html[data-motion=enhanced] .motion-mini--ambient span{
+  animation:vx-motion-halo var(--vx-motion-scene) ease-in-out infinite;
+}
 /* Fine-grained motion pause only applies to decorative ongoing movement. */
 html[data-motion-play=paused] .hero-stage-glow,
 html[data-motion-play=paused] .hero-orbit,
-html[data-motion-play=paused] .motion-stage *{
+html[data-motion-play=paused] .motion-stage *,
+html[data-motion-play=paused] .motion-mini--ambient span{
   animation-play-state:paused!important;
 }
 html[data-theme=light] .motion-card{
@@ -343,6 +378,7 @@ html[data-theme=light] .motion-timing article{
   html[data-motion=enhanced] .hero-visual{
     opacity:1!important;transform:none!important;transition:none!important;animation:none!important;
   }
+  html[data-motion=enhanced] :is(.crystal-button,.component-card,.scene-card,.r1-material-card,.tab-panel),
   .motion-grammar *,
   .motion-grammar *::before,
   .motion-grammar *::after,
