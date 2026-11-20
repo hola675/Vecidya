@@ -1,3 +1,10 @@
+## UX-CRYSTAL-R3 — preparación de rollout, no publicación
+
+R1.5–R1.9 están integrados en `main` (PR #261–#265). R2 aporta la QA de navegador pública y encontró una animación residual bajo `prefers-reduced-motion`, corregida en la rama R2 y pendiente de verificar/merge. R3 añade flags de reversión por ruta y un smoke HTTP anónimo de solo lectura, pero **no demuestra ni ejecuta release**.
+
+**Estado de R3:** `EN PROGRESO` hasta CI de su PR, gates R2 manuales, staging autorizado, rollout verificable por Version ID y aceptación. Los cinco pilotos reflejan clases que ya estaban integradas; los dos futuros están apagados. Sin cambios de D1/CRM/licencias ni activación del tema oscuro productivo.
+
+---
 ## UX-CRYSTAL-R1.6 — componentes visuales (candidato de PR, sin publicación verificada)
 
 `visual-contract.tsx` y CSS `v-*` introducen encabezado, filtro GET, consentimiento explícito, estado con acceso denegado, métrica con dato nulo distinto de cero y tendencia tabular. Son componentes presentacionales; toda garantía sobre permisos, consentimientos, eventos o confirmaciones depende de la ruta/servidor. Estado **EN PROGRESO** hasta CI y adopción. R1.5 de la biblioteca está integrada como contrato de diseño, no como tema oscuro productivo.
