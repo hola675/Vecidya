@@ -321,6 +321,43 @@ try{
         assertStep('estado-vacio',()=>assert.ok(empty));
         await page.locator('#asset-search').fill('');
       }
+      if(width===390 || width===1366){
+        const vicoButtons=page.locator('#vico-workbench-gallery button');
+        await vicoButtons.first().waitFor({timeout:10000});
+        const vicoCount=await vicoButtons.count();
+        assertStep('vico-catalogo-'+width,()=>assert.equal(vicoCount,11));
+        await page.getByRole('button',{name:'Seleccionar Vico · vecindario'}).click();
+        await page.locator('#vico-workbench-background').selectOption('checker');
+        await page.locator('#vico-workbench-position').selectOption('left');
+        await page.locator('#vico-workbench-size').evaluate((node)=>{
+          node.value='110';
+          node.dispatchEvent(new Event('input',{bubbles:true}));
+        });
+        await page.locator('#vico-workbench-scene').check();
+        await page.locator('#vico-workbench-image').evaluate((image)=>image.decode());
+        const vico=await page.locator('#vico-workbench').evaluate((root)=>({
+          chosen:root.querySelector('#vico-workbench-image').getAttribute('src'),
+          loaded:root.querySelector('#vico-workbench-image').naturalWidth>0,
+          label:root.querySelector('#vico-workbench-name').textContent,
+          background:root.querySelector('#vico-workbench-stage').dataset.background,
+          position:root.querySelector('#vico-workbench-stage').dataset.position,
+          scale:root.querySelector('#vico-workbench-stage').style.getPropertyValue('--vico-scale'),
+          scene:root.querySelector('#vico-workbench-stage').dataset.scene,
+          selected:root.querySelectorAll('.vico-workbench__item[aria-pressed="true"]').length
+        }));
+        assertStep('vico-interaccion-'+width,()=>{
+          assert.match(vico.chosen,/vico-vecindario\.webp$/);
+          assert.equal(vico.loaded,true);
+          assert.match(vico.label,/vecindario/i);
+          assert.equal(vico.background,'checker');
+          assert.equal(vico.position,'left');
+          assert.equal(vico.scale,'1.1');
+          assert.equal(vico.scene,'on');
+          assert.equal(vico.selected,1);
+        });
+        await page.locator('#vico-workbench').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-vico-visor.png'),animations:'disabled'});
+      }
       const images=await page.locator('.hero-visual img').evaluateAll(imgs=>imgs.filter(img=>img.complete&&!img.naturalWidth).map(img=>img.src));
       assertStep('hero-assets-'+width,()=>assert.equal(images.length,0,'Imágenes rotas: '+images.join(', ')));
     }catch(e){failures.push({name:'error-vista-'+width,error:String(e)});}
