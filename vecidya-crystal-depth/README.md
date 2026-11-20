@@ -16,6 +16,17 @@ La biblioteca es un **manual de decisiones visuales**, no solo una galería. Ant
 
 **R1 aprobada conceptualmente:** oscuro principal, claro alternativo; cristal focal en escenas, discreto en paneles y sólido en datos; calidad premium compartida entre Cuadra/Barrio/Ciudad con progresión por composiciones/capacidades efectivas; laboratorio interno como sistema de aprobación. **R1 no activa derechos comerciales, CRM ni nuevas plantillas por sí sola.**
 
+## Transiciones y animaciones R1.1 (laboratorio)
+
+La sección `biblioteca.html#movimiento` muestra **cinco recetas** reutilizables por agentes: portada, revelado de sección, respuesta de componente, ambiente de escena y navegación contextual. Incluye controles de intensidad, pausa y repetición, con `prefers-reduced-motion` que impide la animación incluso si el usuario activa el ejemplo. Los estados estáticos son completos.
+
+- `styles/motion-system.css`: tiempos y easing, halo/órbitas, entradas, tarjetas y responsive.
+- `assets/motion-system.js`: mejora progresiva de secciones, preferencias del SO, pausa y replay.
+- `assets/pattern-registry.json → motion`: contrato legible por agentes, usos, limitaciones y QA.
+- `tests/r2-browser-qa.mjs`: Chromium real, captura de cinco tamaños, temas, teclado, selector, controles de movimiento y modo reducido. El pipeline publica capturas como artifact solo al ejecutar la CI.
+
+**Los cambios R1.1 no migran componentes de React, no alteran operaciones de MiniWeb, CRM ni Admin y no autorizan deploy.**
+
 ## Abrir
 
 - Abrir `biblioteca.html` directamente en el navegador.
