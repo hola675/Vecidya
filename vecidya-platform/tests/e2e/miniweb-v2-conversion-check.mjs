@@ -93,12 +93,20 @@ try {
   const unconfirmed = await owner.request(endpoint, "POST", { operation: "create-from-published-v1", confirm: false, familyKey: "vecidya-default", visualVariant: "base" });
   assert.equal(unconfirmed.status, 400);
 
-  const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro" });
+  const design = { palette: "bosque", accentColor: "#226354", backgroundColor: "#f1f6ef", textColor: "#19392f",
+    font: "editorial", layout: "split", align: "center", imagePosition: "left",
+    titleSize: 52, bodySize: 16, spacing: 30, radius: 24, heroHeight: 360 };
+  const invalidStyle = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro",
+    design: { ...design, accentColor: "#ffffff" } });
+  assert.equal(invalidStyle.status, 400, "no se puede crear MiniWeb con CTA de contraste insuficiente");
+  const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro", design });
   assert.equal(empty.status, 201);
   const emptySiteId = (await empty.json()).siteId;
   const previousDraft = await owner.request(`${endpoint}?site=${encodeURIComponent(emptySiteId)}`);
   assert.equal(previousDraft.status, 200);
-  const previousDocument = JSON.stringify((await previousDraft.json()).state.draft.document);
+  const previousParsed = (await previousDraft.json()).state.draft.document;
+  assert.deepEqual(previousParsed.design, design, "la creación conserva la configuración visual de la organización");
+  const previousDocument = JSON.stringify(previousParsed);
   const untouchedCreate = await owner.request(endpoint, "POST", { operation: "create", familyKey: "professional-profile", visualVariant: "base" });
   assert.equal(untouchedCreate.status, 201);
   const untouchedSiteId = (await untouchedCreate.json()).siteId;
@@ -111,6 +119,10 @@ try {
   emptyDocument.sections = [];
   const emptySave = await owner.request(endpoint, "POST", { operation: "save", siteId: emptySiteId, expectedRevision: 1, document: emptyDocument });
   assert.equal(emptySave.status, 200);
+  const savedDesign = await owner.request(`${endpoint}?site=${encodeURIComponent(emptySiteId)}`);
+  assert.equal(savedDesign.status, 200);
+  assert.deepEqual((await savedDesign.json()).state.draft.document.design, design,
+    "guardar y recargar mantiene el diseño en la misma revisión");
   const emptyPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 2 });
   assert.equal(emptyPublish.status, 400, "el Worker rechaza la publicación sin portada");
 
