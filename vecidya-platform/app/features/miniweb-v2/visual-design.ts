@@ -77,7 +77,8 @@ export function validateMiniWebV2Design(value: unknown): value is MiniWebV2Desig
 }
 
 export function miniWebV2DesignStyle(design: MiniWebV2Design | undefined): CSSProperties {
-  const value = design ?? MINIWEB_V2_DEFAULT_DESIGN;
+  if (!design) return {};
+  const value = design;
   return {
     "--mw2-bg": value.backgroundColor,
     "--mw2-ink": value.textColor,
