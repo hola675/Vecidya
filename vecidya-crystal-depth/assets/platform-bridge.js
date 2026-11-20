@@ -50,6 +50,8 @@
         li.append(make("span",item.responsibility));
         gaps.append(li);
       });
+      const stateNote=document.getElementById("platform-bridge-state");
+      if(stateNote && bridge.stateParity)stateNote.textContent=bridge.stateParity.rule;
       output.hidden=false;
       status.textContent="Contrato R1.5 consultado: "+bridge.surfaces.length+" materiales, "+bridge.primitives.length+" componentes existentes, "+bridge.tokens.length+" tokens y "+bridge.proposedNotYetShared.length+" propuestas pendientes. La plataforma real sigue siendo la autoridad.";
     }catch{
