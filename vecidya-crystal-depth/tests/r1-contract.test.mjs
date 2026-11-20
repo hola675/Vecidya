@@ -145,3 +145,20 @@ test('composición de páginas R1.2: cuatro escenas oficiales y alternativa sin 
   assert.match(sceneJs,/root\.classList\.add\("is-interactive"\)/);
   assert.match(sceneJs,/panel\.hidden = !current/);
 });
+
+test('enrutador enlaza cuatro escenas reales y explica los contextos sin vista',()=>{
+  const options=[...html.matchAll(/<option\b[^>]*\bvalue="([^"]+)"[^>]*>/g)]
+    .map(x=>({value:x[1],preview:x[0].match(/\bdata-preview="([^"]+)"/)?.[1]}))
+    .filter(x=>registry.intentRouting.some(r=>r.intent===x.value));
+  const defined=options.filter(x=>x.preview);
+  assert.equal(options.length,8);
+  assert.deepEqual(defined.map(x=>[x.value,x.preview]),[
+    ['portada-marketing','publico'],['buscar-negocios','vecindario'],
+    ['contenido-editorial','aprende'],['editar-miniweb','miniweb']
+  ]);
+  assert.ok(defined.every(x=>registry.sceneRecipes.some(scene=>scene.id===x.preview&&scene.intent===x.value)));
+  assert.match(html,/id="r1-preview-link"/);
+  assert.match(html,/id="r1-preview-note"/);
+  assert.match(read('assets/scene-composer.js'),/suggested\.addEventListener\("click"/);
+  assert.match(read('styles/r1-guidance.css'),/\.r1-preview-action\[hidden\]/);
+});
