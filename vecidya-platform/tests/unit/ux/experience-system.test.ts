@@ -10,9 +10,12 @@ test("R1.8: superficies Admin reutilizan lenguaje v-surface sin cambiar acceso n
   const route = source("app/routes/internal-businesses.tsx");
   assert.match(route, /requirePlatformAdmin\(env, request\)/);
   assert.match(route, /listPlatformBusinessProfiles\(createDatabase\(env\.DB\)\)/);
-  assert.match(route, /className="admin-toolbar v-surface" data-surface="glass" data-depth="quiet"/);
-  assert.match(route, /className="admin-table-wrap v-surface" data-surface="solid" data-depth="rest"/);
-  assert.equal((route.match(/className="empty-state card v-surface" data-surface="solid" data-depth="rest"/g) ?? []).length, 2);
+  assert.match(route, /isVisualFeatureEnabled\("adminBusinessSurfaces"\)/);
+  assert.match(route, /admin-toolbar v-surface/);
+  assert.match(route, /data-surface=\{sharedSurfaces \? "glass" : undefined\}/);
+  assert.match(route, /admin-table-wrap v-surface/);
+  assert.match(route, /data-depth=\{sharedSurfaces \? "rest" : undefined\}/);
+  assert.equal((route.match(/empty-state card v-surface/g) ?? []).length, 2);
   assert.match(route, /profile\.platformStatus === "suspended"/);
   assert.match(route, /setStatusFilter/);
 });
