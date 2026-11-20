@@ -294,7 +294,27 @@ async function ensureMiniWebDraft(client, organizationId, fixture) {
   const contact = sections.get("contact");
   const location = sections.get("location");
   assert(hero && about && contact && location, `La familia MiniWeb V2 de ${fixture.slug} no tiene las secciones iniciales esperadas.`);
-  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.subtitle === fixture.subtitle && about.content.headline === fixture.headline && hero.content.image?.assetId === cover.id;
+  // Los bloques se crean a través del contrato V2 existente: no son una publicación.
+  const ensureSection = (type, content) => {
+    let section = sections.get(type);
+    if (!section) {
+      section = { id: `qa-${fixture.slug}-${type}`, type, schemaVersion: 1,
+        order: document.sections.length, visible: true, content };
+      document.sections.push(section);
+      sections.set(type, section);
+    }
+    return section;
+  };
+  const services = ensureSection("services", { items: [] });
+  const faq = ensureSection("faq", { items: [] });
+  const gallery = ensureSection("gallery", { images: [] });
+  const products = fixture.products?.length ? ensureSection("products", { items: [] }) : null;
+  const enriched = services.content.items.length === fixture.services.length &&
+    faq.content.items.length === fixture.faqs.length &&
+    gallery.content.images.some((image) => image.assetId === cover.id) &&
+    (!products || products.content.items.length === fixture.products.length);
+  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.subtitle === fixture.subtitle &&
+    about.content.headline === fixture.headline && hero.content.image?.assetId === cover.id && enriched;
   if (!alreadyPopulated) {
     hero.content.title = fixture.displayName;
     hero.content.subtitle = fixture.subtitle;
@@ -308,6 +328,25 @@ async function ensureMiniWebDraft(client, organizationId, fixture) {
     location.content.city = fixture.city;
     location.content.area = fixture.serviceArea;
     location.content.mapUrl = null;
+    services.content.items = fixture.services.map((title, index) => ({
+      id: `qa-${fixture.slug}-service-${index}`, title,
+      description: `${title}: servicio de muestra para revisión de diseño y contenido. Consulta las condiciones antes de solicitarlo.`,
+      image: null, cta: null,
+    }));
+    faq.content.items = fixture.faqs.map((question, index) => ({
+      id: `qa-${fixture.slug}-faq-${index}`, question,
+      answer: "Este escenario es una simulación de QA. Los detalles de contratación, disponibilidad y horarios no son reales.",
+    }));
+    gallery.content.images = [{
+      assetId: cover.id, alt: `Composición geométrica de muestra para ${fixture.displayName}.`,
+      caption: "Imagen sintética creada para pruebas visuales",
+    }];
+    if (products) products.content.items = fixture.products.map((title, index) => ({
+      id: `qa-${fixture.slug}-product-${index}`, title,
+      category: fixture.category,
+      description: "Artículo informativo de demostración, sin inventario ni precio real.",
+      image: null, cta: null,
+    }));
 
     const saved = await readJson(await client.json(path, {
       operation: "save",
