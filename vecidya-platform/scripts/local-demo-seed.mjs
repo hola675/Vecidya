@@ -227,16 +227,16 @@ async function ensureProfile(client, organizationId, fixture, index) {
   const fields = {
     displayName: fixture.displayName,
     slug: fixture.slug,
-    shortDescription: "Datos sintéticos para revisar la interfaz local; no representa un negocio real.",
-    description: "Este perfil pertenece al entorno de QA local de Vecidya. Su contenido, contacto, dominio y assets son de prueba y no describen una organización real.",
+    shortDescription: fixture.shortDescription,
+    description: fixture.description,
     category: fixture.category,
-    city: "Entorno de pruebas local",
-    country: "QA",
+    city: fixture.city,
+    country: fixture.country,
     phone: `+1 202-555-01${String(index + 1).padStart(2, "0")}`,
     publicEmail: fixture.publicEmail,
     websiteUrl: fixture.websiteUrl,
-    serviceMode: "hybrid",
-    serviceArea: "Solo entorno local; datos sintéticos.",
+    serviceMode: fixture.serviceMode,
+    serviceArea: `Escenario sintético de atención en ${fixture.city}; no es un establecimiento real.`,
     draftRevision: String(current.draftRevision ?? 0),
   };
   for (const [name, value] of Object.entries(fields)) form.set(name, value);
@@ -297,16 +297,16 @@ async function ensureMiniWebDraft(client, organizationId, fixture) {
   const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.image?.assetId === cover.id;
   if (!alreadyPopulated) {
     hero.content.title = fixture.displayName;
-    hero.content.subtitle = "Ficha sintética de QA en el entorno local de Vecidya.";
+    hero.content.subtitle = fixture.shortDescription;
     hero.content.image = { assetId: cover.id, alt: `Portada geométrica sintética de ${fixture.displayName}.` };
-    about.content.headline = "Contenido de demostración local";
-    about.content.description = "Esta página está creada con datos de prueba. No corresponde a una organización real y no se ha publicado.";
+    about.content.headline = `Conoce ${fixture.displayName}`;
+    about.content.description = fixture.description;
     contact.content.phone = null;
     contact.content.email = fixture.publicEmail;
     contact.content.links = [{ label: "Dominio reservado de prueba", href: fixture.websiteUrl }];
     location.content.address = null;
-    location.content.city = "Entorno de pruebas local";
-    location.content.area = "Solo datos sintéticos.";
+    location.content.city = fixture.city;
+    location.content.area = `Solo escenario local de pruebas, ${fixture.country}.`;
     location.content.mapUrl = null;
 
     const saved = await readJson(await client.json(path, {
@@ -356,8 +356,9 @@ for (let index = 0; index < fixtures.length; index += 1) {
 }
 
 await setActiveOrganization(client, seeded[0].organizationId);
-assert(seeded.length >= 4, "El fixture debe incluir al menos cuatro organizaciones.");
+assert(seeded.length >= 10, "El fixture debe incluir al menos diez organizaciones.");
 console.log(`\nSeed local listo: ${seeded.length} organizaciones, ${createdProfiles} perfiles nuevos, ${createdAssets} assets nuevos y ${createdMiniWebDrafts} borradores MiniWeb V2 nuevos.`);
 console.log(`Cuenta local: ${ownerEmail} / ${ownerPassword}`);
 console.log(`Abrir: ${baseUrl}/app/business-profile y ${baseUrl}/app/miniweb-v2`);
 console.log("Los perfiles quedan como borradores; no se crean licencias ficticias ni se publican páginas.");
+console.log("Las identidades, localidades, teléfonos, servicios y dominios son escenarios sintéticos y NO datos comerciales reales.");
