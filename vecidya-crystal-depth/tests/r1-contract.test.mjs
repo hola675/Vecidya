@@ -20,7 +20,7 @@ const part=(start,end)=>{
 const attrs=(tag,key)=>tag.match(new RegExp(key+'="([^"]*)"'))?.[1];
 const routes=[...html.matchAll(/<option\b[^>]*\bdata-material="[^"]*"[^>]*>/g)].map(x=>({
   value:attrs(x[0],'value'),
-  dataset:{material:attrs(x[0],'data-material'),scene:attrs(x[0],'data-scene'),rule:attrs(x[0],'data-rule')}
+  dataset:{material:attrs(x[0],'data-material'),scene:attrs(x[0],'data-scene'),rule:attrs(x[0],'data-rule'),preview:attrs(x[0],'data-preview')}
 }));
 
 test('tema oscuro inicial y alternancia accesible reversible',()=>{
@@ -39,7 +39,7 @@ test('tema oscuro inicial y alternancia accesible reversible',()=>{
 test('enrutador de agentes: ocho intenciones, tres campos consistentes',()=>{
   assert.equal(routes.length,8);
   assert.deepEqual(routes.map(x=>x.value).sort(),registry.intentRouting.map(x=>x.intent).sort());
-  const els=Object.fromEntries(['r1-route-material','r1-route-scene','r1-route-rule'].map(id=>[id,{textContent:''}]));
+  const els=Object.fromEntries(['r1-route-material','r1-route-scene','r1-route-rule','r1-preview-link','r1-preview-note'].map(id=>[id,{textContent:'',dataset:{},hidden:false}]));
   const select={options:routes,selectedIndex:0,addEventListener(k,fn){assert.equal(k,'change');this.change=fn;}};
   const document={getElementById:id=>id==='r1-intent'?select:els[id]};
   vm.runInNewContext(part('const r1Intent = document.getElementById("r1-intent")','document.getElementById("r1-copy").addEventListener'),{document});
@@ -48,6 +48,8 @@ test('enrutador de agentes: ocho intenciones, tres campos consistentes',()=>{
     assert.equal(els['r1-route-material'].textContent,routes[i].dataset.material);
     assert.equal(els['r1-route-scene'].textContent,routes[i].dataset.scene);
     assert.equal(els['r1-route-rule'].textContent,routes[i].dataset.rule);
+    assert.equal(els['r1-preview-link'].hidden,!routes[i].dataset.preview);
+    assert.equal(els['r1-preview-link'].dataset.preview,routes[i].dataset.preview||'');
   }
   assert.equal(new Set(routes.map(x=>x.dataset.rule)).size,8);
 });
