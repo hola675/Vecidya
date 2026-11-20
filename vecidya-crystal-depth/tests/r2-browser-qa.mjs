@@ -325,7 +325,7 @@ try{
         const vicoButtons=page.locator('#vico-workbench-gallery button');
         await vicoButtons.first().waitFor({timeout:10000});
         const vicoCount=await vicoButtons.count();
-        assertStep('vico-catalogo-'+width,()=>assert.equal(vicoCount,11));
+        assertStep('vico-catalogo-'+width,()=>assert.equal(vicoCount,10));
         await page.getByRole('button',{name:'Seleccionar Vico · vecindario'}).click();
         await page.locator('#vico-workbench-background').selectOption('checker');
         await page.locator('#vico-workbench-position').selectOption('left');
