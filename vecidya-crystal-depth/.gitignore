@@ -1,0 +1,3 @@
+# Carpeta generada por scripts/build-cloudflare.mjs
+/dist/
+/.wrangler/
