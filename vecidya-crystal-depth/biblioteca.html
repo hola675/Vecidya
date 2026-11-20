@@ -439,11 +439,11 @@
             </div>
             <label for="r1-intent">Necesidad de interfaz</label>
             <select id="r1-intent" class="crystal-input" aria-describedby="r1-routing-note">
-              <option value="portada-marketing" data-material="Crystal Focal + Quiet" data-scene="home-scene" data-rule="Mantén texto y acciones en superficies contrastadas; Vico es un elemento independiente.">Portada pública y servicios</option>
-              <option value="buscar-negocios" data-material="Crystal Quiet + Solid" data-scene="neighborhood-scene" data-rule="Filtros funcionales, categoría real y datos del negocio sin inventar.">Vecindario y búsqueda</option>
+              <option value="portada-marketing" data-preview="publico" data-material="Crystal Focal + Quiet" data-scene="home-scene" data-rule="Mantén texto y acciones en superficies contrastadas; Vico es un elemento independiente.">Portada pública y servicios</option>
+              <option value="buscar-negocios" data-preview="vecindario" data-material="Crystal Quiet + Solid" data-scene="neighborhood-scene" data-rule="Filtros funcionales, categoría real y datos del negocio sin inventar.">Vecindario y búsqueda</option>
               <option value="diagnosticar" data-material="Solid Readable" data-scene="diagnostic-scene" data-rule="No modifiques las preguntas, la puntuación ni los contratos del diagnóstico.">Diagnóstico y resultados</option>
-              <option value="contenido-editorial" data-material="Solid Readable + Quiet" data-scene="learn-journey-scene" data-rule="Prioriza longitud de línea, legibilidad y navegación editorial.">Aprende y contenidos</option>
-              <option value="editar-miniweb" data-material="Solid Readable + Quiet" data-scene="Sin escena detrás del editor" data-rule="Distingue borrador, vista previa y publicación; conserva contenido al cambiar la plantilla.">Editor MiniWeb</option>
+              <option value="contenido-editorial" data-preview="aprende" data-material="Solid Readable + Quiet" data-scene="learn-journey-scene" data-rule="Prioriza longitud de línea, legibilidad y navegación editorial.">Aprende y contenidos</option>
+              <option value="editar-miniweb" data-preview="miniweb" data-material="Solid Readable + Quiet" data-scene="Sin escena detrás del editor" data-rule="Distingue borrador, vista previa y publicación; conserva contenido al cambiar la plantilla.">Editor MiniWeb</option>
               <option value="administrar-plataforma" data-material="Solid Readable" data-scene="Sin escena detrás de tablas" data-rule="Protege permisos, estados, densidad de información y trazabilidad.">Mi Vecidya y Admin</option>
               <option value="comparar-licencias" data-material="Crystal Quiet + foco único" data-scene="licenses-scene" data-rule="Cuadra debe ser completo; no afirmes capacidades futuras como activas.">Cuadra, Barrio y Ciudad</option>
               <option value="captacion-comercial" data-material="Solid Readable + foco en CTA" data-scene="Según página, sin fondo obligatorio" data-rule="CRM y automatización corresponden a GHL y requieren integración real.">Captación comercial / CRM</option>
@@ -452,6 +452,10 @@
               <p><span>Material recomendado</span><strong id="r1-route-material">Crystal Focal + Quiet</strong></p>
               <p><span>Escena</span><strong id="r1-route-scene">home-scene</strong></p>
               <p><span>Regla crítica</span><strong id="r1-route-rule">Mantén texto y acciones en superficies contrastadas; Vico es un elemento independiente.</strong></p>
+            </div>
+            <div class="r1-preview-linking">
+              <a id="r1-preview-link" class="crystal-button crystal-button--secondary r1-preview-action" href="#composiciones" data-preview="publico">Ver composición recomendada</a>
+              <p id="r1-preview-note" class="r1-caption" role="status" aria-live="polite">Disponible: sitio público, escena y material de referencia.</p>
             </div>
             <p id="r1-routing-note" class="r1-caption">Contrato legible por máquinas: <a href="assets/pattern-registry.json">pattern-registry.json</a>. Guía de agentes: <a href="docs/INTEGRACION.md">INTEGRACION.md</a>.</p>
             <button type="button" class="crystal-button crystal-button--secondary" id="r1-copy">Copiar instrucciones para el agente</button>
@@ -672,6 +676,14 @@
         document.getElementById("r1-route-material").textContent = data.material;
         document.getElementById("r1-route-scene").textContent = data.scene;
         document.getElementById("r1-route-rule").textContent = data.rule;
+        const link = document.getElementById("r1-preview-link");
+        const note = document.getElementById("r1-preview-note");
+        const preview = data.preview || "";
+        link.hidden = !preview;
+        link.dataset.preview = preview;
+        note.textContent = preview
+          ? "Existe una composición demostrativa para este contexto. No implementa la ruta ni modifica datos."
+          : "Este contexto no tiene composición de página R1.2. Aplica el material y la regla indicados; no reutilices otra escena por suposición.";
       };
       r1Intent.addEventListener("change", updateR1);
       updateR1();
@@ -681,6 +693,7 @@
           "\nMaterial: " + current.dataset.material +
           "\nEscena: " + current.dataset.scene +
           "\nRegla crítica: " + current.dataset.rule +
+          "\nComposición: " + (current.dataset.preview || "sin muestra específica; usar el material recomendado") +
           "\nAntes de implementar: consultar assets/pattern-registry.json, docs/INTEGRACION.md y los contratos reales de la plataforma; verificar accesibilidad, permisos y pruebas focales. R1 no autoriza deploy.";
         const status = document.getElementById("r1-copy-status");
         if (!navigator.clipboard || !window.isSecureContext) {
