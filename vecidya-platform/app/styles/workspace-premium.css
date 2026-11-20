@@ -211,7 +211,7 @@
 .miniweb-v2[data-layout] article,
 .miniweb-v2[data-layout] details { border-radius: var(--mw2-radius); }
 .miniweb-v2[data-layout] > header { min-height: var(--mw2-hero-height); }
-.miniweb-v2[data-layout="split"] > header { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,0.9fr); align-items: center; gap: var(--mw2-spacing); }
+.miniweb-v2[data-layout="split"] > header[data-image="present"] { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,0.9fr); align-items: center; gap: var(--mw2-spacing); }
 .miniweb-v2[data-layout="stacked"] > header { display: flex; flex-direction: column; gap: var(--mw2-spacing); }
 .miniweb-v2[data-image-position="left"][data-layout="split"] > header > .miniweb-v2__media { grid-column: 1; grid-row: 1; }
 .miniweb-v2[data-image-position="left"][data-layout="split"] > header > div:first-child { grid-column: 2; grid-row: 1; }
