@@ -136,6 +136,8 @@ El brief se construye desde `pattern-registry.json` (rutas `intentRouting`, `sce
 
 **Reglas de marca y navegación:** `PUBLIC_NAVIGATION_LINKS` decide nombres y destinos de la web pública. El HTML de Crystal no introduce rutas ni modifica el menú React. La plataforma está actualmente en modo claro; cambiar toda Vecidya a oscuro requiere contrato opt-in por shell y aceptación por pantalla. La fuente de MiniWeb pública es la identidad del negocio; no imponer el tema Vecidya a su página.
 
+**Brecha de estados:** el sistema visual de la plataforma también exige **acceso denegado**. El laboratorio R1.3 todavía no tiene esa muestra; `platformCompatibility.stateParity` la registra y la reserva para R1.6. El motivo de denegación se deriva de autorización real del servidor, no de una animación ni de un resultado vacío.
+
 **Pendientes (NO IMPLEMENTADOS como primitivos compartidos):** `PageHeading` P1, `AdminFilterBar` P1, `ConsentStatus` P1, `DiagnosticMetricCard` P2 y `DiagnosticTrend` P2 son candidatos de la guía oficial. `SharedStatusPanel` es propuesta adicional para unificar loading/empty/error/success, pero debe partir de `EmptyState` y `Alert` existentes sin duplicarlos. Los contratos de datos, consentimiento y métricas siguen bajo el backend existente.
 
 **Trabajo de un agente:** leer la ruta y shell actual → seleccionar componente existente → usar tokens `--v-*` → verificar interfaz y variantes tipadas → adaptar únicamente los estilos necesarios → QA focal y evidencia del SHA → revisión y PR. La sección 12 es una referencia operativa, no una migración realizada.
