@@ -12,6 +12,18 @@ Comandos desde `vecidya-platform/`:
 La reversión es un cambio por PR del flag de una ruta, no una operación en caliente. Después de revertir, repetir tipo/build/regresión, E2E visual de esa ruta y smoke HTTP post-deploy. La CI de contrato no prueba accesibilidad manual ni datos internos.
 
 ---
+## UX-CRYSTAL-R2 — QA en navegador real, alcance y evidencia
+
+Se amplió **el test E2E existente** `tests/e2e/public-navigation-a11y-check.mjs` para comprobar las superficies públicas afectadas por R1.7 (Inicio, Servicios y Vecindario) y guardar capturas de 390/1366 px. La CI R2 inicia el Worker local-demo **solo en loopback**, con D1 local aislada, email falso y Playwright Chromium. No usa D1 remota ni ejecuta comandos de publicación.
+
+Abarca siete anchos de navegador (320, 360, 390, 768, 960, 1024, 1366), desbordamiento, navegación real, salto al contenido, foco visible básico y preferencia de movimiento reducido en una ilustración. `test-results/ux-crystal-r2` conserva capturas y log temporal (retención siete días). No se crea arnés por ejecución.
+
+**No equivale a certificación WCAG integral:** siguen pendientes zoom real de navegador al 200 %, lectura con NVDA/VoiceOver, contraste medido sobre superficies translúcidas y gradientes, revisión humana de las capturas y rendimiento en dispositivos lentos. La suite tampoco cubre sesiones autenticadas de Mi Vecidya/Admin o editor MiniWeb; esos recorridos requieren fixtures y pruebas autorizadas por superficie.
+
+**Criterio de reporte:** solo afirmar `RAN PASS` para pasos efectivamente ejecutados sobre SHA concreto; separar `TEST` (caso versionado), `RAN` (workflow completo y conclusión), `HTTP` (sitio público fechado) y `DOC` (pendiente). Un test redactado o una captura producida no autoriza despliegue.
+
+---
+
 ## UX-CRYSTAL-R1.6 — QA focal del contrato visual compartido
 
 En `vecidya-platform/`, ejecutar `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/ux/experience-system.test.ts`. Cubre ausencia de métricas ficticias, exportaciones de estado, consentimiento explícito, GET/reset, series nulas/cero, CSS compartido, foco y responsive por inspección de código. Typecheck y build son gates adicionales. No se presenta esta prueba como verificación de lector de pantalla, zoom 200%, autorización server-side ni capturas de rutas reales.
