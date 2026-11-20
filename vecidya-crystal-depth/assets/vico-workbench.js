@@ -5,7 +5,6 @@
  */
 (() => {
   const definitions = Object.freeze({
-    "home-vecidya-companion-v4.webp": { purpose: "Bienvenida y ecosistema", placement: "Inicio · composición de bienvenida", route: "/", role: "composicion", scene: "home-scene.webp", caution: "Esta pieza es una composición horizontal; no usarla como sustituto de un Vico vertical independiente." },
     "vico-home.webp": { purpose: "Presentación de Vecidya", placement: "Inicio · personaje separado", route: "/", role: "personaje", scene: "home-scene.webp", caution: "Preservar área despejada junto al título y el CTA." },
     "vico-vecindario.webp": { purpose: "Descubrir negocios", placement: "Vecindario y búsqueda", route: "/vecindario", role: "personaje", scene: "neighborhood-scene.webp", caution: "No superponer sobre tarjetas ni filtros de búsqueda." },
     "vico-diagnostico.webp": { purpose: "Orientar el diagnóstico", placement: "Diagnóstico público", route: "/diagnostico", role: "personaje", scene: "diagnostic-scene.webp", caution: "No usar la pose como indicador de la puntuación o del resultado." },
