@@ -74,6 +74,23 @@ try{
           assert.match(route.scene,/Sin escena detrás del editor/);
           assert.match(route.rule,/borrador/i);
         });
+        const previewAction=page.locator('#r1-preview-link');
+        const previewIsVisible=await previewAction.isVisible();
+        const previewTarget=await previewAction.getAttribute('data-preview');
+        assertStep('guia-con-composicion-'+width,()=>{
+          assert.equal(previewIsVisible,true);
+          assert.equal(previewTarget,'miniweb');
+        });
+        await previewAction.click();
+        const fromGuide=await page.evaluate(()=>({
+          scene:document.querySelector('#composer-tabs [aria-selected="true"]')?.id,
+          fragment:location.hash
+        }));
+        assertStep('guia-abre-miniweb-'+width,()=>{
+          assert.equal(fromGuide.scene,'composer-tab-miniweb');
+          assert.equal(fromGuide.fragment,'#composiciones');
+        });
+        await page.locator('#composer-tab-publico').click();
         await page.locator('#r1-intent').selectOption('diagnosticar');
         const route2=await page.evaluate(()=>({
           material:document.getElementById('r1-route-material').textContent,
@@ -84,6 +101,12 @@ try{
           assert.equal(route2.material,'Solid Readable');
           assert.equal(route2.scene,'diagnostic-scene');
           assert.match(route2.rule,/puntuación/);
+        });
+        const missingPreview=await page.locator('#r1-preview-link').isHidden();
+        const explanatoryNote=await page.locator('#r1-preview-note').textContent();
+        assertStep('guia-sin-composicion-'+width,()=>{
+          assert.ok(missingPreview);
+          assert.match(explanatoryNote,/no tiene composición de página/);
         });
         await page.locator('#r1-intent').scrollIntoViewIfNeeded();
         await page.screenshot({path:join(artifacts,'r2-390-guide.png'),animations:'disabled'});
