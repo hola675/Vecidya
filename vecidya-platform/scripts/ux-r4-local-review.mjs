@@ -44,7 +44,7 @@ try {
   const health = await context.request.get(base.href);
   if (!health.ok()) throw new Error(`El servidor local no responde correctamente: HTTP ${health.status()}`);
   const [email, password] = roles[role];
-  const login = await context.request.post(new URL("/api/auth/sign-in/email", base), {
+  const login = await context.request.post(new URL("/api/auth/sign-in/email", base).toString(), {
     data: { email, password },
     headers: { origin: base.origin },
   });
