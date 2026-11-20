@@ -23,3 +23,31 @@ jobs:
           node-version: "22"
       - name: Comprobar temas, enrutamiento, materiales, assets y contraste
         run: node --test vecidya-crystal-depth/tests/r1-contract.test.mjs
+
+  browser:
+    name: Biblioteca visual · R2 Chromium responsive
+    needs: library
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Instalar Playwright ya declarado por la plataforma
+        run: pnpm --dir vecidya-platform install --frozen-lockfile
+      - name: Certificar interacción y responsive en navegador real
+        run: node vecidya-crystal-depth/tests/r2-browser-qa.mjs
+      - name: Conservar evidencia visual del commit probado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: crystal-depth-r2-capturas
+          path: vecidya-crystal-depth/.qa-artifacts/
+          retention-days: 7
+          if-no-files-found: warn
