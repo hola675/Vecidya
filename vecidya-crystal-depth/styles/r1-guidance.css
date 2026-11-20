@@ -74,3 +74,9 @@ html[data-theme=light] .r1-plans article>span{color:#a44b00}
 @media (max-width:950px){.r1-materials,.r1-plans{grid-template-columns:repeat(2,minmax(0,1fr))}.r1-assistant-answer{grid-template-columns:1fr}}
 @media (max-width:650px){.r1-materials,.r1-plans{grid-template-columns:1fr}.r1-material-card{min-height:0}.r1-assistant,.r1-checklist{padding:18px}.r1-decision-strip span{font-size:11px}}
 @media (prefers-reduced-motion:reduce){.r1-guide *, .r1-guide *::before,.r1-guide *::after{animation:none!important;transition:none!important}}
+
+/* R2: los subtítulos largos de las insignias (p. ej. «en revisión»)
+   no pueden imponer ancho mayor que su tarjeta a 320–390 px. */
+@media (max-width:500px){
+  .section-count small{min-width:0;max-width:100%;overflow-wrap:anywhere;text-align:center;letter-spacing:0;line-height:1.12}
+}
