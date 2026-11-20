@@ -96,6 +96,20 @@ Las cuatro muestras usan pestañas seleccionables mediante ratón y teclado (fle
 
 **Empaquetado aislado:** el script `scripts/build-cloudflare.mjs` construye el sitio de demostración sin desplegar, reescribe assets y conserva los documentos didácticos referenciados por la propia página. La CI ejecuta el empaquetado y comprueba archivos, pero esa aprobación no autoriza conectar producción a Cloudflare.
 
+## 4.3. Estados de interacción R1.3: no mentir a quien usa el producto
+
+Cuando se soliciten formularios, búsquedas, paneles o flujos con cambios de datos, consultar `assets/pattern-registry.json → interactionRecipes` y `biblioteca.html#flujos`.
+
+| Estado | Comportamiento obligatorio |
+| --- | --- |
+| `idle` | Mostrar acción y contexto antes de usarla. |
+| `loading` | Espera solo si hay tarea real; evitar duplicados, no inventar progreso. |
+| `empty` | Explicar por qué no hay resultados y ofrecer siguiente paso. |
+| `error` | Mantener entradas y dar recuperación segura, sin secretos. |
+| `success` | Confirmar **solo** después de respuesta verificable del backend o integración externa. |
+
+Los textos del laboratorio declaran su naturaleza simulada; nunca copiar literalmente `Acción confirmada` a una implementación sin completar el contrato de persistencia. Conservar estados de foco, etiquetas y región viva accesible; respetar `prefers-reduced-motion`. No usar efectos decorativos como indicadores de envío real.
+
 ## 5. MiniWeb V2 y licencias: contrato de interfaz, no habilitación
 
 `Cuadra`: web profesional completa y editable por organización, con plantilla sectorial legible. `Barrio`: hereda Cuadra; composición orientada a captar consultas y gestionar seguimiento cuando su integración GHL esté operativa. `Ciudad`: hereda Barrio; variaciones de composiciones multiproceso cuando esos procesos estén realmente disponibles. Las diferencias deben responder al valor del producto, **no** a reducir artificialmente la calidad de Cuadra.
