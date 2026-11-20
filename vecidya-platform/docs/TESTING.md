@@ -1,3 +1,17 @@
+## UX-CRYSTAL-R3 — regresión de flags y verificación HTTP anónima
+
+Se amplió **la suite existente**, sin añadir tests históricos, para comprobar `VISUAL_ROLLOUT`, composición de clases, fallbacks de Admin/MiniWeb y límites de la consulta remota.
+
+Comandos desde `vecidya-platform/`:
+- `pnpm typecheck`, `pnpm build`, `pnpm test:unit`: gates técnicos generales.
+- `UX_HTTP_CHECK_TARGET=https://vecidya-platform-staging.soporte-8a1.workers.dev/ pnpm ux:verify-http`: smoke **anónimo y de solo lectura** contra staging, solo si el entorno de destino está preparado.
+- Para producción, además `UX_PRODUCTION_READONLY_APPROVED=1` y `UX_HTTP_CHECK_TARGET=https://vecidya.com/`; consultar sin sesión no constituye autorización de deploy.
+
+`scripts/ux-verify-http.mjs` restringe el destino a loopback 4173/5173, staging `vecidya-platform-staging.*.workers.dev`, o dominio Vecidya con opt-in explícito de lectura. Solo ejecuta GET a `/`, `/vecindario`, `/servicios` y `/aprende`, sin seguir redirecciones, sin cookies, auth, mutaciones o bases de datos. Registra fecha UTC, estado HTTP y presencia de H1; **no demuestra que el SHA de GitHub coincida con el Worker desplegado**. Para eso se necesita evidencia de release o de versión publicada independiente.
+
+La reversión es un cambio por PR del flag de una ruta, no una operación en caliente. Después de revertir, repetir tipo/build/regresión, E2E visual de esa ruta y smoke HTTP post-deploy. La CI de contrato no prueba accesibilidad manual ni datos internos.
+
+---
 ## UX-CRYSTAL-R1.6 — QA focal del contrato visual compartido
 
 En `vecidya-platform/`, ejecutar `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/ux/experience-system.test.ts`. Cubre ausencia de métricas ficticias, exportaciones de estado, consentimiento explícito, GET/reset, series nulas/cero, CSS compartido, foco y responsive por inspección de código. Typecheck y build son gates adicionales. No se presenta esta prueba como verificación de lector de pantalla, zoom 200%, autorización server-side ni capturas de rutas reales.
