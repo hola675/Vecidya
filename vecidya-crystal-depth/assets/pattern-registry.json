@@ -953,6 +953,26 @@
         "status": "propuesta-r1.5-a-validar",
         "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert."
       }
-    ]
+    ],
+    "stateParity": {
+      "platformRequired": [
+        "loading",
+        "empty",
+        "error",
+        "access-denied",
+        "success"
+      ],
+      "labExamples": [
+        "idle",
+        "loading",
+        "empty",
+        "error",
+        "success"
+      ],
+      "labMissing": [
+        "access-denied"
+      ],
+      "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
+    }
   }
 }
