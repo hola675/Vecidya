@@ -1,5 +1,4 @@
 {
-  "$id": "vecidya-crystal-depth/pattern-registry-r1",
   "version": "1.0.0-r1-candidate",
   "status": "candidato-en-revision-no-integrado",
   "lastUpdated": "2026-11-19",
@@ -318,5 +317,6 @@
     ],
     "doNot": "No importar CSS de este laboratorio directamente en producción ni fusionar sin autorización."
   },
-  "schemaVersion": "1"
+  "schemaVersion": "1",
+  "id": "vecidya-crystal-depth/pattern-registry-r1"
 }
