@@ -1,3 +1,17 @@
+## APP-MINI-V2 — Personalización en el editor real (checkpoint en PR; 2026-11-20)
+
+**Objetivo:** incorporar los controles de estilo directamente a `/app/miniweb-v2` tanto en creación como edición, no solo en la biblioteca Crystal Depth. **Implementado en rama de PR, no desplegado ni certificado todavía.**
+
+**Arquitectura:** `app/features/miniweb-v2/visual-design.ts` define el contrato `MiniWebV2Design`: paleta Océano/Bosque/Coral/Ciruela o colores personalizados (acento, fondo, tinta), fuente (moderna/editorial/cercana), composición `split/stacked`, alineación, posición de imagen, título 26–60 px, texto 14–20 px, espacio 12–42 px, radio 0–34 px y hero 260–480 px. Los valores están restringidos y requieren contraste >=4,5:1 para fondo/texto, texto sobre tarjeta blanca y botón blanco sobre acento. No se aceptan CSS ni URL libres.
+
+**Persistencia sin migración:** `MiniWebV2Document.design?` es opcional para compatibilidad con publicaciones y borradores legacy. El endpoint `api-miniweb-v2.ts` valida el estilo antes de crear/importar y en `save` valida el documento entero; se conserva el control de revisión, las guardas por organización y la publicación explícita. El renderer React usa un mismo contrato para vista previa y publicación SSR. No modifica datos comerciales, CRM ni capacidad de licencias.
+
+**Interfaz:** `MiniWebV2DesignControls` se muestra en creación y edición dentro de Mi Vecidya. La vista previa privada refleja cambios no guardados, la salida avisa si hay cambios pendientes y el botón de guardar los persiste con el contenido. Los documentos sin personalización no reciben CSS inline nuevo y mantienen sus colores por familia.
+
+**Gates abiertos:** revisión del PR, typecheck/build, pruebas unitarias focales, Worker/D1 local de creación→edición→recarga→publicación, dos organizaciones aisladas, colores extremos, zoom 200 %, teclado, móvil 320/390 y inspección humana. No declarar completado el release ni emitir licencia por cambiar diseño. La biblioteca Crystal Depth permanece referencia didáctica y no CSS productivo.
+
+---
+
 ## UX-CRYSTAL-R3 — activación reversible de los cambios visuales ya integrados
 
 `app/lib/visual-rollout.ts` contiene el catálogo **único** de flags visuales por familia de ruta. Sus cinco opciones activas corresponden a cambios ya integrados por R1.7–R1.9; las dos superficies futuras están **desactivadas por defecto**. No son flags de permisos ni de licencias y no deben usarse para modificar autorización del servidor.
