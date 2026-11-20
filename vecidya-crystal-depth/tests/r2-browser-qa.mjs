@@ -229,6 +229,23 @@ try{
     }catch(e){failures.push({name:'error-vista-'+width,error:String(e)});}
     finally{await page.close();}
   }
+  // Degradación progresiva: las cuatro páginas deben verse sin JS.
+  const noScript=await browser.newPage({viewport:{width:390,height:900},javaScriptEnabled:false});
+  try{
+    await noScript.goto(addr,{waitUntil:'domcontentloaded',timeout:45000});
+    const noJsTabsHidden=await noScript.locator('#composer-tabs').isHidden();
+    const noJsPanels=await noScript.locator('#composer [role="tabpanel"]:visible').count();
+    const noJsScenes=await noScript.locator('#composer [role="tabpanel"] h3').allTextContents();
+    assertStep('compositor-sin-javascript',()=>{
+      assert.equal(noJsTabsHidden,true);
+      assert.equal(noJsPanels,4);
+      assert.equal(noJsScenes.length,4);
+      assert.ok(noJsScenes.every(x=>x.trim().length>10));
+    });
+    await noScript.locator('#composer').scrollIntoViewIfNeeded();
+    await noScript.screenshot({path:join(artifacts,'r2-390-nojs.png'),animations:'disabled'});
+  }catch(error){failures.push({name:'compositor-nojs-error',error:String(error)});}
+  finally{await noScript.close();}
   const catalog=readFileSync(join(library,'assets/library-catalog.js'),'utf8');
   const previews=[...catalog.matchAll(/"preview": "([^"]+)"/g)].map(x=>x[1]);
   const missing=previews.filter(p=>!existsSync(resolve(library,p)));
