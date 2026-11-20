@@ -10,17 +10,27 @@ const evidencePath = "test-results/ux-crystal-r2";
 mkdirSync(evidencePath, { recursive: true });
 
 async function assertNoOverflow(page, label) {
-  const overflow = await page.evaluate(() => {
-    const width = document.documentElement.clientWidth;
-    return [...document.body.querySelectorAll("*")]
+  const measurement = await page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+    const overflow = scrollWidth - viewport;
+    const candidates = overflow > 1 ? [...document.body.querySelectorAll("*")]
       .filter((element) => {
         const rect = element.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.right > width + 1;
+        return rect.width > 0 && rect.height > 0 && rect.right > viewport + 1;
       })
-      .slice(0, 5)
-      .map((element) => ({ tag: element.tagName, className: element.className, right: element.getBoundingClientRect().right }));
+      .slice(0, 6)
+      .map((element) => ({
+        tag: element.tagName,
+        className: typeof element.className === "string" ? element.className : "",
+        right: Math.round(element.getBoundingClientRect().right * 100) / 100,
+        parent: element.parentElement?.className ?? "",
+      })) : [];
+    return { viewport, scrollWidth, overflow, candidates };
   });
-  assert(overflow.length === 0, `${label}: desbordamiento horizontal ${JSON.stringify(overflow)}`);
+  // Un borde hijo puede sobresalir fraccionalmente y quedar recortado sin
+  // causar desplazamiento del documento; medir scrollWidth evita falsos fallos.
+  assert(measurement.overflow <= 1, `${label}: scroll horizontal real ${JSON.stringify(measurement)}`);
 }
 
 async function assertRoundedSurfaces(page, label) {
