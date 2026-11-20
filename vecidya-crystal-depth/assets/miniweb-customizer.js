@@ -14,7 +14,7 @@
     cercana: '"Trebuchet MS", "Segoe UI", sans-serif'
   });
   const defaults = Object.freeze({
-    tier: "base", palette: "oceano", font: "moderna", layout: "split",
+    tier: "base", palette: "oceano", primaryColor: "#154B85", accentColor: "#F6A344", canvasColor: "#F2F7FC", font: "moderna", layout: "split",
     align: "left", heroPosition: "right", titleSize: 40, bodySize: 16,
     spacing: 24, radius: 20, heroHeight: 330
   });
@@ -23,6 +23,8 @@
     font: Object.keys(fonts), layout: ["split", "stacked"], align: ["left", "center"],
     heroPosition: ["left", "right"]
   });
+  const colors = ["primaryColor", "accentColor", "canvasColor"];
+  const isColor = (value) => /^#[0-9a-fA-F]{6}$/.test(value);
   const numeric = Object.freeze({
     titleSize: [26, 60], bodySize: [14, 20],
     spacing: [12, 42], radius: [0, 34], heroHeight: [260, 480]
@@ -47,7 +49,9 @@
         const key = control.dataset.mwField;
         if (!(key in state)) continue;
         const value = control.value;
-        if (Object.prototype.hasOwnProperty.call(numeric, key)) {
+        if (colors.includes(key) && isColor(value)) {
+          state[key] = value;
+        } else if (Object.prototype.hasOwnProperty.call(numeric, key)) {
           const number = Number(value);
           const [min, max] = numeric[key];
           if (Number.isFinite(number)) state[key] = Math.max(min, Math.min(max, number));
@@ -59,11 +63,11 @@
     };
     const paint = (announce = false) => {
       const state = read();
-      const colors = palette[state.palette];
-      preview.style.setProperty("--mw-primary", colors.primary);
-      preview.style.setProperty("--mw-accent", colors.accent);
-      preview.style.setProperty("--mw-canvas", colors.canvas);
-      preview.style.setProperty("--mw-ink", colors.ink);
+      const ink = palette[state.palette].ink;
+      preview.style.setProperty("--mw-primary", state.primaryColor);
+      preview.style.setProperty("--mw-accent", state.accentColor);
+      preview.style.setProperty("--mw-canvas", state.canvasColor);
+      preview.style.setProperty("--mw-ink", ink);
       preview.style.setProperty("--mw-font", fonts[state.font]);
       preview.style.setProperty("--mw-title-size", state.titleSize + "px");
       preview.style.setProperty("--mw-body-size", state.bodySize + "px");
@@ -83,6 +87,13 @@
       return state;
     };
     for (const control of controls) {
+      if (control.dataset.mwField === "palette") control.addEventListener("change", () => {
+        const next = palette[control.value];
+        if (!next) return;
+        $("miniweb-custom-primaryColor").value = next.primary;
+        $("miniweb-custom-accentColor").value = next.accent;
+        $("miniweb-custom-canvasColor").value = next.canvas;
+      });
       control.addEventListener("input", () => paint(false));
       control.addEventListener("change", () => paint(true));
     }
