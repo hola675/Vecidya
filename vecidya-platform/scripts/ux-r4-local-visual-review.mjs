@@ -51,6 +51,9 @@ try {
       },
     });
     if (!response.ok()) throw new Error(`Falló login QA local: HTTP ${response.status()}. Ejecuta pnpm run seed:local-demo tras iniciar el servidor.`);
+    const sessionResponse = await context.request.get(`${baseUrl}/api/auth/get-session`);
+    const session = sessionResponse.ok() ? await sessionResponse.json() : null;
+    if (!session?.user?.id) throw new Error("La sesión QA no fue verificada; no se capturarán páginas privadas como si estuvieran autenticadas.");
   }
   for (const area of groups) {
     for (const [id, path] of routes[area]) {
