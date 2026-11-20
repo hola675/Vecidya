@@ -19,6 +19,7 @@
     "dev:local-demo": "node scripts/local-demo-env.mjs dev",
     "seed:local-demo": "node scripts/local-demo-seed.mjs",
     "status:local-demo": "node scripts/local-demo-env.mjs status",
+    "review:local-demo": "node scripts/ux-r4-local-review.mjs",
     "ux:verify-http": "node scripts/ux-verify-http.mjs",
     "start": "react-router-serve ./build/server/index.js",
     "test:e2e": "node tests/e2e/run-local-e2e.mjs",

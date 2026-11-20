@@ -2,41 +2,281 @@
   {
     "slug": "qa-local-salud",
     "organizationName": "QA local · Salud",
-    "displayName": "Vecidya QA · Perfil Salud",
+    "displayName": "Clínica Horizonte",
     "category": "Salud y bienestar",
     "websiteUrl": "https://qa-salud.vecidya.test",
     "publicEmail": "salud@vecidya.test",
     "accent": "#147D78",
-    "background": "#DDF4EF"
+    "background": "#DDF4EF",
+    "shortDescription": "Atención preventiva, orientación familiar y consultas programadas.",
+    "description": "Clínica de prueba con enfoque en atención primaria, seguimiento preventivo y comunicación clara con los pacientes.",
+    "headline": "Consultas preventivas y orientación en bienestar",
+    "subtitle": "Un espacio de atención organizado, con información accesible y canales de contacto claros.",
+    "city": "Medellín",
+    "serviceMode": "in_person",
+    "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "perfil completo",
+    "services": [
+      "Consulta preventiva",
+      "Orientación familiar",
+      "Seguimiento de bienestar"
+    ],
+    "faqs": [
+      "¿Cómo solicitar una consulta?",
+      "¿Qué llevar a la primera cita?"
+    ]
   },
   {
     "slug": "qa-local-comercio",
     "organizationName": "QA local · Comercio",
-    "displayName": "Vecidya QA · Perfil Comercio",
+    "displayName": "Mercado La Esquina",
     "category": "Comercio y distribución",
     "websiteUrl": "https://qa-comercio.vecidya.test",
     "publicEmail": "comercio@vecidya.test",
     "accent": "#C05B32",
-    "background": "#FBE9DB"
+    "background": "#FBE9DB",
+    "shortDescription": "Productos cotidianos, hogar y selección de proveedores locales.",
+    "description": "Comercio de cercanía con catálogo informativo de artículos para el hogar y compras recurrentes.",
+    "headline": "Productos seleccionados para la vida diaria",
+    "subtitle": "Conoce nuestras categorías y consulta disponibilidad por los canales indicados.",
+    "city": "Bogotá",
+    "serviceMode": "in_person",
+    "serviceArea": "Área de demostración: Bogotá, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "catálogo",
+    "services": [
+      "Atención en tienda",
+      "Selección de productos",
+      "Consultas de disponibilidad"
+    ],
+    "products": [
+      "Artículos de hogar",
+      "Productos de uso diario",
+      "Accesorios prácticos"
+    ],
+    "faqs": [
+      "¿Se puede consultar la disponibilidad?",
+      "¿Atienden pedidos especiales?"
+    ]
   },
   {
     "slug": "qa-local-educacion",
     "organizationName": "QA local · Educación",
-    "displayName": "Vecidya QA · Perfil Educación",
+    "displayName": "Aula Norte Formación",
     "category": "Educación y formación",
     "websiteUrl": "https://qa-educacion.vecidya.test",
     "publicEmail": "educacion@vecidya.test",
     "accent": "#5A5EB4",
-    "background": "#E8E8FF"
+    "background": "#E8E8FF",
+    "shortDescription": "Cursos cortos de herramientas digitales y formación para equipos.",
+    "description": "Centro de capacitación de prueba enfocado en habilidades prácticas para pequeñas empresas.",
+    "headline": "Aprendizaje aplicado a tu trabajo",
+    "subtitle": "Formación clara y flexible para personas que quieren mejorar sus habilidades.",
+    "city": "Cali",
+    "serviceMode": "hybrid",
+    "serviceArea": "Área de demostración: Cali, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "formación",
+    "services": [
+      "Curso de herramientas digitales",
+      "Capacitación para equipos",
+      "Tutorías prácticas"
+    ],
+    "faqs": [
+      "¿Hay modalidades virtuales?",
+      "¿Se requiere experiencia previa?"
+    ]
   },
   {
     "slug": "qa-local-tecnologia",
     "organizationName": "QA local · Tecnología",
-    "displayName": "Vecidya QA · Perfil Tecnología",
+    "displayName": "NexoTec Soporte",
     "category": "Tecnología y comunicaciones",
     "websiteUrl": "https://qa-tecnologia.vecidya.test",
     "publicEmail": "tecnologia@vecidya.test",
     "accent": "#2B648D",
-    "background": "#DDEFFD"
+    "background": "#DDEFFD",
+    "shortDescription": "Mantenimiento preventivo, soporte informático y conectividad.",
+    "description": "Equipo técnico de demostración que presta asistencia a pequeñas oficinas y negocios.",
+    "headline": "Tecnología que acompaña tu operación",
+    "subtitle": "Soporte, mantenimiento y asesoría tecnológica con lenguaje cercano.",
+    "city": "Medellín",
+    "serviceMode": "hybrid",
+    "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "soporte",
+    "services": [
+      "Diagnóstico de equipos",
+      "Mantenimiento preventivo",
+      "Configuración de redes"
+    ],
+    "faqs": [
+      "¿Atienden empresas pequeñas?",
+      "¿Cómo solicitar soporte?"
+    ]
+  },
+  {
+    "slug": "qa-local-gastronomia",
+    "organizationName": "QA local · Gastronomía",
+    "displayName": "Casa Oliva Cocina",
+    "category": "Gastronomía y alimentación",
+    "websiteUrl": "https://qa-gastronomia.vecidya.test",
+    "publicEmail": "gastronomia@vecidya.test",
+    "accent": "#A75A35",
+    "background": "#FAE8DC",
+    "shortDescription": "Menú de temporada, almuerzos y opciones para reuniones.",
+    "description": "Cocina de barrio ficticia con platos de temporada, horarios y consultas de menú.",
+    "headline": "Sabores para compartir",
+    "subtitle": "Una mesa cercana, recetas sencillas y propuestas para cada ocasión.",
+    "city": "Cartagena",
+    "serviceMode": "in_person",
+    "serviceArea": "Área de demostración: Cartagena, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "gastronomía",
+    "services": [
+      "Almuerzos de temporada",
+      "Menú para reuniones",
+      "Atención en local"
+    ],
+    "products": [
+      "Plato de temporada",
+      "Menú para compartir",
+      "Bebidas artesanales"
+    ],
+    "faqs": [
+      "¿Dónde consultar el menú?",
+      "¿Se atienden grupos?"
+    ]
+  },
+  {
+    "slug": "qa-local-automotriz",
+    "organizationName": "QA local · Automotriz",
+    "displayName": "Taller Ruta Clara",
+    "category": "Servicios personales y mantenimiento",
+    "websiteUrl": "https://qa-automotriz.vecidya.test",
+    "publicEmail": "automotriz@vecidya.test",
+    "accent": "#3E5E7B",
+    "background": "#E6EEF5",
+    "shortDescription": "Revisión preventiva, frenos, suspensión y mantenimiento general.",
+    "description": "Taller ficticio enfocado en mantenimiento programado y explicación transparente de cada servicio.",
+    "headline": "Tu vehículo en buenas manos",
+    "subtitle": "Servicios organizados para mantenimiento, diagnóstico y seguridad.",
+    "city": "Barranquilla",
+    "serviceMode": "in_person",
+    "serviceArea": "Área de demostración: Barranquilla, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "servicios técnicos",
+    "services": [
+      "Revisión de frenos",
+      "Mantenimiento programado",
+      "Diagnóstico básico"
+    ],
+    "faqs": [
+      "¿Qué datos se necesitan para una revisión?",
+      "¿Cómo solicitar presupuesto?"
+    ]
+  },
+  {
+    "slug": "qa-local-belleza",
+    "organizationName": "QA local · Belleza",
+    "displayName": "Estudio Lirio",
+    "category": "Servicios personales y mantenimiento",
+    "websiteUrl": "https://qa-belleza.vecidya.test",
+    "publicEmail": "belleza@vecidya.test",
+    "accent": "#995C85",
+    "background": "#F8E7F1",
+    "shortDescription": "Cortes, tratamientos capilares y asesoría de imagen.",
+    "description": "Estudio ficticio de belleza con servicios de estilismo y atención mediante consulta previa.",
+    "headline": "Un espacio para cuidarte",
+    "subtitle": "Conoce nuestros servicios y encuentra una opción acorde con tu estilo.",
+    "city": "Medellín",
+    "serviceMode": "in_person",
+    "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "cuidado personal",
+    "services": [
+      "Corte y estilismo",
+      "Tratamientos capilares",
+      "Asesoría de imagen"
+    ],
+    "faqs": [
+      "¿Se necesita cita previa?",
+      "¿Cómo elegir un tratamiento?"
+    ]
+  },
+  {
+    "slug": "qa-local-profesionales",
+    "organizationName": "QA local · Servicios profesionales",
+    "displayName": "Ábaco Consultores",
+    "category": "Servicios profesionales y legales",
+    "websiteUrl": "https://qa-profesionales.vecidya.test",
+    "publicEmail": "profesionales@vecidya.test",
+    "accent": "#4B687B",
+    "background": "#E7F0F3",
+    "shortDescription": "Asesoría administrativa, control de gastos y organización de procesos.",
+    "description": "Consultora ficticia orientada a ordenar información operativa y decisiones administrativas.",
+    "headline": "Información clara para decidir mejor",
+    "subtitle": "Acompañamiento profesional para organizar procesos de negocios pequeños.",
+    "city": "Bogotá",
+    "serviceMode": "remote",
+    "serviceArea": "Área de demostración: Bogotá, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "asesoría",
+    "services": [
+      "Organización administrativa",
+      "Control de gastos",
+      "Asesoría de procesos"
+    ],
+    "faqs": [
+      "¿Trabajan con negocios nuevos?",
+      "¿La asesoría puede ser remota?"
+    ]
+  },
+  {
+    "slug": "qa-local-hogar",
+    "organizationName": "QA local · Servicios del hogar",
+    "displayName": "Hogar Vivo Servicios",
+    "category": "Servicios personales y mantenimiento",
+    "websiteUrl": "https://qa-hogar.vecidya.test",
+    "publicEmail": "hogar@vecidya.test",
+    "accent": "#54816C",
+    "background": "#E3F3E8",
+    "shortDescription": "Mantenimiento básico, pintura y reparaciones planificadas.",
+    "description": "Equipo ficticio dedicado a mantenimiento de espacios residenciales y comerciales.",
+    "headline": "Espacios que funcionan mejor",
+    "subtitle": "Servicios de mantenimiento con alcance y condiciones explicados desde el inicio.",
+    "city": "Cali",
+    "serviceMode": "hybrid",
+    "serviceArea": "Área de demostración: Cali, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "mantenimiento",
+    "services": [
+      "Pintura interior",
+      "Reparaciones menores",
+      "Mantenimiento planificado"
+    ],
+    "faqs": [
+      "¿Cómo solicitar una evaluación?",
+      "¿Atienden espacios comerciales?"
+    ]
+  },
+  {
+    "slug": "qa-local-creativos",
+    "organizationName": "QA local · Creativos",
+    "displayName": "Trama Estudio Creativo",
+    "category": "Arte, cultura, deporte y entretenimiento",
+    "websiteUrl": "https://qa-creativos.vecidya.test",
+    "publicEmail": "creativos@vecidya.test",
+    "accent": "#765F9C",
+    "background": "#EEE6F7",
+    "shortDescription": "Identidad visual, fotografía de producto y materiales promocionales.",
+    "description": "Estudio creativo ficticio que desarrolla identidad de marca y materiales visuales para emprendimientos.",
+    "headline": "Ideas visuales con propósito",
+    "subtitle": "Diseño y contenido para que cada negocio explique lo que ofrece.",
+    "city": "Pereira",
+    "serviceMode": "remote",
+    "serviceArea": "Área de demostración: Pereira, Colombia. Información ficticia para revisión de diseño.",
+    "qaScenario": "portafolio",
+    "services": [
+      "Identidad de marca",
+      "Fotografía de producto",
+      "Diseño promocional"
+    ],
+    "faqs": [
+      "¿Cómo comienza un proyecto?",
+      "¿Qué materiales recibe el cliente?"
+    ]
   }
 ]

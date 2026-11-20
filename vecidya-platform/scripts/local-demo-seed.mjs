@@ -28,6 +28,17 @@ function ensureLocalBaseUrl() {
   assert(url.protocol === "http:" && ["127.0.0.1", "localhost"].includes(url.hostname) && url.port === "4173", "El seed solo admite http://127.0.0.1:4173 o http://localhost:4173.");
 }
 
+// Comprobaciones locales de consistencia antes de escribir cualquier fixture.
+assert(organizations.length >= 10, "R4 requiere diez o más organizaciones de prueba.");
+assert(new Set(organizations.map((fixture) => fixture.slug)).size === organizations.length, "Hay slugs QA duplicados.");
+for (const fixture of organizations) {
+  assert(/^qa-local-[a-z-]+$/.test(fixture.slug), `Slug fuera del espacio QA: ${fixture.slug}`);
+  assert(["in_person", "remote", "hybrid"].includes(fixture.serviceMode), `Modalidad inválida: ${fixture.slug}`);
+  assert(Array.isArray(fixture.services) && fixture.services.length >= 3, `Faltan servicios: ${fixture.slug}`);
+  assert(Array.isArray(fixture.faqs) && fixture.faqs.length >= 2, `Faltan preguntas frecuentes: ${fixture.slug}`);
+  assert(/^https:\/\/qa-[a-z-]+\.vecidya\.test$/.test(fixture.websiteUrl), `URL no sintética: ${fixture.slug}`);
+}
+
 class SessionClient {
   #cookies = new Map();
 
@@ -199,12 +210,12 @@ function ensureFixtureOrganizations() {
   });
 }
 
-async function authenticate(client, invitationId) {
+async function authenticate(client, invitationId, account = { name: ownerName, email: ownerEmail, password: ownerPassword }) {
   let response;
   if (invitationId) {
-    response = await client.json("/api/auth/sign-up/email", { name: ownerName, email: ownerEmail, password: ownerPassword }, "POST", { "X-Vecidya-Invitation": invitationId });
+    response = await client.json("/api/auth/sign-up/email", { name: account.name, email: account.email, password: account.password }, "POST", { "X-Vecidya-Invitation": invitationId });
   }
-  if (!response?.ok) response = await client.json("/api/auth/sign-in/email", { email: ownerEmail, password: ownerPassword });
+  if (!response?.ok) response = await client.json("/api/auth/sign-in/email", { email: account.email, password: account.password });
   await readJson(response, "Autenticación de la cuenta local");
 }
 
@@ -227,16 +238,16 @@ async function ensureProfile(client, organizationId, fixture, index) {
   const fields = {
     displayName: fixture.displayName,
     slug: fixture.slug,
-    shortDescription: "Datos sintéticos para revisar la interfaz local; no representa un negocio real.",
-    description: "Este perfil pertenece al entorno de QA local de Vecidya. Su contenido, contacto, dominio y assets son de prueba y no describen una organización real.",
+    shortDescription: fixture.shortDescription,
+    description: fixture.description + " [ESCENARIO FICTICIO DE QA — no es un negocio real.]",
     category: fixture.category,
-    city: "Entorno de pruebas local",
+    city: fixture.city,
     country: "QA",
     phone: `+1 202-555-01${String(index + 1).padStart(2, "0")}`,
     publicEmail: fixture.publicEmail,
     websiteUrl: fixture.websiteUrl,
-    serviceMode: "hybrid",
-    serviceArea: "Solo entorno local; datos sintéticos.",
+    serviceMode: fixture.serviceMode,
+    serviceArea: fixture.serviceArea,
     draftRevision: String(current.draftRevision ?? 0),
   };
   for (const [name, value] of Object.entries(fields)) form.set(name, value);
@@ -294,20 +305,59 @@ async function ensureMiniWebDraft(client, organizationId, fixture) {
   const contact = sections.get("contact");
   const location = sections.get("location");
   assert(hero && about && contact && location, `La familia MiniWeb V2 de ${fixture.slug} no tiene las secciones iniciales esperadas.`);
-  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.image?.assetId === cover.id;
+  // Los bloques se crean a través del contrato V2 existente: no son una publicación.
+  const ensureSection = (type, content) => {
+    let section = sections.get(type);
+    if (!section) {
+      section = { id: `qa-${fixture.slug}-${type}`, type, schemaVersion: 1,
+        order: document.sections.length, visible: true, content };
+      document.sections.push(section);
+      sections.set(type, section);
+    }
+    return section;
+  };
+  const services = ensureSection("services", { items: [] });
+  const faq = ensureSection("faq", { items: [] });
+  const gallery = ensureSection("gallery", { images: [] });
+  const products = fixture.products?.length ? ensureSection("products", { items: [] }) : null;
+  const enriched = services.content.items.length === fixture.services.length &&
+    faq.content.items.length === fixture.faqs.length &&
+    gallery.content.images.some((image) => image.assetId === cover.id) &&
+    (!products || products.content.items.length === fixture.products.length);
+  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.subtitle === fixture.subtitle &&
+    about.content.headline === fixture.headline && hero.content.image?.assetId === cover.id && enriched;
   if (!alreadyPopulated) {
     hero.content.title = fixture.displayName;
-    hero.content.subtitle = "Ficha sintética de QA en el entorno local de Vecidya.";
+    hero.content.subtitle = fixture.subtitle;
     hero.content.image = { assetId: cover.id, alt: `Portada geométrica sintética de ${fixture.displayName}.` };
-    about.content.headline = "Contenido de demostración local";
-    about.content.description = "Esta página está creada con datos de prueba. No corresponde a una organización real y no se ha publicado.";
+    about.content.headline = fixture.headline;
+    about.content.description = fixture.description + " [Ejemplo ficticio exclusivamente para QA.]";
     contact.content.phone = null;
     contact.content.email = fixture.publicEmail;
     contact.content.links = [{ label: "Dominio reservado de prueba", href: fixture.websiteUrl }];
     location.content.address = null;
-    location.content.city = "Entorno de pruebas local";
-    location.content.area = "Solo datos sintéticos.";
+    location.content.city = fixture.city;
+    location.content.area = fixture.serviceArea;
     location.content.mapUrl = null;
+    services.content.items = fixture.services.map((title, index) => ({
+      id: `qa-${fixture.slug}-service-${index}`, title,
+      description: `${title}: servicio de muestra para revisión de diseño y contenido. Consulta las condiciones antes de solicitarlo.`,
+      image: null, cta: null,
+    }));
+    faq.content.items = fixture.faqs.map((question, index) => ({
+      id: `qa-${fixture.slug}-faq-${index}`, question,
+      answer: "Este escenario es una simulación de QA. Los detalles de contratación, disponibilidad y horarios no son reales.",
+    }));
+    gallery.content.images = [{
+      assetId: cover.id, alt: `Composición geométrica de muestra para ${fixture.displayName}.`,
+      caption: "Imagen sintética creada para pruebas visuales",
+    }];
+    if (products) products.content.items = fixture.products.map((title, index) => ({
+      id: `qa-${fixture.slug}-product-${index}`, title,
+      category: fixture.category,
+      description: "Artículo informativo de demostración, sin inventario ni precio real.",
+      image: null, cta: null,
+    }));
 
     const saved = await readJson(await client.json(path, {
       operation: "save",
@@ -355,9 +405,62 @@ for (let index = 0; index < fixtures.length; index += 1) {
   console.log(`OK ${fixture.slug}: perfil borrador, ${assets.added} asset(s) nuevos, MiniWeb V2 disponible.`);
 }
 
+// R4: cuentas adicionales de QA por invitación, sin permisos globales inventados.
+// Los accesos se generan exclusivamente en D1 local y las credenciales son sintéticas.
+async function ensureReviewer(account, selectedFixtures, role) {
+  const reviewerClient = new SessionClient();
+  let firstInvitation = null;
+  const pending = [];
+  const now = Date.now();
+  for (const fixture of selectedFixtures) {
+    const membership = queryLocalD1(`SELECT m.id FROM member m JOIN user u ON u.id = m.user_id
+      WHERE m.organization_id = ${sqlLiteral(fixture.id)} AND lower(u.email) = lower(${sqlLiteral(account.email)}) LIMIT 1`)[0];
+    if (membership) continue;
+    let invitation = queryLocalD1(`SELECT id FROM invitation WHERE organization_id = ${sqlLiteral(fixture.id)}
+      AND lower(email) = lower(${sqlLiteral(account.email)}) AND status = 'pending' ORDER BY created_at DESC LIMIT 1`)[0];
+    if (!invitation) {
+      const invitationId = randomUUID();
+      queryLocalD1(`INSERT INTO invitation (id, organization_id, email, role, status, expires_at, created_at, inviter_id)
+        VALUES (${sqlLiteral(invitationId)}, ${sqlLiteral(fixture.id)}, ${sqlLiteral(account.email)}, ${sqlLiteral(role)}, 'pending',
+          ${now + 30 * 24 * 60 * 60 * 1000}, ${now}, ${sqlLiteral(bootstrapUserId)})`);
+      invitation = { id: invitationId };
+    }
+    firstInvitation ??= invitation.id;
+    pending.push({ invitationId: invitation.id, organizationName: fixture.organizationName });
+  }
+  await authenticate(reviewerClient, firstInvitation ?? "", account);
+  queryLocalD1(`UPDATE user SET email_verified = 1, updated_at = ${Date.now()}
+    WHERE lower(email) = lower(${sqlLiteral(account.email)})`);
+  for (const invite of pending) await acceptInvitation(reviewerClient, invite.invitationId, invite.organizationName);
+  if (selectedFixtures.length) await setActiveOrganization(reviewerClient, selectedFixtures[0].id);
+  for (const fixture of selectedFixtures) {
+    const actual = queryLocalD1(`SELECT m.role FROM member m JOIN user u ON u.id=m.user_id
+      WHERE m.organization_id = ${sqlLiteral(fixture.id)} AND lower(u.email)=lower(${sqlLiteral(account.email)}) LIMIT 1`)[0];
+    assert(actual?.role === role, `Rol de QA no confirmado: ${account.email} / ${fixture.slug}`);
+  }
+  console.log(`Cuenta ${role} de QA local: ${account.email} / ${account.password}`);
+}
+
+await ensureReviewer(
+  { name: "Editora de prueba", email: "qa-editor@vecidya.test", password: "VecidyaLocalEditor-2026!" },
+  fixtures.filter((_, index) => index % 2 === 0), "admin"
+);
+await ensureReviewer(
+  { name: "Miembro de prueba", email: "qa-member@vecidya.test", password: "VecidyaLocalMember-2026!" },
+  fixtures.filter((_, index) => index % 2 === 1), "member"
+);
+
 await setActiveOrganization(client, seeded[0].organizationId);
-assert(seeded.length >= 4, "El fixture debe incluir al menos cuatro organizaciones.");
+assert(seeded.length >= 10, "El fixture debe incluir al menos diez organizaciones.");
 console.log(`\nSeed local listo: ${seeded.length} organizaciones, ${createdProfiles} perfiles nuevos, ${createdAssets} assets nuevos y ${createdMiniWebDrafts} borradores MiniWeb V2 nuevos.`);
-console.log(`Cuenta local: ${ownerEmail} / ${ownerPassword}`);
+console.log(`Cuenta local propietaria: ${ownerEmail} / ${ownerPassword}`);
 console.log(`Abrir: ${baseUrl}/app/business-profile y ${baseUrl}/app/miniweb-v2`);
+const counts = queryLocalD1(`SELECT
+  (SELECT COUNT(*) FROM organization WHERE slug LIKE 'qa-local-%') AS organizations,
+  (SELECT COUNT(*) FROM business_profile WHERE slug LIKE 'qa-local-%') AS profiles,
+  (SELECT COUNT(*) FROM business_media_asset WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'qa-local-%') AND is_active = 1) AS assets,
+  (SELECT COUNT(*) FROM miniweb_v2_site WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'qa-local-%')) AS sites`)[0];
+assert(counts.organizations >= 10 && counts.profiles >= 10 && counts.assets >= 20 && counts.sites >= 10,
+  `Seed R4 incompleto: ${JSON.stringify(counts)}`);
+console.log(`Integridad local R4: ${JSON.stringify(counts)}`);
 console.log("Los perfiles quedan como borradores; no se crean licencias ficticias ni se publican páginas.");
