@@ -28,6 +28,17 @@ function ensureLocalBaseUrl() {
   assert(url.protocol === "http:" && ["127.0.0.1", "localhost"].includes(url.hostname) && url.port === "4173", "El seed solo admite http://127.0.0.1:4173 o http://localhost:4173.");
 }
 
+// Comprobaciones locales de consistencia antes de escribir cualquier fixture.
+assert(organizations.length >= 10, "R4 requiere diez o más organizaciones de prueba.");
+assert(new Set(organizations.map((fixture) => fixture.slug)).size === organizations.length, "Hay slugs QA duplicados.");
+for (const fixture of organizations) {
+  assert(/^qa-local-[a-z-]+$/.test(fixture.slug), `Slug fuera del espacio QA: ${fixture.slug}`);
+  assert(["in_person", "remote", "hybrid"].includes(fixture.serviceMode), `Modalidad inválida: ${fixture.slug}`);
+  assert(Array.isArray(fixture.services) && fixture.services.length >= 3, `Faltan servicios: ${fixture.slug}`);
+  assert(Array.isArray(fixture.faqs) && fixture.faqs.length >= 2, `Faltan preguntas frecuentes: ${fixture.slug}`);
+  assert(/^https:\/\/qa-[a-z-]+\.vecidya\.test$/.test(fixture.websiteUrl), `URL no sintética: ${fixture.slug}`);
+}
+
 class SessionClient {
   #cookies = new Map();
 
@@ -444,4 +455,12 @@ assert(seeded.length >= 10, "El fixture debe incluir al menos diez organizacione
 console.log(`\nSeed local listo: ${seeded.length} organizaciones, ${createdProfiles} perfiles nuevos, ${createdAssets} assets nuevos y ${createdMiniWebDrafts} borradores MiniWeb V2 nuevos.`);
 console.log(`Cuenta local propietaria: ${ownerEmail} / ${ownerPassword}`);
 console.log(`Abrir: ${baseUrl}/app/business-profile y ${baseUrl}/app/miniweb-v2`);
+const counts = queryLocalD1(`SELECT
+  (SELECT COUNT(*) FROM organization WHERE slug LIKE 'qa-local-%') AS organizations,
+  (SELECT COUNT(*) FROM business_profile WHERE slug LIKE 'qa-local-%') AS profiles,
+  (SELECT COUNT(*) FROM business_media_asset WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'qa-local-%') AND is_active = 1) AS assets,
+  (SELECT COUNT(*) FROM miniweb_v2_site WHERE organization_id IN (SELECT id FROM organization WHERE slug LIKE 'qa-local-%')) AS sites`)[0];
+assert(counts.organizations >= 10 && counts.profiles >= 10 && counts.assets >= 20 && counts.sites >= 10,
+  `Seed R4 incompleto: ${JSON.stringify(counts)}`);
+console.log(`Integridad local R4: ${JSON.stringify(counts)}`);
 console.log("Los perfiles quedan como borradores; no se crean licencias ficticias ni se publican páginas.");
