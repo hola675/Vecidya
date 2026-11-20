@@ -80,3 +80,9 @@ html[data-theme=light] .r1-plans article>span{color:#a44b00}
 @media (max-width:500px){
   .section-count small{min-width:0;max-width:100%;overflow-wrap:anywhere;text-align:center;letter-spacing:0;line-height:1.12}
 }
+
+/* R1.2: enlace didáctico del enrutador a la escena exacta, sin falsos equivalentes. */
+.r1-preview-linking{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:13px 0 9px}
+.r1-preview-linking .r1-caption{margin:0;flex:1 1 220px;min-width:0}
+.r1-preview-action[hidden]{display:none!important}
+.r1-preview-action:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
