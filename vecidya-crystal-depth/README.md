@@ -1,6 +1,6 @@
 # Vecidya Crystal Depth
 
-**Estado:** dirección artística R1.2 candidata (2026-11-20), en revisión. No integrada ni desplegada. No integrada en Vecidya ni MiniWeb2.
+**Estado:** R1.2 y R1.3 integradas en main; R1.4 (encargos de subagentes) en revisión. El laboratorio no implementa procesos productivos. No integrada en Vecidya ni MiniWeb2.
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 
@@ -46,6 +46,16 @@ La sección `biblioteca.html#flujos` simula cinco estados sin red ni mutaciones:
 - `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: QA focal sobre la misma batería existente.
 
 La guía no promete que una acción está guardada ni que un CRM está conectado. Integrar un estado de éxito en producción requiere una respuesta real y verificable de la operación.
+
+## Encargos para subagentes R1.4 (laboratorio)
+
+La sección `biblioteca.html#guia` genera un **borrador revisable y copiable** para cuatro especialidades del equipo: frontend, editorial, UX/UI y calidad. Parte de la intención elegida y de `assets/pattern-registry.json`, por lo que combina material, reglas críticas, escena oficial si existe, movimiento permitido, estados y restricciones. No inventa una composición cuando la intención no la tiene.
+
+El subagente **editorial es un colaborador del agente líder**, responsable de textos naturales y comprensibles para cualquier persona, sin ambigüedades ni promesas comerciales no verificadas. La previsualización conserva un borrador básico si el JSON no está disponible (por ejemplo, al abrir el HTML con `file://`). No es una orden automática y la persona debe revisar el texto antes de asignarlo.
+
+- `assets/agent-brief.js`: composición de instrucciones por especialidad, sin llamadas a APIs de producto.
+- `assets/pattern-registry.json → agentBrief`: roles y límites de actuación.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: QA focal reutilizando la batería ya existente.
 
 ## Abrir
 
