@@ -13,7 +13,7 @@
     "headline": "Consultas preventivas y orientación en bienestar",
     "subtitle": "Un espacio de atención organizado, con información accesible y canales de contacto claros.",
     "city": "Medellín",
-    "serviceMode": "presencial",
+    "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
     "qaScenario": "perfil completo"
   },
@@ -31,7 +31,7 @@
     "headline": "Productos seleccionados para la vida diaria",
     "subtitle": "Conoce nuestras categorías y consulta disponibilidad por los canales indicados.",
     "city": "Bogotá",
-    "serviceMode": "presencial",
+    "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Bogotá, Colombia. Información ficticia para revisión de diseño.",
     "qaScenario": "catálogo"
   },
@@ -85,7 +85,7 @@
     "headline": "Sabores para compartir",
     "subtitle": "Una mesa cercana, recetas sencillas y propuestas para cada ocasión.",
     "city": "Cartagena",
-    "serviceMode": "presencial",
+    "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Cartagena, Colombia. Información ficticia para revisión de diseño.",
     "qaScenario": "gastronomía"
   },
@@ -103,7 +103,7 @@
     "headline": "Tu vehículo en buenas manos",
     "subtitle": "Servicios organizados para mantenimiento, diagnóstico y seguridad.",
     "city": "Barranquilla",
-    "serviceMode": "presencial",
+    "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Barranquilla, Colombia. Información ficticia para revisión de diseño.",
     "qaScenario": "servicios técnicos"
   },
@@ -121,7 +121,7 @@
     "headline": "Un espacio para cuidarte",
     "subtitle": "Conoce nuestros servicios y encuentra una opción acorde con tu estilo.",
     "city": "Medellín",
-    "serviceMode": "presencial",
+    "serviceMode": "in_person",
     "serviceArea": "Área de demostración: Medellín, Colombia. Información ficticia para revisión de diseño.",
     "qaScenario": "cuidado personal"
   },
