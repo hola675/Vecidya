@@ -257,7 +257,7 @@
       if (!candidate || candidate.source !== selected?.source) return;
       const link = document.createElement("a");
       link.href = candidateCanvas.toDataURL("image/png");
-      link.download = "revision-vico-" + selected.source.split("/").pop().replace(/\\.webp$/i, "") +
+      link.download = "revision-vico-" + selected.source.split("/").pop().replace(/\.webp$/i, "") +
         "-alpha-" + candidate.threshold + ".png";
       link.click();
       status.textContent = "PNG de evaluación generado localmente. No está aprobado ni sustituye el WebP original.";
