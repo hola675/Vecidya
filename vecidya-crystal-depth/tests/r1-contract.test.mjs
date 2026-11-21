@@ -357,7 +357,7 @@ test('Vico: diez personajes catalogados y una infografía separada y un único p
   assert.match(script,/const makeAlphaCandidate = async/);
   assert.match(script,/preview-only-alpha-threshold-not-approved-asset/);
   assert.match(script,/vico-alpha-proposal/);
-  assert.match(script,/canvas\.toDataURL\("image\/png"\)/);
+  assert.match(script,/candidateCanvas\.toDataURL\("image\/png"\)/);
   assert.match(styles,/vico-workbench__candidate/);
   assert.match(styles,/vico-workbench__alpha/);
   assert.doesNotMatch(script,/const sceneBase = "\.\.\/vecidya-platform/);
