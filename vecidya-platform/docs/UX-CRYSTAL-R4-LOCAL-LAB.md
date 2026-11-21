@@ -1,5 +1,5 @@
 # UX-CRYSTAL-R4 · Laboratorio visual local con diez negocios
-<!-- Versión: 1.1.0 | 2026-11-21 | Estado: IMPLEMENTADO EN RAMA, SIN CERTIFICACIÓN RUNTIME -->
+<!-- Versión: 1.2.0 | 2026-11-21 | Estado: SEED LOCAL VERIFICADO POR USUARIO; ACCESO PRIVADO EN REPRUEBA -->
 
 ## Objetivo
 Recorrer el producto Vecidya completo desde un servidor de desarrollo local, con diez organizaciones y escenarios sintéticos distintos. Preparar capturas Playwright y dejar un Chromium visible e interactivo para inspección humana antes de evaluar Web, Mi Vecidya y Admin.
@@ -68,6 +68,14 @@ El script crea capturas en `.wrangler/local-demo/visual-review/` (no en Git); co
 - Ejecutar tests, typecheck y build sobre SHA exacto; revisión del PR. Sin deploy/merge ni D1 remota hasta evidencia.
 - Revisar qué páginas o secciones necesitan contenido de mayor fidelidad, pero mantener claramente marcados los escenarios sintéticos.
 
+## Evidencia remitida por el laboratorio (2026-11-21)
+- El usuario ejecutó `seed:local-demo` y `status:local-demo`: D1/R2 local registró 10 organizaciones, 10 perfiles, 20 assets, 10 borradores y 0 publicados.
+- Revisadas 45 capturas en cinco anchos: públicas 25/25 HTTP 200 y sin overflow reportado; `/app` 5/5 HTTP 200 pero selector sin organización; perfil y editor 10/10 HTTP 403; Admin 5/5 HTTP 403 conforme a owner. Las capturas de las tres rutas 403 son idénticas en cada anchura.
+- Diagnóstico del código: el seed activa una organización en su sesión HTTP, pero el navegador Playwright abre otra sesión con `activeOrganizationId` vacío; `requireOrganization` devuelve 403 en rutas privadas.
+- Fix R4.2: el auditor obtiene las membresías con `GET /api/auth/organization/list`, selecciona la organización ficticia `qa-local-salud` mediante el endpoint oficial `POST /api/auth/organization/set-active` y comprueba `activeOrganizationId` en sesión antes de capturar. No evita autorización y no activa licencias. **La repetición tras este fix aún no ha sido comprobada en Windows.**
+- El aviso de cookies tapa parte del diseño en las capturas públicas; para aceptación visual se requiere un pase con el consentimiento cerrado por la interfaz real (sin inyectar aceptación falsa).
+
 ## Changelog
+- 1.2.0: selección explícita de organización activa para la sesión de Playwright, sustentada por evidencia de 403 local; pendientes nuevas capturas.
 - 1.1.0: capturas automatizadas de cinco anchos, validación de redirects/overflow y errores de página; se conserva exploración interactiva en 1366 px. Sin ejecución de navegador local verificada.
 - 1.0.0: fixture diez escenarios, seed sectorial, recorrido Playwright público y autenticado, procedimiento PowerShell y gates.
