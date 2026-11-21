@@ -1,7 +1,7 @@
 {
-  "version": "1.0.0-r1-candidate",
-  "status": "candidato-en-revision-no-integrado",
-  "lastUpdated": "2026-11-19",
+  "version": "1.1.0-agent-bridge",
+  "status": "laboratorio-integrado-como-referencia-no-importado-a-react",
+  "lastUpdated": "2026-11-20",
   "purpose": "Contrato consultable por agentes: seleccionar composiciones, materiales, assets, componentes y QA antes de implementar Vecidya.",
   "decisions": {
     "defaultTheme": "dark",
@@ -910,50 +910,7 @@
       "GHL es un servicio externo; no fusionar su CRM con componentes de Vecidya ni prometer capacidades no conectadas.",
       "No alterar Diagnóstico V9, scoring, permisos, licencias, publicación, D1 ni procesos por cambios visuales."
     ],
-    "proposedNotYetShared": [
-      {
-        "name": "PageHeading",
-        "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "eyebrow, título, explicación y acción contextual; usar v-section-heading hasta decidir."
-      },
-      {
-        "name": "AdminFilterBar",
-        "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "filtros GET, reset, paginación coherente y estado legible."
-      },
-      {
-        "name": "ConsentStatus",
-        "priority": "P1",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "estado explícito de consentimiento, nunca inferido del registro."
-      },
-      {
-        "name": "DiagnosticMetricCard",
-        "priority": "P2",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "valor con fuente, periodo, unidad y vacío real."
-      },
-      {
-        "name": "DiagnosticTrend",
-        "priority": "P2",
-        "source": "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md",
-        "status": "propuesto-no-exportado",
-        "responsibility": "serie diaria con eje, tabla alternativa y denominadores justificados."
-      },
-      {
-        "name": "SharedStatusPanel",
-        "priority": "P2",
-        "source": "vecidya-crystal-depth/assets/pattern-registry.json",
-        "status": "propuesta-r1.5-a-validar",
-        "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert."
-      }
-    ],
+    "proposedNotYetShared": [],
     "stateParity": {
       "platformRequired": [
         "loading",
@@ -972,8 +929,194 @@
       "labMissing": [
         "access-denied"
       ],
-      "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
-    }
+      "rule": "La demo R1.3 no muestra el estado de acceso denegado (access-denied); React R1.6 sí lo representa en SharedStatusPanel. La autorización server-side sigue siendo fuente única de verdad; nunca inferir denegación desde aspecto, rol simulado o falta de datos."
+    },
+    "sharedR16": [
+      {
+        "name": "PageHeading",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Título semántico y descripción con acción contextual"
+      },
+      {
+        "name": "AdminFilterBar",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Filtros GET y reinicio usando rutas reales"
+      },
+      {
+        "name": "ConsentStatus",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Estado de consentimiento explicitado por origen autorizado"
+      },
+      {
+        "name": "SharedStatusPanel",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Estados de carga, vacío, error, acceso denegado y éxito, sin inventar operaciones"
+      },
+      {
+        "name": "DiagnosticMetricCard",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Valor, unidad, periodo, fuente y nulo distinto de cero"
+      },
+      {
+        "name": "DiagnosticTrend",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Serie diaria y tabla accesible sin inferir conversiones"
+      }
+    ],
+    "sharedR16Rule": "Composiciones presentacionales exportadas; su uso requiere datos, permisos, rutas y props reales."
+  },
+  "agentHandoff": {
+    "version": "1.0.0",
+    "status": "contrato-documental",
+    "scope": "Adopción visual progresiva; no despliegue ni mutación de contratos",
+    "authority": [
+      "AGENTS.md",
+      "vecidya-platform/docs/GOVERNANCE.md",
+      "vecidya-platform/app/components",
+      "vecidya-platform/app/styles",
+      "vecidya-platform/docs/design-system/VECIDYA-UI-UX.md"
+    ],
+    "routeOrder": [
+      "public",
+      "directory",
+      "learn",
+      "diagnostic",
+      "client",
+      "internal",
+      "miniweb"
+    ],
+    "delivery": "Ruta, objetivo de usuario, intención del registry, composición L0–L5, componente exportado y props comprobadas, assets originales verificados, test focal + build + typecheck, captura y PR",
+    "guardrails": [
+      "No importar CSS de laboratorio a React",
+      "No imponer tema Vecidya a MiniWeb públicas",
+      "No inferir licencias o GHL de maquetas",
+      "No dar estado success sin confirmación",
+      "No marcar QA humana, lector o zoom como PASS si no se ejecutan",
+      "No cambiar D1, permisos, publicación ni scoring para adoptar estilos"
+    ],
+    "reference": "vecidya-crystal-depth/docs/INTEGRACION.md"
+  },
+  "miniwebCustomizationLab": {
+    "version": "1.0.0",
+    "status": "demo-only-no-persistence-no-entitlements",
+    "target": "biblioteca.html#miniweb-customizer",
+    "presetTiers": {
+      "base": "cuadra",
+      "pro": "barrio",
+      "premium": "ciudad"
+    },
+    "fields": [
+      {
+        "key": "tier",
+        "values": [
+          "base",
+          "pro",
+          "premium"
+        ],
+        "meaning": "propuesta compositiva, no licencia efectiva"
+      },
+      {
+        "key": "palette",
+        "values": [
+          "oceano",
+          "bosque",
+          "coral",
+          "ciruela"
+        ],
+        "meaning": "paleta de ejemplo; identidad real pertenece al negocio"
+      },
+      {
+        "key": "primaryColor",
+        "format": "#RRGGBB",
+        "meaning": "color principal editable; verificar contraste del CTA"
+      },
+      {
+        "key": "accentColor",
+        "format": "#RRGGBB",
+        "meaning": "acento visual, no sustituye estados semánticos"
+      },
+      {
+        "key": "canvasColor",
+        "format": "#RRGGBB",
+        "meaning": "fondo editable; garantizar contraste del texto"
+      },
+      {
+        "key": "font",
+        "values": [
+          "moderna",
+          "editorial",
+          "cercana"
+        ],
+        "meaning": "tipografía de fallback local; sin dependencia externa"
+      },
+      {
+        "key": "layout",
+        "values": [
+          "split",
+          "stacked"
+        ],
+        "meaning": "disposición de contenido de portada"
+      },
+      {
+        "key": "align",
+        "values": [
+          "left",
+          "center"
+        ],
+        "meaning": "alineación, sin alterar jerarquía HTML"
+      },
+      {
+        "key": "heroPosition",
+        "values": [
+          "right",
+          "left"
+        ],
+        "meaning": "posición del bloque ilustrativo"
+      },
+      {
+        "key": "titleSize",
+        "min": 26,
+        "max": 60,
+        "unit": "px"
+      },
+      {
+        "key": "bodySize",
+        "min": 14,
+        "max": 20,
+        "unit": "px"
+      },
+      {
+        "key": "spacing",
+        "min": 12,
+        "max": 42,
+        "unit": "px"
+      },
+      {
+        "key": "radius",
+        "min": 0,
+        "max": 34,
+        "unit": "px"
+      },
+      {
+        "key": "heroHeight",
+        "min": 260,
+        "max": 480,
+        "unit": "px"
+      }
+    ],
+    "exports": "visual brief JSON; no es API del editor y requiere revisión humana",
+    "invariants": [
+      "sin-persistencia",
+      "sin-llamadas-red",
+      "sin-simular-publicacion",
+      "sin-permisos-ficticios",
+      "sin-tema-global-miniweb-publica",
+      "legible-sin-javascript",
+      "teclado-focus-visible",
+      "reduced-motion",
+      "advertir-contraste-inferior-a-4.5"
+    ],
+    "adoption": "Proponer controles en el editor real solo con schema versionado, preview fiel y pruebas de persistencia, autorización, seguridad, accesibilidad y publicación"
   },
   "vicoVisualIdentity": {
     "version": "1.1.0",

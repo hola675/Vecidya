@@ -321,6 +321,48 @@ try{
         assertStep('estado-vacio',()=>assert.ok(empty));
         await page.locator('#asset-search').fill('');
       }
+      // R1.6: personalizador aislado, controles reales y vista visible.
+      if(width===390||width===1366){
+        await page.locator('#miniweb-custom-tier').selectOption('pro');
+        await page.locator('#miniweb-custom-font').selectOption('editorial');
+        await page.locator('#miniweb-custom-palette').selectOption('bosque');
+        await page.locator('#miniweb-custom-titleSize').evaluate(node=>{node.value='52';node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));});
+        await page.locator('#miniweb-custom-heroPosition').selectOption('left');
+        const personalization=await page.locator('#miniweb-custom-preview').evaluate(node=>({
+          tier:node.dataset.tier,
+          imagePosition:node.dataset.imagePosition,
+          primary:node.style.getPropertyValue('--mw-primary'),
+          title:node.style.getPropertyValue('--mw-title-size'),
+          font:node.style.getPropertyValue('--mw-font'),
+          visible:node.getBoundingClientRect().height>0
+        }));
+        assertStep('miniweb-personalizacion-'+width,()=>{
+          assert.equal(personalization.tier,'pro');
+          assert.equal(personalization.imagePosition,'left');
+          assert.equal(personalization.primary,'#236354');
+          assert.equal(personalization.title,'52px');
+          assert.match(personalization.font,/Georgia/);
+          assert.equal(personalization.visible,true);
+        });
+        await page.locator('#miniweb-customizer').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-miniweb-personalizada.png'),animations:'disabled'});
+        await page.locator('#miniweb-custom-primaryColor').evaluate(node=>{node.value='#FFFFFF';node.dispatchEvent(new Event('input',{bubbles:true}));node.dispatchEvent(new Event('change',{bubbles:true}));});
+        const colorWarning=await page.locator('#miniweb-custom-status').textContent();
+        const customColor=await page.locator('#miniweb-custom-preview').evaluate(node=>node.style.getPropertyValue('--mw-primary'));
+        assertStep('miniweb-color-contrast-'+width,()=>{
+          assert.equal(customColor.toLowerCase(),'#ffffff');
+          assert.match(colorWarning,/contraste insuficiente/);
+        });
+        await page.locator('#miniweb-custom-reset').click();
+        const restored=await page.locator('#miniweb-custom-preview').evaluate(node=>({
+          tier:node.dataset.tier,
+          title:node.style.getPropertyValue('--mw-title-size')
+        }));
+        assertStep('miniweb-reset-'+width,()=>{
+          assert.equal(restored.tier,'base');
+          assert.equal(restored.title,'40px');
+        });
+      }
       if(width===390 || width===1366){
         const vicoButtons=page.locator('#vico-workbench-gallery button');
         await vicoButtons.first().waitFor({timeout:10000});

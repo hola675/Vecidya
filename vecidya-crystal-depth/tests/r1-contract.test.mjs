@@ -287,6 +287,16 @@ test('R1.5: componentes exportados, navegación canónica y pendientes no invent
       !sources['vecidya-platform/app/components/experience-system.tsx'].includes('export function '+item.name+'('),
       'Componente ya exportado; revisar condición de pendiente: '+item.name);
   }
+  const shared=compat.sharedR16;
+  const componentSource=read('../vecidya-platform/app/components/visual-contract.tsx');
+  assert.equal(shared.length,6,'Deben existir seis composiciones R1.6 trazables');
+  assert.equal(compat.proposedNotYetShared.length,0,'No presentar componentes exportados como pendientes');
+  for(const item of shared){
+    assert.equal(item.source,'vecidya-platform/app/components/visual-contract.tsx');
+    assert.ok(componentSource.includes('export function '+item.name+'('),'Componente R1.6 no exportado: '+item.name);
+    assert.ok(item.purpose);
+  }
+  assert.equal(registry.agentHandoff?.status,'contrato-documental');
   assert.ok(compat.boundaries.some(x=>x.includes('business-owned')));
   assert.ok(compat.boundaries.some(x=>x.includes('GHL')));
 });
@@ -367,3 +377,30 @@ test('Vico: diez personajes catalogados y una infografía separada y un único p
     assert.ok(script.includes(asset.source.split('/').pop()),'Falta registrar la variante '+asset.name);
   }
 });
+
+test('R1.6: personalizador MiniWeb aislado, semántico y sin publicación',()=>{
+  const customJs=read('assets/miniweb-customizer.js');
+  const customCss=read('styles/miniweb-customizer.css');
+  assert.doesNotThrow(()=>new vm.Script(customJs));
+  assert.match(html,/id="miniweb-customizer"/);
+  assert.match(html,/id="miniweb-custom-preview"/);
+  assert.match(html,/id="miniweb-custom-status"[^>]*role="status"[^>]*aria-live="polite"/);
+  assert.match(html,/href="styles\/miniweb-customizer\.css"/);
+  assert.match(html,/src="assets\/miniweb-customizer\.js"/);
+  assert.match(html,/id="miniweb-custom-copy"/);
+  assert.match(html,/id="miniweb-custom-reset"/);
+  for (const field of ['tier','palette','primaryColor','accentColor','canvasColor','font','layout','align','heroPosition','titleSize','bodySize','spacing','radius','heroHeight']) {
+    assert.ok(html.includes('data-mw-field="'+field+'"'),'Control ausente: '+field);
+    assert.ok(html.includes('for="miniweb-custom-'+field+'"'),'Etiqueta ausente: '+field);
+  }
+  for(const tier of ['base','pro','premium']) assert.ok(html.includes('<option value="'+tier+'">'));
+  assert.match(customJs,/concept-only-not-a-product-configuration/);
+  assert.match(customJs,/navigator\.clipboard/);
+  assert.match(customJs,/const contrast =/);
+  assert.match(customJs,/contraste insuficiente/);
+  assert.doesNotMatch(customJs,/fetch\(|localStorage|sessionStorage|XMLHttpRequest/);
+  assert.match(customCss,/#?[.]mw-lab__preview\[data-tier=premium\]/);
+  assert.match(customCss,/@media \(prefers-reduced-motion:reduce\)/);
+  assert.match(customCss,/:focus-visible/);
+});
+
