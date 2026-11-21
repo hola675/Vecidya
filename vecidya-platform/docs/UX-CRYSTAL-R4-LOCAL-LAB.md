@@ -1,5 +1,5 @@
 # UX-CRYSTAL-R4 · Laboratorio visual local con diez negocios
-<!-- Versión: 1.0.0 | 2026-11-20 | Estado: IMPLEMENTADO EN RAMA, SIN CERTIFICACIÓN RUNTIME -->
+<!-- Versión: 1.1.0 | 2026-11-21 | Estado: IMPLEMENTADO EN RAMA, SIN CERTIFICACIÓN RUNTIME -->
 
 ## Objetivo
 Recorrer el producto Vecidya completo desde un servidor de desarrollo local, con diez organizaciones y escenarios sintéticos distintos. Preparar capturas Playwright y dejar un Chromium visible e interactivo para inspección humana antes de evaluar Web, Mi Vecidya y Admin.
@@ -29,7 +29,11 @@ pnpm run status:local-demo
 pnpm exec playwright install chromium
 node scripts/ux-r4-local-visual-review.mjs --area=all
 ```
-Para una visita más focal: `--area=public`, `--area=app` o `--area=internal`. Sin `--no-hold`, Chromium permanece visible hasta pulsar Enter. Para recopilar solo capturas sin abrir el navegador visual, añadir `--no-hold`.
+Para una visita más focal: `--area=public`, `--area=app` o `--area=internal`. Sin `--no-hold`, Chromium permanece visible hasta pulsar Enter. Para recopilar capturas **en los cinco anchos 320/390/768/1366/1920** sin abrir ventana interactiva, añadir `--no-hold`:
+```powershell
+node scripts/ux-r4-local-visual-review.mjs --area=all --no-hold
+```
+En modo interactivo se captura 1366 px y se deja la aplicación abierta para la revisión manual.
 
 **Cuenta QA local solamente:** `qa-owner@vecidya.test` / `VecidyaLocalDemoOnly-2026!`. Son credenciales ficticias de laboratorio, no reutilizables en producción. La sesión se regenera al reiniciar el servidor.
 
@@ -54,7 +58,7 @@ Cada perfil tiene categoría canónica, ciudad, modalidad, descripción sectoria
 2. **Mi Vecidya**: `/app`, `/app/business-profile`, `/app/miniweb-v2`; alternar organización con el selector de la aplicación, revisar diez perfiles y previews de borrador. No afirmar publicación pública si la interfaz la prohíbe.
 3. **Admin**: `/app/internal/businesses`; con owner observar control de permisos/403. La vista legítima con `platform_admin` requiere un fixture/perfil de permisos explícito y pruebas de autorización separadas.
 
-El script crea capturas en `.wrangler/local-demo/visual-review/` (no en Git); confirma respuesta HTTP, exige sesión para rutas privadas y registra errores de consola. Capturas y una ventana visual **no sustituyen** zoom 200 %, lector de pantalla, contraste real ni aceptación humana.
+El script crea capturas en `.wrangler/local-demo/visual-review/` (no en Git); confirma respuesta HTTP, exige sesión para rutas privadas, detecta redirecciones inesperadas y desbordamiento horizontal, registra errores de JavaScript y produce capturas por ancho cuando se usa `--no-hold`. Un 403 es esperable únicamente en la vista Admin para owner; no certifica acceso `platform_admin`. Capturas y una ventana visual **no sustituyen** zoom 200 %, lector de pantalla, contraste real ni aceptación humana.
 
 ## Gates para cierre de R4
 - Contador local `organizaciones=10`, `perfiles=10`, `assets registrados=20`, `MiniWeb=10` y `publicados=0` sobre persistencia nueva. Si hay datos locales anteriores, validar el delta y no asumir estos valores absolutos.
@@ -65,4 +69,5 @@ El script crea capturas en `.wrangler/local-demo/visual-review/` (no en Git); co
 - Revisar qué páginas o secciones necesitan contenido de mayor fidelidad, pero mantener claramente marcados los escenarios sintéticos.
 
 ## Changelog
+- 1.1.0: capturas automatizadas de cinco anchos, validación de redirects/overflow y errores de página; se conserva exploración interactiva en 1366 px. Sin ejecución de navegador local verificada.
 - 1.0.0: fixture diez escenarios, seed sectorial, recorrido Playwright público y autenticado, procedimiento PowerShell y gates.
