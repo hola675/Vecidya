@@ -72,6 +72,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const [document, setDocument] = useState<MiniWebV2Document>(initialDocument);
   const [savedDocument, setSavedDocument] = useState<MiniWebV2Document>(initialDocument);
   const [activeSectionId, setActiveSectionId] = useState<string | null>(() => document.sections[0]?.id ?? null);
+  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
   const [revision, setRevision] = useState(data.state?.revision ?? 0);
   const [notice, setNotice] = useState("");
   const [serverErrors, setServerErrors] = useState<string[]>([]);
@@ -199,8 +200,8 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       {data.sites.length > 1 ? <nav aria-label="Elegir sitio web" className="miniweb-v2-editor__sites">
         <strong>Mis sitios</strong>{data.sites.map((site, index) => <Link key={site.id} to={`/app/miniweb-v2?site=${encodeURIComponent(site.id)}`} aria-current={data.state?.site.id === site.id ? "page" : undefined}>Sitio {index + 1} · {MINIWEB_V2_FAMILY_CATALOG[site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}</Link>)}
       </nav> : null}
-      {data.state ? <nav className="miniweb-v2-editor__review-nav" aria-label="Accesos del editor"><a href="#miniweb-v2-sections">Editar secciones</a><a href="#miniweb-v2-preview">Ver vista previa actual</a><span>{isDirty ? "Cambios locales sin guardar" : "Borrador guardado"}</span></nav> : null}
-      <div className="miniweb-v2-editor__workspace">
+      {data.state ? <nav className="miniweb-v2-editor__review-nav" aria-label="Accesos del editor"><a href="#miniweb-v2-sections" aria-current={mobileView === "edit" ? "true" : undefined} onClick={() => setMobileView("edit")}>Editar secciones</a><a href="#miniweb-v2-preview" aria-current={mobileView === "preview" ? "true" : undefined} onClick={() => setMobileView("preview")}>Ver vista previa actual</a><span>{isDirty ? "Cambios locales sin guardar" : "Borrador guardado"}</span></nav> : null}
+      <div className="miniweb-v2-editor__workspace" data-mobile-view={mobileView}>
         <div className="miniweb-v2-editor__controls">
       {!data.canEdit ? <Card surface={editorSurface}><p>Tienes permiso para consultar este sitio, pero no para cambiarlo.</p></Card> : null}
       {!data.state ? <Card surface={editorSurface}><h2>Elige un punto de partida</h2><p>Selecciona un diseño para tu actividad. Todos pueden adaptarse después.</p>
@@ -268,7 +269,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       {serverErrors.length > 0 ? <div role="alert" className="miniweb-v2-editor__errors"><strong>Revisa lo siguiente:</strong><ul>{serverErrors.map((error,index) => <li key={`${index}-${error}`}>{error}</li>)}</ul></div> : null}
       <p role="status" aria-live="polite">{notice}</p>
         </div>
-        <section id="miniweb-v2-preview" aria-label="Vista previa de tu sitio" className="miniweb-v2-editor__preview" tabIndex={-1}><div className="miniweb-v2-editor__preview-heading"><h2>Vista previa</h2><a href="#miniweb-v2-sections">Volver a editar</a></div><p>{isDirty ? "Esta vista refleja los cambios locales aún sin guardar; no modifica la versión publicada." : "Previsualización privada del borrador; no modifica la versión publicada."}</p>
+        <section id="miniweb-v2-preview" aria-label="Vista previa de tu sitio" className="miniweb-v2-editor__preview" tabIndex={-1}><div className="miniweb-v2-editor__preview-heading"><h2>Vista previa</h2><a href="#miniweb-v2-sections" onClick={() => setMobileView("edit")}>Volver a editar</a></div><p>{isDirty ? "Esta vista refleja los cambios locales aún sin guardar; no modifica la versión publicada." : "Previsualización privada del borrador; no modifica la versión publicada."}</p>
         <MiniWebV2Renderer document={document} familyKey={data.state?.site.familyKey ?? family} variant={data.state?.site.visualVariant ?? variant} mediaUrl={mediaUrl} preview/>
         </section>
       </div>
