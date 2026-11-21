@@ -63,6 +63,32 @@ PR, condición de reversión y estado de despliegue:
 
 **Corte:** 2026-11-20 · **Estado:** R1.2–R1.4 integrados en `main`; R1.5 es compatibilidad de laboratorio en rama. Sin migración automática del frontend ni despliegue comprobado. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
 
+## Personalizador MiniWeb de laboratorio — R1.6 (2026-11-20)
+
+En `biblioteca.html#miniweb-customizer` hay una vista previa real en HTML/CSS que permite ajustar **experiencia compositiva Base/Pro/Premium, paleta y tres colores libres (principal, acento y fondo), tipografía, disposición, alineación, posición de imagen, tamaño de título/texto, espaciados, radios y altura de portada**. Los controles cambian únicamente variables CSS de la muestra mediante `assets/miniweb-customizer.js`, aisladas por `.mw-lab__preview`; los estilos viven en `styles/miniweb-customizer.css`.
+
+- **Base/Cuadra**: hero dividido, rejilla uniforme y contacto directo; presentación completa.
+- **Pro/Barrio**: hero asimétrico y retícula editorial; no se inventan formularios CRM ni automatizaciones.
+- **Premium/Ciudad**: hero inmersivo y ritmo de bloques más narrativo; tampoco simula módulos multiproceso.
+- **Igual calidad básica**: las tres conservan tipografía legible, estructura, CTA de ejemplo accesible y recursos completos; se diferencian por composición, no por eliminar funciones de Cuadra.
+- **Color personalizado** permite afinar colores hexadecimales con un selector visual; el laboratorio avisa si el contraste estimado de texto o botón cae por debajo de 4,5:1. La revisión final debe medir los fondos compuestos reales y todos los estados.
+- **Restaurar** vuelve a la vista inicial sin mutar datos.
+- **Copiar propuesta para agentes** produce JSON con `schema: vecidya-crystal-miniweb-visual-brief-v1` y `scope: concept-only-not-a-product-configuration`. Es un **brief visual**, no un formato válido para la API, el snapshot o el renderer MiniWeb V2.
+- El ejemplo usa el negocio sintético **Estudio Aurora**, sin clientes reales. No hay login, localStorage, solicitudes de red, guardado, publicación, pago ni concesión de licencia.
+
+### Interpretación obligatoria para implementadores
+
+1. Leer `assets/pattern-registry.json → miniwebCustomizationLab`; comprobar límites admitidos de cada campo y variantes.
+2. Comparar el componente/selector deseado con el **editor real** en `vecidya-platform/app/routes/miniweb-v2-editor.tsx` y el renderer/snapshot vigente. El nombre de este archivo es orientativo: localizar la exportación real, no asumir que existe por la ruta aquí escrita.
+3. Antes de almacenar estilos personalizados: diseñar **schema versionado y validación server-side**, aislamiento por organización, preview exacto, propiedades permitidas y migración de borradores anteriores. Un campo del lab no autoriza persistir CSS arbitrario.
+4. Usar tokens semánticos y variantes permitidas, no inyección de CSS, HTML ni URLs de recursos sin validar; garantizar contraste, longitud de texto, fallback sin imágenes, navegación y movimiento reducido.
+5. Probar guardar/recargar/revertir y publicación real únicamente en entorno autorizado, sin cambiar derechos `Cuadra/Barrio/Ciudad` ni mezclar identidades de negocios.
+6. QA focal del lab: `node --test vecidya-crystal-depth/tests/r1-contract.test.mjs` desde raíz y `node vecidya-crystal-depth/tests/r2-browser-qa.mjs` según instalación Chromium del proyecto. Comparar 390 y 1366 px, restauración, tema, scroll y ausencia de errores de JS.
+
+**Estado:** implementado solo en biblioteca, para demostración y decisión de diseño. No se ha añadido un editor personalizable de producción ni activado estilos en MiniWeb pública.
+
+---
+
 ## 1. Punto de entrada obligatorio para agentes
 
 Antes de intervenir una pantalla, leer en este orden:

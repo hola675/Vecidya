@@ -16,6 +16,16 @@ La biblioteca es un **manual de decisiones visuales**, no solo una galería. Ant
 
 **R1 aprobada conceptualmente:** oscuro principal, claro alternativo; cristal focal en escenas, discreto en paneles y sólido en datos; calidad premium compartida entre Cuadra/Barrio/Ciudad con progresión por composiciones/capacidades efectivas; laboratorio interno como sistema de aprobación. **R1 no activa derechos comerciales, CRM ni nuevas plantillas por sí sola.**
 
+## Laboratorio de personalización MiniWeb R1.6 (2026-11-20)
+
+Dentro de `biblioteca.html#miniweb-customizer` se puede **cambiar en vivo** la composición Base/Pro/Premium, cuatro paletas con ajuste individual de color principal, acento y fondo (con advertencia de contraste), tres tipografías locales, hero apilado o dividido, posición de imagen, alineación de texto y deslizadores de tamaño de título/texto, márgenes, radios y altura de portada. La maqueta usa un negocio ficticio, soporta teclado, restaura valores y permite copiar un brief JSON **solo de intención visual** para agentes.
+
+- Implementación: `styles/miniweb-customizer.css` y `assets/miniweb-customizer.js`, aislados del resto de la biblioteca.
+- Registro interpretativo: `assets/pattern-registry.json → miniwebCustomizationLab`.
+- Guía de migración futura (no automática): `docs/INTEGRACION.md → Personalizador MiniWeb de laboratorio`.
+- Verificación a ejecutar: `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs` existentes.
+- **Sin persistencia ni publicación:** no altera MiniWeb real, derechos de licencia, datos de clientes o CRM; Cuadra sigue teniendo calidad completa.
+
 ## Transiciones y animaciones R1.1 (laboratorio)
 
 La sección `biblioteca.html#movimiento` muestra **cinco recetas** reutilizables por agentes: portada, revelado de sección, respuesta de componente, ambiente de escena y navegación contextual. Incluye controles de intensidad, pausa y repetición, con `prefers-reduced-motion` que impide la animación incluso si el usuario activa el ejemplo. Los estados estáticos son completos.

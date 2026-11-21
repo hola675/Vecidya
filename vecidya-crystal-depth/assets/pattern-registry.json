@@ -995,5 +995,127 @@
       "No cambiar D1, permisos, publicación ni scoring para adoptar estilos"
     ],
     "reference": "vecidya-crystal-depth/docs/INTEGRACION.md"
+  },
+  "miniwebCustomizationLab": {
+    "version": "1.0.0",
+    "status": "demo-only-no-persistence-no-entitlements",
+    "target": "biblioteca.html#miniweb-customizer",
+    "presetTiers": {
+      "base": "cuadra",
+      "pro": "barrio",
+      "premium": "ciudad"
+    },
+    "fields": [
+      {
+        "key": "tier",
+        "values": [
+          "base",
+          "pro",
+          "premium"
+        ],
+        "meaning": "propuesta compositiva, no licencia efectiva"
+      },
+      {
+        "key": "palette",
+        "values": [
+          "oceano",
+          "bosque",
+          "coral",
+          "ciruela"
+        ],
+        "meaning": "paleta de ejemplo; identidad real pertenece al negocio"
+      },
+      {
+        "key": "primaryColor",
+        "format": "#RRGGBB",
+        "meaning": "color principal editable; verificar contraste del CTA"
+      },
+      {
+        "key": "accentColor",
+        "format": "#RRGGBB",
+        "meaning": "acento visual, no sustituye estados semánticos"
+      },
+      {
+        "key": "canvasColor",
+        "format": "#RRGGBB",
+        "meaning": "fondo editable; garantizar contraste del texto"
+      },
+      {
+        "key": "font",
+        "values": [
+          "moderna",
+          "editorial",
+          "cercana"
+        ],
+        "meaning": "tipografía de fallback local; sin dependencia externa"
+      },
+      {
+        "key": "layout",
+        "values": [
+          "split",
+          "stacked"
+        ],
+        "meaning": "disposición de contenido de portada"
+      },
+      {
+        "key": "align",
+        "values": [
+          "left",
+          "center"
+        ],
+        "meaning": "alineación, sin alterar jerarquía HTML"
+      },
+      {
+        "key": "heroPosition",
+        "values": [
+          "right",
+          "left"
+        ],
+        "meaning": "posición del bloque ilustrativo"
+      },
+      {
+        "key": "titleSize",
+        "min": 26,
+        "max": 60,
+        "unit": "px"
+      },
+      {
+        "key": "bodySize",
+        "min": 14,
+        "max": 20,
+        "unit": "px"
+      },
+      {
+        "key": "spacing",
+        "min": 12,
+        "max": 42,
+        "unit": "px"
+      },
+      {
+        "key": "radius",
+        "min": 0,
+        "max": 34,
+        "unit": "px"
+      },
+      {
+        "key": "heroHeight",
+        "min": 260,
+        "max": 480,
+        "unit": "px"
+      }
+    ],
+    "exports": "visual brief JSON; no es API del editor y requiere revisión humana",
+    "invariants": [
+      "sin-persistencia",
+      "sin-llamadas-red",
+      "sin-simular-publicacion",
+      "sin-permisos-ficticios",
+      "sin-tema-global-miniweb-publica",
+      "legible-sin-javascript",
+      "teclado-focus-visible",
+      "reduced-motion",
+      "advertir-contraste-inferior-a-4.5"
+    ],
+    "adoption": "Proponer controles en el editor real solo con schema versionado, preview fiel y pruebas de persistencia, autorización, seguridad, accesibilidad y publicación"
   }
 }
