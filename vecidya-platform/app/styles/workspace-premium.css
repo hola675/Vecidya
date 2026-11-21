@@ -75,6 +75,11 @@
   background: radial-gradient(ellipse at 100% 0%, rgb(8 204 243 / 11%), transparent 22rem), linear-gradient(120deg, #fff, #f1f7ff 78%, #fff);
 }
 
+/* R4: los colores de la tarjeta de siguiente paso deben ser legibles en la
+   superficie clara, independientemente de colores heredados de Card. */
+.app-shell .app-main .app-primary-action :is(h2, p:not(.eyebrow)) { color: var(--v-ink); }
+.app-shell .app-main .app-primary-action .eyebrow { color: var(--v-blue-700); }
+
 .app-state-tile,
 .app-quick-action,
 .admin-stat-card,
@@ -147,17 +152,200 @@
 .miniweb-v2-editor > nav a { display: inline-flex; min-height: 2.5rem; align-items: center; border: 1px solid var(--v-line); border-radius: 999px; padding: 0.5rem 0.85rem; color: var(--v-blue-800); font-size: 0.86rem; font-weight: 700; text-decoration: none; background: #fff; }
 .miniweb-v2-editor > nav a[aria-current="page"] { border-color: rgb(6 104 237 / 24%); background: #eaf3ff; }
 
-.miniweb-v2-editor > .card { margin-block: 1rem; border-color: rgb(39 95 163 / 14%); border-radius: var(--v-radius-card); padding: clamp(1.1rem, 2.2vw, 1.7rem); background: rgb(255 255 255 / 92%); box-shadow: 0 0.75rem 2rem rgb(7 35 77 / 5%); }
-.miniweb-v2-editor > .card h2 { margin-top: 0; color: var(--v-ink); letter-spacing: -0.035em; }
-.miniweb-v2-editor > .card label { display: grid; gap: 0.4rem; margin-block: 0.8rem; color: #314868; font-size: 0.87rem; font-weight: 700; }
-.miniweb-v2-editor > .card label.miniweb-v2-editor__visibility { display: flex; min-height: 2.75rem; align-items: center; gap: 0.65rem; }
-.miniweb-v2-editor > .card label.miniweb-v2-editor__visibility input { width: 1.1rem; height: 1.1rem; min-height: 0; flex: 0 0 auto; accent-color: var(--v-blue-700); }
-.miniweb-v2-editor > .card :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-height: 2.8rem; border: 1px solid rgb(39 95 163 / 20%); border-radius: var(--v-radius-control); padding: 0.65rem 0.8rem; color: var(--v-ink); background: #fff; }
-.miniweb-v2-editor > .card textarea { min-height: 16rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
+.miniweb-v2-editor__controls > .card { margin-block: 1rem; border-color: rgb(39 95 163 / 14%); border-radius: var(--v-radius-card); padding: clamp(1.1rem, 2.2vw, 1.7rem); background: rgb(255 255 255 / 92%); box-shadow: 0 0.75rem 2rem rgb(7 35 77 / 5%); }
+.miniweb-v2-editor__controls > .card h2 { margin-top: 0; color: var(--v-ink); letter-spacing: -0.035em; }
+.miniweb-v2-editor__controls > .card label { display: grid; gap: 0.4rem; margin-block: 0.8rem; color: #314868; font-size: 0.87rem; font-weight: 700; }
+.miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility { display: flex; min-height: 2.75rem; align-items: center; gap: 0.65rem; }
+.miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility input { width: 1.1rem; height: 1.1rem; min-height: 0; flex: 0 0 auto; accent-color: var(--v-blue-700); }
+.miniweb-v2-editor__controls > .card :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-height: 2.8rem; border: 1px solid rgb(39 95 163 / 20%); border-radius: var(--v-radius-control); padding: 0.65rem 0.8rem; color: var(--v-ink); background: #fff; }
+.miniweb-v2-editor__controls > .card textarea { min-height: 7rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
 
-.miniweb-v2-editor > section[aria-label="Vista previa"] { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
-.miniweb-v2-editor > section[aria-label="Vista previa"] > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
-.miniweb-v2-editor > section[aria-label="Vista previa"] > .card { overflow: auto; border-color: rgb(39 95 163 / 12%); border-radius: 1.35rem; padding: clamp(0.65rem, 1.5vw, 1rem); background: #fff; }
+.miniweb-v2-editor__preview { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
+.miniweb-v2-editor__preview > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
+.miniweb-v2-editor__preview > .card { overflow: auto; border-color: rgb(39 95 163 / 12%); border-radius: 1.35rem; padding: clamp(0.65rem, 1.5vw, 1rem); background: #fff; }
+
+/* R4: edición y resultado visibles en paralelo solo cuando hay espacio real.
+   El renderer sigue siendo el mismo: no duplica ni publica contenido. */
+.miniweb-v2-editor__review-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-block: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--v-line);
+  border-radius: var(--v-radius-card);
+  background: #fff;
+}
+.miniweb-v2-editor__review-nav a,
+.miniweb-v2-editor__preview-heading a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--v-blue-700);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.miniweb-v2-editor__review-nav span { color: var(--v-muted); font-size: 0.88rem; }
+.miniweb-v2-editor__workspace { min-width: 0; }
+.miniweb-v2-editor__controls { min-width: 0; }
+.miniweb-v2-editor__controls > .card {
+  margin-block: 1rem;
+  padding: clamp(1.1rem, 2.2vw, 1.7rem);
+  background: #fff;
+}
+.miniweb-v2-editor__preview-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.miniweb-v2-editor__preview-heading h2 { margin: 0; color: var(--v-ink); }
+.miniweb-v2-editor__preview { min-width: 0; scroll-margin-top: 6rem; }
+#miniweb-v2-sections { scroll-margin-top: 6rem; }
+.miniweb-v2-editor__workspace > .miniweb-v2-editor__preview { margin-top: 1rem; }
+@media (min-width: 1100px) {
+  .miniweb-v2-editor__workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.92fr);
+    align-items: start;
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+  .miniweb-v2-editor__workspace > .miniweb-v2-editor__preview {
+    position: sticky;
+    top: 5.3rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@media (max-width: 1099px) {
+  .miniweb-v2-editor__review-nav { justify-content: space-between; }
+  /* En móvil el usuario alterna entre pasos y vista previa, sin recorrer
+     los formularios para llegar al resultado. En escritorio ambos son visibles. */
+  .miniweb-v2-editor__workspace[data-mobile-view="edit"] > .miniweb-v2-editor__preview,
+  .miniweb-v2-editor__workspace[data-mobile-view="preview"] > .miniweb-v2-editor__controls { display: none; }
+  .miniweb-v2-editor__review-nav a[aria-current="true"] {
+    border-radius: 0.65rem;
+    padding-inline: 0.55rem;
+    color: var(--v-ink);
+    background: #e9f3ff;
+    text-decoration-thickness: 2px;
+  }
+}
+
+/* R4.2 · Navegación secuencial del MiniWeb: una sección activa, sin scroll de
+   todos los formularios. Los botones no hacen peticiones ni cambian el guardado. */
+.miniweb-v2-editor__steps {
+  margin-block: 1rem;
+  border: 1px solid var(--v-line);
+  border-radius: var(--v-radius-card);
+  padding: clamp(0.85rem, 1.8vw, 1.3rem);
+  background: var(--v-surface-glass-strong, #fff);
+}
+.miniweb-v2-editor__steps-caption {
+  margin: 0 0 0.8rem;
+  color: var(--v-muted);
+  line-height: 1.5;
+}
+.miniweb-v2-editor__steps-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.55rem;
+}
+.miniweb-v2-editor__step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid rgb(39 95 163 / 20%);
+  border-radius: 0.8rem;
+  background: #fff;
+  color: var(--v-ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.miniweb-v2-editor__step[aria-current="step"] {
+  border-color: var(--v-blue-700);
+  background: #e9f3ff;
+  box-shadow: inset 3px 0 var(--v-blue-700);
+  font-weight: 700;
+}
+.miniweb-v2-editor__step-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.65rem;
+  min-height: 1.65rem;
+  border-radius: 50%;
+  background: #e6effc;
+  color: var(--v-blue-700);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.miniweb-v2-editor__step-note { color: #83510b; font-size: 0.78rem; }
+.miniweb-v2-editor__step:focus-visible,
+.miniweb-v2-editor__step-footer button:focus-visible,
+.miniweb-v2-editor__review-nav a:focus-visible {
+  outline: 3px solid var(--v-orange-500);
+  outline-offset: 3px;
+}
+.miniweb-v2-editor__active-section {
+  scroll-margin-top: 6rem;
+}
+.miniweb-v2-editor__step-guidance {
+  margin-block: 0.7rem 1rem;
+  border-inline-start: 3px solid var(--v-blue-700);
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.3rem;
+  background: #f2f7ff;
+  color: var(--v-ink);
+  line-height: 1.55;
+}
+.miniweb-v2-form__field-help {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--v-muted);
+  font-size: 0.82rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+.miniweb-v2-editor__step-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--v-line);
+  padding-top: 1rem;
+}
+.miniweb-v2-editor__step-footer button {
+  min-height: 2.75rem;
+  border: 1px solid var(--v-line);
+  border-radius: 0.7rem;
+  padding: 0.45rem 0.85rem;
+  color: var(--v-blue-700);
+  background: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.miniweb-v2-editor__step-footer button:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+@media (max-width: 560px) {
+  .miniweb-v2-editor__steps-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .miniweb-v2-editor__step { font-size: 0.88rem; }
+  .miniweb-v2-editor__step-footer { justify-content: space-between; }
+}
 
 /* El acabado vive en la familia seleccionada: no fuerza la marca Vecidya al negocio. */
 .miniweb-v2 {
@@ -252,8 +440,8 @@
 @media (max-width: 600px) {
   .app-header, .admin-header { min-height: 4.1rem; }
   .admin-main { width: 100%; }
-  .miniweb-v2-editor > section[aria-label="Vista previa"] { padding: 0.8rem; }
-  .miniweb-v2-editor > section[aria-label="Vista previa"] > .card { padding: 0.55rem; }
+  .miniweb-v2-editor__preview { padding: 0.8rem; }
+  .miniweb-v2-editor__preview > .card { padding: 0.55rem; }
   .miniweb-v2--editor-preview[data-variant="premium"] > header { min-height: 10rem; }
   .miniweb-v2 dl > div { align-items: flex-start; }
 }
@@ -264,4 +452,16 @@
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* R4.2: personalización opcional y compacta dentro del asistente. */
+.miniweb-v2-editor__design-details > summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+  color: var(--v-blue-700);
+  font-weight: 700;
+}
+.miniweb-v2-editor__design-details > summary:focus-visible {
+  outline: 3px solid var(--v-orange-500);
+  outline-offset: 3px;
 }

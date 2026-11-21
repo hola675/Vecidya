@@ -1,5 +1,30 @@
 # Guía de integración y uso por agentes — Crystal Depth R1.5–R3
 
+## Catálogo de fondos propuestos R4 — instrucciones para generar, no imágenes publicadas
+
+**Fuente estructurada:** `assets/pattern-registry.json → backgroundAssetBriefs`. Este catálogo contiene **ocho briefs aprobados para evaluación**, no archivos creados ni licencia de uso concedida. Cada agente debe escoger un fondo únicamente cuando refuerce el objetivo de la pantalla, no por rellenar espacio.
+
+| ID para arte | Destino | Prioridad | Material y directriz |
+|---|---|---|---|
+| `vx-bg-public-home` | Inicio | P1 | Escena nocturna/diurna modular con vacío izquierdo para mensaje HTML; Vico oficial separado |
+| `vx-bg-public-services` | Servicios | P2 | Plataformas y conexiones geométricas sin representar funciones no disponibles |
+| `vx-bg-directory` | Vecindario | P2 | Barrio abstracto periférico; filtros y resultados sobre superficie sólida |
+| `vx-bg-learn` | Aprende | P2 | Capas editoriales externas al cuerpo de lectura; párrafos siempre sólidos |
+| `vx-bg-diagnostic` | Diagnóstico | P3 | Orientación y halo en cabecera; respuestas y resultados sin decoración |
+| `vx-bg-client` | Mi Vecidya | P1 | Halo cian mínimo fuera de tarjetas; texto contrastado con tokens `--v-*` |
+| `vx-bg-miniweb-editor` | Editor MiniWeb V2 | P2 | Profundidad en **el marco del editor**, jamás sobre el sitio del negocio |
+| `vx-bg-internal` | Admin | P3 | Solo textura/cabecera; tablas, alertas y controles sólidos |
+
+### Entrega de un asset por parte del agente de diseño
+
+Antes de implementarlo, registrar archivo original, autoría y licencia, dimensiones, variante claro/oscuro y escritorio/móvil, WebP optimizado, peso final, región de contenido libre, alternativa CSS sin imagen y comportamiento con `prefers-reduced-motion`. Verificar contraste sobre el *fondo compuesto*, 320/390/768/1366/1920 px, rendimiento y aprobación humana. Un color o escena no activa licencias, diagnósticos, CRM o publicaciones.
+
+En `/app` la prioridad inmediata es contraste del contenido de «Tu siguiente paso». MiniWeb es un **editor solid** con vista previa contextual; el fondo es envolvente y nunca altera la marca del cliente. Las ocho propuestas no sustituyen la galería de 140 assets existentes ni autorizan generación masiva automática.
+
+---
+
+
+
 ## Contrato de lectura para agentes — consolidación posterior a R3 (2026-11-20)
 
 **Estado verificado en Git:** R1.5–R1.9, R2-A y R3 están integrados en `main` (PR #261–#267; merge R3 `b069103b`). Las frases históricas del documento que dicen «candidato», «en rama» o «no exportado» describen el momento de la fase original y **no prevalecen sobre el código actual**. R2 visual integral y publicación verificable continúan pendientes. La aprobación creativa de la biblioteca **no autoriza** activar tema oscuro en toda la plataforma ni un deploy.

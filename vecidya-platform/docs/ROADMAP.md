@@ -1,3 +1,33 @@
+## UX-CRYSTAL-R4.2 — editor MiniWeb por pasos y puente de arte (2026-11-21)
+
+**Estado:** implementado como candidato en [PR #276](https://github.com/hola675/Vecidya/pull/276), **sin merge ni despliegue**. Base actual `main` en esta rama; integrar solo después de certificar y reconciliar los cambios paralelos. El contrato de Crystal Depth permanece en [PR #271](https://github.com/hola675/Vecidya/pull/271) (CI de contrato e integración PASS) y el laboratorio sintético de diez organizaciones en [PR #270](https://github.com/hola675/Vecidya/pull/270) (CI de integración PASS); ambos siguen siendo líneas de trabajo separadas.
+
+### Evidencia y correcciones
+
+- Laboratorio R4 sobre Windows: diez organizaciones, diez perfiles, veinte assets geométricos, diez borradores de MiniWeb V2, cero publicados. Selección explícita de una organización activa resuelve los HTTP 403 iniciales: las tres rutas privadas devuelven HTTP 200 en 320/390/768/1366/1920 px con `overflow=false`. Esta evidencia no certifica permisos admin ni aislamiento entre usuarios.
+- Auditoría de capturas: contraste insuficiente en «Tu siguiente paso» del dashboard y exceso de desplazamiento vertical en MiniWeb V2 (seis formularios consecutivos, vista previa muy distante). No asumir que 200/overflow=false certifique el diseño.
+- PR #276: contraste con tokens reales; editor de **una sección visible** con pasos, estado/validación, anterior/siguiente, añadir/ordenar/quitar, ayuda por tipo y por campo; alternancia `Editar/Vista previa` en móvil y preview paralelo en escritorio amplio. No cambia el esquema de documento, el renderer, la autorización, los derechos de publicación, el autosave ni D1.
+- **CI inicial del PR #276:** typecheck PASS, build PASS, Crystal Depth PASS, Aprende PASS, QA público browser PASS; regresión unitaria 2115/2116, único fallo por aserción heredada de seis tarjetas estáticas. Se ajustó ese mismo test para comprobar cinco tarjetas estáticas y una dinámica de paso activo, sin reducir los controles de acceso, renderer o `expectedRevision`. **CI del commit correctivo todavía por verificar.**
+
+### Roadmap y dependencias de entrega
+
+| Paso | Entrega verificable | Estado / puerta |
+| --- | --- | --- |
+| R4.2-A | Corregir contraste y navegación MiniWeb, documentar ayudas y pruebas focales | **Implementado en PR #276**, no integrado |
+| R4.2-B | CI sobre HEAD: test focal MiniWeb, 2116 regresiones, typecheck, build y browser público | **En revalidación**; sin cierre hasta PASS |
+| R4.2-C | QA autenticada en Windows: 10 negocios, guardar/recargar sin pérdida, pasos, teclado, focos, errores, zoom 200%, preview de móvil y escritorio | **Pendiente**; usar worktree local aislado y screenshots por viewport |
+| R4.2-D | Revisión visual y editorial humana sobre 320/390/768/1366/1920, con registro de defectos reales y regresiones | **Pendiente**; no simular aceptación |
+| R4.3-A | Preparar ocho fondos por vista: Inicio, Servicios, Vecindario, Aprende, Diagnóstico, Mi Vecidya, MiniWeb marco y Admin | **Briefs estructurados**, `vecidya-crystal-depth/assets/pattern-registry.json → backgroundAssetBriefs`; imágenes todavía **no creadas** |
+| R4.3-B | Generar/revisar originales, confirmar derechos, entregar desktop/mobile, optimizar WebP, medir contraste, rendimiento, fallback CSS y reducción de movimiento | **Pendiente**; solo después de aceptación artística y técnica |
+| R4.4 | Adopción gradual por ruta con componentes y tokens canónicos, sin duplicar design system ni imponer marca Vecidya a MiniWeb del negocio | **Pendiente**; PR pequeño por área |
+| R4.5 | Reconciliar PR #271/#270/#276, revisión, merge autorizado, smoke staging, rollback y eventual producción | **Bloqueado por gates**; merge y deploy requieren autorizaciones independientes |
+
+**Política antiacumulación:** usar las baterías existentes de QA focal, CI y Playwright. No crear suites históricas repetidas por cada ajuste. Cada defecto corregido debe conservar evidencia breve de antes/después; si el resultado cambia, actualizar el contrato del test afectado, no rebajar arbitrariamente la calidad.
+
+**No incluidos en R4:** activación del tema oscuro global, manipulación de licencias, bypass de permisos, publicación de MiniWeb, CRM GHL, cambios en D1 remota, tenencia de fotografías reales de clientes o atribución de derechos de nuevas imágenes.
+
+---
+
 ## UX-CRYSTAL-R3 — rollout por ruta y rollback (candidato técnico)
 
 **Implementado en rama:** `app/lib/visual-rollout.ts` centraliza cinco adopciones previamente integradas en R1.7–R1.9. No habilita nuevas pantallas automáticamente. La reversión se realiza bajando un booleano por ruta en un PR pequeño y ejecutando CI; es una **reversión de código** que aún requiere deploy autorizado, no un interruptor en Cloudflare. Dos posibles superficies posteriores (Aprende y Mi Vecidya) quedan desactivadas por defecto.
