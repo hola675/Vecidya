@@ -163,7 +163,7 @@ test("R4: dashboard legible y MiniWeb con vista previa contextual sin cambiar pe
   assert.match(css, /grid-template-columns: minmax\(0, 1fr\) minmax\(22rem, 0\.92fr\)/);
   assert.match(css, /position: sticky/);
   assert.match(css, /@media \(min-width: 1100px\)/);
-  assert.match(editor, /<MiniWebV2Renderer document=\{document\}/);
+  assert.match(editor, /<MiniWebV2Renderer document=\{data\.state \? document : \{ \.\.\.document, design: createDesign \}\}/);
   assert.match(editor, /const blocker = useBlocker/);
   assert.match(editor, /aria-label="Pasos de edición del sitio"/);
   assert.match(editor, /activeSectionId, setActiveSectionId/);
