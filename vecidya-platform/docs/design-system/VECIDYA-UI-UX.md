@@ -1,3 +1,21 @@
+## UX-CRYSTAL-R4.2 — MiniWeb V2 por pasos (candidato en PR)
+
+**Problema observado en laboratorio real:** con seis secciones de un negocio ficticio, el editor mostraba todas las tarjetas y formularios en una sola página de miles de píxeles. La vista previa quedaba al final, lejos de los controles. En el dashboard, la tarjeta «Tu siguiente paso» tenía contraste insuficiente en móvil.
+
+**Solución en este checkpoint:**
+- Navegación por **pasos de sección** con una única sección editable visible; el orden y el contenido total siguen en el documento y el renderer.
+- Selección directa de paso, anterior/siguiente, indicador de sección y aviso de revisión si faltan campos válidos; añadir una sección abre automáticamente su paso.
+- Ayuda contextual editorial **en cada campo generado** y orientación por tipo de sección, además de imagen/CTA y horarios. Explicar propósito, dato verdadero y efecto; no inventar funciones ni prometer publicaciones.
+- Vista previa contextual en columna paralela a partir de 1100 px, acotada en altura y desplazable; en pantallas estrechas se alcanza mediante enlace de navegación y se puede volver al paso de edición.
+- Mantener control de cambios sin guardar, bloqueo de salida, revisión/revisionId, permisos y confirmación de publicación tal como están; el editor **no** activa autosave ni modifica MiniWeb pública de otras organizaciones.
+- En `/app`, el texto de la acción principal usa tokens de tinta verificables sobre superficie clara, no color heredado de un Card decorativo.
+
+**QA necesario antes del merge:** typecheck/build sobre SHA, test focal `tests/unit/ux/experience-system.test.ts`, capturas Playwright 320/390/768/1366/1920, lectura con teclado/foco, altas/bajas/reordenación de secciones, comprobar que cambiar entre pasos no pierde modificaciones, guardado y revalidación, reducido movimiento y visual de preview. No acreditar aceptación por haber cambiado solamente CSS.
+
+**Arte ambiental posterior:** `vecidya-crystal-depth/assets/pattern-registry.json → backgroundAssetBriefs` contiene ocho especificaciones de fondos por vista, todos con estado **no generados / no implementados**. Antes de crear assets, comprobar alternativas originales disponibles y derechos, contraste sobre la composición final, originales/derivados WebP, móvil/escritorio y fallback CSS. El marco del editor puede usar Crystal Quiet; los formularios siguen Solid y la MiniWeb pública usa la identidad del negocio.
+
+---
+
 ## UX-CRYSTAL-R3 — activación reversible de los cambios visuales ya integrados
 
 `app/lib/visual-rollout.ts` contiene el catálogo **único** de flags visuales por familia de ruta. Sus cinco opciones activas corresponden a cambios ya integrados por R1.7–R1.9; las dos superficies futuras están **desactivadas por defecto**. No son flags de permisos ni de licencias y no deben usarse para modificar autorización del servidor.
