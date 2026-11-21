@@ -24,6 +24,21 @@ const templateCategories = [
 ] as const;
 const variantLabels = { base: "Clásico", pro: "Editorial", premium: "Impacto" } as const;
 
+const sectionGuidance: Record<MiniWebV2SectionType, string> = {
+  hero: "Explica en pocas palabras qué ofrece tu negocio. Es lo primero que verá quien entre al sitio.",
+  about: "Cuenta a qué te dedicas y qué debería saber alguien que todavía no te conoce.",
+  services: "Describe cada servicio con palabras que una persona pueda entender sin conocimientos técnicos.",
+  products: "Muestra los productos disponibles; evita prometer precios o existencias que no estén confirmados.",
+  gallery: "Selecciona imágenes propias de tu negocio y describe su contenido para accesibilidad.",
+  contact: "Comprueba los datos que podrán utilizar los visitantes para comunicarse contigo.",
+  location: "Indica dónde atiendes o qué zonas cubres, según tu forma real de trabajar.",
+  faq: "Responde preguntas frecuentes de forma breve, directa y verificable.",
+  team: "Presenta personas solo con su consentimiento para publicar información personal.",
+  certifications: "Añade únicamente acreditaciones reales cuya procedencia puedas demostrar.",
+  testimonials: "Publica reseñas auténticas con autorización de quien las compartió.",
+  hours: "Indica la zona horaria y los horarios verdaderos; añade excepciones para los días especiales.",
+};
+
 export function meta() {
   return [{ title: "Diseña tu sitio | Vecidya" }];
 }
@@ -56,6 +71,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const initialDocument = () => ensureMiniWebV2Hero(data.state?.document);
   const [document, setDocument] = useState<MiniWebV2Document>(initialDocument);
   const [savedDocument, setSavedDocument] = useState<MiniWebV2Document>(initialDocument);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(() => document.sections[0]?.id ?? null);
   const [revision, setRevision] = useState(data.state?.revision ?? 0);
   const [notice, setNotice] = useState("");
   const [serverErrors, setServerErrors] = useState<string[]>([]);
@@ -67,6 +83,9 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const editing = fetcher.state !== "idle";
   const validation = validateMiniWebV2Document(document);
   const publicationValidation = validateMiniWebV2Document(document, { publishable: true });
+  const orderedSections = [...document.sections].sort((a, b) => a.order - b.order);
+  const activeSectionIndex = Math.max(0, orderedSections.findIndex((section) => section.id === activeSectionId));
+  const activeSection = orderedSections[activeSectionIndex];
   const blocker = useBlocker(({ currentLocation, nextLocation }) => isDirty &&
     (currentLocation.pathname !== nextLocation.pathname || currentLocation.search !== nextLocation.search));
 
@@ -119,6 +138,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       setRevision(data.state.revision);
       const next = ensureMiniWebV2Hero(data.state.document);
       setDocument(next); setSavedDocument(next);
+      setActiveSectionId((current) => next.sections.some((section) => section.id === current) ? current : next.sections[0]?.id ?? null);
     }
   }, [data.state, revision, isDirty]);
 
@@ -153,6 +173,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
     const item = createEmptyMiniWebV2Document([sectionToAdd]).sections[0];
     if (!item || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))) return;
     setDocument((value) => ({ ...value, sections: [...value.sections, { ...item, order: value.sections.length }] }));
+    setActiveSectionId(item.id);
   }
   function moveSection(id: string, direction: -1 | 1) {
     setDocument((value) => {
@@ -165,6 +186,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   }
   function removeSection(id: string) {
     setDocument((value) => ({ ...value, sections: value.sections.filter((item) => item.id !== id).map((item, order) => ({ ...item, order })) }));
+    if (activeSectionId === id) setActiveSectionId(orderedSections.find((item) => item.id !== id)?.id ?? null);
   }
   const mediaUrl = (id: string) => `/api/organizations/${encodeURIComponent(data.organization.id)}/business-media/${encodeURIComponent(id)}`;
   return <ClientAreaShell active="miniweb" activeOrganization={data.organization} isPlatformAdmin={data.isPlatformAdmin}
@@ -203,16 +225,35 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
             {MINIWEB_V2_SECTION_TYPES.map((type) => <option key={type} value={type}>{MINIWEB_V2_SECTION_LABELS[type]}</option>)}
           </select></label><Button disabled={!data.canEdit || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))} onClick={addSection}>Añadir sección</Button></div>
         </Card>
-        {document.sections.slice().sort((a,b) => a.order-b.order).map((section, index) => <Card key={section.id} surface={editorSurface}>
-          <div className="miniweb-v2-editor__section-head"><h2>{index + 1}. {MINIWEB_V2_SECTION_LABELS[section.type]}</h2>
-            <label><input type="checkbox" checked={section.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...section, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
+        <nav aria-label="Pasos de edición del sitio" className="miniweb-v2-editor__steps">
+          <p className="miniweb-v2-editor__steps-caption">Edita una sección a la vez. El contenido de las demás permanece en el borrador.</p>
+          <div className="miniweb-v2-editor__steps-list">{orderedSections.map((item, index) =>
+            <button key={item.id} type="button" className="miniweb-v2-editor__step" aria-current={activeSection?.id === item.id ? "step" : undefined}
+              onClick={() => setActiveSectionId(item.id)}>
+              <span className="miniweb-v2-editor__step-number">{index + 1}</span>
+              <span>{MINIWEB_V2_SECTION_LABELS[item.type]}</span>
+              {!validateMiniWebV2Section(item).valid ? <span className="miniweb-v2-editor__step-note">Revisar</span> : null}
+            </button>)}
           </div>
-          <MiniWebV2SectionForm section={section} media={data.media} organizationId={data.organization.id} disabled={!data.canEdit} onChange={updateSection}/>
-          {!validateMiniWebV2Section(section).valid ? <p className="miniweb-v2-editor__validation">Completa o corrige los campos de esta sección antes de guardar.</p> : null}
-          <div className="miniweb-v2-editor__actions"><Button tone="secondary" disabled={!data.canEdit || index === 0} onClick={() => moveSection(section.id, -1)}>Subir</Button>
-            <Button tone="secondary" disabled={!data.canEdit || index === document.sections.length - 1} onClick={() => moveSection(section.id, 1)}>Bajar</Button>
-            <Button tone="secondary" disabled={!data.canEdit || section.type === "hero"} onClick={() => removeSection(section.id)}>Quitar sección</Button></div>
-        </Card>)}
+        </nav>
+        {activeSection ? <Card key={activeSection.id} surface={editorSurface} className="miniweb-v2-editor__active-section">
+          <div className="miniweb-v2-editor__section-head"><h2>{activeSectionIndex + 1}. {MINIWEB_V2_SECTION_LABELS[activeSection.type]}</h2>
+            <label><input type="checkbox" checked={activeSection.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...activeSection, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
+          </div>
+          <p className="miniweb-v2-editor__step-guidance">{sectionGuidance[activeSection.type]}</p>
+          <MiniWebV2SectionForm section={activeSection} media={data.media} organizationId={data.organization.id} disabled={!data.canEdit} onChange={updateSection}/>
+          {!validateMiniWebV2Section(activeSection).valid ? <p className="miniweb-v2-editor__validation">Completa o corrige los campos de esta sección antes de guardar.</p> : null}
+          <div className="miniweb-v2-editor__actions miniweb-v2-editor__reorder-actions">
+            <Button tone="secondary" disabled={!data.canEdit || activeSectionIndex === 0} onClick={() => moveSection(activeSection.id, -1)}>Subir sección</Button>
+            <Button tone="secondary" disabled={!data.canEdit || activeSectionIndex === orderedSections.length - 1} onClick={() => moveSection(activeSection.id, 1)}>Bajar sección</Button>
+            <Button tone="secondary" disabled={!data.canEdit || activeSection.type === "hero"} onClick={() => removeSection(activeSection.id)}>Quitar sección</Button>
+          </div>
+          <div className="miniweb-v2-editor__step-footer">
+            <button type="button" disabled={activeSectionIndex === 0} onClick={() => setActiveSectionId(orderedSections[activeSectionIndex - 1]!.id)}>Anterior</button>
+            <span aria-live="polite">Sección {activeSectionIndex + 1} de {orderedSections.length}</span>
+            <button type="button" disabled={activeSectionIndex === orderedSections.length - 1} onClick={() => setActiveSectionId(orderedSections[activeSectionIndex + 1]!.id)}>Siguiente</button>
+          </div>
+        </Card> : null}
         <Card surface={editorSurface}><h2>Revisar y publicar</h2><p>{isDirty ? "Primero guarda los cambios. Esta vista previa muestra tu trabajo local." : "Revisa el contenido guardado y publica esta revisión cuando esté lista."}</p>
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar cambios</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar revisión {revision}</Button>
