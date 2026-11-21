@@ -6,13 +6,13 @@ Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e i
 
 ## Vico — explorador de identidad y originales (2026-11-20)
 
-La sección `biblioteca.html#vico` reúne las **10 imágenes oficiales del personaje Vico** ya incluidas entre los 140 assets, sin copiar ni generar archivos adicionales. Permite seleccionar imagen, comparar fondo oscuro/claro/cuadrícula de transparencia, escala, posición y escena contextual independiente; muestra propósito, dimensiones y enlace directo al original.
+La sección `biblioteca.html#vico` reúne las **10 imágenes oficiales del personaje Vico** ya incluidas entre los 140 assets, sin copiar ni generar archivos adicionales. Permite seleccionar imagen, comparar fondo oscuro/claro/cuadrícula y fondo dividido, escala, posición y escena contextual independiente; muestra propósito, dimensiones y enlace directo al original. El botón **Analizar píxeles alfa** construye en el navegador un mapa de máscara no destructivo y una medición orientativa para localizar posibles residuos de fondo.
 
 - `assets/vico-workbench.js`: selección desde `window.vecidyaCrystalCatalog`, diez destinos por ruta, copia de ficha JSON para agentes (orientación; no API).
 - `styles/vico-workbench.css`: visor responsive, foco de teclado, estado seleccionado y movimiento reducido.
 - `assets/pattern-registry.json → vicoVisualIdentity`: inventario y restricciones interpretables.
 - `docs/DIRECCION-ARTISTICA.md → Vico`: carácter, composición y QA requerida.
-- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: suites ya existentes, ampliadas con inventario y comparación en Chromium.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: suites ya existentes, ampliadas con inventario, comparación y auditoría alfa en Chromium. El segundo test guarda `qa-artifacts/vico-alpha-audit.json` y capturas de Inicio/Diagnóstico como artifacts temporales del CI.
 
 **Límites:** conserva originales, no genera ni redibuja a Vico, no aplica Vico como marca de los MiniWeb de clientes, no realiza despliegues y no certifica calidad artística o transparencia sin inspección de capturas. El catálogo sigue en 140 entradas. La infografía `home-vecidya-companion-v4.webp` está correctamente clasificada en `Ilustraciones`, porque no contiene al personaje.
 
