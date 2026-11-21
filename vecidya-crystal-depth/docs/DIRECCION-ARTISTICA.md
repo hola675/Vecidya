@@ -1,3 +1,81 @@
+## Vico — identidad y diez imágenes del personaje (actualización 2026-11-20)
+
+**Contrato de uso verificable:** `assets/pattern-registry.json → vicoVisualIdentity`. En `biblioteca.html#vico` existe un explorador de los **10 registros Vico** ya catalogados en `assets/library-catalog.js`, sin duplicar imágenes. El visor muestra el original, sus dimensiones, destino recomendado y sus límites, permite simular fondos oscuros/claros/cuadrícula, posición, escala y escena contextual independiente. No cambia arte ni plataformas y no es un generador de imágenes.
+
+### Gramática de identidad
+- **Vico personaje (L5):** una pieza individual apropiada al tema. Mantener rasgos, silueta, colores, perspectiva y proporción original. Jamás estirar, reflejar, cortar partes esenciales o recolorear por programa sin una nueva variante aprobada.
+- **Escena ambiental (L1):** imagen contextual independiente, subordinada a título y CTA. Vico puede acompañar la escena, pero no queda soldado a ella como screenshot. Permite recolocar/ocultar cada imagen en pantallas pequeñas.
+- **Infografía complementaria de Inicio:** `home-vecidya-companion-v4.webp` contiene elementos del ecosistema digital, pero **no al personaje Vico**. Se conserva en `Ilustraciones` y no debe contarse ni tratarse como pose del personaje.
+- **Variante por propósito:** Inicio (bienvenida + personaje), Vecindario (descubrimiento), Diagnóstico (orientación), Servicios (explicación), Licencias (comparación), Complementos (capacidades), Aprende (guía), Contacto (bienvenida), Nosotros (historia) y Únete (incorporación). No elegir al azar por color o agrado.
+- **MiniWeb de clientes:** Vico identifica a Vecidya, no a la empresa que contrata MiniWeb; el negocio conserva su propia marca. El editor puede enlazar a ayuda Vecidya, pero no insertar Vico como hero automático del sitio del cliente.
+- **Semántica:** no convertir expresiones de Vico en resultados de diagnóstico, aprobaciones, permisos, estado comercial ni confirmación de guardado. No incrustar texto, formularios, acciones o marcas de terceros dentro del archivo rasterizado.
+
+### Controles para revisar cada imagen
+Verificar a escala real y móvil: transparencia/halo, recorte completo, brazos y accesorios, bordes en claro/oscuro, profundidad coherente, peso visual, contraste del contenido independiente, `object-fit:contain`, ausencia de píxeles transparentes usados como margen que reduzca excesivamente el tamaño del personaje, `width/height` proporcionados, `loading` adecuado, texto alternativo contextual (decorativa `alt=""` si el mismo concepto ya está explicado) y `prefers-reduced-motion`. **Dimensiones WebP catalogadas no certifican transparencia, ausencia de defectos ni calidad subjetiva:** esos resultados requieren abrir los originales o revisar capturas del navegador.
+
+Los agentes deben conservar los originales y optimizar solo derivados trazables. Cualquier rediseño de pose, accesorio o expresión exige un encargo de imagen nuevo y aprobación de identidad, distinto del trabajo de implementación CSS.
+
+### Inspección visual inicial de originales (2026-11-20)
+
+Se reabrieron los 10 archivos WebP originales y la ilustración complementaria por separado. La cabecera WebP `VP8X` declara **canal alfa presente en los diez archivos de Vico**; esto verifica una característica del formato, no que cada píxel transparente sea perfecto.
+
+| Prioridad | Original / grupo | Observación visual | Criterio de corrección |
+|---|---|---|---|
+| Alta | `vico-home.webp` | Se aprecian franjas y restos de gradiente alrededor del personaje, visibles especialmente al contrastar el fondo. | Evaluar máscara alfa y residuos sin regenerar ni alterar rasgos; derivado nuevo solo tras aprobación |
+| Alta | `vico-diagnostico.webp` | Se observan bandas rectangulares de fondo en torno al personaje y al objeto que sostiene. | Revisar bordes/halo sobre superficies oscuras y claras con píxel real |
+| Media | `vico-vecindario.webp`, `vico-licencias.webp`, `vico-servicios.webp`, `vico-addons.webp` | Composición rica en objetos pequeños: pierde detalle cuando se usa como miniatura. | Conservar hero suficiente, no imponer tamaños mínimos ficticios sin medir |
+| Media | Conjunto de 10 poses | Se observan halos luminosos y algunos bordes abruptos alrededor de silueta/accesorios en distintas piezas. | Verificar visualmente en claro/oscuro y a zoom; no asumir máscara limpia por el flag alfa |
+| Identidad conservada | Las diez poses | Coinciden en personaje de zorro naranja, chaqueta azul, acentos de Vecidya y acabado tridimensional. | Mantener coherencia de ojos, orejas, ropa y perspectiva; no sustituir por mascotas alternas |
+| Reclasificación confirmada | `home-vecidya-companion-v4.webp` | Es una infografía del ecosistema Vecidya y **no contiene al personaje**. | Categoria `Ilustraciones`, no `Vico`; sigue disponible para el Inicio |
+
+**Límite de esta revisión:** los hallazgos son observaciones visuales de los archivos originales. No se ejecutó un análisis de máscara por píxel, no se produjeron derivados limpios y no se ha certificado una composición en todas las resoluciones de producción.
+
+### Diagnóstico alfa reproducible en Chromium — segundo checkpoint
+
+El explorador `biblioteca.html#vico` incorpora ahora **Comparación mitad clara/mitad oscura** y el control **Analizar píxeles alfa**. El navegador lee únicamente la imagen original seleccionada, crea una copia temporal en un canvas de hasta **512 px por lado largo**, y calcula un mapa de alfa y un informe local. Ningún pixel del WebP original se modifica ni se sube a un servidor.
+
+- El mapa de diagnóstico representa `alfa 0` como negro, `alfa 255` como blanco y los valores intermedios como grises. No es un derivado publicado, un recorte autorizado ni una nueva ilustración.
+- El informe `vecidya-vico-alpha-audit-v1` registra dimensiones reales y de muestreo, porcentajes por cinco rangos de alfa, límites de área visible (`alfa >= 16`) y actividad de alfa en una franja perimetral del 4 %. Estos indicadores **no demuestran** por sí mismos si un brillo es intencional o si hay fondo residual.
+- **QA sin duplicar harness:** `tests/r2-browser-qa.mjs` analiza las diez imágenes a 1366 px, guarda el artifact temporal `qa-artifacts/vico-alpha-audit.json` y captura comparaciones de Inicio y Diagnóstico; los resultados no se incluyen como binarios permanentes en Git.
+- **Aceptación de cualquier limpieza futura:** conservar la pose y el arte original, comparar lado a lado a tamaño real sobre claro/oscuro, cuantificar cambios de alfa sin eliminar sombras/reflejos intencionales y usar ruta derivada versionada; modificar la referencia productiva solo tras aprobación explícita.
+
+`NO_VERIFICADO` sigue siendo el estado de una **limpieza física del recurso**, pues todavía no hay un derivado validado. Un test PASS de algoritmo alfa no significa que desaparecieron los defectos artísticos.
+
+### Resultado cuantitativo de los diez originales (Chromium R2)
+
+En el workflow **Crystal Depth contract QA** del commit `1fe034ce` (ejecución `44845058860`, navegador PASS) se analizaron diez WebP originales. Estos resultados proceden de un muestreo Canvas de hasta 512 px en el lado largo; son medidas de **transparencia**, no de calidad artística.
+
+| Recurso | Alfa = 0 | Alfa 1–15 | Alfa 16–191 | Alfa 192–254 | Borde 4 % con alfa >= 16 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Inicio | 44,8 % | 1,4 % | 1,5 % | 52,3 % | 5,6 % |
+| Diagnóstico | 44,7 % | 1,3 % | 1,5 % | 52,5 % | 7,3 % |
+| Vecindario | 49,5 % | 1,7 % | 1,5 % | 47,3 % | 9,3 % |
+| Servicios | 45,5 % | 2,8 % | 3,4 % | 48,3 % | 4,0 % |
+| Licencias | 48,6 % | 2,1 % | 1,7 % | 47,5 % | 10,0 % |
+| Complementos | 47,3 % | 2,5 % | 2,2 % | 48,0 % | 7,8 % |
+| Aprende | 44,2 % | 1,3 % | 1,1 % | 53,3 % | 4,7 % |
+| Contacto | 44,7 % | 1,6 % | 2,0 % | 51,7 % | 14,6 % |
+| Nosotros | 47,2 % | 1,8 % | 1,8 % | 49,2 % | 7,3 % |
+| Únete | 47,8 % | 2,6 % | 2,0 % | 47,6 % | 6,2 % |
+
+**Precaución:** el histograma del navegador encontró 0 % exacto en alfa 255 para las diez piezas. No equivale a que el personaje sea visualmente transparente: el contenido casi opaco está en alfa 192–254. La actividad perimetral puede ser una oreja, una mano, una sombra o una franja residual; no se puede etiquetar automáticamente como defecto. La medición se ejecutó correctamente: [workflow de evidencia](https://github.com/hola675/Vecidya/actions/runs/44845058860).
+
+### Propuesta temporal de limpieza sin sobrescribir la fuente
+
+El laboratorio incorpora un **umbral alfa de comparación** (8, 16, 32 o 64). Solo en una copia Canvas reducida elimina los píxeles cuya opacidad sea mayor que cero y menor que el umbral. Muestra el porcentaje afectado y ofrece un **PNG de evaluación** descargable manualmente. El original WebP y las rutas productivas permanecen intactos.
+
+Este procedimiento puede ayudar a quitar residuos translúcidos tenues, pero **no elimina franjas opacas, no identifica bordes falsos ni garantiza mejora visual**. Si Inicio o Diagnóstico conservan sus defectos en una comparación sobre claro y oscuro, se requiere segmentación/edición artística controlada con referencia al original, no aumentar el umbral hasta destruir reflejos. El PNG del laboratorio se limita a 512 px por lado largo y **no sirve como reemplazo de producción**.
+
+La prueba Chromium existente también genera, en artifacts temporales, las muestras `vico-home-alpha16-EVALUACION.png` y `vico-diagnostico-alpha16-EVALUACION.png` junto a capturas de comparación. Son referencias para revisión artística, no archivos destinados a `public/assets/selected`.
+
+### Registro de revisión
+- `CODE`: catálogo de 10 referencias originales WebP del personaje: ocho rutas con `PublicHeroArt`, Inicio y Aprende; la infografía complementaria está catalogada aparte.
+- `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
+- `PENDIENTE`: inspección artística individual de los 10 originales, validación humana sobre captura, diferencias en 320/390/768/1366/1920, zoom 200 % y revisión en móvil real. No declarar esos controles PASS sin evidencia.
+- **Changelog 2026-11-20:** matriz de selección y visor de 10 imágenes. Revisión visual directa detectó que `home-vecidya-companion-v4.webp` no muestra a Vico y corrigió su clasificación; algunos contornos presentan halos o residuos aparentes, pendientes de diagnóstico técnico y eventual limpieza autorizada. Ningún asset sustituido.
+
+---
+
 # Dirección artística — Crystal Depth
 
 Dirección original R1.0 (2026-11-19); ampliación R1.5 de compatibilidad (2026-11-20). R1.2–R1.4 integradas como biblioteca; migración del frontend y certificación visual integral pendientes.

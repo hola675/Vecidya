@@ -1117,5 +1117,161 @@
       "advertir-contraste-inferior-a-4.5"
     ],
     "adoption": "Proponer controles en el editor real solo con schema versionado, preview fiel y pruebas de persistencia, autorización, seguridad, accesibilidad y publicación"
+  },
+  "vicoVisualIdentity": {
+    "version": "1.1.0",
+    "status": "library-workbench-candidate",
+    "workbench": "biblioteca.html#vico",
+    "catalogue": "assets/library-catalog.js → category Vico (10 personajes originales), y la ilustración de ecosistema de Inicio clasificada en Ilustraciones",
+    "canonicalPlatformAssets": "vecidya-platform/app/assets/public-assets.ts",
+    "useInPlatform": "vecidya-platform/app/components/public-hero-art.tsx; app/routes/home.tsx; app/routes/knowledge.tsx",
+    "semantics": {
+      "character": "Vico separado, preferentemente L5, con proporción original intacta",
+      "ambientScene": "Ilustración contextual independiente L1, nunca contenido de lectura",
+      "composition": "home-vecidya-companion-v4.webp es una infografía de ecosistema digital sin Vico; categoría Ilustraciones, NO es variante del personaje"
+    },
+    "variants": [
+      {
+        "original": "vico-home.webp",
+        "route": "/",
+        "intent": "presentacion_marca",
+        "type": "character"
+      },
+      {
+        "original": "vico-vecindario.webp",
+        "route": "/vecindario",
+        "intent": "descubrir_negocios",
+        "type": "character"
+      },
+      {
+        "original": "vico-diagnostico.webp",
+        "route": "/diagnostico",
+        "intent": "orientacion_diagnostico",
+        "type": "character"
+      },
+      {
+        "original": "vico-servicios.webp",
+        "route": "/servicios",
+        "intent": "explicar_servicios",
+        "type": "character"
+      },
+      {
+        "original": "vico-licencias.webp",
+        "route": "/licencias",
+        "intent": "acompanar_comparacion",
+        "type": "character"
+      },
+      {
+        "original": "vico-addons.webp",
+        "route": "/addons",
+        "intent": "presentar_complementos",
+        "type": "character"
+      },
+      {
+        "original": "vico-aprende.webp",
+        "route": "/aprende",
+        "intent": "acompanar_aprendizaje",
+        "type": "character"
+      },
+      {
+        "original": "vico-contacto.webp",
+        "route": "/contacto",
+        "intent": "orientar_contacto",
+        "type": "character"
+      },
+      {
+        "original": "vico-nosotros.webp",
+        "route": "/sobre-nosotros",
+        "intent": "historia_equipo",
+        "type": "character"
+      },
+      {
+        "original": "vico-unete.webp",
+        "route": "/unete",
+        "intent": "incorporacion",
+        "type": "character"
+      }
+    ],
+    "constraints": [
+      "No reconstruir ni redibujar personajes: mantener proporciones, identidad y colores de originales oficiales",
+      "No interpretar la presencia de Vico como aprobación de licencias, CRM o estado de negocio",
+      "No introducir Vico como marca del cliente en MiniWeb de terceros",
+      "Mantener escena y personaje como assets separados, salvo composición oficial horizontal de bienvenida",
+      "No rasterizar texto, botones o estados junto al personaje",
+      "Verificar bordes, recorte, relación de aspecto y fondo oscuro/claro/cuadrícula antes de seleccionar",
+      "Si se requiere icono compacto o una nueva pose, registrar brecha y exigir nueva aprobación artística",
+      "Las previews pequeñas del catálogo no se usan como imagen de producción; recuperar su original",
+      "No etiquetar la infografía del ecosistema de Inicio como Vico: no contiene al personaje."
+    ],
+    "evidenceLevels": {
+      "catalog": "CODE + revisión visual de originales: 10 imágenes del personaje; la pieza home-vecidya-companion-v4.webp no muestra a Vico y se reclasificó como ilustración",
+      "deployment": "El uso aparece en módulos React; no sustituye comprobación HTTP y QA humana por ruta",
+      "alpha": "HEADER: WebP VP8X alpha flag presente en los 10 Vico; VISUAL: franjas/residuos aparentes en vico-home y vico-diagnostico; halos de borde en varias variantes. No equivale a mascara alfa perfecta ni QA de pixels."
+    },
+    "visualFindings": {
+      "status": "observacion-visual-de-originales-no-qa-de-pixeles",
+      "high": [
+        "vico-home.webp: bandas o residuos de gradiente",
+        "vico-diagnostico.webp: franjas rectangulares de fondo"
+      ],
+      "medium": [
+        "Vico Vecindario/Licencias/Servicios/Complementos: detalles se reducen excesivamente a tamaño pequeño",
+        "Halos luminosos y bordes abruptos alrededor de algunas siluetas"
+      ],
+      "identityStrengths": [
+        "Zorro naranja consistente",
+        "Sudadera y calzado azules",
+        "Acentos gráficos Vecidya",
+        "Poses temáticas coherentes con ruta"
+      ],
+      "remediation": "No sobreescribir originales. Probar alpha y crear derivados controlados solo con aprobación de identidad y comparación lado a lado."
+    },
+    "alphaAudit": {
+      "version": "1.0.0",
+      "status": "client-side-diagnostic-not-retouch",
+      "entry": "biblioteca.html#vico → Analizar píxeles alfa",
+      "method": "Canvas downsample longest side <= 512, measure alpha histogram, bounding box and 4% perimeter activity",
+      "preview": "grayscale mask alongside original; split light/dark comparison",
+      "evidence": "tests/r2-browser-qa.mjs -> qa-artifacts/vico-alpha-audit.json and r2-vico-{home,diagnostico}-alpha.png",
+      "restrictions": [
+        "No modifica archivos originales ni derivados",
+        "No identifica automáticamente brillos intencionales",
+        "No certifica recorte perfecto o calidad artística",
+        "Producción requiere aprobación humana y nuevo asset versionado"
+      ],
+      "referenceWorkflow": {
+        "sha": "1fe034ce67c0b99558eef4a18986f8e7ed6b01e9",
+        "runId": 44845058860,
+        "verified": "2026-11-20",
+        "browserResult": "PASS 83/83",
+        "evidence": "GitHub Actions console VICO_ALPHA_SUMMARY, artifact JSON and captures"
+      },
+      "measured": {
+        "home": {
+          "fullyTransparentPercent": 44.8,
+          "alpha1To15Percent": 1.4,
+          "borderVisiblePercent": 5.6
+        },
+        "diagnostic": {
+          "fullyTransparentPercent": 44.7,
+          "alpha1To15Percent": 1.3,
+          "borderVisiblePercent": 7.3
+        },
+        "interpretation": "La eliminación de alfa <16 afecta área pequeña; no implica que franjas residuales estén en esos píxeles"
+      },
+      "previewCleanup": {
+        "status": "optional-local-canvas-preview-not-approved",
+        "thresholdOptions": [
+          8,
+          16,
+          32,
+          64
+        ],
+        "output": "PNG temporal de hasta 512 px, descarga voluntaria; no modifica originales, no desplegar",
+        "scope": "solo alfa no nulo menor que el umbral; no corrige bandas opacas, no reemplaza segmentación manual",
+        "entry": "biblioteca.html#vico → Comparar ajuste alfa (borrador)",
+        "qa": "tests/r1-contract.test.mjs y tests/r2-browser-qa.mjs reutilizados"
+      }
+    }
   }
 }

@@ -363,6 +363,144 @@ try{
           assert.equal(restored.title,'40px');
         });
       }
+      if(width===390 || width===1366){
+        const vicoButtons=page.locator('#vico-workbench-gallery button');
+        await vicoButtons.first().waitFor({timeout:10000});
+        const vicoCount=await vicoButtons.count();
+        assertStep('vico-catalogo-'+width,()=>assert.equal(vicoCount,10));
+        await page.getByRole('button',{name:'Seleccionar Vico · vecindario'}).click();
+        await page.locator('#vico-workbench-background').selectOption('checker');
+        await page.locator('#vico-workbench-position').selectOption('left');
+        await page.locator('#vico-workbench-size').evaluate((node)=>{
+          node.value='110';
+          node.dispatchEvent(new Event('input',{bubbles:true}));
+        });
+        await page.locator('#vico-workbench-scene').check();
+        await page.locator('#vico-workbench-image').evaluate((image)=>image.decode());
+        const vico=await page.locator('#vico-workbench').evaluate((root)=>({
+          chosen:root.querySelector('#vico-workbench-image').getAttribute('src'),
+          loaded:root.querySelector('#vico-workbench-image').naturalWidth>0,
+          label:root.querySelector('#vico-workbench-name').textContent,
+          background:root.querySelector('#vico-workbench-stage').dataset.background,
+          position:root.querySelector('#vico-workbench-stage').dataset.position,
+          scale:root.querySelector('#vico-workbench-stage').style.getPropertyValue('--vico-scale'),
+          scene:root.querySelector('#vico-workbench-stage').dataset.scene,
+          selected:root.querySelectorAll('.vico-workbench__item[aria-pressed="true"]').length
+        }));
+        assertStep('vico-interaccion-'+width,()=>{
+          assert.match(vico.chosen,/vico-vecindario\.webp$/);
+          assert.equal(vico.loaded,true);
+          assert.match(vico.label,/vecindario/i);
+          assert.equal(vico.background,'checker');
+          assert.equal(vico.position,'left');
+          assert.equal(vico.scale,'1.1');
+          assert.equal(vico.scene,'on');
+          assert.equal(vico.selected,1);
+        });
+        if(width===1366){
+          await page.evaluate(()=>{
+            window.__vicoAlphaAudits = [];
+            document.getElementById("vico-workbench").addEventListener("vico-alpha-audited",event=>{
+              window.__vicoAlphaAudits.push(event.detail);
+            });
+          });
+          const vicoLabels = await page.locator('#vico-workbench-gallery button').all();
+          for(const choice of vicoLabels){
+            const expected=1+(await page.evaluate(()=>window.__vicoAlphaAudits.length));
+            await choice.click();
+            await page.locator('#vico-workbench-analyze').click();
+            await page.waitForFunction(count=>
+              window.__vicoAlphaAudits?.length===count, expected,
+              {timeout:20000});
+            const visible=await page.locator('#vico-workbench-alpha-panel').isVisible();
+            assertStep('vico-alpha-visible-'+(await choice.getAttribute('aria-label')),()=>assert.equal(visible,true));
+            const label=await page.locator('#vico-workbench-name').textContent();
+            if(/inicio|diagnóstico/i.test(label)){
+              await page.locator('#vico-workbench-background').selectOption('split');
+              await page.locator('#vico-workbench').scrollIntoViewIfNeeded();
+              const tag=/diagnóstico/i.test(label)?'diagnostico':'home';
+              await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-'+tag+'-alpha.png'),animations:'disabled'});
+            }
+          }
+          // Propuesta de limpieza alfa no destructiva: solo en el laboratorio.
+          await page.getByRole('button',{name:'Seleccionar Vico · inicio'}).click();
+          await page.locator('#vico-workbench-background').selectOption('split');
+          await page.evaluate(()=>{
+            window.__vicoAlphaProposals = [];
+            document.getElementById('vico-workbench').addEventListener('vico-alpha-proposal',event=>{
+              window.__vicoAlphaProposals.push(event.detail);
+            });
+          });
+          await page.locator('#vico-workbench-threshold').selectOption('16');
+          await page.locator('#vico-workbench-propose').click();
+          await page.waitForFunction(()=>window.__vicoAlphaProposals?.length===1,{timeout:20000});
+          const proposal = await page.evaluate(()=>({
+            data:window.__vicoAlphaProposals[0],
+            preview:document.getElementById('vico-workbench-candidate-panel').hidden,
+            download:document.getElementById('vico-workbench-download').disabled,
+            source:document.getElementById('vico-workbench-image').getAttribute('src')
+          }));
+          assertStep('vico-propuesta-alfa-no-destructiva',()=>{
+            assert.match(proposal.source,/vico-home\.webp$/);
+            assert.match(proposal.data.source,/vico-home\.webp$/);
+            assert.equal(proposal.data.threshold,16);
+            assert.equal(proposal.data.schema,'vecidya-vico-alpha-candidate-v1');
+            assert.equal(proposal.data.status,'preview-only-alpha-threshold-not-approved-asset');
+            assert.equal(proposal.preview,false);
+            assert.equal(proposal.download,false);
+          });
+          const homeCandidate=await page.locator('#vico-workbench-candidate-canvas').evaluate(node=>node.toDataURL('image/png'));
+          assertStep('vico-png-home-preview',()=>{
+            assert.match(homeCandidate,/^data:image\/png;base64,/);
+          });
+          writeFileSync(join(artifacts,'vico-home-alpha16-EVALUACION.png'),Buffer.from(homeCandidate.split(',')[1],'base64'));
+          await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-home-candidate-alpha16.png'),animations:'disabled'});
+          await page.locator('#vico-workbench-threshold').selectOption('32');
+          const resetProposal=await page.locator('#vico-workbench').evaluate(root=>({
+            hidden:root.querySelector('#vico-workbench-candidate-panel').hidden,
+            downloadDisabled:root.querySelector('#vico-workbench-download').disabled
+          }));
+          assertStep('vico-propuesta-caduca-umbral',()=>{
+            assert.equal(resetProposal.hidden,true);
+            assert.equal(resetProposal.downloadDisabled,true);
+          });
+          await page.getByRole('button',{name:'Seleccionar Vico · diagnóstico'}).click();
+          await page.locator('#vico-workbench-threshold').selectOption('16');
+          await page.locator('#vico-workbench-propose').click();
+          await page.waitForFunction(()=>window.__vicoAlphaProposals?.length===2,{timeout:20000});
+          const diagnosisCandidate=await page.locator('#vico-workbench-candidate-canvas').evaluate(node=>node.toDataURL('image/png'));
+          assertStep('vico-png-diagnostico-preview',()=>assert.match(diagnosisCandidate,/^data:image\/png;base64,/));
+          writeFileSync(join(artifacts,'vico-diagnostico-alpha16-EVALUACION.png'),Buffer.from(diagnosisCandidate.split(',')[1],'base64'));
+          await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-diagnostico-candidate-alpha16.png'),animations:'disabled'});
+
+          const audits=await page.evaluate(()=>window.__vicoAlphaAudits);
+          // Publicar solo métricas de QA, nunca píxeles ni originales en logs.
+          console.log("VICO_ALPHA_SUMMARY",JSON.stringify(audits.map(entry=>({
+            file:entry.source.split("/").pop(),
+            alpha:entry.alphaPercent,
+            border:entry.border,
+            box:entry.visibleBoundingBox
+          }))));
+          assertStep('vico-alpha-10-originales',()=>{
+            assert.equal(audits.length,10);
+            assert.equal(new Set(audits.map(item=>item.source)).size,10);
+            for(const entry of audits){
+              assert.equal(entry.schema,'vecidya-vico-alpha-audit-v1');
+              assert.ok(entry.sampled[0]>0&&entry.sampled[1]>0);
+              const total=Object.values(entry.alphaPercent).reduce((a,b)=>a+b,0);
+              assert.ok(Math.abs(total-100)<1,'Rangos alfa no cierran: '+entry.source);
+            }
+          });
+          writeFileSync(join(artifacts,'vico-alpha-audit.json'),JSON.stringify({
+            schema:'vecidya-vico-alpha-audit-collection-v1',
+            status:'diagnostic-only-no-pixel-retouch',
+            sourceCommit:process.env.GITHUB_SHA||null,
+            images:audits
+          },null,2)+'\\n');
+        }
+        await page.locator('#vico-workbench').scrollIntoViewIfNeeded();
+        await page.screenshot({path:join(artifacts,'r2-'+width+'-vico-visor.png'),animations:'disabled'});
+      }
       const images=await page.locator('.hero-visual img').evaluateAll(imgs=>imgs.filter(img=>img.complete&&!img.naturalWidth).map(img=>img.src));
       assertStep('hero-assets-'+width,()=>assert.equal(images.length,0,'Imágenes rotas: '+images.join(', ')));
     }catch(e){failures.push({name:'error-vista-'+width,error:String(e)});}
