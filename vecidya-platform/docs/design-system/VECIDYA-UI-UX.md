@@ -5,8 +5,8 @@
 **Solución en este checkpoint:**
 - Navegación por **pasos de sección** con una única sección editable visible; el orden y el contenido total siguen en el documento y el renderer.
 - Selección directa de paso, anterior/siguiente, indicador de sección y aviso de revisión si faltan campos válidos; añadir una sección abre automáticamente su paso.
-- Ayuda contextual editorial **en cada campo generado** y orientación por tipo de sección, además de imagen/CTA y horarios. Explicar propósito, dato verdadero y efecto; no inventar funciones ni prometer publicaciones.
-- Vista previa contextual en columna paralela a partir de 1100 px, acotada en altura y desplazable; en pantallas estrechas se alcanza mediante enlace de navegación y se puede volver al paso de edición.
+- Ayuda contextual editorial **en cada campo generado** y orientación por tipo de sección, además de imagen/CTA y horarios. Las áreas de texto habituales reducen su altura mínima (de 16 rem a 7 rem) y siguen siendo redimensionables. Explicar propósito, dato verdadero y efecto; no inventar funciones ni prometer publicaciones.
+- Vista previa contextual en columna paralela a partir de 1100 px, acotada en altura y desplazable; en pantallas estrechas se alterna entre **Editar / Vista previa**, sin recorrer los formularios. Enlace de retorno y estado visual de la vista seleccionada.
 - Mantener control de cambios sin guardar, bloqueo de salida, revisión/revisionId, permisos y confirmación de publicación tal como están; el editor **no** activa autosave ni modifica MiniWeb pública de otras organizaciones.
 - En `/app`, el texto de la acción principal usa tokens de tinta verificables sobre superficie clara, no color heredado de un Card decorativo.
 
