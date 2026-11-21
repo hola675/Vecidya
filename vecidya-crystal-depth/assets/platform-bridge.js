@@ -44,6 +44,13 @@
         [item.purpose,item.platform,item.value,item.adoption].forEach(value=>row.append(make("td",value)));
         tokens.append(row);
       });
+      const shared = Array.isArray(bridge.sharedR16) ? bridge.sharedR16 : [];
+      shared.forEach(item=>{
+        const li=make("li","");
+        li.append(make("strong",item.name+" · Implementado R1.6"));
+        li.append(make("span",item.purpose+". Ver props en "+item.source));
+        gaps.append(li);
+      });
       bridge.proposedNotYetShared.forEach(item=>{
         const li=make("li","");
         li.append(make("strong",item.name+" · "+item.priority));
@@ -53,7 +60,7 @@
       const stateNote=document.getElementById("platform-bridge-state");
       if(stateNote && bridge.stateParity)stateNote.textContent=bridge.stateParity.rule;
       output.hidden=false;
-      status.textContent="Contrato R1.5 consultado: "+bridge.surfaces.length+" materiales, "+bridge.primitives.length+" componentes existentes, "+bridge.tokens.length+" tokens y "+bridge.proposedNotYetShared.length+" propuestas pendientes. La plataforma real sigue siendo la autoridad.";
+      status.textContent="Contrato R1.5 consultado: "+bridge.surfaces.length+" materiales, "+(bridge.primitives.length+shared.length)+" componentes React existentes, "+bridge.tokens.length+" tokens y "+bridge.proposedNotYetShared.length+" propuestas pendientes. La plataforma real sigue siendo la autoridad.";
     }catch{
       output.hidden=true;
       status.textContent="El registro JSON no está disponible en esta vista. Consulta el contrato y la guía de integración antes de aplicar un patrón; no supongas equivalencias.";
