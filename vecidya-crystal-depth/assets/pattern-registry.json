@@ -1082,6 +1082,20 @@
         "Poses temáticas coherentes con ruta"
       ],
       "remediation": "No sobreescribir originales. Probar alpha y crear derivados controlados solo con aprobación de identidad y comparación lado a lado."
+    },
+    "alphaAudit": {
+      "version": "1.0.0",
+      "status": "client-side-diagnostic-not-retouch",
+      "entry": "biblioteca.html#vico → Analizar píxeles alfa",
+      "method": "Canvas downsample longest side <= 512, measure alpha histogram, bounding box and 4% perimeter activity",
+      "preview": "grayscale mask alongside original; split light/dark comparison",
+      "evidence": "tests/r2-browser-qa.mjs -> qa-artifacts/vico-alpha-audit.json and r2-vico-{home,diagnostico}-alpha.png",
+      "restrictions": [
+        "No modifica archivos originales ni derivados",
+        "No identifica automáticamente brillos intencionales",
+        "No certifica recorte perfecto o calidad artística",
+        "Producción requiere aprobación humana y nuevo asset versionado"
+      ]
     }
   }
 }
