@@ -1,6 +1,6 @@
 /**
  * UX-CRYSTAL-R4 · Recorrido local interactivo con Playwright.
- * Versión 1.0.0 (2026-11-20). Sin mutaciones de datos desde el navegador.
+ * Versión 1.1.0 (2026-11-21). Sin mutaciones de datos desde el navegador.
  * Requiere dev:local-demo y seed:local-demo ejecutados previamente.
  */
 import { chromium } from "playwright";
@@ -13,6 +13,8 @@ const baseUrl = "http://127.0.0.1:4173";
 const outDir = resolve(".wrangler", "local-demo", "visual-review");
 const group = process.argv.find((arg) => arg.startsWith("--area="))?.split("=")[1] ?? "all";
 const noHold = process.argv.includes("--no-hold");
+const viewports = noHold ? [320, 390, 768, 1366, 1920] : [1366];
+const errors = [];
 const allowed = new Set(["public", "app", "internal", "all"]);
 if (!allowed.has(group)) throw new Error("Usa --area=public|app|internal|all");
 mkdirSync(outDir, { recursive: true });
@@ -38,7 +40,7 @@ try {
   browser = await chromium.launch({ headless: noHold, slowMo: noHold ? 0 : 65 });
   const context = await browser.newContext({ viewport: { width: 1366, height: 900 }, deviceScaleFactor: 1, reducedMotion: "reduce" });
   const page = await context.newPage();
-  page.on("pageerror", (error) => console.warn("PAGEERROR:", error.message));
+  page.on("pageerror", (error) => { errors.push(error.message); console.warn("PAGEERROR:", error.message); });
   page.on("console", (msg) => { if (msg.type() === "error") console.warn("CONSOLE:", msg.text().slice(0, 250)); });
   const health = await page.goto(baseUrl, { waitUntil: "domcontentloaded", timeout: 30_000 });
   if (!health?.ok()) throw new Error(`Servidor local no listo: HTTP ${health?.status() ?? "sin respuesta"}.`);
@@ -57,16 +59,30 @@ try {
   }
   for (const area of groups) {
     for (const [id, path] of routes[area]) {
-      const response = await page.goto(baseUrl + path, { waitUntil: "domcontentloaded", timeout: 30_000 });
-      await page.waitForTimeout(650);
-      const status = response?.status() ?? 0;
-      const filename = resolve(outDir, `${area}-${id}.png`);
-      await page.screenshot({ path: filename, fullPage: true, animations: "disabled" });
-      console.log(`[${area}] HTTP ${status} · ${path} · ${filename}`);
-      if (area === "internal" && status === 403) console.log("Admin protegido: 403 esperado para cuenta owner. No equivale a QA con platform_admin.");
-      if (status >= 500) process.exitCode = 1;
+      for (const width of viewports) {
+        await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
+        const response = await page.goto(baseUrl + path, { waitUntil: "domcontentloaded", timeout: 30_000 });
+        await page.waitForTimeout(650);
+        const status = response?.status() ?? 0;
+        const finalPath = new URL(page.url()).pathname;
+        const filename = resolve(outDir, `${area}-${id}-${width}.png`);
+        await page.screenshot({ path: filename, fullPage: true, animations: "disabled" });
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
+        const redirected = finalPath !== path;
+        console.log(`[${area}] HTTP ${status} · ${path} → ${finalPath} · ${width}px · overflow=${overflow} · ${filename}`);
+        if (redirected) {
+          console.error(`ERROR: redirección inesperada en ${path}: ${finalPath}`);
+          process.exitCode = 1;
+        }
+        if (area === "internal" && status === 403) console.log("Admin protegido: 403 esperado para cuenta owner. No equivale a QA con platform_admin.");
+        if (area === "internal" && ![200, 403].includes(status)) process.exitCode = 1;
+        if (area !== "internal" && (status < 200 || status >= 400)) process.exitCode = 1;
+        if (overflow) process.exitCode = 1;
+      }
     }
   }
+  if (errors.length) { console.error(`Errores JavaScript: ${errors.length}`); process.exitCode = 1; }
+  if (!noHold && group === "all") await page.goto(baseUrl + "/app", { waitUntil: "domcontentloaded" });
   console.log("\nCapturas terminadas. Las páginas privadas son vistas de la cuenta QA; la ruta Admin puede responder 403 por permisos.");
   if (!noHold) {
     console.log("Navegador abierto para explorar manualmente. Pulsa Enter en esta terminal para cerrar.");
