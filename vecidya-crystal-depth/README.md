@@ -1,6 +1,6 @@
 # Vecidya Crystal Depth
 
-**Estado:** R1.2, R1.3 y R1.4 integradas en `main` (PR #257, #259 y #260). R1.5 es el contrato de compatibilidad entre la biblioteca y el frontend real; en rama de revisión. La biblioteca no se importa como código React ni certifica despliegue.
+**Estado actualizado (2026-11-20):** R1.2–R1.9, R2-A y R3 integradas en `main` (PR #257–#267, según checkpoint). Biblioteca aprobada como **dirección creativa y laboratorio interno**; no se importa como paquete React ni acredita despliegue. **Pendientes:** R2 visual integral, revisión humana y comprobación operativa en staging. La guía canónica para agentes es `docs/INTEGRACION.md` y el contrato de compatibilidad está en `assets/pattern-registry.json → platformCompatibility`.
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 

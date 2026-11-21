@@ -1,3 +1,11 @@
+## UX-CRYSTAL-R4 — estado reconciliado al 2026-11-20
+
+**Git verificado:** R2-A está integrado en `main` mediante PR #266 (`79b851a0`) y R3 está integrado mediante PR #267 (`b069103b`). Los párrafos históricos R2/R3 de este documento describen el estado **en el momento de sus ramas**, no el estado actual de merge. El cierre de integración de código NO equivale a certificación visual integral ni a deploy. Las ejecuciones CI citadas en PR #267 corresponden al SHA `6984c300`; no se extienden automáticamente a modificaciones posteriores.
+
+**R4 ABIERTO:** inspección humana, zoom real 200 %, lector de pantalla, contraste efectivo de fondos compuestos, performance lenta, rutas autenticadas, rollback en staging y verificación de Cloudflare Version ID siguen pendientes. Sin autorización de producción, cambios remotos de D1 ni activación global del oscuro. Matriz y evidencia requerida: [UX-CRYSTAL-R4-ACCEPTANCE.md](./UX-CRYSTAL-R4-ACCEPTANCE.md).
+
+---
+
 ## UX-CRYSTAL-R3 — preparación de rollout, no publicación
 
 R1.5–R1.9 están integrados en `main` (PR #261–#265). R2 aporta la QA de navegador pública y encontró una animación residual bajo `prefers-reduced-motion`, corregida en la rama R2 y pendiente de verificar/merge. R3 añade flags de reversión por ruta y un smoke HTTP anónimo de solo lectura, pero **no demuestra ni ejecuta release**.

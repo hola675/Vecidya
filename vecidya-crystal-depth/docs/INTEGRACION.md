@@ -1,4 +1,65 @@
-# Guía de integración y uso por agentes — Crystal Depth R1.5
+# Guía de integración y uso por agentes — Crystal Depth R1.5–R3
+
+## Contrato de lectura para agentes — consolidación posterior a R3 (2026-11-20)
+
+**Estado verificado en Git:** R1.5–R1.9, R2-A y R3 están integrados en `main` (PR #261–#267; merge R3 `b069103b`). Las frases históricas del documento que dicen «candidato», «en rama» o «no exportado» describen el momento de la fase original y **no prevalecen sobre el código actual**. R2 visual integral y publicación verificable continúan pendientes. La aprobación creativa de la biblioteca **no autoriza** activar tema oscuro en toda la plataforma ni un deploy.
+
+### Fuente de verdad, desde mayor a menor prioridad
+1. `AGENTS.md`, `vecidya-platform/docs/GOVERNANCE.md` y guardas/contratos del backend.
+2. Código de la ruta, exportaciones de `app/components/ui.tsx`, `app/components/visual-contract.tsx`, `app/components/experience-system.tsx`, `app/components/public-v2.tsx`, y tokens `--v-*` de `premium-foundation.css` y `visual-system.css`.
+3. `vecidya-platform/docs/design-system/VECIDYA-UI-UX.md` y documentación vigente de la capacidad.
+4. `assets/pattern-registry.json` (material, intención, escenas, movimiento, agentes, compatibilidad y mapa de adopción).
+5. `biblioteca.html`, escenas e imágenes del laboratorio como **demostración**, nunca como React distribuible.
+
+**Discrepancia reconciliada:** `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `SharedStatusPanel`, `DiagnosticMetricCard` y `DiagnosticTrend` están implementados como componentes presentacionales en `app/components/visual-contract.tsx`. Antes de utilizarlos, abrir el archivo y comprobar sus propiedades reales: el registry no es contrato TypeScript. `access-denied` falta como ejemplo independiente en la demo R1.3, pero ya es estado de la composición React; lo sigue decidiendo el servidor.
+
+### Matriz de aplicación por superficie
+| Área | Lo que quiere conseguir el visitante | Regla compositiva | Fuente real y condiciones |
+|---|---|---|---|
+| Inicio / Servicios | Comprender valor y elegir siguiente acción | L0 ambiental, L1/L2 contexto, Focal solo en hero, Quiet en apoyo; L4 siempre HTML | Rutas públicas, navegación canónica, `PublicHeroArt`, `Card`, `Button`; no copiar escenas con CTA rasterizado |
+| Vecindario | Encontrar y comparar negocios | Quiet para tarjetas y filtros, Solid para resultados legibles; no ocultar el buscador detrás de efectos | `SearchFilters` y datos reales; no inventar disponibilidad, reseñas ni categorías |
+| Aprende | Leer, aprender y avanzar | Solid dominante, Quiet para índice y lecturas vinculadas; ilustraciones separadas de texto | Editorial real y recursos originales; no añadir scroll animations que oculten párrafos |
+| Diagnóstico | Responder y entender evidencias | Solid para opciones y resultados; atmósfera muy secundaria | No cambiar preguntas, puntuación, cobertura, confianza, privacidad ni almacenamiento |
+| Mi Vecidya | Gestionar tareas y negocio | Solid para formularios, Quiet para ayuda contextual; una acción principal | Shell cliente y permisos efectivos; mostrar borrador/publicación reales |
+| Admin | Operar, filtrar y auditar | Solid en tablas, métricas, permisos y errores; Quiet solo en controles auxiliares | Shell interno, filtros GET, `platform_admin` y datos autorizados; no camuflar 403 |
+| Editor MiniWeb | Preparar, previsualizar y publicar | Solid para edición; Quiet para vista previa; respetar la marca del negocio | `/app/miniweb-v2`, snapshots, revisiones y permisos reales; MiniWeb pública NO hereda tema Vecidya |
+| Planes | Comparar capacidades comprobables | Quiet + un único foco; comparación de lectura sólida | Catálogo comercial y entitlements reales, integración GHL externa diferenciada |
+
+### Secuencia exigida para cada implementación
+1. **Leader:** delimitar ruta, propietario, objetivo, datos reales, restricciones de permisos y estado de publicación; asignar subagentes, nunca delegar la autoridad final.
+2. **UX/UI:** seleccionar `intentRouting`, material Focal/Quiet/Solid, receta `sceneRecipes` si existe, y describir L0–L5 sin introducir escenas innecesarias.
+3. **Editorial:** revisar título, instrucciones, errores, CTA y estado vacío con lenguaje comprensible e inequívoco, sin alterar el significado o la capacidad comercial.
+4. **Frontend:** localizar componente/exportación y consumidores existentes; reutilizar tokens `--v-*`; si algo no existe, registrar brecha en vez de inventar API o copiar CSS `vx-r1-*`.
+5. **Calidad:** probar funcionalidad, estado vacío/carga/error/denegado/éxito, teclado/foco, 320/390/768/1366/1920, reduced-motion y contraste real; zoom 200 % y lector de pantalla requieren evidencia independiente.
+6. **Leader:** revisar diff y límites, asociar resultado a SHA, confirmar typecheck/build y pruebas afectadas, abrir PR. Merge, publicación en Cloudflare y activación global de tema son decisiones separadas.
+
+### Contrato de escena y material
+- **Focal** = `Card surface="highlight"` cuando corresponde; un hero puede tener composición distinta. No usar para tablas ni texto largo.
+- **Quiet** = `Card surface="glass"` como soporte secundario, y **Solid** = `Card surface="solid"` en trabajo/lectura. `depth` es una dimensión distinta (`quiet/rest/raised/floating`).
+- L0 fondo estacionario, L1 ilustración contextual, L2 estructura, L3 soporte material, L4 texto/datos/controles HTML reales y L5 foco visual. Eliminar L1/L2/L5 si no aportan información.
+- El fondo no aporta texto necesario ni controles. Si faltan recursos multimedia, conservar una composición útil y legible. `prefers-reduced-motion` manda sobre controles de animación.
+- Los 140 assets son catálogo de opciones, no lista de recursos obligatorios. Validar archivo fuente, licencia, dimensiones, variantes, transparencia y `alt`; optimizar derivados sin eliminar originales referenciados.
+- Los flags de `app/lib/visual-rollout.ts` son reversión **por código**: Inicio, Vecindario, Servicios, Admin Negocios y editor MiniWeb ya están activos; pilotos de Aprende y shell cliente comienzan apagados. No son autorización ni switches remotos.
+
+### Entrega que puede aceptar el agente líder
+```text
+Área / ruta:
+Objetivo comprobable:
+Intención, material y capas L0–L5:
+Código y componentes reales inspeccionados:
+Assets oficiales (origen, dimensiones, alt):
+Archivos modificados y razón:
+Permisos/datos/licencias afectados: ninguno | detalle autorizado
+Estados y accesibilidad comprobados:
+Pruebas RAN / NO_VERIFICADO, SHA y logs:
+Revisión visual humana y defectos abiertos:
+PR, condición de reversión y estado de despliegue:
+```
+
+**Antialucinación:** ningún patrón, captura, badge o ejemplo declara la función implementada. No declarar «premium terminado», «WCAG PASS», «publicado», «CRM conectado» o «guardado» sin evidencia específica. Respetar el límite documental de `AGENTS.md`: actualizar documentos existentes y no crear otro documento canónico por fase.
+
+---
+
 
 **Corte:** 2026-11-20 · **Estado:** R1.2–R1.4 integrados en `main`; R1.5 es compatibilidad de laboratorio en rama. Sin migración automática del frontend ni despliegue comprobado. **Propósito:** permitir que Kilo Code, subagentes y desarrolladores interpreten solicitudes y seleccionen patrones consistentes, sin usar el laboratorio como si fuera un paquete React listo.
 
