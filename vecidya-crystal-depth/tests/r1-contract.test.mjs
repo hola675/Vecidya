@@ -330,6 +330,54 @@ test('R1.5: biblioteca muestra un puente procedente del registro, sin aplicar CS
   assert.match(style,/overflow-x:auto/);
 });
 
+test('Vico: diez personajes catalogados y una infografía separada y un único punto de entrada accesible',()=>{
+  const raw = read('assets/library-catalog.js');
+  const catalog = JSON.parse(raw.replace(/^window\.vecidyaCrystalCatalog\s*=\s*/, '').replace(/;\s*$/, ''));
+  const vico = catalog.filter((entry)=>entry.category==='Vico');
+  assert.equal(vico.length,10);
+  assert.equal(new Set(vico.map((entry)=>entry.source)).size,10);
+  const companion=catalog.find((entry)=>entry.source.endsWith('/home-vecidya-companion-v4.webp'));
+  assert.equal(companion?.category,'Ilustraciones');
+  assert.doesNotMatch(companion?.name??'',/Vico/i);
+  for(const asset of vico){
+    assert.match(asset.source,/^\.\.\/vecidya-platform\/public\/assets\/selected\/illustrations\/.*\.webp$/);
+    assert.ok(asset.width>0 && asset.height>0 && asset.preview);
+  }
+  const script=read('assets/vico-workbench.js');
+  const styles=read('styles/vico-workbench.css');
+  assert.doesNotThrow(()=>new vm.Script(script));
+  assert.match(html,/id="vico" aria-labelledby="vico-title"/);
+  assert.match(html,/id="vico-workbench-gallery"[^>]*aria-busy="true"/);
+  assert.match(html,/href="#vico"/);
+  assert.match(html,/styles\/vico-workbench\.css/);
+  assert.match(html,/assets\/vico-workbench\.js/);
+  assert.match(script,/concept|visual-review-only-not-a-route-or-design-api/);
+  assert.match(script,/const sceneBase = safeEntries\.length/);
+  assert.match(script,/new URL\(sceneBase \+ rule\.scene, document\.baseURI\)/);
+  assert.match(html,/id="vico-workbench-analyze"/);
+  assert.match(html,/id="vico-workbench-alpha-panel"[^>]*hidden/);
+  assert.match(html,/id="vico-workbench-alpha-canvas"/);
+  assert.match(html,/<option value="split">/);
+  assert.match(script,/getImageData\(0, 0, width, height\)/);
+  assert.match(script,/vico-alpha-audited/);
+  assert.match(script,/diagnostic-only-no-pixel-retouch/);
+  for (const id of ['vico-workbench-threshold','vico-workbench-propose','vico-workbench-candidate-panel','vico-workbench-candidate-canvas','vico-workbench-download']) {
+    assert.ok(html.includes('id="'+id+'"'), 'Falta control de propuesta: '+id);
+  }
+  assert.match(script,/const makeAlphaCandidate = async/);
+  assert.match(script,/preview-only-alpha-threshold-not-approved-asset/);
+  assert.match(script,/vico-alpha-proposal/);
+  assert.match(script,/candidateCanvas\.toDataURL\("image\/png"\)/);
+  assert.match(styles,/vico-workbench__candidate/);
+  assert.match(styles,/vico-workbench__alpha/);
+  assert.doesNotMatch(script,/const sceneBase = "\.\.\/vecidya-platform/);
+  assert.doesNotMatch(script,/localStorage|sessionStorage|XMLHttpRequest|fetch\(/);
+  assert.match(styles,/prefers-reduced-motion:reduce/);
+  for (const asset of vico) {
+    assert.ok(script.includes(asset.source.split('/').pop()),'Falta registrar la variante '+asset.name);
+  }
+});
+
 test('R1.6: personalizador MiniWeb aislado, semántico y sin publicación',()=>{
   const customJs=read('assets/miniweb-customizer.js');
   const customCss=read('styles/miniweb-customizer.css');

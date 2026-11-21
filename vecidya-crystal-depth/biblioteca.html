@@ -12,11 +12,13 @@
   <link rel="stylesheet" href="styles/r1-guidance.css">
   <link rel="stylesheet" href="styles/motion-system.css">
   <link rel="stylesheet" href="styles/scene-composer.css">
+  <link rel="stylesheet" href="styles/vico-workbench.css">
   <link rel="stylesheet" href="styles/miniweb-customizer.css">
   <link rel="stylesheet" href="styles/interaction-flows.css">
   <link rel="stylesheet" href="styles/platform-bridge.css">
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
+  <script defer src="assets/vico-workbench.js"></script>
   <script defer src="assets/miniweb-customizer.js"></script>
   <script defer src="assets/interaction-flows.js"></script>
   <script defer src="assets/agent-brief.js"></script>
@@ -42,6 +44,7 @@
         <a class="nav-link" href="#formularios"><span>04</span> Formularios</a>
         <a class="nav-link" href="#datos"><span>05</span> Datos y estados</a>
         <a class="nav-link" href="#activos"><span>06</span> Activos e iconos</a>
+        <a class="nav-link" href="#vico"><span>06b</span> Vico · personaje e imágenes</a>
         <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
         <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
         <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
@@ -364,6 +367,88 @@
 
           <p class="empty-search crystal-surface" id="asset-empty" hidden>No hay activos con ese término. Prueba con “diagnóstico”, “servicio” o “interfaz”.</p>
           <p class="asset-source">Inventario completo de <code>public/assets/</code>, con fuentes originales separadas. Once iconos tienen una vista Crystal PNG propuesta; los originales permanecen intactos.</p>
+        </section>
+
+        <section class="content-section section-anchor" id="vico" aria-labelledby="vico-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>06b / Vico · identidad y recursos oficiales</p>
+              <h2 id="vico-title">Un personaje. Diez imágenes para diez propósitos.</h2>
+              <p>Selecciona la imagen original de Vico y revisa su encuadre en fondo oscuro, claro o transparente. El visor no modifica las imágenes ni publica cambios en Vecidya.</p>
+            </div>
+            <span class="section-count">10 <small>imágenes Vico</small></span>
+          </div>
+          <div id="vico-workbench" class="vico-workbench" aria-label="Laboratorio de imágenes de Vico">
+            <div class="vico-workbench__heading">
+              <div>
+                <h3>Explorador de Vico</h3>
+                <p class="vico-workbench__intro">Las diez ilustraciones del personaje se enlazan al catálogo oficial. Compara fondo, tamaño, posición y escena complementaria antes de seleccionar el recurso para una página o enviar instrucciones a tus agentes.</p>
+              </div>
+              <span class="vico-workbench__mark">Originales intactos · sin guardado</span>
+            </div>
+            <div class="vico-workbench__body">
+              <div class="vico-workbench__viewer">
+                <div id="vico-workbench-stage" class="vico-workbench__stage" data-background="dark" data-position="center" data-scene="off" aria-label="Comparación visual del personaje">
+                  <img id="vico-workbench-image" src="../vecidya-platform/public/assets/selected/illustrations/vico-home.webp" width="1024" height="1536" alt="Vico, personaje de Vecidya, saluda en una pose de bienvenida">
+                </div>
+                <div class="vico-workbench__detail">
+                  <strong id="vico-workbench-name">Vico · inicio</strong>
+                  <p id="vico-workbench-detail">Presentación de Vecidya · Inicio · original WebP 1024 × 1536 px. Mantener su proporción y dejar espacio para título y botones.</p>
+                  <a id="vico-workbench-original" href="../vecidya-platform/public/assets/selected/illustrations/home-vecidya-companion-v4.webp" target="_blank" rel="noopener noreferrer">Abrir imagen original</a>
+                </div>
+              </div>
+              <div class="vico-workbench__controls" aria-label="Controles de comparación Vico">
+                <label for="vico-workbench-background">Fondo para evaluar la imagen
+                  <select id="vico-workbench-background">
+                    <option value="dark">Oscuro Vecidya</option>
+                    <option value="light">Claro Vecidya</option>
+                    <option value="checker">Cuadrícula de transparencia</option>
+                    <option value="split">Comparación mitad clara / mitad oscura</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-position">Posición de Vico
+                  <select id="vico-workbench-position">
+                    <option value="center">Centrado</option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-size">Escala de previsualización <output id="vico-workbench-size-value" for="vico-workbench-size">100 %</output>
+                  <input id="vico-workbench-size" type="range" min="70" max="125" value="100" step="5">
+                </label>
+                <label for="vico-workbench-scene"><input id="vico-workbench-scene" type="checkbox"> Mostrar escena contextual detrás</label>
+                <label for="vico-workbench-threshold">Umbral de transparencia para comparar
+                  <select id="vico-workbench-threshold">
+                    <option value="8">Muy suave · alfa menor que 8</option>
+                    <option value="16" selected>Suave · alfa menor que 16</option>
+                    <option value="32">Moderado · alfa menor que 32</option>
+                    <option value="64">Alto · alfa menor que 64</option>
+                  </select>
+                </label>
+                <button type="button" id="vico-workbench-analyze">Analizar píxeles alfa</button>
+                <button type="button" id="vico-workbench-propose">Comparar ajuste alfa (borrador)</button>
+                <button type="button" id="vico-workbench-copy">Copiar ficha para mis agentes</button>
+                <p>La escena de fondo es una referencia de composición. El texto y los controles de la web siempre deben conservarse fuera de la imagen.</p>
+              </div>
+            </div>
+            <div id="vico-workbench-alpha-panel" class="vico-workbench__alpha" hidden aria-labelledby="vico-workbench-alpha-title">
+              <div><h4 id="vico-workbench-alpha-title">Mapa técnico de transparencia</h4>
+                <p id="vico-workbench-alpha-summary">Selecciona «Analizar píxeles alfa» para evaluar esta imagen.</p>
+                <p>Blanco: píxeles opacos. Gris: semitransparencias. Negro: transparencia total. La medición es orientativa y no elimina reflejos ni certifica la calidad artística.</p>
+              </div>
+              <canvas id="vico-workbench-alpha-canvas" width="320" height="320" role="img" aria-label="Máscara alfa de la ilustración seleccionada"></canvas>
+              <div id="vico-workbench-candidate-panel" class="vico-workbench__candidate" hidden>
+                <h5>Derivado de comparación · no aprobado</h5>
+                <canvas id="vico-workbench-candidate-canvas" width="320" height="320" role="img" aria-label="Imagen temporal con píxeles de alfa muy bajo eliminados"></canvas>
+                <p id="vico-workbench-candidate-summary">Este ajuste solo elimina píxeles casi transparentes. No repara bandas opacas ni reemplaza el original.</p>
+                <button type="button" id="vico-workbench-download" disabled>Guardar PNG de evaluación</button>
+              </div>
+            </div>
+            <p id="vico-workbench-status" class="vico-workbench__status" role="status" aria-live="polite"></p>
+            <p class="vico-workbench__fallback">Si los controles no se cargan, consulta las diez imágenes oficiales mediante la categoría <a href="#activos">Vico del catálogo completo</a>.</p>
+            <div id="vico-workbench-gallery" class="vico-workbench__gallery" aria-label="Elegir una de las diez imágenes oficiales de Vico" aria-busy="true"></div>
+          </div>
+          <p class="asset-source">Regla: Vico es el personaje de marca; conservar identidad, silueta y proporciones. No convertir fotografías del negocio, estados comerciales ni permisos en imágenes del personaje. Las piezas de Vico corresponden a Vecidya, no son recursos de marca predeterminados de MiniWeb de terceros.</p>
         </section>
 
         <section class="content-section section-anchor" id="escenas" aria-labelledby="scenes-title">

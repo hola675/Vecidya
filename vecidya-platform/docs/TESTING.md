@@ -1,3 +1,15 @@
+## APP-MINI-V2-VISUAL-PERSONALIZATION — pruebas del candidato (2026-11-20)
+
+La personalización visual ahora se incorpora al editor real `/app/miniweb-v2` y se valida en el contrato del documento MiniWeb. El checkpoint reutiliza sin crear harnesses nuevos:
+
+- `tests/unit/miniweb-v2-sections.test.ts`: documento legacy sin `design`, serialización de paleta/tamaño y rechazo de colores ilegibles/rangos inválidos.
+- `tests/unit/miniweb-visual-variants.test.ts`: recuento actualizado de superficies y presencia de controles en creación/edición.
+- `tests/e2e/miniweb-v2-conversion-check.mjs`: Worker/D1 local aislado; creación de sitio con estilo, rechazo de acento inválido, lectura del borrador, guardado y recarga de la configuración.
+
+**Estado:** cobertura agregada en rama de PR; ejecutar y revisar resultados del SHA final antes de declarar PASS. Pendiente además navegador real con controles de color/rango, zoom 200 %, lector de pantalla, permisos y aislamiento entre organizaciones y publicación con diseño persistido. No se han utilizado D1 ni R2 remotos.
+
+---
+
 ## UX-CRYSTAL-R4 — laboratorio local ampliado (2026-11-20, pendiente de ejecución)
 
 El fixture de `dev:local-demo` se amplió de 4 a **10 organizaciones sintéticas** con descripciones, ciudades, servicios, preguntas frecuentes, galería, dos catálogos de muestra y tres cuentas QA con permisos distintos. La información histórica sobre cuatro organizaciones describe la ejecución del 2026-11-11, no el objetivo del nuevo checkpoint. Para inicializar, ejecutar `pnpm run dev:local-demo` en una terminal y `pnpm run seed:local-demo`, `pnpm run status:local-demo` y `pnpm run review:local-demo` en otra. El script Playwright abre Chromium visible, guarda capturas en `test-results/ux-crystal-r4-manual` y permite inspección humana. Más detalles, credenciales y advertencias: [UX-CRYSTAL-R4-LOCAL-REVIEW.md](./UX-CRYSTAL-R4-LOCAL-REVIEW.md).
