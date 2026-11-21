@@ -66,6 +66,8 @@ El laboratorio incorpora un **umbral alfa de comparación** (8, 16, 32 o 64). So
 
 Este procedimiento puede ayudar a quitar residuos translúcidos tenues, pero **no elimina franjas opacas, no identifica bordes falsos ni garantiza mejora visual**. Si Inicio o Diagnóstico conservan sus defectos en una comparación sobre claro y oscuro, se requiere segmentación/edición artística controlada con referencia al original, no aumentar el umbral hasta destruir reflejos. El PNG del laboratorio se limita a 512 px por lado largo y **no sirve como reemplazo de producción**.
 
+La prueba Chromium existente también genera, en artifacts temporales, las muestras `vico-home-alpha16-EVALUACION.png` y `vico-diagnostico-alpha16-EVALUACION.png` junto a capturas de comparación. Son referencias para revisión artística, no archivos destinados a `public/assets/selected`.
+
 ### Registro de revisión
 - `CODE`: catálogo de 10 referencias originales WebP del personaje: ocho rutas con `PublicHeroArt`, Inicio y Aprende; la infografía complementaria está catalogada aparte.
 - `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
