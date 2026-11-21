@@ -1,3 +1,4 @@
+import { miniWebV2DesignStyle } from "../features/miniweb-v2/visual-design";
 import type { MiniWebV2Document, MiniWebV2Section, V2Image } from "../features/miniweb-v2/sections";
 
 const dayNames = { monday: "Lunes", tuesday: "Martes", wednesday: "Miércoles", thursday: "Jueves", friday: "Viernes", saturday: "Sábado", sunday: "Domingo" } as const;
@@ -11,7 +12,7 @@ function SectionView({ section, mediaUrl, contactAnchor }: { section: MiniWebV2S
   if (!section.visible) return null;
   const id = contactAnchor ? "contacto" : section.id;
   switch (section.type) {
-    case "hero": return <header id={id} className="miniweb-v2__hero"><div><h1>{section.content.title}</h1><p>{section.content.subtitle}</p>{section.content.cta && <a className="miniweb-v2__action" href={section.content.cta.href}>{section.content.cta.label}</a>}</div><ImageView image={section.content.image} priority src={mediaUrl}/></header>;
+    case "hero": return <header id={id} className="miniweb-v2__hero" data-image={section.content.image ? "present" : "absent"}><div><h1>{section.content.title}</h1><p>{section.content.subtitle}</p>{section.content.cta && <a className="miniweb-v2__action" href={section.content.cta.href}>{section.content.cta.label}</a>}</div><ImageView image={section.content.image} priority src={mediaUrl}/></header>;
     case "about": return <section id={id}><h2>{section.content.headline || "Conócenos"}</h2><p>{section.content.description}</p><div className="miniweb-v2__cards">{section.content.blocks.map(x => <article key={x.id}><ImageView image={x.image} src={mediaUrl}/><h3>{x.title}</h3><p>{x.body}</p></article>)}</div></section>;
     case "services": return <section id={id}><h2>Servicios</h2><div className="miniweb-v2__cards">{section.content.items.map(x => <article key={x.id}><ImageView image={x.image} src={mediaUrl}/><h3>{x.title}</h3><p>{x.description}</p>{x.cta && <a href={x.cta.href}>{x.cta.label}</a>}</article>)}</div></section>;
     case "products": return <section id={id}><h2>Productos</h2><div className="miniweb-v2__cards">{section.content.items.map(x => <article key={x.id}><ImageView image={x.image} src={mediaUrl}/><h3>{x.title}</h3>{x.category && <small>{x.category}</small>}<p>{x.description}</p>{x.cta && <a href={x.cta.href}>{x.cta.label}</a>}</article>)}</div></section>;
@@ -28,10 +29,12 @@ function SectionView({ section, mediaUrl, contactAnchor }: { section: MiniWebV2S
 }
 
 export function MiniWebV2Renderer({ document, familyKey, variant, preview = false, mediaUrl }: { document: MiniWebV2Document; familyKey: string; variant: string; preview?: boolean; mediaUrl?: (assetId: string) => string }) {
+  const visual = document.design;
+  const designAttributes = { style: miniWebV2DesignStyle(visual), "data-layout": visual?.layout, "data-align": visual?.align, "data-image-position": visual?.imagePosition };
   const orderedSections = [...document.sections].sort((a,b) => a.order-b.order || a.id.localeCompare(b.id));
   const firstContactId = orderedSections.find((section) => section.type === "contact" && section.visible)?.id;
   const sections = orderedSections.map(section => <SectionView key={section.id} section={section} mediaUrl={mediaUrl} contactAnchor={section.type === "contact" && section.id === firstContactId}/>);
   return preview
-    ? <div className="miniweb-v2 miniweb-v2--editor-preview" data-family={familyKey} data-variant={variant}>{sections}</div>
-    : <main className="miniweb-v2" data-family={familyKey} data-variant={variant}>{sections}</main>;
+    ? <div className="miniweb-v2 miniweb-v2--editor-preview" data-family={familyKey} data-variant={variant} {...designAttributes}>{sections}</div>
+    : <main className="miniweb-v2" data-family={familyKey} data-variant={variant} {...designAttributes}>{sections}</main>;
 }

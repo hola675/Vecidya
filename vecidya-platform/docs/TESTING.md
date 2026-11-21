@@ -1,3 +1,15 @@
+## APP-MINI-V2-VISUAL-PERSONALIZATION — pruebas del candidato (2026-11-20)
+
+La personalización visual ahora se incorpora al editor real `/app/miniweb-v2` y se valida en el contrato del documento MiniWeb. El checkpoint reutiliza sin crear harnesses nuevos:
+
+- `tests/unit/miniweb-v2-sections.test.ts`: documento legacy sin `design`, serialización de paleta/tamaño y rechazo de colores ilegibles/rangos inválidos.
+- `tests/unit/miniweb-visual-variants.test.ts`: recuento actualizado de superficies y presencia de controles en creación/edición.
+- `tests/e2e/miniweb-v2-conversion-check.mjs`: Worker/D1 local aislado; creación de sitio con estilo, rechazo de acento inválido, lectura del borrador, guardado y recarga de la configuración.
+
+**Estado:** cobertura agregada en rama de PR; ejecutar y revisar resultados del SHA final antes de declarar PASS. Pendiente además navegador real con controles de color/rango, zoom 200 %, lector de pantalla, permisos y aislamiento entre organizaciones y publicación con diseño persistido. No se han utilizado D1 ni R2 remotos.
+
+---
+
 ## UX-CRYSTAL-R3 — regresión de flags y verificación HTTP anónima
 
 Se amplió **la suite existente**, sin añadir tests históricos, para comprobar `VISUAL_ROLLOUT`, composición de clases, fallbacks de Admin/MiniWeb y límites de la consulta remota.
