@@ -12,10 +12,14 @@
   <link rel="stylesheet" href="styles/r1-guidance.css">
   <link rel="stylesheet" href="styles/motion-system.css">
   <link rel="stylesheet" href="styles/scene-composer.css">
+  <link rel="stylesheet" href="styles/vico-workbench.css">
+  <link rel="stylesheet" href="styles/miniweb-customizer.css">
   <link rel="stylesheet" href="styles/interaction-flows.css">
   <link rel="stylesheet" href="styles/platform-bridge.css">
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
+  <script defer src="assets/vico-workbench.js"></script>
+  <script defer src="assets/miniweb-customizer.js"></script>
   <script defer src="assets/interaction-flows.js"></script>
   <script defer src="assets/agent-brief.js"></script>
   <script defer src="assets/platform-bridge.js"></script>
@@ -40,6 +44,7 @@
         <a class="nav-link" href="#formularios"><span>04</span> Formularios</a>
         <a class="nav-link" href="#datos"><span>05</span> Datos y estados</a>
         <a class="nav-link" href="#activos"><span>06</span> Activos e iconos</a>
+        <a class="nav-link" href="#vico"><span>06b</span> Vico · personaje e imágenes</a>
         <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
         <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
         <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
@@ -364,6 +369,88 @@
           <p class="asset-source">Inventario completo de <code>public/assets/</code>, con fuentes originales separadas. Once iconos tienen una vista Crystal PNG propuesta; los originales permanecen intactos.</p>
         </section>
 
+        <section class="content-section section-anchor" id="vico" aria-labelledby="vico-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>06b / Vico · identidad y recursos oficiales</p>
+              <h2 id="vico-title">Un personaje. Diez imágenes para diez propósitos.</h2>
+              <p>Selecciona la imagen original de Vico y revisa su encuadre en fondo oscuro, claro o transparente. El visor no modifica las imágenes ni publica cambios en Vecidya.</p>
+            </div>
+            <span class="section-count">10 <small>imágenes Vico</small></span>
+          </div>
+          <div id="vico-workbench" class="vico-workbench" aria-label="Laboratorio de imágenes de Vico">
+            <div class="vico-workbench__heading">
+              <div>
+                <h3>Explorador de Vico</h3>
+                <p class="vico-workbench__intro">Las diez ilustraciones del personaje se enlazan al catálogo oficial. Compara fondo, tamaño, posición y escena complementaria antes de seleccionar el recurso para una página o enviar instrucciones a tus agentes.</p>
+              </div>
+              <span class="vico-workbench__mark">Originales intactos · sin guardado</span>
+            </div>
+            <div class="vico-workbench__body">
+              <div class="vico-workbench__viewer">
+                <div id="vico-workbench-stage" class="vico-workbench__stage" data-background="dark" data-position="center" data-scene="off" aria-label="Comparación visual del personaje">
+                  <img id="vico-workbench-image" src="../vecidya-platform/public/assets/selected/illustrations/vico-home.webp" width="1024" height="1536" alt="Vico, personaje de Vecidya, saluda en una pose de bienvenida">
+                </div>
+                <div class="vico-workbench__detail">
+                  <strong id="vico-workbench-name">Vico · inicio</strong>
+                  <p id="vico-workbench-detail">Presentación de Vecidya · Inicio · original WebP 1024 × 1536 px. Mantener su proporción y dejar espacio para título y botones.</p>
+                  <a id="vico-workbench-original" href="../vecidya-platform/public/assets/selected/illustrations/home-vecidya-companion-v4.webp" target="_blank" rel="noopener noreferrer">Abrir imagen original</a>
+                </div>
+              </div>
+              <div class="vico-workbench__controls" aria-label="Controles de comparación Vico">
+                <label for="vico-workbench-background">Fondo para evaluar la imagen
+                  <select id="vico-workbench-background">
+                    <option value="dark">Oscuro Vecidya</option>
+                    <option value="light">Claro Vecidya</option>
+                    <option value="checker">Cuadrícula de transparencia</option>
+                    <option value="split">Comparación mitad clara / mitad oscura</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-position">Posición de Vico
+                  <select id="vico-workbench-position">
+                    <option value="center">Centrado</option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-size">Escala de previsualización <output id="vico-workbench-size-value" for="vico-workbench-size">100 %</output>
+                  <input id="vico-workbench-size" type="range" min="70" max="125" value="100" step="5">
+                </label>
+                <label for="vico-workbench-scene"><input id="vico-workbench-scene" type="checkbox"> Mostrar escena contextual detrás</label>
+                <label for="vico-workbench-threshold">Umbral de transparencia para comparar
+                  <select id="vico-workbench-threshold">
+                    <option value="8">Muy suave · alfa menor que 8</option>
+                    <option value="16" selected>Suave · alfa menor que 16</option>
+                    <option value="32">Moderado · alfa menor que 32</option>
+                    <option value="64">Alto · alfa menor que 64</option>
+                  </select>
+                </label>
+                <button type="button" id="vico-workbench-analyze">Analizar píxeles alfa</button>
+                <button type="button" id="vico-workbench-propose">Comparar ajuste alfa (borrador)</button>
+                <button type="button" id="vico-workbench-copy">Copiar ficha para mis agentes</button>
+                <p>La escena de fondo es una referencia de composición. El texto y los controles de la web siempre deben conservarse fuera de la imagen.</p>
+              </div>
+            </div>
+            <div id="vico-workbench-alpha-panel" class="vico-workbench__alpha" hidden aria-labelledby="vico-workbench-alpha-title">
+              <div><h4 id="vico-workbench-alpha-title">Mapa técnico de transparencia</h4>
+                <p id="vico-workbench-alpha-summary">Selecciona «Analizar píxeles alfa» para evaluar esta imagen.</p>
+                <p>Blanco: píxeles opacos. Gris: semitransparencias. Negro: transparencia total. La medición es orientativa y no elimina reflejos ni certifica la calidad artística.</p>
+              </div>
+              <canvas id="vico-workbench-alpha-canvas" width="320" height="320" role="img" aria-label="Máscara alfa de la ilustración seleccionada"></canvas>
+              <div id="vico-workbench-candidate-panel" class="vico-workbench__candidate" hidden>
+                <h5>Derivado de comparación · no aprobado</h5>
+                <canvas id="vico-workbench-candidate-canvas" width="320" height="320" role="img" aria-label="Imagen temporal con píxeles de alfa muy bajo eliminados"></canvas>
+                <p id="vico-workbench-candidate-summary">Este ajuste solo elimina píxeles casi transparentes. No repara bandas opacas ni reemplaza el original.</p>
+                <button type="button" id="vico-workbench-download" disabled>Guardar PNG de evaluación</button>
+              </div>
+            </div>
+            <p id="vico-workbench-status" class="vico-workbench__status" role="status" aria-live="polite"></p>
+            <p class="vico-workbench__fallback">Si los controles no se cargan, consulta las diez imágenes oficiales mediante la categoría <a href="#activos">Vico del catálogo completo</a>.</p>
+            <div id="vico-workbench-gallery" class="vico-workbench__gallery" aria-label="Elegir una de las diez imágenes oficiales de Vico" aria-busy="true"></div>
+          </div>
+          <p class="asset-source">Regla: Vico es el personaje de marca; conservar identidad, silueta y proporciones. No convertir fotografías del negocio, estados comerciales ni permisos en imágenes del personaje. Las piezas de Vico corresponden a Vecidya, no son recursos de marca predeterminados de MiniWeb de terceros.</p>
+        </section>
+
         <section class="content-section section-anchor" id="escenas" aria-labelledby="scenes-title">
           <div class="section-heading">
             <div>
@@ -652,6 +739,71 @@
             <article><strong>Movimiento por propósito</strong><p>Transición breve de página simulada; sin autoplay obligatorio ni bloqueo de interacción. Respeta movimiento reducido.</p></article>
             <article><strong>Calidad consistente</strong><p>Una sola identidad para todos los niveles. El acceso a funciones depende del contrato de producto real, nunca del mockup.</p></article>
           </div>
+
+          <section id="miniweb-customizer" class="mw-lab" aria-labelledby="miniweb-customizer-title">
+            <div class="mw-lab__heading">
+              <div>
+                <h3 id="miniweb-customizer-title">Personaliza una MiniWeb en tiempo real</h3>
+                <p>Explora colores, tipografías, tamaños, posición, estructura y márgenes con una página ficticia. La calidad básica es igual en Cuadra, Barrio y Ciudad; cada composición cambia el modo de presentar los contenidos.</p>
+              </div>
+              <span class="mw-lab__tag">Laboratorio visual · no publica</span>
+            </div>
+            <div class="mw-lab__layout">
+              <div class="mw-lab__controls">
+                <fieldset>
+                  <legend>Controles de diseño</legend>
+                <div class="mw-lab__field"><label for="miniweb-custom-tier">Experiencia visual</label><select id="miniweb-custom-tier" data-mw-field="tier"><option value="base">Cuadra · Base</option><option value="pro">Barrio · Pro</option><option value="premium">Ciudad · Premium</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-palette">Paleta de color</label><select id="miniweb-custom-palette" data-mw-field="palette"><option value="oceano">Océano azul</option><option value="bosque">Bosque verde</option><option value="coral">Coral cálido</option><option value="ciruela">Ciruela elegante</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-primaryColor">Color principal</label><input type="color" id="miniweb-custom-primaryColor" data-mw-field="primaryColor" value="#154B85"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-accentColor">Color de acento</label><input type="color" id="miniweb-custom-accentColor" data-mw-field="accentColor" value="#F6A344"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-canvasColor">Fondo de la web</label><input type="color" id="miniweb-custom-canvasColor" data-mw-field="canvasColor" value="#F2F7FC"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-font">Tipografía</label><select id="miniweb-custom-font" data-mw-field="font"><option value="moderna">Moderna y clara</option><option value="editorial">Editorial serif</option><option value="cercana">Cercana y humanista</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-layout">Composición</label><select id="miniweb-custom-layout" data-mw-field="layout"><option value="split">Dos columnas</option><option value="stacked">En bloques apilados</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-align">Alineación del texto</label><select id="miniweb-custom-align" data-mw-field="align"><option value="left">Izquierda</option><option value="center">Centrado</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroPosition">Posición de la ilustración</label><select id="miniweb-custom-heroPosition" data-mw-field="heroPosition"><option value="right">A la derecha</option><option value="left">A la izquierda</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-titleSize">Tamaño del título</label><input id="miniweb-custom-titleSize" data-mw-field="titleSize" type="range" min="26" max="60" value="40" step="1"><output class="mw-lab__value" id="miniweb-custom-titleSize-value" for="miniweb-custom-titleSize">40 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-bodySize">Tamaño del texto</label><input id="miniweb-custom-bodySize" data-mw-field="bodySize" type="range" min="14" max="20" value="16" step="1"><output class="mw-lab__value" id="miniweb-custom-bodySize-value" for="miniweb-custom-bodySize">16 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-spacing">Espaciado</label><input id="miniweb-custom-spacing" data-mw-field="spacing" type="range" min="12" max="42" value="24" step="1"><output class="mw-lab__value" id="miniweb-custom-spacing-value" for="miniweb-custom-spacing">24 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-radius">Redondeo</label><input id="miniweb-custom-radius" data-mw-field="radius" type="range" min="0" max="34" value="20" step="1"><output class="mw-lab__value" id="miniweb-custom-radius-value" for="miniweb-custom-radius">20 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroHeight">Altura de portada</label><input id="miniweb-custom-heroHeight" data-mw-field="heroHeight" type="range" min="260" max="480" value="330" step="1"><output class="mw-lab__value" id="miniweb-custom-heroHeight-value" for="miniweb-custom-heroHeight">330 px</output></div>
+                </fieldset>
+                <div class="mw-lab__actions">
+                  <button id="miniweb-custom-reset" type="button">Restaurar diseño</button>
+                  <button id="miniweb-custom-copy" type="button">Copiar propuesta para agentes</button>
+                </div>
+                <p id="miniweb-custom-status" class="mw-lab__status" role="status" aria-live="polite">Modifica un control para actualizar la vista; ningún cambio se guarda.</p>
+              </div>
+              <div class="mw-lab__stage">
+                <div class="mw-lab__stage-label"><strong>Vista previa · negocio de ejemplo</strong><span id="miniweb-custom-tier-note">Cuadra · Presencia profesional completa</span></div>
+                <div id="miniweb-custom-preview" class="mw-lab__preview" data-tier="base" data-layout="split" data-align="left" data-image-position="right">
+                  <div class="mw-lab__nav">
+                    <span class="mw-lab__brand"><span class="mw-lab__brand-mark" aria-hidden="true"></span> Estudio Aurora</span>
+                    <span class="mw-lab__nav-note">Servicios · Sobre nosotros · Contacto</span>
+                  </div>
+                  <div class="mw-lab__hero">
+                    <div class="mw-lab__copy">
+                      <span class="mw-lab__eyebrow">Diseño que acompaña a tu negocio</span>
+                      <h4>Tu espacio merece sentirse único.</h4>
+                      <p>Un estudio ficticio que transforma ideas en soluciones visuales. Cambia el diseño a tu gusto sin sacrificar lectura ni funcionalidad.</p>
+                      <a class="mw-lab__cta" href="#guia" aria-label="Consultar guía de diseño MiniWeb">Consultar guía</a>
+                    </div>
+                    <div class="mw-lab__picture" role="img" aria-label="Ilustración geométrica abstracta de muestra, no fotografía de un negocio real">
+                      <span class="mw-lab__picture-label">Espacio de imagen · demo</span>
+                    </div>
+                  </div>
+                  <div class="mw-lab__services">
+                    <h5>Lo que podemos crear juntos</h5>
+                    <div class="mw-lab__cards">
+                      <article class="mw-lab__card"><strong>Identidad</strong><p>Una imagen reconocible y coherente.</p></article>
+                      <article class="mw-lab__card"><strong>Contenido</strong><p>Mensajes fáciles de entender.</p></article>
+                      <article class="mw-lab__card"><strong>Experiencia</strong><p>Un recorrido simple para contactar.</p></article>
+                    </div>
+                  </div>
+                </div>
+                <p class="mw-lab__disclaimer">Ejemplo local del laboratorio. Base, Pro y Premium aquí son composiciones conceptuales, no derechos activos ni plantillas publicables. El archivo copiado es una orientación de diseño, no un formato de configuración del editor de Vecidya.</p>
+              </div>
+            </div>
+          </section>
           <p class="r1-caption">Consulta <a href="assets/pattern-registry.json">el contrato de escenas</a> y <a href="docs/INTEGRACION.md">el protocolo para agentes</a> antes de trasladar un patrón a React. Esta biblioteca no implementa routing real ni edita un MiniWeb.</p>
         </section>
 
@@ -724,7 +876,7 @@
               </table>
             </div>
             <p class="pb-warning" id="platform-bridge-state"></p>
-            <h3 class="pb-heading">Componentes que requieren contrato</h3>
+            <h3 class="pb-heading">Componentes R1.6 disponibles y propuestas por evaluar</h3>
             <ul class="pb-inventory" id="platform-bridge-gaps"></ul>
           </div>
           <p class="pb-source-note">Fuentes: <a href="docs/INTEGRACION.md">guía de agentes</a>, <a href="assets/pattern-registry.json">contrato estructurado</a> y código real de <code>vecidya-platform/app/components/</code> y <code>vecidya-platform/app/styles/</code>. No modificar el tema, los permisos, los flujos de MiniWeb ni el CRM por interpretar una muestra.</p>

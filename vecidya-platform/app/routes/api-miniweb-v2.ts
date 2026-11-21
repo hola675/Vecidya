@@ -5,6 +5,7 @@ import { getBusinessPublicationSnapshotForOrganization } from "../../db/queries/
 import { member } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
 import { createMiniWebV2Site, getMiniWebV2EditorState, publishMiniWebV2Draft, saveMiniWebV2Draft } from "../../db/queries/miniweb-v2.server";
+import { validateMiniWebV2Design } from "../features/miniweb-v2/visual-design";
 import { createEmptyMiniWebV2Document, validateMiniWebV2Document } from "../features/miniweb-v2/sections";
 import { convertPublishedV1ContentToV2 } from "../features/miniweb-v2/conversion";
 import { isMiniWebV2Family, isMiniWebV2Variant, MINIWEB_V2_FAMILY_CATALOG } from "../features/miniweb-v2/visual-families";
@@ -44,7 +45,9 @@ export async function action(args: Route.ActionArgs) {
     if (!owner) return Response.json({ error: "La organización no tiene un titular activo." }, { status: 409 });
     const familyKey = isMiniWebV2Family(input.familyKey) ? input.familyKey : "vecidya-default";
     const visualVariant = isMiniWebV2Variant(input.visualVariant) ? input.visualVariant : "base";
+    if (input.design !== undefined && !validateMiniWebV2Design(input.design)) return Response.json({ error: "La configuración visual no es válida." }, { status: 400 });
     const document = createEmptyMiniWebV2Document(MINIWEB_V2_FAMILY_CATALOG[familyKey].initialSections);
+    if (input.design !== undefined && validateMiniWebV2Design(input.design)) document.design = input.design;
     await createMiniWebV2Site(database, { id, organizationId: organization.id, ownerUserId: owner.userId, familyKey, visualVariant });
     const saved = await saveMiniWebV2Draft(database, { siteId: id, organizationId: organization.id, actorUserId: session.user.id, expectedRevision: 0, schemaVersion: 1, documentJson: JSON.stringify(document) });
     if (!saved.ok) return Response.json({ error: "No fue posible inicializar el borrador." }, { status: 409 });
@@ -67,6 +70,8 @@ export async function action(args: Route.ActionArgs) {
       media: snapshot.media.map((asset) => ({ id: asset.id, purpose: asset.purpose, altText: asset.altText, mediaType: asset.mediaType })),
       branding: snapshot.branding,
     });
+    if (input.design !== undefined && !validateMiniWebV2Design(input.design)) return Response.json({ error: "La configuración visual no es válida." }, { status: 400 });
+    if (input.design !== undefined && validateMiniWebV2Design(input.design)) converted.document.design = input.design;
     const report = { migrationVersion: 1, sourcePublicationVersion: publishedVersion, imported: converted.imported, omitted: [...converted.omitted, "horario V1 (exclusión absoluta)", "configuración y estilos V1", "datos privados/CRM", "referencias de media no incluidas en la publicación"] };
     const siteId = crypto.randomUUID();
     const created = await createMiniWebV2Site(database, {

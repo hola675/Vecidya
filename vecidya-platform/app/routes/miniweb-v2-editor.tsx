@@ -10,6 +10,8 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { ensureMiniWebV2Hero, miniWebV2EditorKey } from "../features/miniweb-v2/editor-state";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Button, Card } from "../components/ui";
+import { MiniWebV2DesignControls } from "../components/miniweb-v2-design-controls";
+import { MINIWEB_V2_DEFAULT_DESIGN, validateMiniWebV2Design, type MiniWebV2Design } from "../features/miniweb-v2/visual-design";
 import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
 import { MiniWebV2SectionForm, MINIWEB_V2_SECTION_LABELS } from "../components/miniweb-v2-section-form";
 import { createEmptyMiniWebV2Document, MINIWEB_V2_SECTION_TYPES, validateMiniWebV2Document, validateMiniWebV2Section, type MiniWebV2Document, type MiniWebV2Section, type MiniWebV2SectionType } from "../features/miniweb-v2/sections";
@@ -79,6 +81,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const [sectionToAdd, setSectionToAdd] = useState<MiniWebV2SectionType>("about");
   const [family, setFamily] = useState<MiniWebV2Family>((data.state?.site.familyKey as MiniWebV2Family | undefined) ?? "vecidya-default");
   const [variant, setVariant] = useState<MiniWebV2Variant>((data.state?.site.visualVariant as MiniWebV2Variant | undefined) ?? "base");
+  const [createDesign, setCreateDesign] = useState<MiniWebV2Design>({ ...MINIWEB_V2_DEFAULT_DESIGN });
   const pending = useRef<{ operation: string; document: MiniWebV2Document } | null>(null);
   const isDirty = JSON.stringify(document) !== JSON.stringify(savedDocument);
   const editing = fetcher.state !== "idle";
@@ -164,7 +167,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   function importPublishedV1() {
     if (isDirty) { setNotice("Guarda o descarta tus cambios antes de crear otro sitio."); return; }
     if (!window.confirm("Se creará un sitio independiente desde la última publicación anterior. Horarios, estilos y datos privados no se importarán. No se publicará automáticamente. ¿Continuar?")) return;
-    submit("create-from-published-v1", { confirm: true, familyKey: family, visualVariant: variant });
+    submit("create-from-published-v1", { confirm: true, familyKey: family, visualVariant: variant, design: createDesign });
   }
   function updateSection(section: MiniWebV2Section) {
     setDocument((value) => ({ ...value, sections: value.sections.map((item) => item.id === section.id ? section : item) }));
@@ -209,8 +212,10 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
           {group.families.map((key) => <label key={key} className={`miniweb-v2-editor__template${family === key ? " is-selected" : ""}`}><input type="radio" name="family" checked={family === key} disabled={!data.canEdit} onChange={() => setFamily(key)}/><strong>{MINIWEB_V2_FAMILY_CATALOG[key].label}</strong><small>{MINIWEB_V2_FAMILY_CATALOG[key].description}</small></label>)}
         </fieldset>)}</div>
         <label>Estilo visual<select value={variant} disabled={!data.canEdit} onChange={(event) => setVariant(event.currentTarget.value as MiniWebV2Variant)}>{MINIWEB_V2_VARIANTS.map((value) => <option key={value} value={value}>{variantLabels[value]}</option>)}</select></label>
-        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing} onClick={() => submit("create", { familyKey: family, visualVariant: variant })}>Crear mi sitio</Button>
-          <Button tone="secondary" disabled={!data.canEdit || editing} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
+        <MiniWebV2DesignControls value={createDesign} onChange={setCreateDesign} disabled={!data.canEdit}/>
+        <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setCreateDesign({ ...MINIWEB_V2_DEFAULT_DESIGN })}>Restaurar estilo inicial</Button>
+        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={() => submit("create", { familyKey: family, visualVariant: variant, design: createDesign })}>Crear mi sitio</Button>
+          <Button tone="secondary" disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
       </Card> : <>
         <Card surface={editorSurface}><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{isDirty ? "● Hay cambios sin guardar" : `✓ Borrador guardado · Revisión ${revision}`}</p>
           <p>Diseño: {MINIWEB_V2_FAMILY_CATALOG[data.state.site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}. Estilo: {variantLabels[data.state.site.visualVariant as MiniWebV2Variant] ?? "Personalizado"}.</p>
@@ -220,6 +225,15 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar cambios</Button>
             <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar sitio</Button></div>
         </Card>
+        <Card surface={editorSurface} className="miniweb-v2-editor__design-card"><details className="miniweb-v2-editor__design-details"><summary>Personalizar diseño y colores del negocio</summary>
+          <p>Ajusta la identidad visual de tu negocio. La vista previa se actualiza inmediatamente; guarda los cambios para conservarlos.</p>
+          <MiniWebV2DesignControls value={document.design ?? { ...MINIWEB_V2_DEFAULT_DESIGN }} disabled={!data.canEdit || editing}
+            onChange={(next) => { setDocument((current) => ({ ...current, design: next })); setServerErrors([]); }}/>
+          <div className="miniweb-v2-editor__actions">
+            <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setDocument((current) => ({ ...current, design: { ...MINIWEB_V2_DEFAULT_DESIGN } }))}>Restaurar estilo inicial</Button>
+            <Button disabled={!data.canEdit || editing || !isDirty || !validation.valid} onClick={save}>Guardar estilo y contenido</Button>
+          </div>
+        </details></Card>
         {data.state.site.conversionReportJson ? <Card surface={editorSurface}><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
         <Card id="miniweb-v2-sections" surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
           <div className="miniweb-v2-editor__actions"><label>Nueva sección<select value={sectionToAdd} disabled={!data.canEdit} onChange={(event) => setSectionToAdd(event.currentTarget.value as MiniWebV2SectionType)}>
@@ -270,7 +284,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       <p role="status" aria-live="polite">{notice}</p>
         </div>
         <section id="miniweb-v2-preview" aria-label="Vista previa de tu sitio" className="miniweb-v2-editor__preview" tabIndex={-1}><div className="miniweb-v2-editor__preview-heading"><h2>Vista previa</h2><a href="#miniweb-v2-sections" onClick={() => setMobileView("edit")}>Volver a editar</a></div><p>{isDirty ? "Esta vista refleja los cambios locales aún sin guardar; no modifica la versión publicada." : "Previsualización privada del borrador; no modifica la versión publicada."}</p>
-        <MiniWebV2Renderer document={document} familyKey={data.state?.site.familyKey ?? family} variant={data.state?.site.visualVariant ?? variant} mediaUrl={mediaUrl} preview/>
+        <MiniWebV2Renderer document={data.state ? document : { ...document, design: createDesign }} familyKey={data.state?.site.familyKey ?? family} variant={data.state?.site.visualVariant ?? variant} mediaUrl={mediaUrl} preview/>
         </section>
       </div>
     </main>

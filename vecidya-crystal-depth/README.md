@@ -1,8 +1,26 @@
 # Vecidya Crystal Depth
 
-**Estado:** R1.2, R1.3 y R1.4 integradas en `main` (PR #257, #259 y #260). R1.5 es el contrato de compatibilidad entre la biblioteca y el frontend real; en rama de revisión. La biblioteca no se importa como código React ni certifica despliegue.
+**Estado actualizado (2026-11-20):** R1.2–R1.9, R2-A y R3 integradas en `main` (PR #257–#267, según checkpoint). Biblioteca aprobada como **dirección creativa y laboratorio interno**; no se importa como paquete React ni acredita despliegue. **Pendientes:** R2 visual integral, revisión humana y comprobación operativa en staging. La guía canónica para agentes es `docs/INTEGRACION.md` y el contrato de compatibilidad está en `assets/pattern-registry.json → platformCompatibility`.
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
+
+## Vico — explorador de identidad y originales (2026-11-20)
+
+La sección `biblioteca.html#vico` reúne las **10 imágenes oficiales del personaje Vico** ya incluidas entre los 140 assets, sin copiar ni generar archivos adicionales. Permite seleccionar imagen, comparar fondo oscuro/claro/cuadrícula y fondo dividido, escala, posición y escena contextual independiente; muestra propósito, dimensiones y enlace directo al original. El botón **Analizar píxeles alfa** construye en el navegador un mapa de máscara no destructivo y una medición orientativa para localizar posibles residuos de fondo.
+
+- `assets/vico-workbench.js`: selección desde `window.vecidyaCrystalCatalog`, diez destinos por ruta, copia de ficha JSON para agentes (orientación; no API).
+- `styles/vico-workbench.css`: visor responsive, foco de teclado, estado seleccionado y movimiento reducido.
+- `assets/pattern-registry.json → vicoVisualIdentity`: inventario y restricciones interpretables.
+- `docs/DIRECCION-ARTISTICA.md → Vico`: carácter, composición y QA requerida.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: suites ya existentes, ampliadas con inventario, comparación y auditoría alfa en Chromium. El segundo test guarda `qa-artifacts/vico-alpha-audit.json` y capturas de Inicio/Diagnóstico como artifacts temporales del CI.
+
+**Límites:** conserva originales, no genera ni redibuja a Vico, no aplica Vico como marca de los MiniWeb de clientes, no realiza despliegues y no certifica calidad artística o transparencia sin inspección de capturas. El catálogo sigue en 140 entradas. La infografía `home-vecidya-companion-v4.webp` está correctamente clasificada en `Ilustraciones`, porque no contiene al personaje.
+
+### Segunda fase: diagnóstico y derivados de evaluación (2026-11-20)
+
+La sección Vico incorpora un mapa alfa cuantitativo, fondo dividido claro/oscuro y un botón **Comparar ajuste alfa (borrador)** con umbrales controlados de 8, 16, 32 o 64. La comparación modifica únicamente la opacidad muy baja en una copia Canvas de máximo 512 px y permite descargar un PNG **solo para evaluación**; nunca escribe sobre el original ni cambia recursos productivos. Una franja opaca o un halo legítimo requiere revisión artística específica: aumentar el umbral no equivale a corregirlo.
+
+Mediciones verificadas en Chromium ([run #44845058860](https://github.com/hola675/Vecidya/actions/runs/44845058860)): Inicio contiene 44,8 % de píxeles totalmente transparentes y 1,4 % de alfa 1–15; Diagnóstico, 44,7 % y 1,3 %. Consultar la tabla completa y criterios en `docs/DIRECCION-ARTISTICA.md`. Las pruebas focales R1/R2 se ampliaron sin crear un harness nuevo. Las propuestas PNG de laboratorio **no son derivados aprobados para producción**.
 
 ## Entrada didáctica para agentes
 
@@ -15,6 +33,16 @@ La biblioteca es un **manual de decisiones visuales**, no solo una galería. Ant
 5. Contrastar componentes y capacidades reales en `vecidya-platform/`, hacer QA focal y abrir PR sin desplegar.
 
 **R1 aprobada conceptualmente:** oscuro principal, claro alternativo; cristal focal en escenas, discreto en paneles y sólido en datos; calidad premium compartida entre Cuadra/Barrio/Ciudad con progresión por composiciones/capacidades efectivas; laboratorio interno como sistema de aprobación. **R1 no activa derechos comerciales, CRM ni nuevas plantillas por sí sola.**
+
+## Laboratorio de personalización MiniWeb R1.6 (2026-11-20)
+
+Dentro de `biblioteca.html#miniweb-customizer` se puede **cambiar en vivo** la composición Base/Pro/Premium, cuatro paletas con ajuste individual de color principal, acento y fondo (con advertencia de contraste), tres tipografías locales, hero apilado o dividido, posición de imagen, alineación de texto y deslizadores de tamaño de título/texto, márgenes, radios y altura de portada. La maqueta usa un negocio ficticio, soporta teclado, restaura valores y permite copiar un brief JSON **solo de intención visual** para agentes.
+
+- Implementación: `styles/miniweb-customizer.css` y `assets/miniweb-customizer.js`, aislados del resto de la biblioteca.
+- Registro interpretativo: `assets/pattern-registry.json → miniwebCustomizationLab`.
+- Guía de migración futura (no automática): `docs/INTEGRACION.md → Personalizador MiniWeb de laboratorio`.
+- Verificación a ejecutar: `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs` existentes.
+- **Sin persistencia ni publicación:** no altera MiniWeb real, derechos de licencia, datos de clientes o CRM; Cuadra sigue teniendo calidad completa.
 
 ## Transiciones y animaciones R1.1 (laboratorio)
 

@@ -44,5 +44,7 @@ test("R1.9: editor MiniWeb usa superficies sólidas sin alterar variantes, permi
   assert.match(editor, /requireOrganizationPermission\(env, request, organization\.id, "business-profile:read"\)/);
   assert.match(editor, /disabled=\{!data\.canEdit/);
   assert.match(editor, /<MiniWebV2Renderer/);
+  assert.match(editor, /<MiniWebV2DesignControls value=\{createDesign\}/);
+  assert.match(editor, /<MiniWebV2DesignControls value=\{document\.design/);
   assert.match(editor, /expectedRevision: revision/);
 });

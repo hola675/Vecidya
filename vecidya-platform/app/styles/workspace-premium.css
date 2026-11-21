@@ -390,6 +390,40 @@
 .miniweb-v2[data-variant="pro"] > section { border-top: 0.18rem solid color-mix(in srgb, var(--mw2-accent) 56%, transparent); }
 .miniweb-v2[data-variant="premium"] { border-color: color-mix(in srgb, var(--mw2-accent) 23%, transparent); box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--mw2-ink) 14%, transparent), 0 0.2rem 0.8rem color-mix(in srgb, var(--mw2-accent) 8%, transparent); }
 .miniweb-v2[data-variant="premium"] > header { display: flex; min-height: 16rem; flex-direction: column; align-items: flex-start; justify-content: center; }
+/* MiniWeb V2 · preferencias visuales guardadas por sitio. No altera documentos legacy. */
+.miniweb-v2[data-layout] { font-family: var(--mw2-font); font-size: var(--mw2-body-size); }
+.miniweb-v2[data-layout] > header,
+.miniweb-v2[data-layout] > section { border-radius: var(--mw2-radius); padding: clamp(0.85rem, var(--mw2-spacing), 2.7rem); }
+.miniweb-v2[data-layout] h1 { font-size: clamp(1.5rem, var(--mw2-title-size), 3.75rem); }
+.miniweb-v2[data-layout] p { color: var(--mw2-ink); }
+.miniweb-v2[data-layout] article,
+.miniweb-v2[data-layout] details { border-radius: var(--mw2-radius); }
+.miniweb-v2[data-layout] > header { min-height: var(--mw2-hero-height); }
+.miniweb-v2[data-layout="split"] > header[data-image="present"] { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,0.9fr); align-items: center; gap: var(--mw2-spacing); }
+.miniweb-v2[data-layout="stacked"] > header { display: flex; flex-direction: column; gap: var(--mw2-spacing); }
+.miniweb-v2[data-image-position="left"][data-layout="split"] > header > .miniweb-v2__media { grid-column: 1; grid-row: 1; }
+.miniweb-v2[data-image-position="left"][data-layout="split"] > header > div:first-child { grid-column: 2; grid-row: 1; }
+.miniweb-v2[data-align="center"] > header { text-align: center; }
+.miniweb-v2[data-align="center"] > header h1,
+.miniweb-v2[data-align="center"] > header p { margin-inline: auto; }
+.miniweb-v2[data-layout] .miniweb-v2__media img { display: block; width: 100%; max-height: 28rem; object-fit: contain; border-radius: var(--mw2-radius); }
+.miniweb-v2[data-layout] .miniweb-v2__cards,
+.miniweb-v2[data-layout] .miniweb-v2__gallery { gap: var(--mw2-spacing); }
+.miniweb-v2-design { min-width: 0; margin-block: 1rem; padding: 1rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-card); }
+.miniweb-v2-design legend { font-weight: 800; color: var(--v-ink); padding-inline: 0.4rem; }
+.miniweb-v2-design__intro { max-width: 70ch; line-height: 1.6; color: var(--v-muted); }
+.miniweb-v2-design__fields { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,13rem),1fr)); gap: 0.6rem 1.2rem; }
+.miniweb-v2-design__fields label { min-width: 0; }
+.miniweb-v2-design__fields input[type="color"] { height: 2.9rem; padding: 0.25rem; cursor: pointer; }
+.miniweb-v2-design__fields input[type="range"] { min-height: 2.75rem; padding: 0; accent-color: var(--v-blue-700); cursor: pointer; }
+.miniweb-v2-design__warning { color: #9d2921; font-weight: 750; }
+.miniweb-v2-design__contrast { color: var(--v-muted); font-size: 0.82rem; }
+@media (max-width:600px) {
+  .miniweb-v2[data-layout="split"] > header { display:flex; flex-direction:column; min-height:0; }
+  .miniweb-v2[data-image-position="left"][data-layout="split"] > header > .miniweb-v2__media { order:-1; }
+  .miniweb-v2[data-layout] > header { min-height:0; }
+}
+
 .miniweb-v2--editor-preview { width: 100%; max-width: 56rem; border: 0; border-radius: 0.95rem; padding: clamp(0.5rem, 1.25vw, 1rem); box-shadow: none; }
 .miniweb-v2--editor-preview > header, .miniweb-v2--editor-preview > section { border-radius: 0.8rem; padding: clamp(0.9rem, 2vw, 1.45rem); }
 .miniweb-v2--editor-preview[data-variant="premium"] > header { min-height: 12rem; }
@@ -418,4 +452,16 @@
     animation: none !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* R4.2: personalización opcional y compacta dentro del asistente. */
+.miniweb-v2-editor__design-details > summary {
+  min-height: 2.75rem;
+  cursor: pointer;
+  color: var(--v-blue-700);
+  font-weight: 700;
+}
+.miniweb-v2-editor__design-details > summary:focus-visible {
+  outline: 3px solid var(--v-orange-500);
+  outline-offset: 3px;
 }
