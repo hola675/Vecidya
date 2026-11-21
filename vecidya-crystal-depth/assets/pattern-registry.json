@@ -967,7 +967,7 @@
   },
   "agentHandoff": {
     "version": "1.0.0",
-    "status": "contracto-documental",
+    "status": "contrato-documental",
     "scope": "Adopción visual progresiva; no despliegue ni mutación de contratos",
     "authority": [
       "AGENTS.md",
