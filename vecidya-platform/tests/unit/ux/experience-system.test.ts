@@ -165,4 +165,15 @@ test("R4: dashboard legible y MiniWeb con vista previa contextual sin cambiar pe
   assert.match(css, /@media \(min-width: 1100px\)/);
   assert.match(editor, /<MiniWebV2Renderer document=\{document\}/);
   assert.match(editor, /const blocker = useBlocker/);
+  assert.match(editor, /aria-label="Pasos de edición del sitio"/);
+  assert.match(editor, /activeSectionId, setActiveSectionId/);
+  assert.match(editor, /activeSection \? <Card key=\{activeSection.id\}/);
+  assert.match(editor, /sectionGuidance\[activeSection.type\]/);
+  assert.match(editor, /onClick=\{\(\) => setActiveSectionId\(item.id\)\}/);
+  assert.match(editor, /Sección \{activeSectionIndex \+ 1\} de \{orderedSections.length\}/);
+  const fields = source("app/components/miniweb-v2-section-form.tsx");
+  assert.match(fields, /const fieldGuidance:/);
+  assert.match(fields, /field.help \?\? fieldGuidance\[field.label\]/);
+  assert.match(css, /miniweb-v2-editor__steps-list/);
+  assert.match(css, /miniweb-v2-form__field-help/);
 });
