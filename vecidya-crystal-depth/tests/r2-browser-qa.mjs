@@ -364,10 +364,11 @@ try{
           });
           const vicoLabels = await page.locator('#vico-workbench-gallery button').all();
           for(const choice of vicoLabels){
+            const expected=1+(await page.evaluate(()=>window.__vicoAlphaAudits.length));
             await choice.click();
             await page.locator('#vico-workbench-analyze').click();
-            await page.waitForFunction(expected=>
-              window.__vicoAlphaAudits?.length===expected, (await page.evaluate(()=>window.__vicoAlphaAudits.length))+1,
+            await page.waitForFunction(count=>
+              window.__vicoAlphaAudits?.length===count, expected,
               {timeout:20000});
             const visible=await page.locator('#vico-workbench-alpha-panel').isVisible();
             assertStep('vico-alpha-visible-'+(await choice.getAttribute('aria-label')),()=>assert.equal(visible,true));
