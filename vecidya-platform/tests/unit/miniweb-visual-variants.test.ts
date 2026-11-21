@@ -33,8 +33,12 @@ test("V2A: comparación de niveles visuales", () => {
 
 test("R1.9: editor MiniWeb usa superficies sólidas sin alterar variantes, permisos o vista previa", () => {
   const editor = readFileSync(new URL("../../app/routes/miniweb-v2-editor.tsx", import.meta.url), "utf8");
-  assert.equal((editor.match(/<Card surface=\{editorSurface\}>/g) ?? []).length, 6);
-  assert.match(editor, /<Card key=\{section\.id\} surface=\{editorSurface\}>/);
+  // R4.2: cinco tarjetas estáticas y una tarjeta dinámica para el único paso visible.
+  assert.equal((editor.match(/<Card surface=\{editorSurface\}>/g) ?? []).length, 5);
+  assert.match(editor, /<Card key=\{activeSection\.id\} surface=\{editorSurface\}/);
+  assert.match(editor, /activeSection \? <Card/);
+  assert.match(editor, /<MiniWebV2SectionForm section=\{activeSection\}/);
+  assert.doesNotMatch(editor, /document\.sections\.slice\(\)\.sort[\s\S]*\.map\(\(section, index\) => <Card/);
   assert.match(editor, /isVisualFeatureEnabled\("miniWebEditorSolid"\)/);
   assert.match(editor, /<Card className="miniweb-v2-editor__guides">/);
   assert.match(editor, /requireOrganizationPermission\(env, request, organization\.id, "business-profile:read"\)/);
