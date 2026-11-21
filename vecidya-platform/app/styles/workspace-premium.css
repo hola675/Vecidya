@@ -158,7 +158,7 @@
 .miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility { display: flex; min-height: 2.75rem; align-items: center; gap: 0.65rem; }
 .miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility input { width: 1.1rem; height: 1.1rem; min-height: 0; flex: 0 0 auto; accent-color: var(--v-blue-700); }
 .miniweb-v2-editor__controls > .card :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-height: 2.8rem; border: 1px solid rgb(39 95 163 / 20%); border-radius: var(--v-radius-control); padding: 0.65rem 0.8rem; color: var(--v-ink); background: #fff; }
-.miniweb-v2-editor__controls > .card textarea { min-height: 16rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
+.miniweb-v2-editor__controls > .card textarea { min-height: 7rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
 
 .miniweb-v2-editor__preview { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
 .miniweb-v2-editor__preview > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
@@ -223,6 +223,17 @@
 }
 @media (max-width: 1099px) {
   .miniweb-v2-editor__review-nav { justify-content: space-between; }
+  /* En móvil el usuario alterna entre pasos y vista previa, sin recorrer
+     los formularios para llegar al resultado. En escritorio ambos son visibles. */
+  .miniweb-v2-editor__workspace[data-mobile-view="edit"] > .miniweb-v2-editor__preview,
+  .miniweb-v2-editor__workspace[data-mobile-view="preview"] > .miniweb-v2-editor__controls { display: none; }
+  .miniweb-v2-editor__review-nav a[aria-current="true"] {
+    border-radius: 0.65rem;
+    padding-inline: 0.55rem;
+    color: var(--v-ink);
+    background: #e9f3ff;
+    text-decoration-thickness: 2px;
+  }
 }
 
 /* R4.2 · Navegación secuencial del MiniWeb: una sección activa, sin scroll de
