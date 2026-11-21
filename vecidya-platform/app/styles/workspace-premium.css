@@ -152,17 +152,17 @@
 .miniweb-v2-editor > nav a { display: inline-flex; min-height: 2.5rem; align-items: center; border: 1px solid var(--v-line); border-radius: 999px; padding: 0.5rem 0.85rem; color: var(--v-blue-800); font-size: 0.86rem; font-weight: 700; text-decoration: none; background: #fff; }
 .miniweb-v2-editor > nav a[aria-current="page"] { border-color: rgb(6 104 237 / 24%); background: #eaf3ff; }
 
-.miniweb-v2-editor > .card { margin-block: 1rem; border-color: rgb(39 95 163 / 14%); border-radius: var(--v-radius-card); padding: clamp(1.1rem, 2.2vw, 1.7rem); background: rgb(255 255 255 / 92%); box-shadow: 0 0.75rem 2rem rgb(7 35 77 / 5%); }
-.miniweb-v2-editor > .card h2 { margin-top: 0; color: var(--v-ink); letter-spacing: -0.035em; }
-.miniweb-v2-editor > .card label { display: grid; gap: 0.4rem; margin-block: 0.8rem; color: #314868; font-size: 0.87rem; font-weight: 700; }
-.miniweb-v2-editor > .card label.miniweb-v2-editor__visibility { display: flex; min-height: 2.75rem; align-items: center; gap: 0.65rem; }
-.miniweb-v2-editor > .card label.miniweb-v2-editor__visibility input { width: 1.1rem; height: 1.1rem; min-height: 0; flex: 0 0 auto; accent-color: var(--v-blue-700); }
-.miniweb-v2-editor > .card :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-height: 2.8rem; border: 1px solid rgb(39 95 163 / 20%); border-radius: var(--v-radius-control); padding: 0.65rem 0.8rem; color: var(--v-ink); background: #fff; }
-.miniweb-v2-editor > .card textarea { min-height: 16rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
+.miniweb-v2-editor__controls > .card { margin-block: 1rem; border-color: rgb(39 95 163 / 14%); border-radius: var(--v-radius-card); padding: clamp(1.1rem, 2.2vw, 1.7rem); background: rgb(255 255 255 / 92%); box-shadow: 0 0.75rem 2rem rgb(7 35 77 / 5%); }
+.miniweb-v2-editor__controls > .card h2 { margin-top: 0; color: var(--v-ink); letter-spacing: -0.035em; }
+.miniweb-v2-editor__controls > .card label { display: grid; gap: 0.4rem; margin-block: 0.8rem; color: #314868; font-size: 0.87rem; font-weight: 700; }
+.miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility { display: flex; min-height: 2.75rem; align-items: center; gap: 0.65rem; }
+.miniweb-v2-editor__controls > .card label.miniweb-v2-editor__visibility input { width: 1.1rem; height: 1.1rem; min-height: 0; flex: 0 0 auto; accent-color: var(--v-blue-700); }
+.miniweb-v2-editor__controls > .card :is(input:not([type="checkbox"]), select, textarea) { width: 100%; min-height: 2.8rem; border: 1px solid rgb(39 95 163 / 20%); border-radius: var(--v-radius-control); padding: 0.65rem 0.8rem; color: var(--v-ink); background: #fff; }
+.miniweb-v2-editor__controls > .card textarea { min-height: 16rem; resize: vertical; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.84rem; line-height: 1.55; tab-size: 2; }
 
-.miniweb-v2-editor > section[aria-label="Vista previa"] { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
-.miniweb-v2-editor > section[aria-label="Vista previa"] > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
-.miniweb-v2-editor > section[aria-label="Vista previa"] > .card { overflow: auto; border-color: rgb(39 95 163 / 12%); border-radius: 1.35rem; padding: clamp(0.65rem, 1.5vw, 1rem); background: #fff; }
+.miniweb-v2-editor__preview { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
+.miniweb-v2-editor__preview > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
+.miniweb-v2-editor__preview > .card { overflow: auto; border-color: rgb(39 95 163 / 12%); border-radius: 1.35rem; padding: clamp(0.65rem, 1.5vw, 1rem); background: #fff; }
 
 /* R4: edición y resultado visibles en paralelo solo cuando hay espacio real.
    El renderer sigue siendo el mismo: no duplica ni publica contenido. */
@@ -284,8 +284,8 @@
 @media (max-width: 600px) {
   .app-header, .admin-header { min-height: 4.1rem; }
   .admin-main { width: 100%; }
-  .miniweb-v2-editor > section[aria-label="Vista previa"] { padding: 0.8rem; }
-  .miniweb-v2-editor > section[aria-label="Vista previa"] > .card { padding: 0.55rem; }
+  .miniweb-v2-editor__preview { padding: 0.8rem; }
+  .miniweb-v2-editor__preview > .card { padding: 0.55rem; }
   .miniweb-v2--editor-preview[data-variant="premium"] > header { min-height: 10rem; }
   .miniweb-v2 dl > div { align-items: flex-start; }
 }
