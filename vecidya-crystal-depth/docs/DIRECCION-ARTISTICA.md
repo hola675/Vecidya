@@ -30,6 +30,17 @@ Se reabrieron los 10 archivos WebP originales y la ilustración complementaria p
 
 **Límite de esta revisión:** los hallazgos son observaciones visuales de los archivos originales. No se ejecutó un análisis de máscara por píxel, no se produjeron derivados limpios y no se ha certificado una composición en todas las resoluciones de producción.
 
+### Diagnóstico alfa reproducible en Chromium — segundo checkpoint
+
+El explorador `biblioteca.html#vico` incorpora ahora **Comparación mitad clara/mitad oscura** y el control **Analizar píxeles alfa**. El navegador lee únicamente la imagen original seleccionada, crea una copia temporal en un canvas de hasta **512 px por lado largo**, y calcula un mapa de alfa y un informe local. Ningún pixel del WebP original se modifica ni se sube a un servidor.
+
+- El mapa de diagnóstico representa `alfa 0` como negro, `alfa 255` como blanco y los valores intermedios como grises. No es un derivado publicado, un recorte autorizado ni una nueva ilustración.
+- El informe `vecidya-vico-alpha-audit-v1` registra dimensiones reales y de muestreo, porcentajes por cinco rangos de alfa, límites de área visible (`alfa >= 16`) y actividad de alfa en una franja perimetral del 4 %. Estos indicadores **no demuestran** por sí mismos si un brillo es intencional o si hay fondo residual.
+- **QA sin duplicar harness:** `tests/r2-browser-qa.mjs` analiza las diez imágenes a 1366 px, guarda el artifact temporal `qa-artifacts/vico-alpha-audit.json` y captura comparaciones de Inicio y Diagnóstico; los resultados no se incluyen como binarios permanentes en Git.
+- **Aceptación de cualquier limpieza futura:** conservar la pose y el arte original, comparar lado a lado a tamaño real sobre claro/oscuro, cuantificar cambios de alfa sin eliminar sombras/reflejos intencionales y usar ruta derivada versionada; modificar la referencia productiva solo tras aprobación explícita.
+
+`NO_VERIFICADO` sigue siendo el estado de una **limpieza física del recurso**, pues todavía no hay un derivado validado. Un test PASS de algoritmo alfa no significa que desaparecieron los defectos artísticos.
+
 ### Registro de revisión
 - `CODE`: catálogo de 10 referencias originales WebP del personaje: ocho rutas con `PublicHeroArt`, Inicio y Aprende; la infografía complementaria está catalogada aparte.
 - `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
