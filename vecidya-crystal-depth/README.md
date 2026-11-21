@@ -16,6 +16,12 @@ La sección `biblioteca.html#vico` reúne las **10 imágenes oficiales del perso
 
 **Límites:** conserva originales, no genera ni redibuja a Vico, no aplica Vico como marca de los MiniWeb de clientes, no realiza despliegues y no certifica calidad artística o transparencia sin inspección de capturas. El catálogo sigue en 140 entradas. La infografía `home-vecidya-companion-v4.webp` está correctamente clasificada en `Ilustraciones`, porque no contiene al personaje.
 
+### Segunda fase: diagnóstico y derivados de evaluación (2026-11-20)
+
+La sección Vico incorpora un mapa alfa cuantitativo, fondo dividido claro/oscuro y un botón **Comparar ajuste alfa (borrador)** con umbrales controlados de 8, 16, 32 o 64. La comparación modifica únicamente la opacidad muy baja en una copia Canvas de máximo 512 px y permite descargar un PNG **solo para evaluación**; nunca escribe sobre el original ni cambia recursos productivos. Una franja opaca o un halo legítimo requiere revisión artística específica: aumentar el umbral no equivale a corregirlo.
+
+Mediciones verificadas en Chromium ([run #44845058860](https://github.com/hola675/Vecidya/actions/runs/44845058860)): Inicio contiene 44,8 % de píxeles totalmente transparentes y 1,4 % de alfa 1–15; Diagnóstico, 44,7 % y 1,3 %. Consultar la tabla completa y criterios en `docs/DIRECCION-ARTISTICA.md`. Las pruebas focales R1/R2 se ampliaron sin crear un harness nuevo. Las propuestas PNG de laboratorio **no son derivados aprobados para producción**.
+
 ## Entrada didáctica para agentes
 
 La biblioteca es un **manual de decisiones visuales**, no solo una galería. Antes de modificar una pantalla de Vecidya:
