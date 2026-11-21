@@ -287,6 +287,16 @@ test('R1.5: componentes exportados, navegación canónica y pendientes no invent
       !sources['vecidya-platform/app/components/experience-system.tsx'].includes('export function '+item.name+'('),
       'Componente ya exportado; revisar condición de pendiente: '+item.name);
   }
+  const shared=compat.sharedR16;
+  const componentSource=read('../vecidya-platform/app/components/visual-contract.tsx');
+  assert.equal(shared.length,6,'Deben existir seis composiciones R1.6 trazables');
+  assert.equal(compat.proposedNotYetShared.length,0,'No presentar componentes exportados como pendientes');
+  for(const item of shared){
+    assert.equal(item.source,'vecidya-platform/app/components/visual-contract.tsx');
+    assert.ok(componentSource.includes('export function '+item.name+'('),'Componente R1.6 no exportado: '+item.name);
+    assert.ok(item.purpose);
+  }
+  assert.equal(registry.agentHandoff?.status,'contrato-documental');
   assert.ok(compat.boundaries.some(x=>x.includes('business-owned')));
   assert.ok(compat.boundaries.some(x=>x.includes('GHL')));
 });

@@ -1,3 +1,28 @@
+## MINIWEB EXPERIENCE — pauta de implementación visual (2026-11-20, propuesta sin deploy)
+
+**Fuente comercial:** `docs/business/VECIDYA_PRODUCT_CATALOG.md → MINIWEB EXPERIENCE`. El estándar de calidad visual y accesibilidad no cambia por licencia. La diferencia debe observarse en composición y recorrido, nunca en una degradación deliberada de Cuadra.
+
+| Variante de diseño tipada | Licencia mínima prevista | Escena de la MiniWeb | Relación con producto |
+| --- | --- | --- | --- |
+| `base` | Cuadra | Hero split, ofertas y galería uniformes; lectura directa, identidad, contacto y CTA claros | Presencia completa; sin CRM operativo |
+| `pro` | Barrio | Hero asymmetric, ofertas editorial-grid y galería mosaic; progresión hacia consulta | La gestión de la consulta pertenece al CRM estándar **si fue provisionado y probado** |
+| `premium` | Ciudad | Hero immersive, ofertas narrative, galería editorial-sequence y transiciones sutiles | Visión de varios procesos; flujos coordinados solo si existen en CRM y la organización tiene licencia válida |
+
+**No confundir propuesta y disponibilidad:** las composiciones están tipadas en `app/features/miniweb/visual-variants.ts`; `app/features/miniweb/registry.ts` mantiene solo la plantilla `vecidya-default` / layout `standard` en estado disponible. La política pura en `visual-entitlements.ts` no concede licencias y requiere licencia activa verificada y validación server-side. No anunciar Pro/Premium como selector funcional hasta comprobar el renderer, el editor, los permisos, el guardado y la publicación.
+
+### Cómo interpretarla en un diseño concreto
+- Construir la página a partir de una identidad empresarial, objetivo y datos reales; conservar los módulos base disponibles, el orden editable y contacto.
+- Mantener tokens y componentes ya existentes; usar Focal solo donde la narrativa gane claridad, Quiet para apoyo y Solid para información que se deba leer o editar.
+- Crear una escena contextual diferente por sector o necesidad: no repetir un mismo hero con un filtro de color y llamarlo otro tier. La diferencia visual debe ser perceptible en hero, ritmo editorial, relación de bloques, galería y transiciones.
+- El texto sigue siendo HTML, las imágenes ambientales decorativas y los controles reales. Todas las variantes deben ser usables sin animación, blur o imagen de fondo.
+- Priorizar en Cuadra primero una entrega comparable en calidad al mejor trabajo visual de la biblioteca. Barrio y Ciudad añaden decisiones compositivas y, cuando corresponda, operaciones disponibles, no calidad básica que se retira.
+- En MiniWeb pública la organización controla identidad y contenido: prohibido imponer el dark theme de la biblioteca Crystal a terceros.
+- Antes de implementar, lector del código actual, pruebas focales por variante, 320/390/768/1366/1920, zoom 200 %, teclado, roles/tenant, rollback y capturas comparativas **de la misma organización**. Un demo no acredita producción.
+
+**Estado:** documentación de dirección; no agrega plantillas, variantes activas, componentes nuevos ni entitlement efectivo. Los agentes deben consultar también `vecidya-crystal-depth/docs/INTEGRACION.md` y `assets/pattern-registry.json`, cuando se fusionen sus actualizaciones pendientes.
+
+---
+
 ## APP-MINI-V2 — Personalización en el editor real (checkpoint en PR; 2026-11-20)
 
 **Objetivo:** incorporar los controles de estilo directamente a `/app/miniweb-v2` tanto en creación como edición, no solo en la biblioteca Crystal Depth. **Implementado en rama de PR, no desplegado ni certificado todavía.**
