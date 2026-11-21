@@ -198,11 +198,11 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
             <Button tone="secondary" disabled={!data.canEdit || editing || isDirty || !publicationValidation.valid} onClick={publish}>Publicar sitio</Button></div>
         </Card>
         {data.state.site.conversionReportJson ? <Card surface={editorSurface}><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
-        <div id="miniweb-v2-sections"><Card surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
+        <Card id="miniweb-v2-sections" surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
           <div className="miniweb-v2-editor__actions"><label>Nueva sección<select value={sectionToAdd} disabled={!data.canEdit} onChange={(event) => setSectionToAdd(event.currentTarget.value as MiniWebV2SectionType)}>
             {MINIWEB_V2_SECTION_TYPES.map((type) => <option key={type} value={type}>{MINIWEB_V2_SECTION_LABELS[type]}</option>)}
           </select></label><Button disabled={!data.canEdit || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))} onClick={addSection}>Añadir sección</Button></div>
-        </Card></div>
+        </Card>
         {document.sections.slice().sort((a,b) => a.order-b.order).map((section, index) => <Card key={section.id} surface={editorSurface}>
           <div className="miniweb-v2-editor__section-head"><h2>{index + 1}. {MINIWEB_V2_SECTION_LABELS[section.type]}</h2>
             <label><input type="checkbox" checked={section.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...section, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
