@@ -355,6 +355,48 @@ try{
           assert.equal(vico.scene,'on');
           assert.equal(vico.selected,1);
         });
+        if(width===1366){
+          await page.evaluate(()=>{
+            window.__vicoAlphaAudits = [];
+            document.getElementById("vico-workbench").addEventListener("vico-alpha-audited",event=>{
+              window.__vicoAlphaAudits.push(event.detail);
+            });
+          });
+          const vicoLabels = await page.locator('#vico-workbench-gallery button').all();
+          for(const choice of vicoLabels){
+            await choice.click();
+            await page.locator('#vico-workbench-analyze').click();
+            await page.waitForFunction(expected=>
+              window.__vicoAlphaAudits?.length===expected, (await page.evaluate(()=>window.__vicoAlphaAudits.length))+1,
+              {timeout:20000});
+            const visible=await page.locator('#vico-workbench-alpha-panel').isVisible();
+            assertStep('vico-alpha-visible-'+(await choice.getAttribute('aria-label')),()=>assert.equal(visible,true));
+            const label=await page.locator('#vico-workbench-name').textContent();
+            if(/inicio|diagnóstico/i.test(label)){
+              await page.locator('#vico-workbench-background').selectOption('split');
+              await page.locator('#vico-workbench').scrollIntoViewIfNeeded();
+              const tag=/diagnóstico/i.test(label)?'diagnostico':'home';
+              await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-'+tag+'-alpha.png'),animations:'disabled'});
+            }
+          }
+          const audits=await page.evaluate(()=>window.__vicoAlphaAudits);
+          assertStep('vico-alpha-10-originales',()=>{
+            assert.equal(audits.length,10);
+            assert.equal(new Set(audits.map(item=>item.source)).size,10);
+            for(const entry of audits){
+              assert.equal(entry.schema,'vecidya-vico-alpha-audit-v1');
+              assert.ok(entry.sampled[0]>0&&entry.sampled[1]>0);
+              const total=Object.values(entry.alphaPercent).reduce((a,b)=>a+b,0);
+              assert.ok(Math.abs(total-100)<1,'Rangos alfa no cierran: '+entry.source);
+            }
+          });
+          writeFileSync(join(artifacts,'vico-alpha-audit.json'),JSON.stringify({
+            schema:'vecidya-vico-alpha-audit-collection-v1',
+            status:'diagnostic-only-no-pixel-retouch',
+            sourceCommit:process.env.GITHUB_SHA||null,
+            images:audits
+          },null,2)+'\\n');
+        }
         await page.locator('#vico-workbench').scrollIntoViewIfNeeded();
         await page.screenshot({path:join(artifacts,'r2-'+width+'-vico-visor.png'),animations:'disabled'});
       }
