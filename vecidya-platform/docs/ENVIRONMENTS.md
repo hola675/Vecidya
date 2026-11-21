@@ -1,3 +1,11 @@
+## UX-CRYSTAL-R4 — laboratorio local ampliado (2026-11-20, pendiente de ejecución)
+
+El fixture de `dev:local-demo` se amplió de 4 a **10 organizaciones sintéticas** con descripciones, ciudades, servicios, preguntas frecuentes, galería, dos catálogos de muestra y tres cuentas QA con permisos distintos. La información histórica sobre cuatro organizaciones describe la ejecución del 2026-11-11, no el objetivo del nuevo checkpoint. Para inicializar, ejecutar `pnpm run dev:local-demo` en una terminal y `pnpm run seed:local-demo`, `pnpm run status:local-demo` y `pnpm run review:local-demo` en otra. El script Playwright abre Chromium visible, guarda capturas en `test-results/ux-crystal-r4-manual` y permite inspección humana. Más detalles, credenciales y advertencias: [UX-CRYSTAL-R4-LOCAL-REVIEW.md](./UX-CRYSTAL-R4-LOCAL-REVIEW.md).
+
+**No hay evidencia de ejecución del seed de 10 organizaciones ni de Playwright en este checkpoint.** Sin D1 remota, licencias ficticias, publicaciones, despliegue ni acceso a organizaciones reales. Los resultados requerirán registro por SHA.
+
+---
+
 ## UX-CRYSTAL-R3 — preflight HTTP y publicación separada
 
 El verificador `pnpm ux:verify-http` no tiene URL por defecto y rechaza destinos fuera de loopback, el Worker staging `vecidya-platform-staging.*.workers.dev` y `vecidya.com`/`www.vecidya.com`. Producción exige `UX_PRODUCTION_READONLY_APPROVED=1`, que autoriza **solo cuatro GET anónimos** y nunca modifica Cloudflare o D1. El resultado no confirma el SHA desplegado.
