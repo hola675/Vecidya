@@ -75,6 +75,11 @@
   background: radial-gradient(ellipse at 100% 0%, rgb(8 204 243 / 11%), transparent 22rem), linear-gradient(120deg, #fff, #f1f7ff 78%, #fff);
 }
 
+/* R4: los colores de la tarjeta de siguiente paso deben ser legibles en la
+   superficie clara, independientemente de colores heredados de Card. */
+.app-shell .app-main .app-primary-action :is(h2, p:not(.eyebrow)) { color: var(--v-ink); }
+.app-shell .app-main .app-primary-action .eyebrow { color: var(--v-blue-700); }
+
 .app-state-tile,
 .app-quick-action,
 .admin-stat-card,
@@ -158,6 +163,67 @@
 .miniweb-v2-editor > section[aria-label="Vista previa"] { margin-top: 2rem; border: 1px solid var(--v-line); border-radius: var(--v-radius-panel); padding: clamp(1rem, 2.4vw, 1.8rem); background: linear-gradient(145deg, #eaf3ff, #f8fbff 68%, #fff4e6); box-shadow: var(--v-shadow-card); }
 .miniweb-v2-editor > section[aria-label="Vista previa"] > h2 { margin: 0 0 1rem; color: var(--v-ink); font-size: 1.2rem; }
 .miniweb-v2-editor > section[aria-label="Vista previa"] > .card { overflow: auto; border-color: rgb(39 95 163 / 12%); border-radius: 1.35rem; padding: clamp(0.65rem, 1.5vw, 1rem); background: #fff; }
+
+/* R4: edición y resultado visibles en paralelo solo cuando hay espacio real.
+   El renderer sigue siendo el mismo: no duplica ni publica contenido. */
+.miniweb-v2-editor__review-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  margin-block: 1rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--v-line);
+  border-radius: var(--v-radius-card);
+  background: #fff;
+}
+.miniweb-v2-editor__review-nav a,
+.miniweb-v2-editor__preview-heading a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--v-blue-700);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+.miniweb-v2-editor__review-nav span { color: var(--v-muted); font-size: 0.88rem; }
+.miniweb-v2-editor__workspace { min-width: 0; }
+.miniweb-v2-editor__controls { min-width: 0; }
+.miniweb-v2-editor__controls > .card {
+  margin-block: 1rem;
+  padding: clamp(1.1rem, 2.2vw, 1.7rem);
+  background: #fff;
+}
+.miniweb-v2-editor__preview-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.miniweb-v2-editor__preview-heading h2 { margin: 0; color: var(--v-ink); }
+.miniweb-v2-editor__preview { min-width: 0; scroll-margin-top: 6rem; }
+#miniweb-v2-sections { scroll-margin-top: 6rem; }
+.miniweb-v2-editor__workspace > .miniweb-v2-editor__preview { margin-top: 1rem; }
+@media (min-width: 1100px) {
+  .miniweb-v2-editor__workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.92fr);
+    align-items: start;
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+  .miniweb-v2-editor__workspace > .miniweb-v2-editor__preview {
+    position: sticky;
+    top: 5.3rem;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+@media (max-width: 1099px) {
+  .miniweb-v2-editor__review-nav { justify-content: space-between; }
+}
 
 /* El acabado vive en la familia seleccionada: no fuerza la marca Vecidya al negocio. */
 .miniweb-v2 {
