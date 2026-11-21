@@ -239,15 +239,15 @@ async function ensureProfile(client, organizationId, fixture, index) {
     displayName: fixture.displayName,
     slug: fixture.slug,
     shortDescription: fixture.shortDescription,
-    description: fixture.description + " [ESCENARIO FICTICIO DE QA — no es un negocio real.]",
+    description: fixture.description,
     category: fixture.category,
     city: fixture.city,
-    country: "QA",
+    country: fixture.country,
     phone: `+1 202-555-01${String(index + 1).padStart(2, "0")}`,
     publicEmail: fixture.publicEmail,
     websiteUrl: fixture.websiteUrl,
     serviceMode: fixture.serviceMode,
-    serviceArea: fixture.serviceArea,
+    serviceArea: `Escenario sintético de atención en ${fixture.city}; no es un establecimiento real.`,
     draftRevision: String(current.draftRevision ?? 0),
   };
   for (const [name, value] of Object.entries(fields)) form.set(name, value);
@@ -305,59 +305,20 @@ async function ensureMiniWebDraft(client, organizationId, fixture) {
   const contact = sections.get("contact");
   const location = sections.get("location");
   assert(hero && about && contact && location, `La familia MiniWeb V2 de ${fixture.slug} no tiene las secciones iniciales esperadas.`);
-  // Los bloques se crean a través del contrato V2 existente: no son una publicación.
-  const ensureSection = (type, content) => {
-    let section = sections.get(type);
-    if (!section) {
-      section = { id: `qa-${fixture.slug}-${type}`, type, schemaVersion: 1,
-        order: document.sections.length, visible: true, content };
-      document.sections.push(section);
-      sections.set(type, section);
-    }
-    return section;
-  };
-  const services = ensureSection("services", { items: [] });
-  const faq = ensureSection("faq", { items: [] });
-  const gallery = ensureSection("gallery", { images: [] });
-  const products = fixture.products?.length ? ensureSection("products", { items: [] }) : null;
-  const enriched = services.content.items.length === fixture.services.length &&
-    faq.content.items.length === fixture.faqs.length &&
-    gallery.content.images.some((image) => image.assetId === cover.id) &&
-    (!products || products.content.items.length === fixture.products.length);
-  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.subtitle === fixture.subtitle &&
-    about.content.headline === fixture.headline && hero.content.image?.assetId === cover.id && enriched;
+  const alreadyPopulated = hero.content.title === fixture.displayName && hero.content.image?.assetId === cover.id;
   if (!alreadyPopulated) {
     hero.content.title = fixture.displayName;
-    hero.content.subtitle = fixture.subtitle;
+    hero.content.subtitle = fixture.shortDescription;
     hero.content.image = { assetId: cover.id, alt: `Portada geométrica sintética de ${fixture.displayName}.` };
-    about.content.headline = fixture.headline;
-    about.content.description = fixture.description + " [Ejemplo ficticio exclusivamente para QA.]";
+    about.content.headline = `Conoce ${fixture.displayName}`;
+    about.content.description = fixture.description;
     contact.content.phone = null;
     contact.content.email = fixture.publicEmail;
     contact.content.links = [{ label: "Dominio reservado de prueba", href: fixture.websiteUrl }];
     location.content.address = null;
     location.content.city = fixture.city;
-    location.content.area = fixture.serviceArea;
+    location.content.area = `Solo escenario local de pruebas, ${fixture.country}.`;
     location.content.mapUrl = null;
-    services.content.items = fixture.services.map((title, index) => ({
-      id: `qa-${fixture.slug}-service-${index}`, title,
-      description: `${title}: servicio de muestra para revisión de diseño y contenido. Consulta las condiciones antes de solicitarlo.`,
-      image: null, cta: null,
-    }));
-    faq.content.items = fixture.faqs.map((question, index) => ({
-      id: `qa-${fixture.slug}-faq-${index}`, question,
-      answer: "Este escenario es una simulación de QA. Los detalles de contratación, disponibilidad y horarios no son reales.",
-    }));
-    gallery.content.images = [{
-      assetId: cover.id, alt: `Composición geométrica de muestra para ${fixture.displayName}.`,
-      caption: "Imagen sintética creada para pruebas visuales",
-    }];
-    if (products) products.content.items = fixture.products.map((title, index) => ({
-      id: `qa-${fixture.slug}-product-${index}`, title,
-      category: fixture.category,
-      description: "Artículo informativo de demostración, sin inventario ni precio real.",
-      image: null, cta: null,
-    }));
 
     const saved = await readJson(await client.json(path, {
       operation: "save",
@@ -453,7 +414,7 @@ await ensureReviewer(
 await setActiveOrganization(client, seeded[0].organizationId);
 assert(seeded.length >= 10, "El fixture debe incluir al menos diez organizaciones.");
 console.log(`\nSeed local listo: ${seeded.length} organizaciones, ${createdProfiles} perfiles nuevos, ${createdAssets} assets nuevos y ${createdMiniWebDrafts} borradores MiniWeb V2 nuevos.`);
-console.log(`Cuenta local propietaria: ${ownerEmail} / ${ownerPassword}`);
+console.log(`Cuenta local: ${ownerEmail} / ${ownerPassword}`);
 console.log(`Abrir: ${baseUrl}/app/business-profile y ${baseUrl}/app/miniweb-v2`);
 const counts = queryLocalD1(`SELECT
   (SELECT COUNT(*) FROM organization WHERE slug LIKE 'qa-local-%') AS organizations,
@@ -464,3 +425,4 @@ assert(counts.organizations >= 10 && counts.profiles >= 10 && counts.assets >= 2
   `Seed R4 incompleto: ${JSON.stringify(counts)}`);
 console.log(`Integridad local R4: ${JSON.stringify(counts)}`);
 console.log("Los perfiles quedan como borradores; no se crean licencias ficticias ni se publican páginas.");
+console.log("Las identidades, localidades, teléfonos, servicios y dominios son escenarios sintéticos y NO datos comerciales reales.");

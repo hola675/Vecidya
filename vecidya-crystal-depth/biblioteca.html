@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="styles/r1-guidance.css">
   <link rel="stylesheet" href="styles/motion-system.css">
   <link rel="stylesheet" href="styles/scene-composer.css">
+  <link rel="stylesheet" href="styles/miniweb-customizer.css">
   <link rel="stylesheet" href="styles/interaction-flows.css">
   <link rel="stylesheet" href="styles/platform-bridge.css">
   <script defer src="assets/motion-system.js"></script>
   <script defer src="assets/scene-composer.js"></script>
+  <script defer src="assets/miniweb-customizer.js"></script>
   <script defer src="assets/interaction-flows.js"></script>
   <script defer src="assets/agent-brief.js"></script>
   <script defer src="assets/platform-bridge.js"></script>
@@ -652,6 +654,71 @@
             <article><strong>Movimiento por propósito</strong><p>Transición breve de página simulada; sin autoplay obligatorio ni bloqueo de interacción. Respeta movimiento reducido.</p></article>
             <article><strong>Calidad consistente</strong><p>Una sola identidad para todos los niveles. El acceso a funciones depende del contrato de producto real, nunca del mockup.</p></article>
           </div>
+
+          <section id="miniweb-customizer" class="mw-lab" aria-labelledby="miniweb-customizer-title">
+            <div class="mw-lab__heading">
+              <div>
+                <h3 id="miniweb-customizer-title">Personaliza una MiniWeb en tiempo real</h3>
+                <p>Explora colores, tipografías, tamaños, posición, estructura y márgenes con una página ficticia. La calidad básica es igual en Cuadra, Barrio y Ciudad; cada composición cambia el modo de presentar los contenidos.</p>
+              </div>
+              <span class="mw-lab__tag">Laboratorio visual · no publica</span>
+            </div>
+            <div class="mw-lab__layout">
+              <div class="mw-lab__controls">
+                <fieldset>
+                  <legend>Controles de diseño</legend>
+                <div class="mw-lab__field"><label for="miniweb-custom-tier">Experiencia visual</label><select id="miniweb-custom-tier" data-mw-field="tier"><option value="base">Cuadra · Base</option><option value="pro">Barrio · Pro</option><option value="premium">Ciudad · Premium</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-palette">Paleta de color</label><select id="miniweb-custom-palette" data-mw-field="palette"><option value="oceano">Océano azul</option><option value="bosque">Bosque verde</option><option value="coral">Coral cálido</option><option value="ciruela">Ciruela elegante</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-primaryColor">Color principal</label><input type="color" id="miniweb-custom-primaryColor" data-mw-field="primaryColor" value="#154B85"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-accentColor">Color de acento</label><input type="color" id="miniweb-custom-accentColor" data-mw-field="accentColor" value="#F6A344"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-canvasColor">Fondo de la web</label><input type="color" id="miniweb-custom-canvasColor" data-mw-field="canvasColor" value="#F2F7FC"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-font">Tipografía</label><select id="miniweb-custom-font" data-mw-field="font"><option value="moderna">Moderna y clara</option><option value="editorial">Editorial serif</option><option value="cercana">Cercana y humanista</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-layout">Composición</label><select id="miniweb-custom-layout" data-mw-field="layout"><option value="split">Dos columnas</option><option value="stacked">En bloques apilados</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-align">Alineación del texto</label><select id="miniweb-custom-align" data-mw-field="align"><option value="left">Izquierda</option><option value="center">Centrado</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroPosition">Posición de la ilustración</label><select id="miniweb-custom-heroPosition" data-mw-field="heroPosition"><option value="right">A la derecha</option><option value="left">A la izquierda</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-titleSize">Tamaño del título</label><input id="miniweb-custom-titleSize" data-mw-field="titleSize" type="range" min="26" max="60" value="40" step="1"><output class="mw-lab__value" id="miniweb-custom-titleSize-value" for="miniweb-custom-titleSize">40 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-bodySize">Tamaño del texto</label><input id="miniweb-custom-bodySize" data-mw-field="bodySize" type="range" min="14" max="20" value="16" step="1"><output class="mw-lab__value" id="miniweb-custom-bodySize-value" for="miniweb-custom-bodySize">16 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-spacing">Espaciado</label><input id="miniweb-custom-spacing" data-mw-field="spacing" type="range" min="12" max="42" value="24" step="1"><output class="mw-lab__value" id="miniweb-custom-spacing-value" for="miniweb-custom-spacing">24 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-radius">Redondeo</label><input id="miniweb-custom-radius" data-mw-field="radius" type="range" min="0" max="34" value="20" step="1"><output class="mw-lab__value" id="miniweb-custom-radius-value" for="miniweb-custom-radius">20 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroHeight">Altura de portada</label><input id="miniweb-custom-heroHeight" data-mw-field="heroHeight" type="range" min="260" max="480" value="330" step="1"><output class="mw-lab__value" id="miniweb-custom-heroHeight-value" for="miniweb-custom-heroHeight">330 px</output></div>
+                </fieldset>
+                <div class="mw-lab__actions">
+                  <button id="miniweb-custom-reset" type="button">Restaurar diseño</button>
+                  <button id="miniweb-custom-copy" type="button">Copiar propuesta para agentes</button>
+                </div>
+                <p id="miniweb-custom-status" class="mw-lab__status" role="status" aria-live="polite">Modifica un control para actualizar la vista; ningún cambio se guarda.</p>
+              </div>
+              <div class="mw-lab__stage">
+                <div class="mw-lab__stage-label"><strong>Vista previa · negocio de ejemplo</strong><span id="miniweb-custom-tier-note">Cuadra · Presencia profesional completa</span></div>
+                <div id="miniweb-custom-preview" class="mw-lab__preview" data-tier="base" data-layout="split" data-align="left" data-image-position="right">
+                  <div class="mw-lab__nav">
+                    <span class="mw-lab__brand"><span class="mw-lab__brand-mark" aria-hidden="true"></span> Estudio Aurora</span>
+                    <span class="mw-lab__nav-note">Servicios · Sobre nosotros · Contacto</span>
+                  </div>
+                  <div class="mw-lab__hero">
+                    <div class="mw-lab__copy">
+                      <span class="mw-lab__eyebrow">Diseño que acompaña a tu negocio</span>
+                      <h4>Tu espacio merece sentirse único.</h4>
+                      <p>Un estudio ficticio que transforma ideas en soluciones visuales. Cambia el diseño a tu gusto sin sacrificar lectura ni funcionalidad.</p>
+                      <a class="mw-lab__cta" href="#guia" aria-label="Consultar guía de diseño MiniWeb">Consultar guía</a>
+                    </div>
+                    <div class="mw-lab__picture" role="img" aria-label="Ilustración geométrica abstracta de muestra, no fotografía de un negocio real">
+                      <span class="mw-lab__picture-label">Espacio de imagen · demo</span>
+                    </div>
+                  </div>
+                  <div class="mw-lab__services">
+                    <h5>Lo que podemos crear juntos</h5>
+                    <div class="mw-lab__cards">
+                      <article class="mw-lab__card"><strong>Identidad</strong><p>Una imagen reconocible y coherente.</p></article>
+                      <article class="mw-lab__card"><strong>Contenido</strong><p>Mensajes fáciles de entender.</p></article>
+                      <article class="mw-lab__card"><strong>Experiencia</strong><p>Un recorrido simple para contactar.</p></article>
+                    </div>
+                  </div>
+                </div>
+                <p class="mw-lab__disclaimer">Ejemplo local del laboratorio. Base, Pro y Premium aquí son composiciones conceptuales, no derechos activos ni plantillas publicables. El archivo copiado es una orientación de diseño, no un formato de configuración del editor de Vecidya.</p>
+              </div>
+            </div>
+          </section>
           <p class="r1-caption">Consulta <a href="assets/pattern-registry.json">el contrato de escenas</a> y <a href="docs/INTEGRACION.md">el protocolo para agentes</a> antes de trasladar un patrón a React. Esta biblioteca no implementa routing real ni edita un MiniWeb.</p>
         </section>
 
@@ -724,7 +791,7 @@
               </table>
             </div>
             <p class="pb-warning" id="platform-bridge-state"></p>
-            <h3 class="pb-heading">Componentes que requieren contrato</h3>
+            <h3 class="pb-heading">Componentes R1.6 disponibles y propuestas por evaluar</h3>
             <ul class="pb-inventory" id="platform-bridge-gaps"></ul>
           </div>
           <p class="pb-source-note">Fuentes: <a href="docs/INTEGRACION.md">guía de agentes</a>, <a href="assets/pattern-registry.json">contrato estructurado</a> y código real de <code>vecidya-platform/app/components/</code> y <code>vecidya-platform/app/styles/</code>. No modificar el tema, los permisos, los flujos de MiniWeb ni el CRM por interpretar una muestra.</p>

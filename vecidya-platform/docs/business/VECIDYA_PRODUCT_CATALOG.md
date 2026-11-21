@@ -67,6 +67,52 @@ Uso variable → coste de uso.**
 | Routing/equipos | — | Básico cuando aplica | Avanzado |
 | Control | Vecidya | Comercial | Operacional |
 
+## MINIWEB EXPERIENCE — Diferenciación sin degradar Cuadra (propuesta de diseño, 2026-11-20)
+
+**Propósito:** que una persona perciba la diferencia entre Cuadra, Barrio y Ciudad en la MiniWeb y en el trabajo que logra realizar, sin confundir belleza con autorización comercial. Esta sección es una **propuesta de dirección de producto y diseño**, no un entitlement, precio, plantilla activada ni implementación certificada. Mandan las reglas aprobadas de [VECIDYA_LICENCIAS_ORGANIZACIONES_CRM_V2.md](./VECIDYA_LICENCIAS_ORGANIZACIONES_CRM_V2.md): tres organizaciones iniciales, una MiniWeb por organización, CRM solo para una organización explícitamente licenciada en Barrio/Ciudad y ampliación Cuadra en bloques de tres.
+
+### Experiencia de cada licencia
+
+| Dimensión | Cuadra — presencia completa | Barrio — captar y seguir | Ciudad — coordinar procesos |
+| --- | --- | --- | --- |
+| Promesa práctica | La persona comprende qué ofrece el negocio y cómo contactar | La persona descubre la oferta y puede iniciar un recorrido comercial cuya gestión se hace en el CRM **cuando esté habilitado** | La persona entiende servicios y recorridos relacionados y puede recibir atención coordinada **cuando los módulos estén operativos** |
+| Calidad de ejecución | **La misma** tipografía cuidada, accesibilidad, diseño adaptable, performance, fotografía contextual, marca y calidad de contenidos | Exactamente la misma base técnica y calidad | Exactamente la misma base técnica y calidad |
+| Composición visual objetivo | Hero dividido, grid uniforme, navegación y CTA directos | Hero asimétrico, grid editorial, mosaico; comunicación orientada a acciones comerciales | Hero inmersivo, secuencias narrativas, presentación modular por recorridos; sin animaciones esenciales |
+| Valor funcional actual de licencia | Perfil, MiniWeb, Vecindario y relación con Vecidya; contacto directo, **sin CRM** | Todo Cuadra + un CRM Standard para **una organización**, un proceso principal (captación, contacto, oportunidad, tarea, agenda cuando aplica) | Todo Barrio + biblioteca de seis módulos estándar para **una organización** con coordinación multiproceso |
+| No prometer por diseño | Reservas online, pagos, CRM ni formularios conectados por el mero hecho de dibujar controles | Agenda, pipeline, respuestas automáticas o canal conectado si el onboarding y GHL no están validados | Automatización multiproceso, reportes y traspasos si no existe configuración y verificación operativa |
+
+**Regla comercial crucial:** Cuadra tiene una MiniWeb **completa**, con identidad, portada, servicios o productos, contenido, contacto y legibilidad profesional. Ninguna persona debe percibirla como un anuncio deliberadamente incompleto. Barrio y Ciudad enriquecen **formas de comunicar y operar**, no retiran módulos básicos de Cuadra para volver a venderlos. El upgrade solo se recomienda cuando el negocio necesita seguimiento comercial (Barrio) o coordinación entre procesos (Ciudad), nunca para arreglar deficiencias estéticas de Cuadra.
+
+### Estado real del código y frontera del trabajo
+
+- **CODE:** `app/features/miniweb/visual-variants.ts` define `base/pro/premium` y tres composiciones: Cuadra `split/uniform-grid`, Barrio `asymmetric/editorial-grid/mosaic`, Ciudad `immersive/narrative/editorial-sequence`. Es un catálogo tipado de **propuesta**, no evidencia de las tres variantes disponibles en el renderer.
+- **CODE:** `app/features/miniweb/visual-entitlements.ts` evalúa una licencia ya verificada del propietario de facturación para `base` (Cuadra), `pro` (Barrio) y `premium` (Ciudad), con fallo cerrado. No procesa cobros ni concede derechos por sí solo. La verificación servidor/organización sigue siendo obligatoria.
+- **CODE:** `app/features/miniweb/registry.ts` registra `vecidya-default` (Esencial) como `available`, con `standard`; `services-studio`, `catalog-store`, `gastronomy-table` y `professional-profile` siguen `planned`. **No presentar estas familias como publicables**.
+- **DOC / no verificado en ejecución aquí:** la experiencia MiniWeb con Pro y Premium renderizada, editable, publicada y probada. La matriz anterior guía una implementación futura, no la activa.
+
+### Biblioteca de composición para agentes: no multiplicar sistemas
+
+Un único contrato visual: tokens de producción `--v-*` y componentes React reales; patrón Focal para apertura editorial, Quiet para contexto y Solid para contenido operativo. `vecidya-crystal-depth/assets/pattern-registry.json` es orientación, no paquete productivo. Para una MiniWeb de cualquier plan: preservar identidad del negocio, datos reales, orden de módulos, vista móvil, texto alternativo, controles y contacto. La estética oscura de Crystal Depth **no** se impone a sitios propiedad de organizaciones.
+
+Los agentes de UX/editorial diseñan diferencias perceptibles en estructura y narrativa; el frontend solo implementa variantes cuando renderer, editor, contratos de datos, autorización y publicación lo permiten; calidad prueba las tres licencias con identidad y organización real de QA, accesibilidad, cambio de variante sin perder contenido, reversión y fallo cerrado. **Los componentes y datos fundamentales no se triplican por tier.**
+
+### Plan focal de adopción (no autorización de lanzamiento)
+1. Auditar vista MiniWeb actual y dependencias del editor; documentar qué módulos ya están disponibles y qué partes son solo bocetos.
+2. Pulir `base` primero con negocios de diferentes sectores: estructura completa, imágenes reales o placeholders bien etiquetados, buen diseño sin CRM.
+3. Prototipar `pro` usando los mismos datos persistidos y una composición realmente distinta. Enlazar contacto/formulario a CRM **solo** si el servicio está provisionado y probado.
+4. Prototipar `premium` con secciones narrativas y contexto multiproceso; módulos avanzados solo al contar con fuentes y configuración reales.
+5. Certificar cambio de variante sin pérdida de datos, organización/owner aislados, licencias válidas, lectura SSR, responsive, 200 % zoom, teclado, lector de pantalla, performance y rollback; no publicar sin autorización específica.
+
+### Ejemplos que explican la diferencia en lenguaje cotidiano
+- **Cuadra, taller:** «Estos son mis servicios, cuándo atiendo, dónde estoy y cómo puedes consultarme»; una página sólida y lista para representar al negocio una vez autorizada su publicación.
+- **Barrio, taller:** «Además, cuando el sistema comercial esté conectado, cada consulta puede entrar a un proceso de atención y seguimiento con tareas»; no promete la conexión antes de probarla.
+- **Ciudad, taller con varias áreas:** «Cuando la coordinación esté configurada, venta, atención y renovaciones pueden pasar de una persona a otra conservando responsables y estados»; no equivale a que la página web sea un ERP.
+
+### Changelog documental
+- 2026-11-20: propuesta MiniWeb Experience por tier, reconciliación de las variantes `base/pro/premium` con catálogo aprobado y límites de operación.
+
+---
+
 ## Beneficios concretos, unificación y continuidad (modelo comercial objetivo)
 
 La descripción pública de cada complemento o servicio debe responder **qué trabajo ahorra**, **qué mejora para el cliente** y **qué se conserva si un canal falla**; no basta enumerar nombres tecnológicos.
