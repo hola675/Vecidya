@@ -381,6 +381,13 @@ try{
             }
           }
           const audits=await page.evaluate(()=>window.__vicoAlphaAudits);
+          // Publicar solo métricas de QA, nunca píxeles ni originales en logs.
+          console.log("VICO_ALPHA_SUMMARY",JSON.stringify(audits.map(entry=>({
+            file:entry.source.split("/").pop(),
+            alpha:entry.alphaPercent,
+            border:entry.border,
+            box:entry.visibleBoundingBox
+          }))));
           assertStep('vico-alpha-10-originales',()=>{
             assert.equal(audits.length,10);
             assert.equal(new Set(audits.map(item=>item.source)).size,10);
