@@ -4,6 +4,24 @@
 
 Sitio independiente de componentes HTML/CSS funcionales, escenas ambientales e iconos en capas separadas. Abre por defecto en **tema oscuro** y permite alternar a claro. La escena generada aprobada por el usuario se integra como fondo, no como captura ni como contenido de los componentes. La galería recorre los 140 assets de `public/assets/`, con búsqueda, 17 categorías y tres órdenes.
 
+## Vico — explorador de identidad y originales (2026-11-20)
+
+La sección `biblioteca.html#vico` reúne las **10 imágenes oficiales del personaje Vico** ya incluidas entre los 140 assets, sin copiar ni generar archivos adicionales. Permite seleccionar imagen, comparar fondo oscuro/claro/cuadrícula y fondo dividido, escala, posición y escena contextual independiente; muestra propósito, dimensiones y enlace directo al original. El botón **Analizar píxeles alfa** construye en el navegador un mapa de máscara no destructivo y una medición orientativa para localizar posibles residuos de fondo.
+
+- `assets/vico-workbench.js`: selección desde `window.vecidyaCrystalCatalog`, diez destinos por ruta, copia de ficha JSON para agentes (orientación; no API).
+- `styles/vico-workbench.css`: visor responsive, foco de teclado, estado seleccionado y movimiento reducido.
+- `assets/pattern-registry.json → vicoVisualIdentity`: inventario y restricciones interpretables.
+- `docs/DIRECCION-ARTISTICA.md → Vico`: carácter, composición y QA requerida.
+- `tests/r1-contract.test.mjs` y `tests/r2-browser-qa.mjs`: suites ya existentes, ampliadas con inventario, comparación y auditoría alfa en Chromium. El segundo test guarda `qa-artifacts/vico-alpha-audit.json` y capturas de Inicio/Diagnóstico como artifacts temporales del CI.
+
+**Límites:** conserva originales, no genera ni redibuja a Vico, no aplica Vico como marca de los MiniWeb de clientes, no realiza despliegues y no certifica calidad artística o transparencia sin inspección de capturas. El catálogo sigue en 140 entradas. La infografía `home-vecidya-companion-v4.webp` está correctamente clasificada en `Ilustraciones`, porque no contiene al personaje.
+
+### Segunda fase: diagnóstico y derivados de evaluación (2026-11-20)
+
+La sección Vico incorpora un mapa alfa cuantitativo, fondo dividido claro/oscuro y un botón **Comparar ajuste alfa (borrador)** con umbrales controlados de 8, 16, 32 o 64. La comparación modifica únicamente la opacidad muy baja en una copia Canvas de máximo 512 px y permite descargar un PNG **solo para evaluación**; nunca escribe sobre el original ni cambia recursos productivos. Una franja opaca o un halo legítimo requiere revisión artística específica: aumentar el umbral no equivale a corregirlo.
+
+Mediciones verificadas en Chromium ([run #44845058860](https://github.com/hola675/Vecidya/actions/runs/44845058860)): Inicio contiene 44,8 % de píxeles totalmente transparentes y 1,4 % de alfa 1–15; Diagnóstico, 44,7 % y 1,3 %. Consultar la tabla completa y criterios en `docs/DIRECCION-ARTISTICA.md`. Las pruebas focales R1/R2 se ampliaron sin crear un harness nuevo. Las propuestas PNG de laboratorio **no son derivados aprobados para producción**.
+
 ## Entrada didáctica para agentes
 
 La biblioteca es un **manual de decisiones visuales**, no solo una galería. Antes de modificar una pantalla de Vecidya:
