@@ -344,6 +344,14 @@ test('Vico: diez personajes catalogados y una infografía separada y un único p
   assert.match(script,/concept|visual-review-only-not-a-route-or-design-api/);
   assert.match(script,/const sceneBase = safeEntries\.length/);
   assert.match(script,/new URL\(sceneBase \+ rule\.scene, document\.baseURI\)/);
+  assert.match(html,/id="vico-workbench-analyze"/);
+  assert.match(html,/id="vico-workbench-alpha-panel"[^>]*hidden/);
+  assert.match(html,/id="vico-workbench-alpha-canvas"/);
+  assert.match(html,/<option value="split">/);
+  assert.match(script,/getImageData\(0, 0, width, height\)/);
+  assert.match(script,/vico-alpha-audited/);
+  assert.match(script,/diagnostic-only-no-pixel-retouch/);
+  assert.match(styles,/vico-workbench__alpha/);
   assert.doesNotMatch(script,/const sceneBase = "\.\.\/vecidya-platform/);
   assert.doesNotMatch(script,/localStorage|sessionStorage|XMLHttpRequest|fetch\(/);
   assert.match(styles,/prefers-reduced-motion:reduce/);
