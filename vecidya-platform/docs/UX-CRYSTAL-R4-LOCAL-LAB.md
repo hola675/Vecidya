@@ -75,6 +75,24 @@ El script crea capturas en `.wrangler/local-demo/visual-review/` (no en Git); co
 - Fix R4.2: el auditor obtiene las membresías con `GET /api/auth/organization/list`, selecciona la organización ficticia `qa-local-salud` mediante el endpoint oficial `POST /api/auth/organization/set-active` y comprueba `activeOrganizationId` en sesión antes de capturar. No evita autorización y no activa licencias. **La repetición tras este fix aún no ha sido comprobada en Windows.**
 - El aviso de cookies tapa parte del diseño en las capturas públicas; para aceptación visual se requiere un pase con el consentimiento cerrado por la interfaz real (sin inyectar aceptación falsa).
 
+## Revisión visual de las 15 capturas privadas recibidas (2026-11-21)
+
+**Evidencia:** ZIP suministrado por el usuario, 15 PNG; 3 rutas × 320/390/768/1366/1920 px; screenshots de páginas completas. El log anterior confirmó HTTP 200 y `overflow=false` en los 15 casos, selección activa de `qa-local-salud` con diez membresías. **No confundir evidencia de screenshots con pruebas de foco/teclado/zoom/lector o edición funcional.**
+
+### Hallazgos verificables
+| ID | Prioridad | Ruta | Hallazgo / evidencia visual | Siguiente acción |
+|---|---|---|---|---|
+| R4-V01 | P1 | `/app` | En 320/390 el bloque **TU SIGUIENTE PASO** tiene texto explicativo y título casi blancos sobre superficie blanca; contraste manifiestamente insuficiente frente al resto del dashboard. El CTA principal sí conserva relieve y lectura. | Inspeccionar reglas efectivas `.app-primary-action` (incluidos `workspace-premium.css`, capas heredadas y orden CSS); corregir color de título y ayuda con tokens reales. Medir contraste compuesto, no asumir WCAG PASS. |
+| R4-V02 | P1/P2 | `/app/miniweb-v2` | Captura 1366/1920: controles y seis bloques editables forman una columna muy larga y la **vista previa aparece únicamente al final**. Captura 390: ~7462 px de alto; para conocer el resultado del primer cambio hay que desplazarse a gran distancia. | Evaluar layout escritorio de dos columnas o preview contextual/sticky solo si no sacrifica controles; en móvil usar pestañas `Editar/Vista previa` o acceso rápido sin perder scroll/borrador. No cambiar motor de render ni guardar automáticamente. |
+| R4-V03 | P2 | `/app/miniweb-v2` | Acciones **Subir, Bajar, Quitar sección** se repiten en cada módulo, junto con controles de contenido. Hay densidad operativa y navegación de secciones poco compacta en móvil. | Mejorar jerarquía/agrupación semántica y estados foco. No retirar acciones ni perjudicar reordenación por teclado. |
+| R4-V04 | P2 | `/app/business-profile` | En 390 px, título e indicador de completitud están claros; el paso `Identidad` muestra selección de sector, buscador alternativo y varias acciones en una superficie vertical extensa. | Compactar jerarquía de selector de actividad y explicación; conservar `Otra actividad`, búsqueda, categorías y pasos. Verificar textos editorialmente. |
+| R4-V05 | P2 | `/app/business-profile` y `/app` | El perfil comunica **100% completo** y **Borrador** a la vez; son estados diferentes (campos completos frente a publicación) y ambos se muestran correctamente, pero pueden confundirse sin explicación contextual. | Reforzar microcopy: 'Datos mínimos completos · Todavía no publicado'; conservar condición de licencia y proceso de publicación. |
+| R4-V06 | P2 | Las tres rutas | En escritorio los shells usan área izquierda oscura y lectura blanca; a 390 el header se comprime correctamente, sin desbordamientos reportados. El acabado se percibe más como panel funcional claro que como escena Crystal Depth, coherente con el requisito `solid` de zonas operativas. | Aplicar Crystal Quiet solo a apoyos y reservar Focal para una entrada breve; no imponer fondo oscuro o cristal detrás de formularios. |
+
+**Cierre del acceso:** error HTTP 403 anterior eliminado para estas tres rutas mediante selección de organización en la sesión Playwright. No se ha auditado `platform_admin` ni la independencia entre usuarios, no hay publicaciones reales ni licencias ficticias.
+
+**Próximo checkpoint recomendado:** corregir primero R4-V01 (contraste de contenido del dashboard) y certificar visualmente. Después trabajar R4-V02–V03 como decisión UX del editor con medición y comparación de capturas; no implementar un cambio estructural solo por la estética de la maqueta.
+
 ## Changelog
 - 1.2.0: selección explícita de organización activa para la sesión de Playwright, sustentada por evidencia de 403 local; pendientes nuevas capturas.
 - 1.1.0: capturas automatizadas de cinco anchos, validación de redirects/overflow y errores de página; se conserva exploración interactiva en 1366 px. Sin ejecución de navegador local verificada.
