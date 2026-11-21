@@ -380,6 +380,43 @@ try{
               await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-'+tag+'-alpha.png'),animations:'disabled'});
             }
           }
+          // Propuesta de limpieza alfa no destructiva: solo en el laboratorio.
+          await page.getByRole('button',{name:'Seleccionar Vico · inicio'}).click();
+          await page.locator('#vico-workbench-background').selectOption('split');
+          await page.evaluate(()=>{
+            window.__vicoAlphaProposals = [];
+            document.getElementById('vico-workbench').addEventListener('vico-alpha-proposal',event=>{
+              window.__vicoAlphaProposals.push(event.detail);
+            });
+          });
+          await page.locator('#vico-workbench-threshold').selectOption('16');
+          await page.locator('#vico-workbench-propose').click();
+          await page.waitForFunction(()=>window.__vicoAlphaProposals?.length===1,{timeout:20000});
+          const proposal = await page.evaluate(()=>({
+            data:window.__vicoAlphaProposals[0],
+            preview:document.getElementById('vico-workbench-candidate-panel').hidden,
+            download:document.getElementById('vico-workbench-download').disabled,
+            source:document.getElementById('vico-workbench-image').getAttribute('src')
+          }));
+          assertStep('vico-propuesta-alfa-no-destructiva',()=>{
+            assert.match(proposal.source,/vico-home\.webp$/);
+            assert.match(proposal.data.source,/vico-home\.webp$/);
+            assert.equal(proposal.data.threshold,16);
+            assert.equal(proposal.data.schema,'vecidya-vico-alpha-candidate-v1');
+            assert.equal(proposal.data.status,'preview-only-alpha-threshold-not-approved-asset');
+            assert.equal(proposal.preview,false);
+            assert.equal(proposal.download,false);
+          });
+          await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-home-candidate-alpha16.png'),animations:'disabled'});
+          await page.locator('#vico-workbench-threshold').selectOption('32');
+          const resetProposal=await page.locator('#vico-workbench').evaluate(root=>({
+            hidden:root.querySelector('#vico-workbench-candidate-panel').hidden,
+            downloadDisabled:root.querySelector('#vico-workbench-download').disabled
+          }));
+          assertStep('vico-propuesta-caduca-umbral',()=>{
+            assert.equal(resetProposal.hidden,true);
+            assert.equal(resetProposal.downloadDisabled,true);
+          });
           const audits=await page.evaluate(()=>window.__vicoAlphaAudits);
           // Publicar solo métricas de QA, nunca píxeles ni originales en logs.
           console.log("VICO_ALPHA_SUMMARY",JSON.stringify(audits.map(entry=>({
