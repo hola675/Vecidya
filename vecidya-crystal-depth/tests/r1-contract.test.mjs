@@ -296,7 +296,7 @@ test('R1.5: componentes exportados, navegación canónica y pendientes no invent
     assert.ok(componentSource.includes('export function '+item.name+'('),'Componente R1.6 no exportado: '+item.name);
     assert.ok(item.purpose);
   }
-  assert.equal(registry.agentHandoff?.status,'contracto-documental');
+  assert.equal(registry.agentHandoff?.status,'contrato-documental');
   assert.ok(compat.boundaries.some(x=>x.includes('business-owned')));
   assert.ok(compat.boundaries.some(x=>x.includes('GHL')));
 });
