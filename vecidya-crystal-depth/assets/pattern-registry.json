@@ -974,5 +974,125 @@
       ],
       "rule": "La plataforma exige comunicar acceso denegado por permisos reales; Crystal R1.3 aún no ofrece muestra dedicada. Implementar estado solo sobre autorización server-side, nunca desde apariencia, rol simulado o ausencia de datos."
     }
+  },
+  "backgroundAssetBriefs": {
+    "version": "R4.1",
+    "status": "especificacion-para-generar-no-asset-publicado",
+    "rules": [
+      "Escenas sin tipografía, controles, marcas ajenas, capturas de interfaz ni textos legibles",
+      "L0 ambiental debe permitir soportes sólidos de lectura L4 con contraste medido",
+      "Conservar logos originales y mascota Vico; no dibujarlos dentro de nuevas escenas",
+      "Exportar originales y derivados optimizados WebP con variantes mobile/desktop y dark/light solo cuando se aprueben",
+      "No incrustar assets decorativos dentro de MiniWeb de negocios ajenos; sus fondos pertenecen a su identidad",
+      "Usar CSS gradiente existente hasta aprobar y verificar el archivo nuevo; no bloquear render si imagen no está"
+    ],
+    "assets": [
+      {
+        "id": "vx-bg-public-home",
+        "area": "/",
+        "priority": "P1",
+        "purpose": "Portada de Vecidya",
+        "composition": "Escena nocturna azul petróleo con plataformas translucidas ascendentes, halos cian contenidos y acento ámbar periférico; dejar 55% izquierda libre para titular HTML, ilustración Vico oficial en capa separada",
+        "variants": [
+          "desktop-dark",
+          "desktop-light",
+          "mobile-dark",
+          "mobile-light"
+        ],
+        "preferredSource": "WebP derivado de arte original, mínimo 1920x1080 escritorio; 960x1280 móvil",
+        "material": "focal"
+      },
+      {
+        "id": "vx-bg-public-services",
+        "area": "/servicios",
+        "priority": "P2",
+        "purpose": "Contexto de servicios conectado",
+        "composition": "Piezas modulares geométricas que se enlazan en perspectiva, profundidad sobria, amplio negativo central, sin representar funcionalidades inexistentes",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "quiet"
+      },
+      {
+        "id": "vx-bg-directory",
+        "area": "/vecindario",
+        "priority": "P2",
+        "purpose": "Entorno de descubrimiento local",
+        "composition": "Abstracción de barrio y nodos de establecimientos sin negocios reales ni calles exactas, periferia ilustrada; área central limpia para filtros y resultados",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "quiet"
+      },
+      {
+        "id": "vx-bg-learn",
+        "area": "/aprende",
+        "priority": "P2",
+        "purpose": "Lectura y aprendizaje",
+        "composition": "Capas editoriales de papel y cristal translúcido al margen, iluminación fría y cálida mínima; ninguna textura detrás de párrafos",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "solid+quiet"
+      },
+      {
+        "id": "vx-bg-diagnostic",
+        "area": "/diagnostico",
+        "priority": "P3",
+        "purpose": "Acompañamiento del diagnóstico",
+        "composition": "Haces y líneas de orientación discretos solo en cabecera, sin datos simulados ni gráficos cuantitativos; campos y resultados sólidos",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "solid"
+      },
+      {
+        "id": "vx-bg-client",
+        "area": "/app",
+        "priority": "P1",
+        "purpose": "Zona personal y siguiente acción",
+        "composition": "Gradiente claro con brillo cian muy sutil fuera del texto y línea orbital parcial en esquina superior; contraste de tarjetas y controles independiente de imagen",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "quiet"
+      },
+      {
+        "id": "vx-bg-miniweb-editor",
+        "area": "/app/miniweb-v2",
+        "priority": "P2",
+        "purpose": "Marco de previsualización, no tema del negocio",
+        "composition": "Halo ambiental sobrio en marco exterior del editor y borde de profundidad, nunca dentro del renderer de la MiniWeb del negocio",
+        "variants": [
+          "desktop-light",
+          "mobile-light"
+        ],
+        "material": "solid+quiet"
+      },
+      {
+        "id": "vx-bg-internal",
+        "area": "/app/internal",
+        "priority": "P3",
+        "purpose": "Admin y auditoría",
+        "composition": "Trama mínima y gradiente estable únicamente en cabecera, sin reflejos bajo tablas ni métricas; superficie sólida dominante",
+        "variants": [
+          "desktop-light"
+        ],
+        "material": "solid"
+      }
+    ],
+    "reviewGates": [
+      "legibilidad 4.5:1 en composición final",
+      "capturas 320/390/768/1366/1920",
+      "peso optimizado y no empeorar métricas de carga",
+      "fallback con gradiente CSS sin imagen",
+      "prefers-reduced-motion, sin paralaje obligatorio",
+      "licencia/origen documentados y aprobación visual por arte antes de integración"
+    ]
   }
 }
