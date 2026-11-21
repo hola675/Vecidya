@@ -1,6 +1,6 @@
 /**
  * UX-CRYSTAL-R4 · Recorrido local interactivo con Playwright.
- * Versión 1.1.0 (2026-11-21). Sin mutaciones de datos desde el navegador.
+ * Versión 1.2.0 (2026-11-21). Solo selección de organización activa en sesión QA.
  * Requiere dev:local-demo y seed:local-demo ejecutados previamente.
  */
 import { chromium } from "playwright";
@@ -56,6 +56,27 @@ try {
     const sessionResponse = await context.request.get(`${baseUrl}/api/auth/get-session`);
     const session = sessionResponse.ok() ? await sessionResponse.json() : null;
     if (!session?.user?.id) throw new Error("La sesión QA no fue verificada; no se capturarán páginas privadas como si estuvieran autenticadas.");
+    // El seed selecciona una organización en SU sesión. Una autenticación nueva no
+    // hereda activeOrganizationId; seleccionamos solo una membresía existente.
+    const organizationsResponse = await context.request.get(`${baseUrl}/api/auth/organization/list`);
+    if (!organizationsResponse.ok()) throw new Error(`No se pudieron consultar las organizaciones QA: HTTP ${organizationsResponse.status()}.`);
+    const organizations = await organizationsResponse.json();
+    if (!Array.isArray(organizations) || organizations.length < 10) {
+      throw new Error(`Se esperaban al menos 10 organizaciones QA vinculadas a esta cuenta; recibidas: ${Array.isArray(organizations) ? organizations.length : "formato inesperado"}.`);
+    }
+    const selected = organizations.find((item) => item.slug === "qa-local-salud");
+    if (!selected?.id) throw new Error("Falta la organización qa-local-salud entre las membresías QA.");
+    const activateResponse = await context.request.post(`${baseUrl}/api/auth/organization/set-active`, {
+      headers: { origin: baseUrl, "content-type": "application/json" },
+      data: { organizationId: selected.id },
+    });
+    if (!activateResponse.ok()) throw new Error(`No se pudo activar ${selected.slug}: HTTP ${activateResponse.status()}.`);
+    const verifiedResponse = await context.request.get(`${baseUrl}/api/auth/get-session`);
+    const verifiedSession = verifiedResponse.ok() ? await verifiedResponse.json() : null;
+    if (verifiedSession?.session?.activeOrganizationId !== selected.id) {
+      throw new Error("La organización QA no quedó activa en la sesión del navegador; se detiene la revisión privada.");
+    }
+    console.log(`Organización QA activa: ${selected.name} (${selected.slug}). Membresías disponibles: ${organizations.length}.`);
   }
   for (const area of groups) {
     for (const [id, path] of routes[area]) {
