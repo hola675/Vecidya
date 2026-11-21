@@ -78,6 +78,43 @@
       status: "diagnostic-only-no-pixel-retouch",
     };
   };
+  // Bounded, reversible alpha-only candidate for visual QA. Opaque pixels, RGB,
+  // pose and identity remain untouched. Never treat it as a mastered asset.
+  const makeAlphaCandidate = async (src, threshold, canvas) => {
+    if (![8, 16, 32, 64].includes(threshold)) throw Error("Umbral no permitido");
+    const image = new Image();
+    image.decoding = "async";
+    image.src = src;
+    await image.decode();
+    const factor = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight));
+    const width = Math.max(1, Math.round(image.naturalWidth * factor));
+    const height = Math.max(1, Math.round(image.naturalHeight * factor));
+    canvas.width = width; canvas.height = height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) throw Error("Canvas no disponible");
+    context.clearRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+    const frame = context.getImageData(0, 0, width, height);
+    let changed = 0;
+    let sumRemoved = 0;
+    for (let index = 3; index < frame.data.length; index += 4) {
+      const alpha = frame.data[index];
+      if (alpha > 0 && alpha < threshold) {
+        frame.data[index] = 0;
+        changed++;
+        sumRemoved += alpha;
+      }
+    }
+    context.putImageData(frame, 0, 0);
+    return {
+      schema: "vecidya-vico-alpha-candidate-v1",
+      source: src, threshold, pixelsAffected: changed,
+      affectedPercent: Math.round(changed / (width * height) * 10000) / 100,
+      opacityMassRemovedPercent: Math.round(sumRemoved / (width * height * 255) * 100000) / 1000,
+      dimensions: [width, height],
+      status: "preview-only-alpha-threshold-not-approved-asset",
+    };
+  };
   const $ = (id) => document.getElementById(id);
   const init = () => {
     const root = $("vico-workbench");
@@ -95,13 +132,19 @@
     const size = $("vico-workbench-size");
     const sizeLabel = $("vico-workbench-size-value");
     const scene = $("vico-workbench-scene");
+    const propose = $("vico-workbench-propose");
+    const threshold = $("vico-workbench-threshold");
+    const candidatePanel = $("vico-workbench-candidate-panel");
+    const candidateCanvas = $("vico-workbench-candidate-canvas");
+    const candidateSummary = $("vico-workbench-candidate-summary");
+    const download = $("vico-workbench-download");
     const analyze = $("vico-workbench-analyze");
     const alphaPanel = $("vico-workbench-alpha-panel");
     const alphaSummary = $("vico-workbench-alpha-summary");
     const alphaCanvas = $("vico-workbench-alpha-canvas");
     const copy = $("vico-workbench-copy");
     const status = $("vico-workbench-status");
-    if (![gallery,image,name,detail,original,stage,theme,position,size,sizeLabel,scene,copy,status,analyze,alphaPanel,alphaSummary,alphaCanvas].every(Boolean)) return;
+    if (![gallery,image,name,detail,original,stage,theme,position,size,sizeLabel,scene,copy,status,analyze,alphaPanel,alphaSummary,alphaCanvas,propose,threshold,candidatePanel,candidateCanvas,candidateSummary,download].every(Boolean)) return;
     const normalized = (asset) => asset.source.split("/").pop();
     const safeEntries = entries.filter((asset) => Object.hasOwn(definitions, normalized(asset)));
     const missing = entries.filter((asset) => !Object.hasOwn(definitions, normalized(asset)));
@@ -110,6 +153,7 @@
     }
     let selected = safeEntries[0] ?? null;
     let lastAudit = null;
+    let candidate = null;
     // Derive from the catalog: the Cloudflare build rewrites original URLs in library-catalog.js.
     const sceneBase = safeEntries.length ? safeEntries[0].source.slice(0, safeEntries[0].source.lastIndexOf("/") + 1) : "";
     const buttons = safeEntries.map((asset) => {
@@ -126,7 +170,11 @@
       const label = document.createElement("span");
       label.textContent = asset.name;
       button.append(thumb, label);
-      button.addEventListener("click", () => { selected = asset; lastAudit = null; alphaPanel.hidden = true; render(); });
+      button.addEventListener("click", () => {
+        selected = asset; lastAudit = null; candidate = null;
+        alphaPanel.hidden = true; candidatePanel.hidden = true; download.disabled = true;
+        render();
+      });
       gallery.append(button);
       return button;
     });
@@ -176,6 +224,44 @@
         analyze.disabled = false;
       }
     });
+    threshold.addEventListener("change", () => {
+      candidate = null;
+      candidatePanel.hidden = true;
+      download.disabled = true;
+      status.textContent = "Umbral cambiado. Vuelve a ejecutar la comparación para evaluar la imagen actual.";
+    });
+    propose.addEventListener("click", async () => {
+      if (!selected) return;
+      const inspectedAsset = selected;
+      propose.disabled = true;
+      status.textContent = "Preparando comparación alfa local. El original permanece intacto.";
+      try {
+        const result = await makeAlphaCandidate(inspectedAsset.source, Number(threshold.value), candidateCanvas);
+        if (selected !== inspectedAsset) return;
+        candidate = result;
+        candidatePanel.hidden = false;
+        download.disabled = false;
+        candidateSummary.textContent = "Borrador a " + result.dimensions.join(" × ") + " px. " +
+          result.pixelsAffected + " píxeles modificados (" + result.affectedPercent +
+          " % de la imagen). Solo cambia la transparencia menor que " + result.threshold +
+          ". No elimina bandas opacas ni corrige una máscara defectuosa alrededor del personaje.";
+        root.dispatchEvent(new CustomEvent("vico-alpha-proposal", { detail: result }));
+        status.textContent = "Comparación lista, no aprobada para producción.";
+      } catch {
+        status.textContent = "No se pudo crear la comparación de transparencia. El original sigue intacto.";
+      } finally {
+        propose.disabled = false;
+      }
+    });
+    download.addEventListener("click", () => {
+      if (!candidate || candidate.source !== selected?.source) return;
+      const link = document.createElement("a");
+      link.href = candidateCanvas.toDataURL("image/png");
+      link.download = "revision-vico-" + selected.source.split("/").pop().replace(/\\.webp$/i, "") +
+        "-alpha-" + candidate.threshold + ".png";
+      link.click();
+      status.textContent = "PNG de evaluación generado localmente. No está aprobado ni sustituye el WebP original.";
+    });
     copy.addEventListener("click", async () => {
       if (!selected) return;
       const rule = definitions[normalized(selected)];
@@ -193,6 +279,7 @@
         scalePercent: Number(size.value),
         caution: rule.caution,
         alphaAudit: lastAudit && lastAudit.source === selected.source ? lastAudit : null,
+        alphaCandidate: candidate && candidate.source === selected.source ? candidate : null,
         status: "visual-review-only-not-a-route-or-design-api",
       }, null, 2);
       try {
