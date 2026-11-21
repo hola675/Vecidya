@@ -148,3 +148,21 @@ test("R3: comprobador HTTP es anónimo y deniega destinos o acciones no autoriza
   assert.match(source, /verifiesDeployedSha: false/);
   assert.doesNotMatch(source, /method: "POST"|cookies:|Authorization:/);
 });
+
+test("R4: dashboard legible y MiniWeb con vista previa contextual sin cambiar persistencia", () => {
+  const css = source("app/styles/workspace-premium.css");
+  const editor = source("app/routes/miniweb-v2-editor.tsx");
+  const dashboard = source("app/routes/app.tsx");
+  assert.match(dashboard, /className="app-primary-action"/);
+  assert.match(css, /\.app-shell \.app-main \.app-primary-action :is\(h2, p:not\(\.eyebrow\)\)\s*\{\s*color: var\(--v-ink\)/);
+  assert.match(editor, /id="miniweb-v2-preview"/);
+  assert.match(editor, /id="miniweb-v2-sections"/);
+  assert.match(editor, /href="#miniweb-v2-preview"/);
+  assert.match(editor, /href="#miniweb-v2-sections"/);
+  assert.match(editor, /isDirty \? "Esta vista refleja los cambios locales aún sin guardar/);
+  assert.match(css, /grid-template-columns: minmax\(0, 1fr\) minmax\(22rem, 0\.92fr\)/);
+  assert.match(css, /position: sticky/);
+  assert.match(css, /@media \(min-width: 1100px\)/);
+  assert.match(editor, /<MiniWebV2Renderer document=\{document\}/);
+  assert.match(editor, /const blocker = useBlocker/);
+});
