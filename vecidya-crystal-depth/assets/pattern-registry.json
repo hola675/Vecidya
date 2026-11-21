@@ -622,7 +622,7 @@
     ]
   },
   "platformCompatibility": {
-    "version": "1.1.0-agent-bridge",
+    "version": "R1.5",
     "status": "verified-source-crosswalk-no-product-migration",
     "verifiedScope": "vecidya-platform/app en main al 2026-11-20; exact source selectors and exports checked by focal tests",
     "authority": [
@@ -910,50 +910,7 @@
       "GHL es un servicio externo; no fusionar su CRM con componentes de Vecidya ni prometer capacidades no conectadas.",
       "No alterar Diagnóstico V9, scoring, permisos, licencias, publicación, D1 ni procesos por cambios visuales."
     ],
-    "proposedNotYetShared": [
-      {
-        "name": "PageHeading",
-        "priority": "P1",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "eyebrow, título, explicación y acción contextual; usar v-section-heading hasta decidir. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      },
-      {
-        "name": "AdminFilterBar",
-        "priority": "P1",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "filtros GET, reset, paginación coherente y estado legible. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      },
-      {
-        "name": "ConsentStatus",
-        "priority": "P1",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "estado explícito de consentimiento, nunca inferido del registro. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      },
-      {
-        "name": "DiagnosticMetricCard",
-        "priority": "P2",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "valor con fuente, periodo, unidad y vacío real. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      },
-      {
-        "name": "DiagnosticTrend",
-        "priority": "P2",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "serie diaria con eje, tabla alternativa y denominadores justificados. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      },
-      {
-        "name": "SharedStatusPanel",
-        "priority": "P2",
-        "source": "vecidya-platform/app/components/visual-contract.tsx",
-        "status": "implementado-r1.6-en-visual-contract.tsx-verificar-props",
-        "responsibility": "loading/empty/error/success sin reemplazar EmptyState público ni Alert. Composición visual; no ejecuta permisos, operaciones o persistencia."
-      }
-    ],
+    "proposedNotYetShared": [],
     "stateParity": {
       "platformRequired": [
         "loading",
@@ -973,7 +930,40 @@
         "access-denied"
       ],
       "rule": "La demo R1.3 no muestra access-denied; React R1.6 sí lo representa en SharedStatusPanel. La autorización server-side sigue siendo fuente única de verdad; nunca inferir denegación desde aspecto, rol simulado o falta de datos."
-    }
+    },
+    "sharedR16": [
+      {
+        "name": "PageHeading",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Título semántico y descripción con acción contextual"
+      },
+      {
+        "name": "AdminFilterBar",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Filtros GET y reinicio usando rutas reales"
+      },
+      {
+        "name": "ConsentStatus",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Estado de consentimiento explicitado por origen autorizado"
+      },
+      {
+        "name": "SharedStatusPanel",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Estados de carga, vacío, error, acceso denegado y éxito, sin inventar operaciones"
+      },
+      {
+        "name": "DiagnosticMetricCard",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Valor, unidad, periodo, fuente y nulo distinto de cero"
+      },
+      {
+        "name": "DiagnosticTrend",
+        "source": "vecidya-platform/app/components/visual-contract.tsx",
+        "purpose": "Serie diaria y tabla accesible sin inferir conversiones"
+      }
+    ],
+    "sharedR16Rule": "Composiciones presentacionales exportadas; su uso requiere datos, permisos, rutas y props reales."
   },
   "agentHandoff": {
     "version": "1.0.0",
