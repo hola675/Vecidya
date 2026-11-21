@@ -41,6 +41,31 @@ El explorador `biblioteca.html#vico` incorpora ahora **Comparación mitad clara/
 
 `NO_VERIFICADO` sigue siendo el estado de una **limpieza física del recurso**, pues todavía no hay un derivado validado. Un test PASS de algoritmo alfa no significa que desaparecieron los defectos artísticos.
 
+### Resultado cuantitativo de los diez originales (Chromium R2)
+
+En el workflow **Crystal Depth contract QA** del commit `1fe034ce` (ejecución `44845058860`, navegador PASS) se analizaron diez WebP originales. Estos resultados proceden de un muestreo Canvas de hasta 512 px en el lado largo; son medidas de **transparencia**, no de calidad artística.
+
+| Recurso | Alfa = 0 | Alfa 1–15 | Alfa 16–191 | Alfa 192–254 | Borde 4 % con alfa >= 16 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Inicio | 44,8 % | 1,4 % | 1,5 % | 52,3 % | 5,6 % |
+| Diagnóstico | 44,7 % | 1,3 % | 1,5 % | 52,5 % | 7,3 % |
+| Vecindario | 49,5 % | 1,7 % | 1,5 % | 47,3 % | 9,3 % |
+| Servicios | 45,5 % | 2,8 % | 3,4 % | 48,3 % | 4,0 % |
+| Licencias | 48,6 % | 2,1 % | 1,7 % | 47,5 % | 10,0 % |
+| Complementos | 47,3 % | 2,5 % | 2,2 % | 48,0 % | 7,8 % |
+| Aprende | 44,2 % | 1,3 % | 1,1 % | 53,3 % | 4,7 % |
+| Contacto | 44,7 % | 1,6 % | 2,0 % | 51,7 % | 14,6 % |
+| Nosotros | 47,2 % | 1,8 % | 1,8 % | 49,2 % | 7,3 % |
+| Únete | 47,8 % | 2,6 % | 2,0 % | 47,6 % | 6,2 % |
+
+**Precaución:** el histograma del navegador encontró 0 % exacto en alfa 255 para las diez piezas. No equivale a que el personaje sea visualmente transparente: el contenido casi opaco está en alfa 192–254. La actividad perimetral puede ser una oreja, una mano, una sombra o una franja residual; no se puede etiquetar automáticamente como defecto. La medición se ejecutó correctamente: [workflow de evidencia](https://github.com/hola675/Vecidya/actions/runs/44845058860).
+
+### Propuesta temporal de limpieza sin sobrescribir la fuente
+
+El laboratorio incorpora un **umbral alfa de comparación** (8, 16, 32 o 64). Solo en una copia Canvas reducida elimina los píxeles cuya opacidad sea mayor que cero y menor que el umbral. Muestra el porcentaje afectado y ofrece un **PNG de evaluación** descargable manualmente. El original WebP y las rutas productivas permanecen intactos.
+
+Este procedimiento puede ayudar a quitar residuos translúcidos tenues, pero **no elimina franjas opacas, no identifica bordes falsos ni garantiza mejora visual**. Si Inicio o Diagnóstico conservan sus defectos en una comparación sobre claro y oscuro, se requiere segmentación/edición artística controlada con referencia al original, no aumentar el umbral hasta destruir reflejos. El PNG del laboratorio se limita a 512 px por lado largo y **no sirve como reemplazo de producción**.
+
 ### Registro de revisión
 - `CODE`: catálogo de 10 referencias originales WebP del personaje: ocho rutas con `PublicHeroArt`, Inicio y Aprende; la infografía complementaria está catalogada aparte.
 - `CODE`: `public-assets.ts` y `public-hero-art.tsx` utilizan personajes y escenas independientes para ocho páginas, con usos adicionales en Inicio y Aprende.
