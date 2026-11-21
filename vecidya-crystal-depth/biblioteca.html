@@ -401,6 +401,7 @@
                     <option value="dark">Oscuro Vecidya</option>
                     <option value="light">Claro Vecidya</option>
                     <option value="checker">Cuadrícula de transparencia</option>
+                    <option value="split">Comparación mitad clara / mitad oscura</option>
                   </select>
                 </label>
                 <label for="vico-workbench-position">Posición de Vico
@@ -414,9 +415,17 @@
                   <input id="vico-workbench-size" type="range" min="70" max="125" value="100" step="5">
                 </label>
                 <label for="vico-workbench-scene"><input id="vico-workbench-scene" type="checkbox"> Mostrar escena contextual detrás</label>
+                <button type="button" id="vico-workbench-analyze">Analizar píxeles alfa</button>
                 <button type="button" id="vico-workbench-copy">Copiar ficha para mis agentes</button>
                 <p>La escena de fondo es una referencia de composición. El texto y los controles de la web siempre deben conservarse fuera de la imagen.</p>
               </div>
+            </div>
+            <div id="vico-workbench-alpha-panel" class="vico-workbench__alpha" hidden aria-labelledby="vico-workbench-alpha-title">
+              <div><h4 id="vico-workbench-alpha-title">Mapa técnico de transparencia</h4>
+                <p id="vico-workbench-alpha-summary">Selecciona «Analizar píxeles alfa» para evaluar esta imagen.</p>
+                <p>Blanco: píxeles opacos. Gris: semitransparencias. Negro: transparencia total. La medición es orientativa y no elimina reflejos ni certifica la calidad artística.</p>
+              </div>
+              <canvas id="vico-workbench-alpha-canvas" width="320" height="320" role="img" aria-label="Máscara alfa de la ilustración seleccionada"></canvas>
             </div>
             <p id="vico-workbench-status" class="vico-workbench__status" role="status" aria-live="polite"></p>
             <p class="vico-workbench__fallback">Si los controles no se cargan, consulta las diez imágenes oficiales mediante la categoría <a href="#activos">Vico del catálogo completo</a>.</p>
