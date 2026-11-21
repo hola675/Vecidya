@@ -163,6 +163,7 @@
         const report = await inspectAlpha(inspectedAsset.source, { maskCanvas: alphaCanvas });
         if (selected !== inspectedAsset) return;
         lastAudit = report;
+        root.dispatchEvent(new CustomEvent("vico-alpha-audited", { detail: report }));
         alphaPanel.hidden = false;
         alphaSummary.textContent = inspectedAsset.name + ": área totalmente transparente " +
           report.alphaPercent.transparent + " %, píxeles semitransparentes " +
