@@ -351,6 +351,14 @@ test('Vico: diez personajes catalogados y una infografía separada y un único p
   assert.match(script,/getImageData\(0, 0, width, height\)/);
   assert.match(script,/vico-alpha-audited/);
   assert.match(script,/diagnostic-only-no-pixel-retouch/);
+  for (const id of ['vico-workbench-threshold','vico-workbench-propose','vico-workbench-candidate-panel','vico-workbench-candidate-canvas','vico-workbench-download']) {
+    assert.ok(html.includes('id="'+id+'"'), 'Falta control de propuesta: '+id);
+  }
+  assert.match(script,/const makeAlphaCandidate = async/);
+  assert.match(script,/preview-only-alpha-threshold-not-approved-asset/);
+  assert.match(script,/vico-alpha-proposal/);
+  assert.match(script,/canvas\.toDataURL\("image\/png"\)/);
+  assert.match(styles,/vico-workbench__candidate/);
   assert.match(styles,/vico-workbench__alpha/);
   assert.doesNotMatch(script,/const sceneBase = "\.\.\/vecidya-platform/);
   assert.doesNotMatch(script,/localStorage|sessionStorage|XMLHttpRequest|fetch\(/);
