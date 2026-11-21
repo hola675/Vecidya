@@ -929,7 +929,7 @@
       "labMissing": [
         "access-denied"
       ],
-      "rule": "La demo R1.3 no muestra access-denied; React R1.6 sí lo representa en SharedStatusPanel. La autorización server-side sigue siendo fuente única de verdad; nunca inferir denegación desde aspecto, rol simulado o falta de datos."
+      "rule": "La demo R1.3 no muestra el estado de acceso denegado (access-denied); React R1.6 sí lo representa en SharedStatusPanel. La autorización server-side sigue siendo fuente única de verdad; nunca inferir denegación desde aspecto, rol simulado o falta de datos."
     },
     "sharedR16": [
       {
