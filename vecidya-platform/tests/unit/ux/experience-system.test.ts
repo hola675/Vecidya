@@ -176,4 +176,9 @@ test("R4: dashboard legible y MiniWeb con vista previa contextual sin cambiar pe
   assert.match(fields, /field.help \?\? fieldGuidance\[field.label\]/);
   assert.match(css, /miniweb-v2-editor__steps-list/);
   assert.match(css, /miniweb-v2-form__field-help/);
+  assert.match(editor, /mobileView, setMobileView/);
+  assert.match(editor, /data-mobile-view=\{mobileView\}/);
+  assert.match(css, /data-mobile-view="edit"/);
+  assert.match(css, /data-mobile-view="preview"/);
+  assert.match(css, /textarea \{ min-height: 7rem/);
 });
