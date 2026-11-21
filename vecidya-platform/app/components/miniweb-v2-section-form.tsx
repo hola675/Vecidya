@@ -1,4 +1,4 @@
-import type { MiniWebV2Section, MiniWebV2SectionType, V2Image, V2Link } from "../features/miniweb-v2/sections";
+import type { MiniWebV2Section, MiniWebV2SectionType, V2Image, V2Link, V2Promotion, V2WhatsAppAction, V2ContactForm } from "../features/miniweb-v2/sections";
 import { V2_WEEKDAYS } from "../features/miniweb-v2/hours";
 
 type Path = readonly (string | number)[];
@@ -7,7 +7,7 @@ type Field = { path: Path; label: string; multiline?: boolean; type?: string; he
 const sectionNames: Record<MiniWebV2SectionType, string> = {
   hero: "Portada", about: "Quiénes somos", services: "Servicios", products: "Productos",
   gallery: "Galería", contact: "Contacto", location: "Ubicación", faq: "Preguntas frecuentes",
-  team: "Equipo", certifications: "Certificaciones", testimonials: "Testimonios", hours: "Horarios",
+   team: "Equipo", certifications: "Certificaciones", testimonials: "Reseñas autorizadas", hours: "Horarios",
 };
 export { sectionNames as MINIWEB_V2_SECTION_LABELS };
 
@@ -43,7 +43,7 @@ const lists: Partial<Record<MiniWebV2SectionType, { key: string; title: string; 
   faq: { key: "items", title: "Preguntas y respuestas", fields: [{ path: ["question"], label: "Pregunta" }, { path: ["answer"], label: "Respuesta", multiline: true }], blank: { question: "", answer: "" } },
   team: { key: "people", title: "Personas", fields: [{ path: ["name"], label: "Nombre" }, { path: ["role"], label: "Función" }, { path: ["bio"], label: "Presentación", multiline: true }], imageKey: "image", canConsent: true, blank: { name: "", role: null, bio: "", image: null, consented: false } },
   certifications: { key: "items", title: "Acreditaciones", fields: [{ path: ["title"], label: "Nombre de la acreditación" }, { path: ["issuer"], label: "Entidad emisora" }, { path: ["date"], label: "Fecha o año" }], imageKey: "document", blank: { title: "", issuer: "", date: null, document: null } },
-  testimonials: { key: "items", title: "Reseñas autorizadas", fields: [{ path: ["author"], label: "Autor" }, { path: ["quote"], label: "Testimonio", multiline: true }, { path: ["context"], label: "Contexto" }], canConsent: true, blank: { author: "", quote: "", context: null, consented: false } },
+  testimonials: { key: "items", title: "Reseñas autorizadas", fields: [{ path: ["author"], label: "Autor" }, { path: ["quote"], label: "Testimonio", multiline: true }, { path: ["context"], label: "Contexto" }, { path: ["sourceLabel"], label: "Fuente (opcional)" }, { path: ["sourceUrl"], label: "Enlace HTTPS a la reseña original", type: "url" }, { path: ["reviewedOn"], label: "Fecha de la reseña", type: "date" }], canConsent: true, blank: { author: "", quote: "", context: null, sourceLabel: null, sourceUrl: null, reviewedOn: null, consented: false } },
   contact: { key: "links", title: "Enlaces de contacto", fields: [{ path: ["label"], label: "Texto del enlace" }, { path: ["href"], label: "Dirección web, teléfono o correo" }], blank: { label: "", href: "" } },
   gallery: { key: "images", title: "Fotografías de la galería", fields: [], imageKey: "self", blank: { assetId: "", alt: "" } },
 };
@@ -91,12 +91,49 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
       </div> : null}
     </fieldset>;
   }
+  function renderPromotionList() {
+    const promotions = (read(["promotions"]) as V2Promotion[] | undefined) ?? [];
+    return <fieldset className="miniweb-v2-form__list"><legend>Promociones</legend>
+      <p>Publica condiciones y vigencia verificables. Solo se muestran promociones dentro de su periodo UTC.</p>
+      {promotions.map((promotion, index) => <div className="miniweb-v2-form__item" key={promotion.id}>
+        <div className="miniweb-v2-form__item-head"><strong>Promoción · {index + 1}</strong><button type="button" disabled={disabled} onClick={() => update(["promotions"], promotions.filter((_, rowIndex) => rowIndex !== index))}>Eliminar</button></div>
+        <div className="miniweb-v2-form__fields">
+          {renderText({ path: ["title"], label: "Título de la promoción" }, ["promotions", index])}
+          {renderText({ path: ["description"], label: "Descripción y beneficio", multiline: true }, ["promotions", index])}
+          {renderText({ path: ["startsOn"], label: "Válida desde (UTC; opcional)", type: "date" }, ["promotions", index])}
+          {renderText({ path: ["endsOn"], label: "Válida hasta (UTC; obligatoria)", type: "date" }, ["promotions", index])}
+          {renderText({ path: ["terms"], label: "Condiciones importantes", multiline: true }, ["promotions", index])}
+        </div>
+        {renderCta(["promotions", index, "cta"], "Enlace opcional")}
+      </div>)}
+      <button type="button" className="miniweb-v2-form__add" disabled={disabled || promotions.length >= 20} onClick={() => update(["promotions"], [...promotions, { id: crypto.randomUUID(), title: "", description: "", startsOn: null, endsOn: null, terms: null, cta: null }])}>Añadir promoción</button>
+    </fieldset>;
+  }
   const def = lists[section.type];
   const rowItems = def ? (read([def.key]) as Record<string, unknown>[] | undefined) ?? [] : [];
   return <div className="miniweb-v2-form">
     <div className="miniweb-v2-form__fields">{(detailFields[section.type] ?? []).map((field) => renderText(field))}</div>
     {section.type === "hero" ? <>{renderImage(["image"], "Imagen de portada")}{renderCta(["cta"], "Botón principal")}</> : null}
-    {section.type === "contact" ? renderCta(["cta"], "Botón adicional") : null}
+    {section.type === "contact" ? <>
+      {renderCta(["cta"], "Botón adicional")}
+      <fieldset className="miniweb-v2-form__consent"><legend>WhatsApp</legend>
+        <label><input type="checkbox" checked={Boolean(read(["whatsapp"]))} disabled={disabled} onChange={(event) => update(["whatsapp"], event.currentTarget.checked ? { phone: read(["phone"]) ?? "", message: "" } : null)}/> Mostrar enlace directo a WhatsApp</label>
+        {read(["whatsapp"]) ? <div className="miniweb-v2-form__fields">
+          {renderText({ path: ["phone"], label: "Teléfono internacional (+código país)", type: "tel", help: "Ejemplo de formato: +14155550123" }, ["whatsapp"])}
+          {renderText({ path: ["message"], label: "Mensaje inicial (opcional)", multiline: true }, ["whatsapp"])}
+          <small>El enlace abre WhatsApp; Vecidya no recibe ni almacena los mensajes.</small>
+        </div> : null}
+      </fieldset>
+      <fieldset className="miniweb-v2-form__consent"><legend>Formulario de contacto</legend>
+        <label><input type="checkbox" checked={Boolean(read(["form"]))} disabled={disabled} onChange={(event) => update(["form"], event.currentTarget.checked ? { title: "Escríbenos", introduction: "Cuéntanos cómo podemos ayudarte.", submitLabel: "Preparar correo" } satisfies V2ContactForm : null)}/> Mostrar formulario para preparar un correo</label>
+        {read(["form"]) ? <div className="miniweb-v2-form__fields">
+          {renderText({ path: ["title"], label: "Título del formulario" }, ["form"])}
+          {renderText({ path: ["introduction"], label: "Instrucción breve", multiline: true }, ["form"])}
+          {renderText({ path: ["submitLabel"], label: "Texto del botón" }, ["form"])}
+          <small>Requiere un correo público válido. El formulario abre la aplicación de correo de la persona; Vecidya no recibe ni almacena la solicitud.</small>
+        </div> : null}
+      </fieldset>
+    </> : null}
     {def ? <fieldset className="miniweb-v2-form__list"><legend>{def.title}</legend>
       {rowItems.map((row, index) => <div className="miniweb-v2-form__item" key={String(row.id ?? `${index}-${row.assetId ?? "item"}`)}>
         <div className="miniweb-v2-form__item-head"><strong>{def.title} · {index + 1}</strong><button type="button" disabled={disabled} onClick={() => update([def.key], rowItems.filter((_, position) => position !== index))}>Eliminar</button></div>
@@ -107,6 +144,7 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
       </div>)}
       <button type="button" className="miniweb-v2-form__add" disabled={disabled || rowItems.length >= 50} onClick={() => update([def.key], [...rowItems, { ...def.blank, ...(def.key !== "images" && def.key !== "links" ? { id: crypto.randomUUID() } : {}) }])}>Añadir {sectionNames[section.type].toLowerCase()}</button>
     </fieldset> : null}
+    {section.type === "products" ? renderPromotionList() : null}
     {section.type === "hours" ? <fieldset className="miniweb-v2-form__hours"><legend>Horario semanal</legend><p>Elige la zona horaria antes de publicar. Los horarios de MiniWeb anterior no se importan automáticamente.</p>
       {V2_WEEKDAYS.map((day, index) => { const entry = (read(["days", index]) as { day: string; closed: boolean; ranges: { start: string; end: string }[] });
         return <div className="miniweb-v2-form__day" key={day}><strong>{weekLabels[index]}</strong>

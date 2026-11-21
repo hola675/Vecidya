@@ -1,3 +1,7 @@
+## PUBLIC-SLUG-01 / PUBLIC-BLOCKS-01 / PUBLIC-EDITOR-01 — checkpoint local MiniWeb V2 (2026-11-19)
+
+Branch `feat/app-mini-vecindario-v2-route-01` basada en `origin/main@3fab29da`; versión `0.9.2`. Migración `0046`, bloques opcionales y editor autosave/self-review se probaron solo con Worker/D1/R2 Wrangler locales; no se añadió otra migration ni se cambiaron bindings. El form usa `mailto:` local del visitante, sin CRM/POST. Tests PASS de retry manual ante error, CAS conflict/reload, review/confirm publish. Sin ledger/backup de datos remotos, sin deploy ni HTTP pública fechada; ledger/backfill `0046` en staging/prod **NO VERIFICADO**. Release conjunta sigue NO-GO.
+
 ## Entorno QA local aislado (2026-11-11)
 
 `pnpm run dev:local-demo` ejecuta la aplicación en `http://127.0.0.1:4173`, con `wrangler.local-demo/wrangler.jsonc`, persistencia D1/R2 bajo `.wrangler/local-demo`, email falso y clave de autenticación aleatoria por inicio. Wrangler y Vite aíslan sus directorios de entorno en `wrangler.local-demo/`; el Worker local no carga secretos de `.dev.vars` ni `.env` desde la raíz de la plataforma. Logs, temporales y caché quedan bajo `.wrangler/local-demo`. No configura rutas públicas ni `workers.dev`; el servidor local se enlaza a loopback. Las cuatro organizaciones `qa-local-*`, sus perfiles, medios y borradores se crean con `pnpm run seed:local-demo`; consulta `docs/TESTING.md` para el recorrido y la cuenta QA.

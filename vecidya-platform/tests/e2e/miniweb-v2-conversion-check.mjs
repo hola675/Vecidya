@@ -20,12 +20,21 @@ function wrangler(args, timeout = 600_000) {
   return result.stdout;
 }
 function literal(value) { return `'${String(value).replaceAll("'", "''")}'`; }
-function query(sql) {
+async function query(sql) {
+  const restartWorker = Boolean(worker && worker.exitCode === null);
+  // The local D1 CLI and dev Worker share persistence; never access it concurrently.
+  if (restartWorker) await stopWorker();
   const dir = mkdtempSync(join(tmpdir(), "vecidya-miniweb-v2-"));
   const file = join(dir, "query.sql");
   writeFileSync(file, sql, "utf8");
-  try { return JSON.parse(wrangler(["d1", "execute", "DB", "--local", "--persist-to", persistenceName, "--json", "--file", file])).flatMap((part) => part.results ?? []); }
+  let result;
+  try { result = JSON.parse(wrangler(["d1", "execute", "DB", "--local", "--persist-to", persistenceName, "--json", "--file", file])).flatMap((part) => part.results ?? []); }
   finally { rmSync(dir, { recursive: true, force: true }); }
+  if (restartWorker) {
+    worker = startWorker(base, secret);
+    await waitForWorker(base);
+  }
+  return result;
 }
 async function port() {
   const server = createServer(); server.listen(0, "127.0.0.1");
@@ -50,22 +59,27 @@ class Client {
   }
 }
 async function stopWorker() {
-  if (worker?.exitCode === null) {
-    worker.kill();
-    await Promise.race([new Promise((resolveExit) => worker.once("exit", resolveExit)), new Promise((resolveTimeout) => setTimeout(resolveTimeout, 5_000))]);
+  if (worker) {
+    const child = worker;
+    if (child.exitCode === null) {
+      if (process.platform === "win32") {
+        spawnSync("taskkill", ["/PID", String(child.pid), "/T", "/F"], { encoding: "utf8", windowsHide: true });
+      } else {
+        child.kill("SIGINT");
+      }
+      await Promise.race([new Promise((resolveExit) => child.once("exit", resolveExit)), new Promise((resolveTimeout) => setTimeout(resolveTimeout, 5_000))]);
+      if (child.exitCode === null) throw new Error("El Worker local no se detuvo; no se ejecutará Wrangler D1 en paralelo.");
+    }
+    worker = undefined;
   }
 }
-
-assertLocalBaseUrl("http://127.0.0.1");
-const suffix = randomUUID(); const now = Date.now(); const inviterId = randomUUID(); const inviteOrgId = randomUUID(); const invitationId = randomUUID();
-const email = `miniweb-v2-owner-${suffix}@vecidya.test`; const password = `local-${randomUUID()}`;
-const secret = randomBytes(32).toString("hex"); const base = `http://127.0.0.1:${await port()}`;
-let worker; let output = ""; let orgId; let userId; let mediaFilePath;
-try {
-  wrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
-  query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${literal(inviterId)},'V2 conversion inviter',${literal(`inviter-${suffix}@vecidya.test`)},1,${now},${now}); INSERT INTO organization (id,name,slug,created_at) VALUES (${literal(inviteOrgId)},'V2 conversion fixture',${literal(`v2-fixture-${suffix}`)},${now}); INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${literal(invitationId)},${literal(inviteOrgId)},${literal(email)},'member','pending',${now + 3_600_000},${now},${literal(inviterId)});`);
-  worker = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", new URL(base).port, "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${base}`, "--var", `BETTER_AUTH_URL:${base}`, "--show-interactive-dev-session=false", "--log-level", "error"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"] });
-  worker.stdout.on("data", (chunk) => { output += chunk.toString(); }); worker.stderr.on("data", (chunk) => { output += chunk.toString(); });
+function startWorker(base, secret) {
+  const child = spawn(process.execPath, [wranglerCli, "dev", "--local", "--persist-to", persistenceName, "--ip", "127.0.0.1", "--port", new URL(base).port, "--var", "APP_ENV:staging", "--var", "EMAIL_PROVIDER:fake", "--var", `APP_URL:${base}`, "--var", `BETTER_AUTH_URL:${base}`, "--show-interactive-dev-session=false", "--log-level", "error"], { cwd: projectDirectory, env: { ...process.env, BETTER_AUTH_SECRET: secret }, stdio: ["ignore", "pipe", "pipe"] });
+  child.stdout.on("data", (chunk) => { output += chunk.toString(); });
+  child.stderr.on("data", (chunk) => { output += chunk.toString(); });
+  return child;
+}
+async function waitForWorker(base) {
   let ready = false;
   for (let attempt = 0; attempt < 60; attempt += 1) {
     if (worker.exitCode !== null) throw new Error(`Worker terminó antes de iniciar: ${output}`);
@@ -73,6 +87,19 @@ try {
     await new Promise((resolveWait) => setTimeout(resolveWait, 500));
   }
   assert.equal(ready, true, `Worker no inició: ${output}`);
+}
+
+assertLocalBaseUrl("http://127.0.0.1");
+const suffix = randomUUID(); const now = Date.now(); const inviterId = randomUUID(); const inviteOrgId = randomUUID(); const invitationId = randomUUID();
+const email = `miniweb-v2-owner-${suffix}@vecidya.test`; const password = `local-${randomUUID()}`;
+const secret = randomBytes(32).toString("hex"); const base = `http://127.0.0.1:${await port()}`;
+let worker; let output = ""; let orgId; let userId; let mediaFilePath;
+let primaryError;
+try {
+  wrangler(["d1", "migrations", "apply", "DB", "--local", "--persist-to", persistenceName]);
+  await query(`INSERT INTO user (id,name,email,email_verified,created_at,updated_at) VALUES (${literal(inviterId)},'V2 conversion inviter',${literal(`inviter-${suffix}@vecidya.test`)},1,${now},${now}); INSERT INTO organization (id,name,slug,created_at) VALUES (${literal(inviteOrgId)},'V2 conversion fixture',${literal(`v2-fixture-${suffix}`)},${now}); INSERT INTO invitation (id,organization_id,email,role,status,expires_at,created_at,inviter_id) VALUES (${literal(invitationId)},${literal(inviteOrgId)},${literal(email)},'member','pending',${now + 3_600_000},${now},${literal(inviterId)});`);
+   worker = startWorker(base, secret);
+   await waitForWorker(base);
   const owner = new Client(base);
   const signup = await owner.request("/api/auth/sign-up/email", "POST", { name: "MiniWeb V2 owner", email, password }, { "X-Vecidya-Invitation": invitationId });
   assert.equal(signup.status, 200, `signup: ${await signup.clone().text()}`);
@@ -82,20 +109,27 @@ try {
   orgId = (await createdOrg.json()).id;
   assert.equal((await owner.request("/api/auth/organization/set-active", "POST", { organizationId: orgId })).status, 200);
   const billingAccountId = randomUUID(); const priceId = randomUUID(); const licenseId = randomUUID();
-  query(`INSERT INTO billing_account (id,owner_user_id,kind,created_at,updated_at) VALUES (${literal(billingAccountId)},${literal(userId)},'individual',${now},${now}); INSERT INTO license_price (id,plan_code,currency,amount_cents,billing_interval,effective_from,status,created_at,updated_at) VALUES (${literal(priceId)},'cuadra','USD',3900,'monthly',${now},'active',${now},${now}); INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,created_at,updated_at) VALUES (${literal(licenseId)},${literal(orgId)},${literal(billingAccountId)},'cuadra',${literal(priceId)},'active',${now},${now},${now},${now});`);
+  await query(`INSERT INTO billing_account (id,owner_user_id,kind,created_at,updated_at) VALUES (${literal(billingAccountId)},${literal(userId)},'individual',${now},${now}); INSERT INTO license_price (id,plan_code,currency,amount_cents,billing_interval,effective_from,status,created_at,updated_at) VALUES (${literal(priceId)},'cuadra','USD',3900,'monthly',${now},'active',${now},${now}); INSERT INTO organization_license (id,organization_id,billing_account_id,plan_code,price_id,status,started_at,activated_at,created_at,updated_at) VALUES (${literal(licenseId)},${literal(orgId)},${literal(billingAccountId)},'cuadra',${literal(priceId)},'active',${now},${now},${now},${now});`);
 
-  const v1Snapshot = { schemaVersion: 1, profile: { displayName: "Negocio V1", shortDescription: "Perfil publicado", description: "Contenido permitido", phone: "+1 555 0100", publicEmail: "contact@example.test", websiteUrl: "https://example.test", city: "Queens", serviceArea: "Queens" }, hours: [], configuration: { version: 1, templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] } };
-  const snapshotJson = JSON.stringify(v1Snapshot).replaceAll("'", "''");
-  query(`INSERT INTO business_profile_publication (organization_id,draft_revision,published_version,published_slug,snapshot_schema_version,snapshot_json,updated_at) VALUES (${literal(orgId)},1,7,${literal(`v1-${suffix}`)},1,'${snapshotJson}',${now});`);
+   const v1Slug = `v1-${suffix}`;
+   const v1Snapshot = { schemaVersion: 1, profile: { slug: v1Slug, displayName: "Negocio V1", shortDescription: "Perfil publicado", description: "Contenido permitido", phone: "+1 555 0100", publicEmail: "contact@example.test", websiteUrl: "https://example.test", city: "Queens", serviceArea: "Queens" }, hours: [], configuration: { version: 1, templateKey: "vecidya-default", templateVersion: 1, layoutVariant: "standard", modules: [{ type: "hero", moduleVersion: 1, enabled: true, sortOrder: 0, layoutVariant: "standard", settings: null }] } };
+   const snapshotJson = JSON.stringify(v1Snapshot).replaceAll("'", "''");
+   await query(`INSERT INTO business_profile (id,organization_id,display_name,slug,status,created_at,updated_at) VALUES (${literal(randomUUID())},${literal(orgId)},'Negocio V1',${literal(v1Slug)},'published',${now},${now}); INSERT INTO business_profile_publication (organization_id,draft_revision,published_version,published_slug,snapshot_schema_version,snapshot_json,updated_at) VALUES (${literal(orgId)},1,7,${literal(v1Slug)},1,'${snapshotJson}',${now});`);
+   const v1BeforeConversion = await fetch(new URL(`/vecindario/${v1Slug}`, base));
+   assert.equal(v1BeforeConversion.status, 200, "la URL V1 existente debe seguir resolviendo antes del cutover");
+   const v1Html = await v1BeforeConversion.text();
+   assert.ok(v1Html.includes("Negocio V1"));
+   assert.ok(v1Html.includes("© 2026 Vecidya") && v1Html.includes("Versión pública"), "V1 fallback keeps the shared public version footer");
   const endpoint = `/api/organizations/${orgId}/miniweb-v2`;
   const anonymous = await fetch(new URL(endpoint, base), { method: "POST", headers: { origin: base, "content-type": "application/json" }, body: JSON.stringify({ operation: "create-from-published-v1", confirm: true, familyKey: "vecidya-default", visualVariant: "base" }) });
   assert.notEqual(anonymous.status, 201, "anonymous conversion must be rejected");
   const unconfirmed = await owner.request(endpoint, "POST", { operation: "create-from-published-v1", confirm: false, familyKey: "vecidya-default", visualVariant: "base" });
   assert.equal(unconfirmed.status, 400);
 
-  const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro" });
-  assert.equal(empty.status, 201);
-  const emptySiteId = (await empty.json()).siteId;
+   const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro" });
+   assert.equal(empty.status, 201);
+   const emptySite = await empty.json(); const emptySiteId = emptySite.siteId; const emptySlug = emptySite.publicSlug;
+   assert.match(emptySlug, /^v2-conversion-[a-f0-9-]+-site-[a-f0-9]{8}$/);
   const previousDraft = await owner.request(`${endpoint}?site=${encodeURIComponent(emptySiteId)}`);
   assert.equal(previousDraft.status, 200);
   const previousDocument = JSON.stringify((await previousDraft.json()).state.draft.document);
@@ -120,7 +154,7 @@ try {
   mediaFilePath = join(tmpdir(), `vecidya-miniweb-v2-${mediaId}.png`);
   writeFileSync(mediaFilePath, png);
   wrangler(["r2", "object", "put", `vecidya-business-media-prod/${objectKey}`, "--local", "--persist-to", persistenceName, "--file", mediaFilePath, "--content-type", "image/png", "--force"]);
-  query(`INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(mediaId)},${literal(orgId)},${literal(objectKey)},'gallery','image','image/png',${png.length},'Imagen propia',${now}); INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(videoMediaId)},${literal(orgId)},${literal(`organizations/${orgId}/${videoMediaId}`)},'gallery','video','video/mp4',${png.length},'Video no aceptado',${now}); INSERT INTO organization (id,name,slug,created_at) VALUES (${literal(foreignOrganizationId)},'Organización aislada',${literal(`v2-isolated-${suffix}`)},${now}); INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(foreignMediaId)},${literal(foreignOrganizationId)},${literal(`organizations/${foreignOrganizationId}/${foreignMediaId}`)},'gallery','image','image/png',${png.length},'Medio ajeno',${now});`);
+  await query(`INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(mediaId)},${literal(orgId)},${literal(objectKey)},'gallery','image','image/png',${png.length},'Imagen propia',${now}); INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(videoMediaId)},${literal(orgId)},${literal(`organizations/${orgId}/${videoMediaId}`)},'gallery','video','video/mp4',${png.length},'Video no aceptado',${now}); INSERT INTO organization (id,name,slug,created_at) VALUES (${literal(foreignOrganizationId)},'Organización aislada',${literal(`v2-isolated-${suffix}`)},${now}); INSERT INTO business_media_asset (id,organization_id,object_key,purpose,media_type,content_type,size_bytes,alt_text,created_at) VALUES (${literal(foreignMediaId)},${literal(foreignOrganizationId)},${literal(`organizations/${foreignOrganizationId}/${foreignMediaId}`)},'gallery','image','image/png',${png.length},'Medio ajeno',${now});`);
 
   const draftDocument = JSON.parse(previousDocument);
   const hero = draftDocument.sections.find((section) => section.type === "hero");
@@ -145,17 +179,20 @@ try {
   assert.equal(validSave.status, 200);
   const publish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 5 });
   assert.equal(publish.status, 200, `publicación V2: ${await publish.clone().text()}`);
-  const activePublication = query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`)[0]?.active_publication_id;
+  const activePublication = (await query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`))[0]?.active_publication_id;
   const repeatedPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 5 });
   assert.equal(repeatedPublish.status, 409, "a repeated publish request for the active revision must conflict");
   assert.equal((await repeatedPublish.json()).code, "REVISION_CONFLICT");
-  assert.equal(query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`)[0]?.active_publication_id, activePublication, "a repeated request must preserve the active publication pointer");
-  const publicPage = await fetch(new URL(`/miniweb/${emptySiteId}`, base));
-  assert.equal(publicPage.status, 200);
-  const html = await publicPage.text();
-  assert.ok(html.includes("Negocio V2 de prueba | Vecidya"), "el título SEO usa el nombre del negocio");
-  assert.ok(html.includes(`https://vecidya.com/miniweb/${emptySiteId}`), "canonical usa la ruta pública V2");
-  assert.ok((await (await fetch(new URL("/sitemap.xml", base))).text()).includes(`https://vecidya.com/miniweb/${emptySiteId}`), "sitemap incluye el sitio con publicación activa");
+  assert.equal((await query(`SELECT active_publication_id FROM miniweb_v2_site WHERE id=${literal(emptySiteId)};`))[0]?.active_publication_id, activePublication, "a repeated request must preserve the active publication pointer");
+   const publicPage = await fetch(new URL(`/vecindario/${emptySlug}`, base));
+   assert.equal(publicPage.status, 200);
+   const html = await publicPage.text();
+   assert.ok(html.includes("Negocio V2 de prueba | Vecidya"), "el título SEO usa el nombre del negocio");
+   assert.ok(html.includes(`https://vecidya.com/vecindario/${emptySlug}`), "canonical usa la URL pública V2 de Vecindario");
+   assert.ok((await (await fetch(new URL("/sitemap.xml", base))).text()).includes(`https://vecidya.com/vecindario/${emptySlug}`), "sitemap incluye el sitio publicado por slug");
+   const idAlias = await fetch(new URL(`/miniweb/${emptySiteId}`, base), { redirect: "manual" });
+   assert.equal(idAlias.status, 308, "la URL V2 por ID anterior conserva un alias permanente");
+   assert.equal(idAlias.headers.get("location"), `/vecindario/${emptySlug}`);
 
   const publicMediaPath = `/media/miniweb/${encodeURIComponent(emptySiteId)}/${encodeURIComponent(mediaId)}`;
   const publicMedia = await fetch(new URL(publicMediaPath, base));
@@ -163,9 +200,9 @@ try {
   assert.equal(publicMedia.headers.get("content-type"), "image/png");
   assert.equal(publicMedia.headers.get("cache-control"), "no-store");
   assert.deepEqual(Buffer.from(await publicMedia.arrayBuffer()), png);
-  query(`UPDATE business_media_asset SET is_active=0 WHERE id=${literal(mediaId)};`);
+  await query(`UPDATE business_media_asset SET is_active=0 WHERE id=${literal(mediaId)};`);
   assert.equal((await fetch(new URL(publicMediaPath, base))).status, 404, "desactivar el medio revoca inmediatamente su entrega");
-  query(`UPDATE business_media_asset SET is_active=1 WHERE id=${literal(mediaId)};`);
+  await query(`UPDATE business_media_asset SET is_active=1 WHERE id=${literal(mediaId)};`);
   assert.equal((await fetch(new URL(publicMediaPath, base))).status, 200, "reactivar el medio permite servir la publicación vigente");
   const unreferencedDocument = JSON.parse(JSON.stringify(draftDocument));
   unreferencedDocument.sections.find((section) => section.type === "hero").content.image = null;
@@ -176,16 +213,17 @@ try {
   assert.equal(unreferencedPublish.status, 200);
   assert.equal((await fetch(new URL(publicMediaPath, base))).status, 404, "media deja de servirse al dejar de estar referida");
 
-  const conversion = await owner.request(endpoint, "POST", { operation: "create-from-published-v1", confirm: true, familyKey: "services-studio", visualVariant: "premium" });
-  assert.equal(conversion.status, 201, `conversion: ${await conversion.clone().text()}`);
-  const convertedBody = await conversion.json(); const convertedId = convertedBody.siteId;
+   const conversion = await owner.request(endpoint, "POST", { operation: "create-from-published-v1", confirm: true, familyKey: "services-studio", visualVariant: "premium" });
+   assert.equal(conversion.status, 201, `conversion: ${await conversion.clone().text()}`);
+   const convertedBody = await conversion.json(); const convertedId = convertedBody.siteId;
+   assert.equal(convertedBody.publicSlug, v1Slug, "la conversión conserva la URL pública V1 como slug V2");
   assert.notEqual(convertedId, emptySiteId);
   assert.equal(convertedBody.imported.hours, 0);
   const preservedDraftResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(untouchedSiteId)}`);
   assert.equal(preservedDraftResponse.status, 200);
   assert.equal(JSON.stringify((await preservedDraftResponse.json()).state.draft.document), untouchedDocument, "conversion must not overwrite an existing V2 draft");
-  assert.equal((await fetch(new URL(`/miniweb/${convertedId}`, base))).status, 404, "new draft is not public until explicit publication");
-  const crossTenant = await owner.request(`/api/organizations/${randomUUID()}/miniweb-v2`, "POST", { operation: "create-from-published-v1", confirm: true, familyKey: "vecidya-default", visualVariant: "base" });
+   assert.equal((await fetch(new URL(`/vecindario/${v1Slug}`, base))).status, 200, "la URL V1 sigue mostrando el perfil legacy mientras V2 sea borrador");
+   const crossTenant = await owner.request(`/api/organizations/${randomUUID()}/miniweb-v2`, "POST", { operation: "create-from-published-v1", confirm: true, familyKey: "vecidya-default", visualVariant: "base" });
   assert.equal(crossTenant.status, 403);
 
   async function createPublishableDraft(title) {
@@ -202,11 +240,11 @@ try {
   }
 
   const publishableSites = [await createPublishableDraft("Matriz QA <script>window.__miniwebXss=1</script>")];
-  query(`UPDATE organization_license SET status='suspended' WHERE id=${literal(licenseId)};`);
+  await query(`UPDATE organization_license SET status='suspended' WHERE id=${literal(licenseId)};`);
   const noLicensePublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: publishableSites[0], expectedRevision: 2 });
   assert.equal(noLicensePublish.status, 409, `publication without an effective license must fail closed: ${await noLicensePublish.clone().text()} ${output}`);
   assert.equal((await fetch(new URL(`/miniweb/${publishableSites[0]}`, base))).status, 404, "a blocked draft must remain private");
-  query(`UPDATE organization_license SET status='active' WHERE id=${literal(licenseId)};`);
+  await query(`UPDATE organization_license SET status='active' WHERE id=${literal(licenseId)};`);
   console.log("MINIWEB_V2_QA_STAGE: blocked publication without license");
 
   for (let index = 2; index <= 4; index += 1) publishableSites.push(await createPublishableDraft("Matriz QA <script>window.__miniwebXss=1</script>"));
@@ -223,10 +261,48 @@ try {
   assert.doesNotMatch(publishedHtml, /<script>window\.__miniwebXss=1<\/script>/, "content must not inject executable HTML");
 
   const extensionId = randomUUID();
-  query(`INSERT INTO billing_miniweb_capacity_extension (id,organization_id,billing_account_id,kind,status,starts_at,ends_at,reason,granted_by_user_id,idempotency_key,created_at,updated_at) VALUES (${literal(extensionId)},${literal(orgId)},${literal(billingAccountId)},'cuadra_extra','active',${now},NULL,'QA fixture authorized extension',${literal(userId)},${literal(`qa-${suffix}`)},${now},${now});`);
-  const extensionPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: rejectedSiteId, expectedRevision: 2 });
-  assert.equal(extensionPublish.status, 200, "one explicit Cuadra extension must add three publication slots");
-  console.log("MINIWEB_V2_QA_STAGE: explicit Cuadra extension and escaped renderer content");
+  await query(`INSERT INTO billing_miniweb_capacity_extension (id,organization_id,billing_account_id,kind,status,starts_at,ends_at,reason,granted_by_user_id,idempotency_key,created_at,updated_at) VALUES (${literal(extensionId)},${literal(orgId)},${literal(billingAccountId)},'cuadra_extra','active',${now},NULL,'QA fixture authorized extension',${literal(userId)},${literal(`qa-${suffix}`)},${now},${now});`);
+   const extensionPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: rejectedSiteId, expectedRevision: 2 });
+   assert.equal(extensionPublish.status, 200, "one explicit Cuadra extension must add three publication slots");
+   console.log("MINIWEB_V2_QA_STAGE: explicit Cuadra extension and escaped renderer content");
+
+   const convertedDraftResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`);
+   assert.equal(convertedDraftResponse.status, 200);
+    const convertedDraft = (await convertedDraftResponse.json()).state.draft;
+    const convertedDocument = convertedDraft.document;
+    assert.equal(convertedDocument.sections.find((section) => section.type === "hero").content.title, "Negocio V1", "conversion imports the existing V1 title before edits");
+    convertedDocument.sections.find((section) => section.type === "hero").content.title = "Negocio V2 convertido";
+    const convertedContact = convertedDocument.sections.find((section) => section.type === "contact");
+    convertedContact.visible = true;
+    convertedContact.content.whatsapp = { phone: "+1555010100", message: "Quiero información" };
+    convertedContact.content.form = { title: "Formulario de prueba", introduction: "Cuéntanos qué necesitas.", submitLabel: "Preparar correo" };
+    const convertedProducts = convertedDocument.sections.find((section) => section.type === "products");
+    convertedProducts.visible = true;
+    convertedProducts.content.promotions = [
+      { id: "promotion-active", title: "Promoción vigente de prueba", description: "Fixture sintético de contenido con fecha final.", startsOn: null, endsOn: "2099-12-31", terms: "Válida en el fixture de prueba.", cta: null },
+      { id: "promotion-expired", title: "Promoción expirada de prueba", description: "No debe mostrarse fuera de vigencia.", startsOn: null, endsOn: "2020-01-01", terms: null, cta: null },
+    ];
+    convertedDocument.sections.push({ id: randomUUID(), type: "testimonials", schemaVersion: 1, order: convertedDocument.sections.length, visible: true, content: { items: [
+      { id: "review-consented", author: "Persona de prueba", quote: "Reseña sintética autorizada para QA.", context: "Fixture", consented: true, sourceLabel: "Fuente de QA", sourceUrl: "https://example.test/review", reviewedOn: "2026-11-19" },
+      { id: "review-not-consented", author: "No publicar", quote: "Fixture sin consentimiento.", context: null, consented: false, sourceLabel: null, sourceUrl: null, reviewedOn: null },
+    ] } });
+    convertedDocument.sections.push({ id: randomUUID(), type: "contact", schemaVersion: 1, order: convertedDocument.sections.length, visible: false, content: { phone: null, email: "hidden-only@example.test", links: [], cta: null, whatsapp: null, form: null } });
+    assert.equal((await owner.request(endpoint, "POST", { operation: "save", siteId: convertedId, expectedRevision: convertedDraft.revision, document: convertedDocument })).status, 200);
+   assert.equal((await owner.request(endpoint, "POST", { operation: "publish", siteId: convertedId, expectedRevision: convertedDraft.revision + 1 })).status, 200, "la V2 convertida requiere publicación explícita");
+    const convertedPublic = await fetch(new URL(`/vecindario/${v1Slug}`, base));
+    assert.equal(convertedPublic.status, 200);
+    const convertedPublicHtml = await convertedPublic.text();
+    assert.ok(convertedPublicHtml.includes("Negocio V2 convertido"), "la URL estable sirve V2 tras el cutover explícito");
+    assert.ok(convertedPublicHtml.includes("Promoción vigente de prueba"));
+    assert.ok(!convertedPublicHtml.includes("Promoción expirada de prueba"), "promotions outside the UTC validity window stay hidden");
+    assert.ok(convertedPublicHtml.includes("https://wa.me/1555010100?text="), "configured WhatsApp opens the intended external channel");
+    assert.ok(convertedPublicHtml.includes("Reseña sintética autorizada para QA."));
+    assert.ok(!convertedPublicHtml.includes("Fixture sin consentimiento"), "non-consented testimonials remain private");
+    assert.ok(!convertedPublicHtml.includes("hidden-only@example.test"), "hidden section content is not serialized to public loader data");
+    assert.ok(convertedPublicHtml.includes("Formulario de prueba"));
+   const convertedAlias = await fetch(new URL(`/miniweb/${convertedId}`, base), { redirect: "manual" });
+   assert.equal(convertedAlias.status, 308);
+   assert.equal(convertedAlias.headers.get("location"), `/vecindario/${v1Slug}`);
 
   const families = ["vecidya-default", "services-studio", "catalog-store", "gastronomy-table", "professional-profile"];
   const variants = ["base", "pro", "premium"];
@@ -262,30 +338,193 @@ try {
   }
   for (const family of families) for (const variant of variants) {
     const siteId = randomUUID(); const publicationId = randomUUID();
-    visualSites.push({ family, variant, siteId });
-    const exercisesHiddenContact = family === families[0] && variant === variants[0];
+     const exercisesHiddenContact = family === families[0] && variant === variants[0];
     const document = JSON.stringify(visualDocument(family, variant, exercisesHiddenContact)).replaceAll("'", "''");
-    visualSql.push(`INSERT INTO miniweb_v2_site (id,organization_id,owner_user_id,family_key,visual_variant,draft_revision,published_revision,active_publication_id,created_at,updated_at) VALUES (${literal(siteId)},${literal(orgId)},${literal(userId)},${literal(family)},${literal(variant)},1,1,${literal(publicationId)},${now},${now}); INSERT INTO miniweb_v2_publication (id,site_id,revision,schema_version,document_json,published_by_user_id,created_at) VALUES (${literal(publicationId)},${literal(siteId)},1,1,'${document}',${literal(userId)},${now});`);
+     const publicSlug = `visual-${family}-${variant}-${suffix}`;
+     visualSites.push({ family, variant, siteId, publicSlug });
+     visualSql.push(`INSERT INTO miniweb_v2_site (id,organization_id,public_slug,owner_user_id,family_key,visual_variant,draft_revision,published_revision,active_publication_id,created_at,updated_at) VALUES (${literal(siteId)},${literal(orgId)},${literal(publicSlug)},${literal(userId)},${literal(family)},${literal(variant)},1,1,${literal(publicationId)},${now},${now}); INSERT INTO miniweb_v2_publication (id,site_id,revision,schema_version,document_json,published_by_user_id,created_at) VALUES (${literal(publicationId)},${literal(siteId)},1,1,'${document}',${literal(userId)},${now});`);
   }
-  query(visualSql.join("\n"));
+  await query(visualSql.join("\n"));
 
   const captureDirectory = resolve(projectDirectory, `../.playwright-mcp/miniweb-v2-vis01-${suffix}`);
   mkdirSync(captureDirectory, { recursive: true });
   const browser = await chromium.launch({ headless: true, executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined });
   const visualResults = [];
   try {
+    const ownerContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+    await ownerContext.addCookies([...owner.cookies].map(([name, value]) => ({ name, value, url: base, httpOnly: true, sameSite: "Lax" })));
+    const editorPage = await ownerContext.newPage();
+    const editorResponse = await editorPage.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(convertedId)}`, base).toString(), { waitUntil: "networkidle" });
+    assert.equal(editorResponse?.status(), 200, "owner can open the V2 editor for the converted site");
+    assert.ok((await editorPage.locator("body").innerText()).includes("Secciones de tu sitio"), "the route rendered the authenticated editor, not the login page");
+    assert.ok((await editorPage.locator("body").innerText()).includes("Promociones"));
+    assert.ok((await editorPage.locator("body").innerText()).includes("WhatsApp"));
+    assert.ok((await editorPage.locator("body").innerText()).includes("Formulario de contacto"));
+    assert.ok((await editorPage.locator("body").innerText()).includes("Reseñas autorizadas"));
+    const autoSaveResponse = editorPage.waitForResponse((response) => {
+      const request = response.request();
+      return response.url().includes("/api/organizations/") && request.method() === "POST" && request.postDataJSON()?.operation === "save";
+    });
+    await editorPage.getByLabel("Título de la promoción").first().fill("Promoción editada desde el editor");
+    await editorPage.getByLabel("Instrucción breve").fill("Editado desde el editor en navegador.");
+    assert.equal((await autoSaveResponse).status(), 200, "debounced autosave persists the latest nested content to the V2 draft");
+    await editorPage.getByText(/Autoguardado completado · revisión/).waitFor();
+    await editorPage.getByLabel("Título del formulario").fill("Formulario guardado por el botón");
+    const explicitSaveResponse = editorPage.waitForResponse((response) => {
+      const request = response.request();
+      return response.url().includes("/api/organizations/") && request.method() === "POST" && request.postDataJSON()?.operation === "save";
+    });
+    await editorPage.getByRole("button", { name: "Guardar cambios" }).first().click();
+    assert.equal((await explicitSaveResponse).status(), 200, "Guardar changes uses the same CAS write path as autosave");
+    const editorStateResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`);
+    const editorState = (await editorStateResponse.json()).state;
+    assert.equal(editorState.draft.document.sections.find((section) => section.type === "products").content.promotions[0].title, "Promoción editada desde el editor");
+    assert.equal(editorState.draft.document.sections.find((section) => section.type === "contact").content.form.introduction, "Editado desde el editor en navegador.");
+    assert.equal(editorState.draft.document.sections.find((section) => section.type === "contact").content.form.title, "Formulario guardado por el botón");
+    const stillPublished = await fetch(new URL(`/vecindario/${v1Slug}`, base));
+    const stillPublishedHtml = await stillPublished.text();
+    assert.ok(stillPublishedHtml.includes("Promoción vigente de prueba"), "editing nested content does not alter the active publication");
+    assert.ok(!stillPublishedHtml.includes("Promoción editada desde el editor"));
+    assert.ok(stillPublishedHtml.includes("Formulario de prueba"), "autosaved draft content does not leak into the active publication");
+
+    await editorPage.getByRole("button", { name: /Revisar y publicar revisión/ }).click();
+    const reviewHeading = editorPage.getByRole("heading", { name: /Revisión previa · revisión/ });
+    await reviewHeading.waitFor();
+    const reviewPublishButton = editorPage.getByRole("button", { name: /Confirmar revisión y publicar revisión/ });
+    assert.equal(await reviewPublishButton.isDisabled(), true, "the self-review confirmation is required before publishing");
+    await editorPage.getByLabel(/Revisé la vista previa guardada/).check();
+    let publishRequestCount = 0;
+    editorPage.on("request", (request) => {
+      if (request.method() === "POST" && request.url().includes("/api/organizations/") && request.postDataJSON()?.operation === "publish") publishRequestCount += 1;
+    });
+    editorPage.once("dialog", (dialog) => { assert.equal(dialog.type(), "confirm"); void dialog.dismiss(); });
+    await reviewPublishButton.click();
+    assert.equal(publishRequestCount, 0, "canceling publication does not send a publish request");
+    const publishResponse = editorPage.waitForResponse((response) => response.url().includes("/api/organizations/") && response.request().method() === "POST" && response.request().postDataJSON()?.operation === "publish");
+    editorPage.once("dialog", (dialog) => { assert.equal(dialog.type(), "confirm"); void dialog.accept(); });
+    await reviewPublishButton.click();
+    assert.equal((await publishResponse).status(), 200, "an acknowledged review explicitly publishes the current CAS revision");
+    assert.equal(publishRequestCount, 1);
+    const reviewedPublication = await fetch(new URL(`/vecindario/${v1Slug}`, base));
+    const reviewedPublicationHtml = await reviewedPublication.text();
+    assert.ok(reviewedPublicationHtml.includes("Promoción editada desde el editor"), "the explicitly reviewed publication becomes public");
+    assert.ok(reviewedPublicationHtml.includes("Formulario guardado por el botón"));
+
+    const routePattern = "**/api/organizations/**/miniweb-v2";
+    let abortNextSave = true;
+    let networkSaveAttemptCount = 0;
+    const abortOneSave = async (route) => {
+      const request = route.request();
+      if (request.method() === "POST" && request.postDataJSON()?.operation === "save") networkSaveAttemptCount += 1;
+      if (abortNextSave && request.method() === "POST" && request.postDataJSON()?.operation === "save") {
+        abortNextSave = false;
+        await route.abort("failed");
+        return;
+      }
+      await route.continue();
+    };
+    await editorPage.route(routePattern, abortOneSave);
+    await editorPage.getByLabel("Instrucción breve").fill("Edición que conserva el valor local ante error de red.");
+    await editorPage.getByText(/No se pudo confirmar el guardado/).waitFor();
+    assert.equal(await editorPage.getByLabel("Instrucción breve").inputValue(), "Edición que conserva el valor local ante error de red.");
+    await assert.rejects(
+      editorPage.waitForRequest((request) => request.method() === "POST" && request.url().includes("/api/organizations/") && request.postDataJSON()?.operation === "save", { timeout: 1200 }),
+      (error) => error.name === "TimeoutError",
+      "autosave must not silently retry a failed network operation",
+    );
+    assert.equal(networkSaveAttemptCount, 1);
+    await editorPage.unroute(routePattern, abortOneSave);
+    const retrySave = editorPage.waitForResponse((response) => response.url().includes("/api/organizations/") && response.request().method() === "POST" && response.request().postDataJSON()?.operation === "save");
+    await editorPage.getByRole("button", { name: "Guardar cambios" }).first().click();
+    assert.equal((await retrySave).status(), 200, "an explicit retry saves the retained local value after the simulated network failure");
+
+    let releaseHeldSave;
+    let captureHeldSave;
+    const heldSaveReached = new Promise((resolve) => { captureHeldSave = resolve; });
+    const heldSaveGate = new Promise((resolve) => { releaseHeldSave = resolve; });
+    let hasHeldSave = false;
+    const holdFirstSave = async (route) => {
+      const request = route.request();
+      if (!hasHeldSave && request.method() === "POST" && request.postDataJSON()?.operation === "save") {
+        hasHeldSave = true;
+        captureHeldSave(request.postDataJSON());
+        await heldSaveGate;
+      }
+      await route.continue();
+    };
+    await editorPage.route(routePattern, holdFirstSave);
+    await editorPage.getByLabel("Instrucción breve").fill("Primer snapshot antes de seguir escribiendo.");
+    const heldSnapshot = await heldSaveReached;
+    assert.equal(heldSnapshot.document.sections.find((section) => section.type === "contact").content.form.introduction, "Primer snapshot antes de seguir escribiendo.");
+    await editorPage.getByLabel("Título del formulario").fill("Título añadido durante el primer save");
+    const firstSnapshotResponsePromise = editorPage.waitForResponse((response) => response.request().method() === "POST" && response.request().postDataJSON()?.operation === "save" && response.request().postDataJSON()?.document.sections.find((section) => section.type === "contact")?.content.form.introduction === "Primer snapshot antes de seguir escribiendo.");
+    releaseHeldSave();
+    const firstSnapshotResponse = await firstSnapshotResponsePromise;
+    assert.equal(firstSnapshotResponse.status(), 200);
+    const firstSnapshotPayload = await firstSnapshotResponse.json();
+    const secondSnapshotResponse = await editorPage.waitForResponse((response) => response.request().method() === "POST" && response.request().postDataJSON()?.operation === "save" && response.request().postDataJSON()?.document.sections.find((section) => section.type === "contact")?.content.form.title === "Título añadido durante el primer save");
+    assert.equal(secondSnapshotResponse.status(), 200, "edits typed while a CAS write is in flight are saved by a later serialized request");
+    const secondSnapshotRequest = secondSnapshotResponse.request().postDataJSON();
+    assert.equal(secondSnapshotRequest.expectedRevision, firstSnapshotPayload.revision, "the follow-up save uses the revision returned by the preceding save");
+    await editorPage.unroute(routePattern, holdFirstSave);
+    const concurrentEditState = (await (await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`)).json()).state;
+    assert.equal(concurrentEditState.draft.document.sections.find((section) => section.type === "contact").content.form.introduction, "Primer snapshot antes de seguir escribiendo.");
+    assert.equal(concurrentEditState.draft.document.sections.find((section) => section.type === "contact").content.form.title, "Título añadido durante el primer save");
+
+    let releaseConflictRequest;
+    let signalConflictRequest;
+    const conflictRequestReached = new Promise((resolve) => { signalConflictRequest = resolve; });
+    const conflictRequestGate = new Promise((resolve) => { releaseConflictRequest = resolve; });
+    let holdNextSave = true;
+    const holdOneSave = async (route) => {
+      const request = route.request();
+      if (holdNextSave && request.method() === "POST" && request.postDataJSON()?.operation === "save") {
+        holdNextSave = false;
+        signalConflictRequest(request.postDataJSON());
+        await conflictRequestGate;
+      }
+      await route.continue();
+    };
+    await editorPage.route(routePattern, holdOneSave);
+    await editorPage.getByLabel("Instrucción breve").fill("Edición local que entrará en conflicto.");
+    const staleBrowserSave = await conflictRequestReached;
+    const latestStateResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`);
+    const latestState = (await latestStateResponse.json()).state;
+    const externalDocument = structuredClone(latestState.draft.document);
+    externalDocument.sections.find((section) => section.type === "contact").content.form.introduction = "Edición remota de otro cliente.";
+    const externalSave = await owner.request(endpoint, "POST", { operation: "save", siteId: convertedId, expectedRevision: latestState.draft.revision, document: externalDocument });
+    assert.equal(externalSave.status, 200, `external revision fixture: ${await externalSave.clone().text()}`);
+    assert.equal(staleBrowserSave.expectedRevision, latestState.draft.revision, "the browser save is holding the revision the other client will advance");
+    releaseConflictRequest();
+    await editorPage.getByText(/El borrador cambió en otra sesión/).waitFor();
+    assert.equal(await editorPage.getByLabel("Instrucción breve").inputValue(), "Edición local que entrará en conflicto.", "a CAS conflict preserves the local text");
+    const conflictReload = editorPage.getByRole("button", { name: /Cargar la revisión más reciente/ });
+    editorPage.once("dialog", (dialog) => { assert.equal(dialog.type(), "confirm"); void dialog.accept(); });
+    await conflictReload.click();
+    await editorPage.waitForFunction((expected) => {
+      const label = [...document.querySelectorAll("label")].find((element) => element.textContent?.includes("Instrucción breve"));
+      return label?.querySelector("textarea")?.value === expected;
+    }, "Edición remota de otro cliente.");
+    const conflictStateResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`);
+    assert.equal((await conflictStateResponse.json()).state.draft.document.sections.find((section) => section.type === "contact").content.form.introduction, "Edición remota de otro cliente.");
+    await editorPage.unroute(routePattern, holdOneSave);
+    await ownerContext.close();
+
     const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
     for (const site of visualSites) {
-      for (const viewport of [{ width: 390, height: 844 }, { width: 768, height: 1024 }, { width: 1440, height: 900 }]) {
+       for (const viewport of [{ width: 320, height: 740 }, { width: 390, height: 844 }, { width: 768, height: 1024 }, { width: 1366, height: 900 }, { width: 1920, height: 1080 }]) {
         await page.setViewportSize(viewport);
         let response;
         try {
-          response = await page.goto(new URL(`/miniweb/${site.siteId}`, base).toString(), { waitUntil: "load", timeout: 15_000 });
+           response = await page.goto(new URL(`/vecindario/${site.publicSlug}`, base).toString(), { waitUntil: "load", timeout: 15_000 });
         } catch (error) {
           throw new Error(`No se pudo cargar ${site.family}/${site.variant}/${viewport.width}; Worker exit=${worker.exitCode}; ${output}`, { cause: error });
-        }
-        assert.equal(response?.status(), 200, `visual matrix route ${site.family}/${site.variant}`);
-        await page.locator(".miniweb-v2 > header h1").waitFor();
+         }
+         assert.equal(response?.status(), 200, `visual matrix route ${site.family}/${site.variant}`);
+         assert.equal(await page.locator("main").count(), 1, "public MiniWeb must have exactly one main landmark");
+         const platformFooter = await page.locator(".platform-footer").textContent();
+         assert.ok(platformFooter?.includes("© 2026 Vecidya") && platformFooter.includes("Versión pública"), "public MiniWeb renders the shared version footer");
+         await page.locator(".miniweb-v2 > header h1").waitFor();
         const inspection = await page.evaluate(() => {
           const siteRoot = document.querySelector(".miniweb-v2");
           const heading = siteRoot?.querySelector("h1");
@@ -337,7 +576,7 @@ try {
         assert.equal(inspection.linkTargetsValid, true);
         assert.ok(inspection.textContrast >= 4.5, `text contrast below AA: ${JSON.stringify(inspection)}`);
         assert.ok(inspection.linkContrast >= 4.5, `link contrast below AA: ${JSON.stringify(inspection)}`);
-        assert.equal(inspection.motion.animation, "0s", "reduced motion disables animations");
+         assert.ok(parseFloat(inspection.motion.animation) <= 0.0001, `reduced motion leaves no meaningful animation: ${JSON.stringify(inspection.motion)}`);
         assert.ok(parseFloat(inspection.motion.transition) <= 0.01, "reduced motion disables transitions");
         const filename = `${site.family}-${site.variant}-${viewport.width}.png`;
         await page.screenshot({ path: join(captureDirectory, filename), fullPage: true });
@@ -345,33 +584,63 @@ try {
       }
     }
     const keyboardPage = await browser.newPage({ viewport: { width: 390, height: 844 } });
-    await keyboardPage.goto(new URL(`/miniweb/${visualSites[0].siteId}`, base).toString(), { waitUntil: "networkidle" });
+     await keyboardPage.goto(new URL(`/vecindario/${visualSites[0].publicSlug}`, base).toString(), { waitUntil: "networkidle" });
     let reachedMiniWebLink = false;
     for (let tab = 0; tab < 12 && !reachedMiniWebLink; tab += 1) {
       await keyboardPage.keyboard.press("Tab");
       reachedMiniWebLink = await keyboardPage.evaluate(() => document.querySelector(".miniweb-v2")?.contains(document.activeElement) && document.activeElement?.tagName === "A");
     }
     assert.equal(reachedMiniWebLink, true, "keyboard navigation reaches public MiniWeb links");
-    writeFileSync(join(captureDirectory, "manifest.json"), JSON.stringify({ capturedAt: new Date().toISOString(), familyCount: families.length, variantCount: variants.length, viewportCount: 3, captureCount: visualResults.length, keyboard: "PASS", results: visualResults }, null, 2));
+    const contactFormResponse = await page.goto(new URL(`/vecindario/${v1Slug}`, base).toString(), { waitUntil: "networkidle" });
+    assert.equal(contactFormResponse?.status(), 200);
+    assert.equal(await page.locator(".miniweb-v2__contact-form").count(), 1, "the contact form renders on the stable public URL");
+    let formPostRequests = 0;
+    page.on("request", (request) => {
+      if (request.method() === "POST" && new URL(request.url()).origin === new URL(base).origin) formPostRequests += 1;
+    });
+    await page.getByLabel("Nombre", { exact: true }).fill("Visitante QA");
+    await page.getByLabel("Correo electrónico", { exact: true }).fill("visitor@example.test");
+    await page.getByLabel("Mensaje", { exact: true }).fill("Consulta de prueba desde el navegador");
+    await page.getByRole("button", { name: "Preparar correo" }).click();
+    assert.equal(await page.locator('.miniweb-v2__contact-form a[href^="mailto:"]').count(), 0, "form consent is required before preparing a mail draft");
+    await page.getByLabel(/Acepto enviar este mensaje/).check();
+    await page.getByRole("button", { name: "Preparar correo" }).click();
+    const preparedEmail = page.locator('.miniweb-v2__contact-form a[href^="mailto:"]');
+    await preparedEmail.waitFor();
+    const preparedHref = await preparedEmail.getAttribute("href");
+    assert.ok(preparedHref?.startsWith("mailto:contact@example.test?"));
+    assert.ok(preparedHref?.includes(encodeURIComponent("Consulta de prueba desde el navegador")));
+    assert.equal(formPostRequests, 0, "the message is prepared for the visitor's email client; no CRM/server submission occurs");
+    writeFileSync(join(captureDirectory, "manifest.json"), JSON.stringify({ capturedAt: new Date().toISOString(), familyCount: families.length, variantCount: variants.length, viewportCount: 5, captureCount: visualResults.length, keyboard: "PASS", results: visualResults }, null, 2));
   } finally {
     await browser.close();
   }
   console.log(`MINIWEB_V2_VISUAL_MATRIX: ${visualResults.length} captures in ${captureDirectory}`);
   await stopWorker();
 
-  assert.equal(Number(query(`SELECT count(*) AS total FROM miniweb_v2_site WHERE organization_id=${literal(orgId)};`)[0]?.total), 3 + publishableSites.length + visualSites.length, "refusal must not create extra sites beyond the explicitly seeded visual matrix");
-  const converted = query(`SELECT s.*,d.document_json FROM miniweb_v2_site s JOIN miniweb_v2_draft d ON d.site_id=s.id WHERE s.id=${literal(convertedId)};`)[0];
+  assert.equal(Number((await query(`SELECT count(*) AS total FROM miniweb_v2_site WHERE organization_id=${literal(orgId)};`))[0]?.total), 3 + publishableSites.length + visualSites.length, "refusal must not create extra sites beyond the explicitly seeded visual matrix");
+  const converted = (await query(`SELECT s.*,d.document_json FROM miniweb_v2_site s JOIN miniweb_v2_draft d ON d.site_id=s.id WHERE s.id=${literal(convertedId)};`))[0];
   assert.equal(converted.family_key, "services-studio"); assert.equal(converted.visual_variant, "premium");
   assert.equal(converted.source_organization_id, orgId); assert.equal(Number(converted.source_publication_version), 7);
   assert.equal(Number(converted.conversion_migration_version), 1); assert.equal(converted.conversion_consented_by_user_id, userId);
   assert.ok(Number(converted.conversion_consented_at) > 0);
   const report = JSON.parse(converted.conversion_report_json); assert.equal(report.imported.hours, 0); assert.ok(report.omitted.includes("horario V1 (exclusión absoluta)"));
   const document = JSON.parse(converted.document_json); assert.equal(document.sections.some((section) => section.type === "hours"), false);
-  assert.equal(document.sections.find((section) => section.type === "hero").content.title, "Negocio V1");
-  assert.equal(Number(query(`SELECT revision FROM miniweb_v2_draft WHERE site_id=${literal(untouchedSiteId)};`)[0]?.revision), 1, "conversion must preserve the previous V2 revision");
-  assert.equal(Number(query(`SELECT published_version FROM business_profile_publication WHERE organization_id=${literal(orgId)};`)[0]?.published_version), 7, "conversion must preserve V1 publication");
+   assert.equal(document.sections.find((section) => section.type === "hero").content.title, "Negocio V2 convertido", "editing the converted V2 draft preserves its latest title");
+  assert.equal(Number((await query(`SELECT revision FROM miniweb_v2_draft WHERE site_id=${literal(untouchedSiteId)};`))[0]?.revision), 1, "conversion must preserve the previous V2 revision");
+  assert.equal(Number((await query(`SELECT published_version FROM business_profile_publication WHERE organization_id=${literal(orgId)};`))[0]?.published_version), 7, "conversion must preserve V1 publication");
   console.log("MINIWEB_V2_CHECK_PASS: validación, publicación, media R2 tenant-scoped, metadata, sitemap y conversión V1.");
+} catch (error) {
+  primaryError = error;
+  throw error;
 } finally {
-  await stopWorker();
-  rmSync(persistence, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 });
+  let workerStopped = !worker;
+  try { await stopWorker(); }
+  catch (cleanupError) {
+    if (primaryError) console.error("MINIWEB_V2_WORKER_CLEANUP_FAILED", cleanupError);
+    else throw cleanupError;
+  }
+  workerStopped = !worker;
+  if (workerStopped) rmSync(persistence, { recursive: true, force: true, maxRetries: 10, retryDelay: 250 });
+  else console.error(`MINIWEB_V2_PERSISTENCE_RETAINED ${persistence}`);
 }

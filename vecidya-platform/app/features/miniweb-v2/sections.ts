@@ -8,18 +8,21 @@ export const MINIWEB_V2_SECTION_TYPES = [
 export type MiniWebV2SectionType = (typeof MINIWEB_V2_SECTION_TYPES)[number];
 export type V2Link = { label: string; href: string };
 export type V2Image = { assetId: string; alt: string; caption?: string };
+export type V2Promotion = { id: string; title: string; description: string; startsOn: string | null; endsOn: string | null; terms: string | null; cta: V2Link | null };
+export type V2ContactForm = { title: string; introduction: string; submitLabel: string };
+export type V2WhatsAppAction = { phone: string; message: string | null };
 export type V2SectionContentMap = {
   hero: { title: string; subtitle: string; cta: V2Link | null; image: V2Image | null };
   about: { headline: string; description: string; blocks: { id: string; title: string; body: string; image: V2Image | null }[] };
   services: { items: { id: string; title: string; description: string; image: V2Image | null; cta: V2Link | null }[] };
-  products: { items: { id: string; title: string; category: string | null; description: string; image: V2Image | null; cta: V2Link | null }[] };
+  products: { items: { id: string; title: string; category: string | null; description: string; image: V2Image | null; cta: V2Link | null }[]; promotions?: V2Promotion[] };
   gallery: { images: V2Image[] };
-  contact: { phone: string | null; email: string | null; links: V2Link[]; cta: V2Link | null };
+  contact: { phone: string | null; email: string | null; links: V2Link[]; cta: V2Link | null; whatsapp?: V2WhatsAppAction | null; form?: V2ContactForm | null };
   location: { address: string | null; city: string | null; area: string | null; mapUrl: string | null };
   faq: { items: { id: string; question: string; answer: string }[] };
   team: { people: { id: string; name: string; role: string | null; bio: string; image: V2Image | null; consented: boolean }[] };
   certifications: { items: { id: string; issuer: string; title: string; date: string | null; document: V2Image | null }[] };
-  testimonials: { items: { id: string; quote: string; author: string; context: string | null; consented: boolean }[] };
+  testimonials: { items: { id: string; quote: string; author: string; context: string | null; consented: boolean; sourceLabel?: string | null; sourceUrl?: string | null; reviewedOn?: string | null }[] };
   hours: import("./hours").V2HoursSection;
 };
 export type MiniWebV2Section = { [T in MiniWebV2SectionType]: {
@@ -42,19 +45,38 @@ const item = (x: unknown, fields: Record<string, (v: unknown) => boolean>) => is
 const nullableText = (max = 1000) => (x: unknown) => x === null || isText(x, max);
 const imageOrNull = (x: unknown) => x === null || validImage(x);
 const linkOrNull = (x: unknown) => x === null || validLink(x);
+const isDateOnly = (x: unknown): x is string => typeof x === "string" && /^\d{4}-\d{2}-\d{2}$/.test(x) && Number.isFinite(Date.parse(`${x}T00:00:00.000Z`)) && new Date(`${x}T00:00:00.000Z`).toISOString().slice(0, 10) === x;
+const nullableDateOnly = (x: unknown) => x === null || isDateOnly(x);
+const nullableHttpsUrl = (x: unknown) => {
+  if (x === undefined || x === null) return true;
+  if (typeof x !== "string" || x.length > 2048) return false;
+  try { return new URL(x).protocol === "https:"; } catch { return false; }
+};
+const validWhatsApp = (x: unknown) => x === undefined || x === null ||
+  (isRecord(x) && isText(x.phone, 20) && nullableText(500)(x.message));
+const validContactForm = (x: unknown) => x === undefined || x === null ||
+  (isRecord(x) && isText(x.title, 120) && isText(x.introduction, 500) && isText(x.submitLabel, 80));
+const validPromotions = (x: unknown) => x === undefined || list(x, (candidate) => item(candidate, {
+  title: value => isText(value, 160),
+  description: value => isText(value, 800),
+  startsOn: nullableDateOnly,
+  endsOn: nullableDateOnly,
+  terms: nullableText(1000),
+  cta: linkOrNull,
+}), 20);
 
 const validators: Record<MiniWebV2SectionType, (c: unknown) => boolean> = {
   hero: c => isRecord(c) && isText(c.title, 160) && isText(c.subtitle, 600) && linkOrNull(c.cta) && imageOrNull(c.image),
   about: c => isRecord(c) && isText(c.headline, 160) && isText(c.description) && list(c.blocks, x => item(x, { title: v => isText(v, 160), body: isText, image: imageOrNull })),
   services: c => isRecord(c) && list(c.items, x => item(x, { title: v => isText(v, 160), description: isText, image: imageOrNull, cta: linkOrNull })),
-  products: c => isRecord(c) && list(c.items, x => item(x, { title: v => isText(v, 160), category: nullableText(120), description: isText, image: imageOrNull, cta: linkOrNull })),
+  products: c => isRecord(c) && list(c.items, x => item(x, { title: v => isText(v, 160), category: nullableText(120), description: isText, image: imageOrNull, cta: linkOrNull })) && validPromotions(c.promotions),
   gallery: c => isRecord(c) && list(c.images, validImage),
-  contact: c => isRecord(c) && nullableText(80)(c.phone) && nullableText(254)(c.email) && list(c.links, validLink, 30) && linkOrNull(c.cta),
+  contact: c => isRecord(c) && nullableText(80)(c.phone) && nullableText(254)(c.email) && list(c.links, validLink, 30) && linkOrNull(c.cta) && validWhatsApp(c.whatsapp) && validContactForm(c.form),
   location: c => isRecord(c) && nullableText(300)(c.address) && nullableText(120)(c.city) && nullableText(200)(c.area) && (c.mapUrl === null || (typeof c.mapUrl === "string" && validLink({ label: "map", href: c.mapUrl }))),
   faq: c => isRecord(c) && list(c.items, x => item(x, { question: v => isText(v, 500), answer: isText })),
   team: c => isRecord(c) && list(c.people, x => item(x, { name: v => isText(v, 160), role: nullableText(120), bio: isText, image: imageOrNull, consented: v => typeof v === "boolean" })),
   certifications: c => isRecord(c) && list(c.items, x => item(x, { issuer: v => isText(v, 200), title: v => isText(v, 200), date: nullableText(40), document: imageOrNull })),
-  testimonials: c => isRecord(c) && list(c.items, x => item(x, { quote: v => isText(v, 2000), author: v => isText(v, 160), context: nullableText(300), consented: v => typeof v === "boolean" })),
+  testimonials: c => isRecord(c) && list(c.items, x => item(x, { quote: v => isText(v, 2000), author: v => isText(v, 160), context: nullableText(300), consented: v => typeof v === "boolean", sourceLabel: value => value === undefined || nullableText(120)(value), sourceUrl: nullableHttpsUrl, reviewedOn: value => value === undefined || nullableDateOnly(value) })),
   hours: c => isRecord(c) && validateV2HoursSection(c as unknown as V2HoursSection, { requireTimezone: false }).valid,
 };
 
@@ -91,6 +113,24 @@ export function validateMiniWebV2Document(value: unknown, options: { publishable
   if (options.publishable) {
     const heroes = value.sections.filter((candidate: unknown) => isRecord(candidate) && candidate.type === "hero" && candidate.visible === true);
     if (heroes.length !== 1) errors.push("La publicación necesita exactamente una portada visible.");
+    const visibleContactForms = value.sections.filter((candidate: unknown) => isRecord(candidate) && candidate.type === "contact" && candidate.visible === true && isRecord(candidate.content) && candidate.content.form != null);
+    for (const candidate of visibleContactForms) {
+      const content = (candidate as Record<string, unknown>).content as Record<string, unknown>;
+      const form = content.form as Record<string, unknown>;
+      if (typeof content.email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(content.email) || !String(form.title).trim() || !String(form.introduction).trim() || !String(form.submitLabel).trim())
+        errors.push("El formulario de contacto necesita un correo público válido y título, introducción y botón configurados.");
+    }
+    for (const candidate of value.sections) {
+      if (!isRecord(candidate) || candidate.type !== "contact" || candidate.visible !== true || !isRecord(candidate.content) || candidate.content.whatsapp == null) continue;
+      const whatsapp = candidate.content.whatsapp;
+      if (!isRecord(whatsapp) || typeof whatsapp.phone !== "string" || !/^\+?[1-9]\d{7,14}$/.test(whatsapp.phone))
+        errors.push("WhatsApp requiere un número internacional de 8 a 15 dígitos.");
+    }
+    for (const candidate of value.sections) {
+      if (!isRecord(candidate) || candidate.type !== "products" || candidate.visible !== true || !isRecord(candidate.content) || !Array.isArray(candidate.content.promotions)) continue;
+      if (candidate.content.promotions.some((promotion: unknown) => isRecord(promotion) && (!String(promotion.title).trim() || !String(promotion.description).trim() || !isDateOnly(promotion.endsOn))))
+        errors.push("Cada promoción visible necesita título, descripción y fecha final válida.");
+    }
   }
   const ids = new Set<string>(); const orders = new Set<number>();
   for (const section of value.sections) {

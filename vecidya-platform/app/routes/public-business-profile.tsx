@@ -1,9 +1,10 @@
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 
 import { createDatabase } from "../../db/client.server";
 import { getPublishedBusinessProfileBySlug } from "../../db/queries/business-profile.server";
 import { listBusinessHoursForOrganization } from "../../db/queries/business-hours.server";
 import { getMiniWebConfigurationForOrganization } from "../../db/queries/miniweb.server";
+import { getPublicMiniWebV2BySlug } from "../../db/queries/miniweb-v2.server";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { publicSiteUrl } from "../lib/public-seo";
 import { publicMeta } from "../components/public-layout";
@@ -11,6 +12,12 @@ import { JsonLd } from "../components/public-v2";
 import { MiniWebRenderer } from "../components/miniweb/miniweb-renderer";
 import { getRenderableMiniWebModules } from "../features/miniweb/render";
 import { restrictMiniWebPublicModel, toMiniWebPublicProfile } from "../features/miniweb/public-model";
+import { validateMiniWebV2Document } from "../features/miniweb-v2/sections";
+import { miniWebV2ImageUrl } from "../features/miniweb-v2/media";
+import { createPublicMiniWebV2Document } from "../features/miniweb-v2/promotions";
+import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
+import { CookieConsent } from "../components/cookie-consent";
+import { PlatformFooter } from "../components/platform-footer";
 
 import { MiniWebSiteFooter, MiniWebSiteHeader } from "../components/miniweb/miniweb-site-chrome";
 import type { Route } from "./+types/public-business-profile";
@@ -28,7 +35,20 @@ const schemaOrgDayNames: Record<number, string> = {
 export async function loader({ context, params, request }: Route.LoaderArgs) {
   const { env } = context.get(cloudflareContext);
   const database = createDatabase(env.DB);
-  const profile = await getPublishedBusinessProfileBySlug(database, params.slug);
+  const [profile, miniWebV2] = await Promise.all([
+    getPublishedBusinessProfileBySlug(database, params.slug),
+    getPublicMiniWebV2BySlug(database, params.slug),
+  ]);
+
+  if (miniWebV2 && (!profile || (profile.organizationId === miniWebV2.organizationId && miniWebV2.sourceOrganizationId === profile.organizationId))) {
+    let parsed: unknown;
+    try { parsed = JSON.parse(miniWebV2.documentJson); } catch { throw new Response("Publicación inválida", { status: 404 }); }
+    const validated = validateMiniWebV2Document(parsed);
+    if (!validated.valid) throw new Response("Publicación inválida", { status: 404 });
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    const publicDocument = createPublicMiniWebV2Document(validated.value, todayUtc);
+    return { kind: "v2" as const, siteId: miniWebV2.siteId, slug: params.slug, document: publicDocument, familyKey: miniWebV2.familyKey, variant: miniWebV2.visualVariant };
+  }
 
   if (!profile) {
     throw new Response("Perfil no encontrado", { status: 404 });
@@ -50,16 +70,38 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
   const renderableModules = getRenderableMiniWebModules(miniweb.publishedConfiguration, publicProfile, hours, offerings, faqs, media);
   const publicModel = restrictMiniWebPublicModel(publicProfile, hours, renderableModules.map((module) => module.type));
 
-  return { ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, logoUrl: publishedLogo?.publicUrl ?? null, cover: publishedCover ? { publicUrl: publishedCover.publicUrl, altText: publishedCover.altText } : null, visibleModuleTypes: renderableModules.map((module) => module.type) };
+  return { kind: "v1" as const, ...publicModel, configuration: miniweb.publishedConfiguration, offerings, faqs, media, logoUrl: publishedLogo?.publicUrl ?? null, cover: publishedCover ? { publicUrl: publishedCover.publicUrl, altText: publishedCover.altText } : null, visibleModuleTypes: renderableModules.map((module) => module.type) };
 }
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  if (!loaderData?.profile) return [{ title: "Perfil no encontrado | Vecidya" }, { name: "robots", content: "noindex" }];
+  if (!loaderData) return [{ title: "Perfil no encontrado | Vecidya" }, { name: "robots", content: "noindex" }];
+  if (loaderData.kind === "v2") {
+    const hero = loaderData.document.sections.find((section) => section.visible && section.type === "hero");
+    const title = hero?.type === "hero" && hero.content.title.trim() ? hero.content.title.trim() : "Sitio del negocio";
+    const summary = hero?.type === "hero" && hero.content.subtitle.trim() ? hero.content.subtitle.trim() : "Conoce este negocio, sus servicios y cómo contactarlo.";
+    return publicMeta(title, summary, `/vecindario/${encodeURIComponent(loaderData.slug)}`);
+  }
   return publicMeta(loaderData.profile.displayName, loaderData.profile.shortDescription ?? "Perfil público en Vecidya.", `/vecindario/${loaderData.profile.slug}`);
 }
 
 export default function PublicBusinessProfilePage() {
-  const { profile, hours, configuration, offerings, faqs, media, logoUrl, cover, visibleModuleTypes } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  if (data.kind === "v2") {
+    return <div className="public-site miniweb-standalone">
+      <a className="skip-link" href="#miniweb-main">Saltar al contenido</a>
+      <MiniWebV2Renderer mainId="miniweb-main" document={data.document} familyKey={data.familyKey} variant={data.variant} mediaUrl={(assetId) => miniWebV2ImageUrl(data.siteId, assetId)}/>
+      <footer className="miniweb-standalone__footer">
+        <nav aria-label="Enlaces de regreso">
+          <Link to="/vecindario">Volver al Vecindario</Link>
+          <Link to="/">Conocer Vecidya</Link>
+        </nav>
+        <p className="miniweb-standalone__credit">Creado con Vecidya</p>
+        <CookieConsent />
+      </footer>
+      <PlatformFooter area="public" />
+    </div>;
+  }
+  const { profile, hours, configuration, offerings, faqs, media, logoUrl, cover, visibleModuleTypes } = data;
   const sameAs = [profile.websiteUrl, profile.instagramUrl, profile.facebookUrl, profile.linkedinUrl, profile.tiktokUrl, profile.youtubeUrl].filter(
     (url): url is string => Boolean(url),
   );
@@ -103,6 +145,7 @@ export default function PublicBusinessProfilePage() {
         </div>
       </main>
       <MiniWebSiteFooter profile={profile} />
+      <PlatformFooter area="public" />
     </div>
   );
 }
