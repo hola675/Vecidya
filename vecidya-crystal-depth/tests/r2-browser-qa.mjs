@@ -407,6 +407,11 @@ try{
             assert.equal(proposal.preview,false);
             assert.equal(proposal.download,false);
           });
+          const homeCandidate=await page.locator('#vico-workbench-candidate-canvas').evaluate(node=>node.toDataURL('image/png'));
+          assertStep('vico-png-home-preview',()=>{
+            assert.match(homeCandidate,/^data:image\/png;base64,/);
+          });
+          writeFileSync(join(artifacts,'vico-home-alpha16-EVALUACION.png'),Buffer.from(homeCandidate.split(',')[1],'base64'));
           await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-home-candidate-alpha16.png'),animations:'disabled'});
           await page.locator('#vico-workbench-threshold').selectOption('32');
           const resetProposal=await page.locator('#vico-workbench').evaluate(root=>({
@@ -417,6 +422,15 @@ try{
             assert.equal(resetProposal.hidden,true);
             assert.equal(resetProposal.downloadDisabled,true);
           });
+          await page.getByRole('button',{name:'Seleccionar Vico · diagnóstico'}).click();
+          await page.locator('#vico-workbench-threshold').selectOption('16');
+          await page.locator('#vico-workbench-propose').click();
+          await page.waitForFunction(()=>window.__vicoAlphaProposals?.length===2,{timeout:20000});
+          const diagnosisCandidate=await page.locator('#vico-workbench-candidate-canvas').evaluate(node=>node.toDataURL('image/png'));
+          assertStep('vico-png-diagnostico-preview',()=>assert.match(diagnosisCandidate,/^data:image\/png;base64,/));
+          writeFileSync(join(artifacts,'vico-diagnostico-alpha16-EVALUACION.png'),Buffer.from(diagnosisCandidate.split(',')[1],'base64'));
+          await page.locator('#vico-workbench').screenshot({path:join(artifacts,'r2-vico-diagnostico-candidate-alpha16.png'),animations:'disabled'});
+
           const audits=await page.evaluate(()=>window.__vicoAlphaAudits);
           // Publicar solo métricas de QA, nunca píxeles ni originales en logs.
           console.log("VICO_ALPHA_SUMMARY",JSON.stringify(audits.map(entry=>({
