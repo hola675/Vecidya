@@ -301,4 +301,3 @@ Cuando la tarea requiera Vico o una de sus escenas, el subagente deberá:
 6. Entregar ruta, fuente, intención, composición, captura del mismo SHA, fallos y estado de aprobación humana. Sin evidencia, marcar `NO_VERIFICADO`, nunca `PASS`.
 
 **Separación de marca:** Vico identifica a Vecidya; no se inserta como marca del sitio de los negocios ni se ofrece por defecto como personaje de las MiniWeb. Las diez imágenes del personaje se mantienen originales, y ninguna modificación del visor constituye una migración a React.
-

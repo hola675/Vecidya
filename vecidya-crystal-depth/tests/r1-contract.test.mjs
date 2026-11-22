@@ -35,7 +35,6 @@ test('tema oscuro inicial y alternancia accesible reversible',()=>{
   switcher.click();
   assert.deepEqual([document.documentElement.dataset.theme,switcher.attrs['aria-checked'],label.textContent,meta.content],['dark','true','Oscuro','#06172F']);
 });
-
 test('enrutador de agentes: ocho intenciones, tres campos consistentes',()=>{
   assert.equal(routes.length,8);
   assert.deepEqual(routes.map(x=>x.value).sort(),registry.intentRouting.map(x=>x.intent).sort());
@@ -403,4 +402,3 @@ test('R1.6: personalizador MiniWeb aislado, semántico y sin publicación',()=>{
   assert.match(customCss,/@media \(prefers-reduced-motion:reduce\)/);
   assert.match(customCss,/:focus-visible/);
 });
-

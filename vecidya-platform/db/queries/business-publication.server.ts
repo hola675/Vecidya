@@ -131,6 +131,7 @@ export async function getBusinessPublicationSnapshotForOrganization(database: Da
   });
   return {
     publishedVersion: publication?.publishedVersion ?? 0,
+    publishedSlug: publication?.publishedSlug ?? null,
     snapshot: parseBusinessPublicationSnapshot(publication?.snapshotJson ?? null, publication?.snapshotSchemaVersion ?? null),
   };
 }

@@ -1,12 +1,28 @@
+## APP-MINI-ROUTE-01 — editor canónico y conversión V2 (RAN local, 2026-11-22)
+
+Sobre `feat/app-mini-vecindario-v2-route-01`, sincronizada con `main@ed44ede5` antes del cambio. `/app/miniweb` registra el editor V2; `/app/miniweb-v2` redirige preservando `site`; el editor usa la ruta canónica para seleccionar sitio y recuperar conflictos. `/vecindario/:slug` sirve el snapshot V2 tras conversión/publicación explícita y preserva V1 como fallback para perfiles aún no convertidos.
+
+`pnpm run test:unit`: **2122/2122 PASS**. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. `pnpm run test:e2e:miniweb-v2-conversion`: **PASS** en Wrangler Worker y D1/R2 local aislada, migraciones `0000–0046`; pasó conversión, edición/conflicto/recarga, aserción de `/app/miniweb`, alias anterior y 75 capturas en 320/390/768/1366/1920. `pnpm run test:e2e:app-dashboard-redesign`: **PASS**, incluida ruta autenticada canónica a cinco anchos y movimiento reducido. Se usó Edge local; no hubo D1/R2 remota ni deploy.
+
+`node tests/e2e/miniweb-core-check.mjs` se detuvo antes de las aserciones: la D1 local predeterminada no contenía la tabla `user`; el arnés no llegó a crear fixtures (`fixturesCleaned: false`). No se atribuye como fallo del código ni como PASS; repetir con D1 local aislada y migrada. No se probó `0046` sobre sitios V2 preexistentes, roles admin/lector, corte V1 total, R2 remoto, restore/rollback ni aceptación manual. PR #278 está abierto; el CI del head final debe completar antes de considerar la certificación de este checkpoint.
+
+## MiniWeb V2 PUBLIC-SLUG-01 / PUBLIC-BLOCKS-01 — RAN local previo (2026-11-19)
+
+Desde `feat/app-mini-vecindario-v2-route-01`, base `origin/main@3fab29da`. `pnpm run typecheck`, `pnpm run build`: PASS; build conserva avisos conocidos de secretos opcionales ausentes (no se leyeron), imports dinámicos inefectivos y sourcemap CSS. Diez suites focales MiniWeb V2: **17/17 PASS**.
+
+`$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'; pnpm run test:e2e:miniweb-v2-conversion`: **PASS** sobre Worker Wrangler con D1/R2 locales; migraciones `0000–0046` aplicadas a D1 efímera nueva. Comprueba que V1 conserva `/vecindario/:slug` mientras V2 es draft, conversión/cutover explícito sobre el mismo slug, alias ID 308, canonical/sitemap y no publicación de draft. El owner modifica promociones/form en el editor real; autosave debounced y Guardar escriben snapshots CAS serializados sin cambiar la publicación activa. El test aborta un save de red, verifica la retención local y reintenta explícitamente; provoca `REVISION_CONFLICT` desde otro cliente, conserva texto local y solo descarta/recarga tras confirmación. El paso self-review es por revisión guardada: sin ack/cancel no se envía publish; al confirmar se publica el expectedRevision actual. El sitio público muestra WhatsApp, promo vigente, review consentida y formulario con consentimiento que prepara `mailto:`; no POST, D1 ni CRM. El loader elimina promos expiradas, secciones ocultas y testimonios/equipo no consentidos antes de serializar. Incluye licencia/cupo, R2, safe rendering, 75/75 capturas (5 familias × 3 variantes × 320/390/768/1366/1920), `<main>` único, footer compartido/versionado, teclado y reduced-motion.
+
+El runner serializa `wrangler d1 execute --local` apagando y reiniciando el Worker local que comparte esa persistencia; aborta si el proceso no termina. Durante setup pueden fallar probes `/api/auth/ok` hasta que el Worker esté listo; el flujo funcional pasó sin reset de petición. El mailto depende de la app de correo del visitante; no se probó entrega real. El self-review no es aprobación de un revisor independiente ni se persiste como auditoría. No se probaron backfill `0046` sobre V2 preexistente, matriz owner/admin/lector, cambio de familia conservando contenido, límites/optimización/reemplazo R2, analytics, accesibilidad humana/axe/lector/zoom 200 %, R2 remoto, ledger staging/producción, backup/restore, deploy ni HTTP pública; no declara MiniWeb completo ni GO release.
+
 ## APP-MINI-V2-VISUAL-PERSONALIZATION — pruebas del candidato (2026-11-20)
 
-La personalización visual ahora se incorpora al editor real `/app/miniweb-v2` y se valida en el contrato del documento MiniWeb. El checkpoint reutiliza sin crear harnesses nuevos:
+La personalización visual se incorpora al editor V2, ahora canónico en `/app/miniweb`, y se valida en el contrato del documento MiniWeb. El checkpoint reutiliza sin crear harnesses nuevos:
 
 - `tests/unit/miniweb-v2-sections.test.ts`: documento legacy sin `design`, serialización de paleta/tamaño y rechazo de colores ilegibles/rangos inválidos.
 - `tests/unit/miniweb-visual-variants.test.ts`: recuento actualizado de superficies y presencia de controles en creación/edición.
 - `tests/e2e/miniweb-v2-conversion-check.mjs`: Worker/D1 local aislado; creación de sitio con estilo, rechazo de acento inválido, lectura del borrador, guardado y recarga de la configuración.
 
-**Estado:** cobertura agregada en rama de PR; ejecutar y revisar resultados del SHA final antes de declarar PASS. Pendiente además navegador real con controles de color/rango, zoom 200 %, lector de pantalla, permisos y aislamiento entre organizaciones y publicación con diseño persistido. No se han utilizado D1 ni R2 remotos.
+**Estado:** las pruebas del nuevo candidato pasan en `test:e2e:miniweb-v2-conversion` y `test:e2e:app-dashboard-redesign`; 75/75 capturas no sustituyen accesibilidad/aceptación. Pendientes personalización visual E2E sobre SHA final, zoom 200 %, lector de pantalla, roles/aislamiento y publicación con diseño persistido. No se han utilizado D1 ni R2 remotos.
 
 ---
 

@@ -1,3 +1,31 @@
+# 2026-11-22 — APP-MINI-ROUTE-01 — editor MiniWeb V2 canónico (candidato, sin publicar)
+
+- `/app/miniweb` ahora monta el editor MiniWeb V2. El alias `/app/miniweb-v2` redirige a la ruta canónica conservando la selección del sitio; los enlaces del editor y la recuperación de conflictos usan `/app/miniweb`.
+- Se actualizan las regresiones de conversión y dashboard para comprobar la ruta canónica, alias, selección de organización y preview V2. La prueba del flujo MiniWeb anterior se actualiza para verificar la entrada V2 y preservar checks públicos/administrativos que siguen activos.
+- Suite unitaria 2122/2122, typecheck/build, `test:e2e:miniweb-v2-conversion` y `test:e2e:app-dashboard-redesign` PASS sobre Worker/D1/R2 locales; la conversión cubrió 75 capturas en cinco viewports. `miniweb-core-check.mjs` no alcanzó aserciones por ausencia de schema en la D1 local predeterminada; no registró fixtures.
+- V1 sigue como fallback para perfiles aún no convertidos; no se declara cutover completo. PR #278 abierto, CI del head final pendiente; sin merge, deploy, D1/R2 remotos ni HTTP pública fechada. Versión de aplicación sin cambio.
+
+# 2026-11-19 — MiniWeb V2 PUBLIC-EDITOR-01 — autosave CAS y self-review local
+
+- El owner editor usa un autosave debounced que serializa CAS por revisión; `Guardar cambios` fuerza el mismo endpoint. No hay escrituras concurrentes ni retry silencioso. El estado de red queda visible, preserva cambios locales y permite retry manual; `REVISION_CONFLICT` conserva local y bloquea publicar hasta que el usuario confirme recargar la revisión actual.
+- Publicar requiere una pantalla de revisión de la última revisión guardada, un ack del editor y la confirmación existente de publicación. La E2E confirma que cancelar no envía `publish`, aceptar publica el expectedRevision inspeccionado, y una edición posterior no reemplaza la publicación activa hasta confirmación. Es self-review por owner/editor autorizado, no aprobación de una tercera persona ni audit persistida.
+- RAN typecheck/build PASS y E2E Worker/navegador MiniWeb PASS con debounce, Guardar, network abort+retry, conflicto CAS con actualización de otro cliente, conservación del draft local y reload explícito. No se alteró API/schema/migración.
+
+# 2026-11-19 — MiniWeb V2 PUBLIC-BLOCKS-01 — editor y contenido local, sin publicar
+
+- Se extendieron de forma opcional y compatible en el JSON schema-v1 los sub-bloques de promociones con expiración UTC, reviews con consentimiento/fuente, acción WhatsApp y formulario de contacto mailto. El form exige consentimiento del visitante y correo público de destino; prepara un borrador en el cliente, sin POST a Vecidya/GHL ni almacenamiento de la solicitud. El email depende del cliente de correo del visitante y no se verifica entrega.
+- El loader público filtra hidden sections, personas/reseñas sin consentimiento y promociones fuera de vigencia antes de serializar el payload al navegador. E2E comprobó contenido no consentido/hideado no filtrado al HTML.
+- E2E Worker/D1/R2 PASS con owner editando y guardando los nuevos campos en borrador sin cambiar la publicación vigente, promoción expirada omitida, WA/review/form visible, form sin consentimiento bloqueado y generación de mailto sin request POST; 75 capturas/5 anchos. Unitarias focales 17/17, typecheck/build PASS.
+- No hay migración nueva, operación remota, restore probado ni cambio de versión (`0.9.2`); sin deploy ni HTTP pública. Review/autosave, roles, plantillas, límites R2, analytics, accesibilidad humana y gates productivos siguen abiertos.
+
+# 2026-11-18 — MiniWeb V2 PUBLIC-SLUG-01 — implementación local, sin publicar
+
+- La ruta `/vecindario/:slug` resuelve V2 solo cuando existe publicación activa; si el sitio se convirtió desde V1, mantiene la URL V1 y no desplaza el perfil hasta publicación explícita. La URL V2 previa por ID redirige con 308; canonical/sitemap usan slugs. V1 y V2 conservan un `<main>` único y el footer público compartido con © 2026/versionado.
+- Migración forward-only `0046` añade `public_slug`, rellena los sitios anteriores como `site-<id>` y agrega unicidad. E2E aplicó `0000–0046` solo en D1 efímera vacía; no se consultó staging/producción ni se probó el backfill sobre filas V2 preexistentes.
+- RAN local: typecheck/build PASS; unitarias focales MiniWeb 15/15; Worker/D1/R2 E2E PASS, incluyendo publicación, conversión V1 y URL conservada, alias 308, sitemap/canonical, licencia/cupo, medios, teclado, main único, footer y 75 capturas en 320/390/768/1366/1920. El runner serializa Wrangler D1 con el Worker local; ningún reset de red afectó una petición funcional.
+- MiniWeb no queda completo ni certificado para release: workflow/revisión/autosave, bloques, roles, personalización de plantillas, límites de media, analytics, accesibilidad humana/WCAG, R2 remoto, migración sobre datos existentes, restore/rollback y cutover pendientes. Se conserva V1.
+- Versión `0.9.2`; sin D1/R2 remota, secrets, flags, merge, deploy ni HTTP pública fechada. Diagnóstico V9 y release conjunta permanecen pendientes.
+
 ## 2026-11-20 — UX-CRYSTAL (R1.5–R3, conciliación)
 
 - R1.5 (PR #261): correspondencias verificables entre biblioteca Crystal Depth y componentes/tokens efectivos del frontend.
@@ -10,12 +38,12 @@
 
 ---
 
-# 2026-11-17 — DIAG-V9-PRIVACY-GATE-01 — candidato local validado, aún sin PR
+# 2026-11-17 — DIAG-V9-PRIVACY-GATE-01 — integrado por PR #256 (V9 no activado)
 
 - Política vigente aclarada el 2026-11-16: ningún diagnóstico persiste en D1 respuestas, valores elegidos, transcript, identidad/run individual ni resultado, finalizado o no. Solo se permiten métricas agregadas/coarse-grained no reidentificables; replay/finalización son transitorios, el draft local TTL es 7 días y el resultado firmado se conserva localmente hasta 24 horas. Esta política supersede el criterio documental del 2026-11-14 sobre persistencia terminal consentida.
 - Las escrituras legacy de identidad/run/eventos/finalización/claim y la asociación de historiales a organizaciones quedan fail-closed aunque el flag V9 esté activo. Las ejecuciones completadas preexistentes se preservan y se sirven read-only solo al owner autenticado o visitante con prueba de recuperación, sin recalcular, exigir versiones runtime actuales ni mutar D1; usuarios distintos obtienen 404 y anónimos sin prueba 401. No se borran rutas, tablas ni filas.
-- `/diagnostico` no crea una identidad anónima D1 al entrar; el manejo de expiración del borrador local respeta Web Locks y notifica limpieza no confirmada. 40/40 unitarias focales, E2E Worker+D1 local aislada, typecheck, build y diff-check PASS (RAN 2026-11-17). Suite unitaria completa NO VERIFICADA. El E2E usa secreto Auth efímero en configuración local y elimina su D1/config en `finally`.
-- La versión de aplicación permanece en `0.9.2`; no se modificó el paquete/versionado ni la configuración Cloudflare. Sin secretos reales, migraciones remotas, deploy, publicación ni HTTP pública. El candidato requiere sincronización/revisión CI y PR; base original `cbdb73e`, `origin/main` vigente `76fad3eb` tras PR #255.
+- `/diagnostico` no crea una identidad anónima D1 al entrar; el manejo de expiración del borrador local respeta Web Locks y notifica limpieza no confirmada. PR #256 integra esta política en `main@3fab29da`; CI aprobó typecheck/build/regresión y omitió Diagnostic V9 W5/F04 por condición. REL-GATE-01 reejecutó la suite unitaria completa 2108/2108, 40/40 focales V9 y E2E Worker/D1 local PASS; audit total de desarrollo falla nueve findings y audit prod pasa. Esto no certifica V9 integral ni autoriza activación.
+- La versión de aplicación permanece en `0.9.2`; no se modificó el paquete/versionado ni la configuración Cloudflare. Sin secretos reales, migraciones remotas, deploy, activación ni HTTP pública nueva. El SHA de implementación de PR #256 es ancestro de `main@3fab29da`.
 
 # 2026-11-13 — auditoría de higiene documental
 

@@ -31,6 +31,7 @@ export const miniWebV2Site = sqliteTable(
   {
     id: text("id").primaryKey(),
     organizationId: text("organization_id").notNull().references(() => organization.id, { onDelete: "cascade" }),
+    publicSlug: text("public_slug"),
     ownerUserId: text("owner_user_id").notNull(),
     familyKey: text("family_key").notNull(),
     visualVariant: text("visual_variant").notNull(),
@@ -46,7 +47,7 @@ export const miniWebV2Site = sqliteTable(
     createdAt: integer("created_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).notNull(),
     updatedAt: integer("updated_at", { mode: "timestamp_ms" }).default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`).$onUpdate(() => new Date()).notNull(),
   },
-  (t) => [index("miniweb_v2_site_org_family_idx").on(t.organizationId, t.familyKey), index("miniweb_v2_site_owner_idx").on(t.ownerUserId)],
+  (t) => [uniqueIndex("miniweb_v2_site_public_slug_unique").on(t.publicSlug), index("miniweb_v2_site_org_family_idx").on(t.organizationId, t.familyKey), index("miniweb_v2_site_owner_idx").on(t.ownerUserId)],
 );
 
 export const miniWebV2Draft = sqliteTable("miniweb_v2_draft", {

@@ -37,6 +37,46 @@ test("IMP-05 initializes incomplete hours hidden so the first draft can publish"
   assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, true);
 });
 
+test("PUBLIC-BLOCKS-01 validates optional promo, WhatsApp, contact-form and consented review blocks additively", () => {
+  const document = createEmptyMiniWebV2Document(["hero", "products", "contact", "testimonials"]);
+  const hero = document.sections.find((entry) => entry.type === "hero");
+  const products = document.sections.find((entry) => entry.type === "products");
+  const contact = document.sections.find((entry) => entry.type === "contact");
+  const testimonials = document.sections.find((entry) => entry.type === "testimonials");
+  if (hero?.type === "hero") hero.content.title = "Mi negocio";
+  if (products?.type === "products") products.content.promotions = [{ id: "promo-1", title: "Oferta de temporada", description: "Condiciones publicadas por el negocio.", startsOn: null, endsOn: "2099-12-31", terms: null, cta: null }];
+  if (contact?.type === "contact") {
+    contact.content.email = "hola@example.test";
+    contact.content.whatsapp = { phone: "+15550100100", message: "Quiero información" };
+    contact.content.form = { title: "Escríbenos", introduction: "El correo se prepara en tu dispositivo.", submitLabel: "Preparar correo" };
+  }
+  if (testimonials?.type === "testimonials") testimonials.content.items = [{ id: "review-1", author: "Cliente", quote: "Experiencia compartida con permiso.", context: null, consented: true, sourceLabel: "Fuente pública", sourceUrl: "https://example.test/review/1", reviewedOn: "2026-11-19" }];
+
+  assert.equal(document.schemaVersion, 1, "optional blocks are additive to the existing document schema");
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, true);
+
+  if (contact?.type === "contact") contact.content.email = "not-an-email";
+  assert.equal(validateMiniWebV2Document(document).valid, true, "incomplete contact details remain editable in a draft");
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, false, "published forms require a valid public recipient address");
+
+  if (contact?.type === "contact") contact.content.email = "hola@example.test";
+  if (products?.type === "products") products.content.promotions![0]!.endsOn = "2026-02-31";
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, false, "calendar-invalid promotion dates are rejected");
+
+  if (products?.type === "products") products.content.promotions![0]!.endsOn = null;
+  assert.equal(validateMiniWebV2Document(document).valid, true, "an incomplete promotion can be saved as a draft");
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, false, "a promotion cannot be published without a valid end date");
+
+  if (products?.type === "products") products.content.promotions![0]!.endsOn = "2099-12-31";
+  if (contact?.type === "contact") contact.content.whatsapp = { phone: "123", message: null };
+  assert.equal(validateMiniWebV2Document(document).valid, true, "WhatsApp can be edited before the number is complete");
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, false, "WhatsApp targets require a plausible international number");
+
+  if (contact?.type === "contact") contact.content.whatsapp = { phone: "+15550100100", message: "Quiero información" };
+  if (testimonials?.type === "testimonials") testimonials.content.items[0]!.sourceUrl = "http://example.test/review/1";
+  assert.equal(validateMiniWebV2Document(document, { publishable: true }).valid, false, "review sources must use HTTPS");
+});
+
 test("APP-MINI-V2: los borradores legacy siguen siendo válidos sin diseño", () => {
   const original = createEmptyMiniWebV2Document(["hero"]);
   assert.equal(validateMiniWebV2Document(original).valid, true);

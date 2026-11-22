@@ -561,38 +561,12 @@ try {
   check(await platformPage.getByText("Hay cambios de borrador pendientes de publicación.").count() === 1, "la pantalla interna compara el snapshot completo para indicar cambios pendientes");
 
   const editorResponse = await page.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
-  check(editorResponse?.status() === 200, "el editor privado Mi MiniWeb responde para el owner");
-  const editorSteps = page.locator(".miniweb-editor__steps button");
-  const editorStepLabels = await editorSteps.allTextContents();
-  check(editorStepLabels.length === 5 && editorStepLabels.every((label, index) =>
-    label.includes(["Diseño", "Secciones", "Contenido", "Vista previa", "Publicar"][index])),
-  "el editor organiza Diseño, Secciones, Contenido, Vista previa y Publicar como pasos accesibles");
-  await page.getByRole("button", { name: "5 Publicar" }).click();
-  const publishCard = page.locator("#miniweb-publish");
-  check(await publishCard.isVisible() && await page.locator("#miniweb-step-title").innerText() === "Publicar",
-    "el paso Publicar muestra solo el apartado correcto");
-  check(await page.getByRole("button", { name: "5 Publicar" }).getAttribute("aria-pressed") === "true",
-    "la navegación comunica el paso activo");
-  await page.waitForFunction(() => {
-    const guide = document.querySelector("#miniweb-step-guide");
-    const header = document.querySelector(".app-header");
-    return Boolean(guide && header && guide.getBoundingClientRect().top >= header.getBoundingClientRect().bottom);
-  });
-  check(await page.evaluate(() => {
-    const guide = document.querySelector("#miniweb-step-guide");
-    const header = document.querySelector(".app-header");
-    return Boolean(guide && header && guide.getBoundingClientRect().top >= header.getBoundingClientRect().bottom);
-  }), "la guía del paso activo queda visible bajo la cabecera fija");
-  await page.getByRole("button", { name: "3 Contenido" }).click();
-  await page.getByRole("button", { name: /Archivos e identidad/ }).click();
-  const mediaPurposeValues = await page.locator(".miniweb-content-editor select[name='purpose'] option").evaluateAll((options) => options.map((option) => option.value));
-  check(mediaPurposeValues.join(",") === "gallery,cover,logo,icon", "el editor integrado expone galería, portada, logo e icono");
-  check(await page.getByRole("button", { name: "Retirar del borrador" }).count() === 5, "el editor permite retirar galería, logo, icono y portada del borrador");
-  await page.getByRole("button", { name: "4 Vista previa" }).click();
-  check(await page.locator(".miniweb-editor__preview .miniweb-standalone__header").isVisible(), "el preview muestra la cabecera real de MiniWeb");
-  check(await page.locator(".miniweb-editor__preview .miniweb-standalone__header img").count() === 1, "la cabecera de vista previa usa el logo cargado desde Archivos e identidad");
-  check(await page.locator(".miniweb-editor__publication-state").getByText("Hay cambios guardados que todavía no se han publicado.").count() === 1, "el estado de MiniWeb identifica cambios de perfil/horarios aunque el diseño siga igual");
-  await page.getByRole("button", { name: "5 Publicar" }).click();
+  check(editorResponse?.status() === 200, "el editor V2 canónico /app/miniweb responde para el owner");
+  await page.getByRole("heading", { name: "Diseña tu sitio" }).waitFor();
+  check(await page.getByRole("button", { name: "Importar contenido de mi sitio anterior" }).isEnabled(), "el editor V2 ofrece una importación manual consentida sin reemplazar el sitio V1");
+  check(await page.locator("#miniweb-v2-preview .miniweb-v2").count() === 1, "la vista previa del editor canónico usa el renderer V2");
+  check(await page.locator(".miniweb-editor__steps").count() === 0, "la ruta canónica no monta el editor V1");
+
   const ownerBContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
   const ownerBPage = await ownerBContext.newPage();
   await ownerBPage.goto(new URL("/login", baseUrl).toString(), { waitUntil: "networkidle" });
@@ -602,37 +576,13 @@ try {
   await ownerBPage.waitForURL((url) => url.pathname === "/app", { timeout: 15000 });
   await ownerBPage.goto(new URL("/app/miniweb", baseUrl).toString(), { waitUntil: "networkidle" });
   await ownerBPage.locator("#organization-switcher").selectOption(organizationD);
-  await ownerBPage.getByText(`Trabajando en MiniWeb org-d ${suffix}.`).waitFor();
-  await ownerBPage.getByRole("button", { name: "2 Secciones" }).click();
-  check(organizationDConfig.draftRevision !== (await orgBRevisionAdvance.json()).draftRevision, "las organizaciones B y D usan revisiones distintas para hacer determinista el cambio de contexto");
-  const aboutToggle = ownerBPage.locator('.miniweb-module-list__item[data-module-type="about"] input[type="checkbox"]');
-  await aboutToggle.setChecked(!(await aboutToggle.isChecked()));
-  const switchedOrgSaveRequest = ownerBPage.waitForRequest((request) => request.url().includes(`/api/organizations/${organizationD}/miniweb-config`) && request.method() === "POST");
-  await ownerBPage.getByRole("button", { name: "Guardar borrador" }).click();
-  const switchedOrgRequest = await switchedOrgSaveRequest;
-  const switchedOrgBody = switchedOrgRequest.postDataJSON();
-  check(switchedOrgBody.draftRevision === organizationDConfig.draftRevision, "al cambiar de organización, MiniWeb asocia su configuración con la revisión de D");
-  await ownerBPage.getByRole("status").filter({ hasText: "Borrador guardado." }).waitFor();
+  await ownerBPage.getByRole("heading", { name: "Diseña tu sitio" }).waitFor();
+  check(await ownerBPage.locator("#organization-switcher").inputValue() === organizationD, "el editor V2 recarga el contexto de organización seleccionado sin reutilizar estado de otro tenant");
   await ownerBContext.close();
-  const designBeforeDataOnlyPublish = await (await ownerA.client.json(pathA, null, "GET")).json();
-  await page.getByRole("button", { name: "Publicar configuración" }).click();
-  await page.getByRole("status").filter({ hasText: "La página completa quedó publicada." }).waitFor();
-  const dataOnlyPublishedState = await (await ownerA.client.json(pathA, null, "GET")).json();
-  const dataOnlySnapshotRow = (await d1(`SELECT snapshot_json FROM business_profile_publication WHERE organization_id = '${organizationA}';`))[0];
-  const dataOnlySnapshot = JSON.parse(dataOnlySnapshotRow.snapshot_json);
-  check(JSON.stringify(dataOnlyPublishedState.draftConfiguration) === JSON.stringify(designBeforeDataOnlyPublish.draftConfiguration), "publicar solo perfil/horarios conserva la configuración MiniWeb sin editar el diseño");
-  check(dataOnlySnapshot.profile.phone === winnerPhone && dataOnlySnapshot.profile.description === hoursConflictWinnerProfile.description && dataOnlySnapshot.hours.some((entry) => entry.dayOfWeek === 1 && entry.opensAt === "08:30" && entry.closesAt === "16:30"), "la publicación de cambios solo de teléfono y horarios guarda el snapshot completo actualizado");
   await platformPage.goto(new URL(`/app/internal/organizations/${organizationA}/miniweb`, baseUrl).toString(), { waitUntil: "networkidle" });
   check(await platformPage.getByRole("button", { name: "Publicar MiniWeb" }).isDisabled(), "la pantalla interna deshabilita publicación cuando el snapshot completo ya coincide");
   check(await platformPage.getByText("El perfil, los horarios y la configuración coinciden con la versión publicada.").count() === 1, "la pantalla interna confirma el estado completo publicado");
   await platformContext.close();
-  check(await page.getByRole("heading", { name: "Mi MiniWeb", level: 1 }).count() === 1, "el editor presenta el punto de entrada Mi MiniWeb");
-  await page.getByRole("button", { name: "2 Secciones" }).click();
-  check(await page.getByRole("checkbox", { name: "Desactivar Presentación" }).isDisabled(), "la sección hero requerida no se puede apagar");
-  check(await page.locator('.miniweb-module-list__item[data-module-type="gallery"]').count() === 1 && await page.locator('.miniweb-module-list__item[data-module-type="products"]').count() === 1, "el editor ofrece Galería y Productos ya implementados");
-  const renderedModuleOrder = await page.locator(".miniweb-module-list__item").evaluateAll((elements) => elements.map((element) => element.getAttribute("data-module-type")));
-  const availableModuleOrder = published.draftConfiguration.modules.filter((module) => ["hero", "about", "contact", "hours", "services", "gallery", "location", "products", "faq"].includes(module.type)).map((module) => module.type);
-  check(renderedModuleOrder.join(",") === availableModuleOrder.join(","), "la lista de secciones visualiza el orden de los módulos disponibles");
   const viewportResults = [];
   const captureDirectory = process.env.MINIWEB_CAPTURE_DIR ?? join(process.cwd(), ".playwright-mcp");
   mkdirSync(captureDirectory, { recursive: true });

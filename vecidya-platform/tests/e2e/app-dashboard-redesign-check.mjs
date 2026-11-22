@@ -203,20 +203,22 @@ INSERT INTO member (id,organization_id,user_id,role,created_at) SELECT ${sqlLite
     return { status: response.status, body: await response.json() };
   }, organizationId);
   if (draftResponse.status !== 201 || typeof draftResponse.body.siteId !== "string") throw new Error(`La creación local del borrador MiniWeb V2 falló: ${JSON.stringify(draftResponse)}.`);
-  await page.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(draftResponse.body.siteId)}`, baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.getByRole("heading", { name: "Editor V2" }).waitFor();
-  await page.getByRole("region", { name: "Vista previa" }).locator(".miniweb-v2[data-family='services-studio'][data-variant='premium']").waitFor();
+  await page.goto(new URL(`/app/miniweb?site=${encodeURIComponent(draftResponse.body.siteId)}`, baseUrl).toString(), { waitUntil: "networkidle" });
+  if (!page.url().includes("/app/miniweb?site=")) throw new Error("La ruta canónica del editor MiniWeb V2 debe ser /app/miniweb.");
+  await page.getByRole("heading", { name: "Diseña tu sitio" }).waitFor();
+  const miniwebPreview = page.locator("#miniweb-v2-preview .miniweb-v2[data-family='services-studio'][data-variant='premium']");
+  if (await miniwebPreview.count() !== 1) throw new Error("El editor no renderizó la vista previa V2 del sitio actual.");
+  await page.getByRole("link", { name: "Ver vista previa actual" }).click();
+  await miniwebPreview.waitFor();
   for (const width of [320, 390, 768, 1366, 1920]) {
     await page.setViewportSize({ width, height: width < 500 ? 844 : width === 768 ? 1024 : 900 });
-    await assertNoOverflow(page, `${width}px /app/miniweb-v2`);
+    await assertNoOverflow(page, `${width}px /app/miniweb`);
     if (screenshotDirectory) await page.screenshot({ path: join(screenshotDirectory, `vecidya-miniweb-editor-${width}.png`), fullPage: true });
   }
-  await page.getByLabel("Familia del próximo sitio").selectOption("catalog-store");
-  await page.getByLabel("Variante visual del próximo sitio").selectOption("pro");
-  if (await page.locator(".miniweb-v2").getAttribute("data-family") !== "services-studio" || await page.locator(".miniweb-v2").getAttribute("data-variant") !== "premium") throw new Error("Cambiar la familia/variante del próximo sitio alteró la vista previa del borrador actual.");
+  if (await miniwebPreview.getAttribute("data-family") !== "services-studio" || await miniwebPreview.getAttribute("data-variant") !== "premium") throw new Error("La vista previa no conserva la familia y variante del sitio editado.");
   await page.keyboard.press("Tab");
   await page.emulateMedia({ reducedMotion: "reduce" });
-  const reducedMotion = await page.locator(".miniweb-v2").evaluate((element) => getComputedStyle(element).scrollBehavior);
+  const reducedMotion = await miniwebPreview.evaluate((element) => getComputedStyle(element).scrollBehavior);
   if (reducedMotion === "smooth") throw new Error("MiniWeb V2 no respetó prefers-reduced-motion.");
 
   phase = "internal dashboard and mobile navigation";

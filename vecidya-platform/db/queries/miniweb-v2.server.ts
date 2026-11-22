@@ -1,15 +1,16 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, or, sql } from "drizzle-orm";
 import type { Database } from "../client.server";
 import { miniWebV2Draft, miniWebV2Publication, miniWebV2PublicationSlot, miniWebV2Site } from "../schema/miniweb";
+import { businessProfile, businessProfilePublication } from "../schema/auth";
 import { billingAccount, billingMiniwebCapacityExtension, organizationLicense } from "../schema/licensing";
 import { calculateMiniWebCapacity } from "../../app/features/miniweb-v2/capacity";
 
 export type MiniWebV2SiteInput = {
-  id: string; organizationId: string; ownerUserId: string; familyKey: string; visualVariant: string;
+  id: string; organizationId: string; publicSlug: string; ownerUserId: string; familyKey: string; visualVariant: string;
 };
 
 export async function listMiniWebV2Sites(database: Database, organizationId: string) {
-  return database.select({ id: miniWebV2Site.id, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, createdAt: miniWebV2Site.createdAt })
+  return database.select({ id: miniWebV2Site.id, publicSlug: miniWebV2Site.publicSlug, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, createdAt: miniWebV2Site.createdAt })
     .from(miniWebV2Site).where(eq(miniWebV2Site.organizationId, organizationId)).orderBy(miniWebV2Site.createdAt);
 }
 
@@ -36,6 +37,17 @@ export async function getMiniWebV2PublicationCapacity(database: Database, ownerU
   return { capacity, occupied: slots.length, available: Math.max(0, capacity - slots.length) };
 }
 
+/** A converted site may take over only its own published V1 URL. */
+export async function isMiniWebV2PublicSlugAvailable(database: Database, slug: string, organizationId?: string) {
+  const [site] = await database.select({ id: miniWebV2Site.id }).from(miniWebV2Site)
+    .where(eq(miniWebV2Site.publicSlug, slug)).limit(1);
+  if (site) return false;
+  const [profile] = await database.select({ organizationId: businessProfile.organizationId }).from(businessProfile)
+    .leftJoin(businessProfilePublication, eq(businessProfilePublication.organizationId, businessProfile.organizationId))
+    .where(or(eq(businessProfile.slug, slug), eq(businessProfilePublication.publishedSlug, slug))).limit(1);
+  return !profile || profile.organizationId === organizationId;
+}
+
 /** Creates an empty V2 site and revision-zero draft atomically. Caller must authorize org membership. */
 export async function createMiniWebV2Site(database: Database, input: MiniWebV2SiteInput & { documentJson?: string; conversion?: { sourceOrganizationId: string; sourcePublicationVersion: number; reportJson: string; consentedAt: Date; consentedByUserId: string } }) {
   const { documentJson, conversion, ...site } = input;
@@ -43,7 +55,7 @@ export async function createMiniWebV2Site(database: Database, input: MiniWebV2Si
     database.insert(miniWebV2Site).values({ ...site, sourceOrganizationId: conversion?.sourceOrganizationId ?? null, sourcePublicationVersion: conversion?.sourcePublicationVersion ?? null, conversionMigrationVersion: conversion ? 1 : null, conversionReportJson: conversion?.reportJson ?? null, conversionConsentedAt: conversion?.consentedAt ?? null, conversionConsentedByUserId: conversion?.consentedByUserId ?? null, draftRevision: documentJson ? 1 : 0 }),
     database.insert(miniWebV2Draft).values({ siteId: site.id, revision: documentJson ? 1 : 0, schemaVersion: 1, documentJson: documentJson ?? JSON.stringify({ schemaVersion: 1, sections: [] }), updatedByUserId: conversion?.consentedByUserId ?? site.ownerUserId }),
   ]);
-  return { siteId: site.id, revision: documentJson ? 1 : 0 };
+  return { siteId: site.id, publicSlug: site.publicSlug, revision: documentJson ? 1 : 0 };
 }
 
 /** Revision CAS. The site increment and draft replacement are one D1 batch transaction. */
@@ -115,17 +127,30 @@ export async function getPublishedMiniWebV2(database: Database, siteId: string, 
 
 /** Public lookup follows only the site's active publication pointer, never its draft. */
 export async function getPublicMiniWebV2BySiteId(database: Database, siteId: string) {
-  const [row] = await database.select({ siteId: miniWebV2Site.id, organizationId: miniWebV2Site.organizationId, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
+  const [row] = await database.select({ siteId: miniWebV2Site.id, publicSlug: miniWebV2Site.publicSlug, organizationId: miniWebV2Site.organizationId, sourceOrganizationId: miniWebV2Site.sourceOrganizationId, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
     .from(miniWebV2Site).innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
     .where(and(eq(miniWebV2Site.id, siteId), eq(miniWebV2Publication.siteId, miniWebV2Site.id))).limit(1);
   return row ?? null;
 }
 
+export async function getPublicMiniWebV2BySlug(database: Database, slug: string) {
+  const [row] = await database.select({ siteId: miniWebV2Site.id, publicSlug: miniWebV2Site.publicSlug, organizationId: miniWebV2Site.organizationId, sourceOrganizationId: miniWebV2Site.sourceOrganizationId, familyKey: miniWebV2Site.familyKey, visualVariant: miniWebV2Site.visualVariant, publicationId: miniWebV2Site.activePublicationId, revision: miniWebV2Publication.revision, schemaVersion: miniWebV2Publication.schemaVersion, documentJson: miniWebV2Publication.documentJson })
+    .from(miniWebV2Site).innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
+    .where(and(eq(miniWebV2Site.publicSlug, slug), eq(miniWebV2Publication.siteId, miniWebV2Site.id))).limit(1);
+  return row ?? null;
+}
+
 
 /** Solo rutas con puntero a publicación activa. No filtra ningún borrador. */
-export async function listPublicMiniWebV2SiteIds(database: Database): Promise<string[]> {
-  const rows = await database.select({ id: miniWebV2Site.id }).from(miniWebV2Site)
+export async function listPublicMiniWebV2Slugs(database: Database): Promise<string[]> {
+  const rows = await database.select({ slug: miniWebV2Site.publicSlug }).from(miniWebV2Site)
     .innerJoin(miniWebV2Publication, eq(miniWebV2Site.activePublicationId, miniWebV2Publication.id))
-    .orderBy(miniWebV2Site.id);
-  return rows.map((row) => row.id);
+    .where(sql`${miniWebV2Site.publicSlug} IS NOT NULL AND NOT EXISTS (
+      SELECT 1 FROM business_profile bp
+      LEFT JOIN business_profile_publication bpp ON bpp.organization_id = bp.organization_id
+      WHERE (bp.slug = ${miniWebV2Site.publicSlug} OR bpp.published_slug = ${miniWebV2Site.publicSlug})
+        AND (bp.organization_id <> ${miniWebV2Site.organizationId} OR ${miniWebV2Site.sourceOrganizationId} IS NULL)
+    )`)
+    .orderBy(miniWebV2Site.publicSlug);
+  return rows.flatMap((row) => row.slug ? [row.slug] : []);
 }

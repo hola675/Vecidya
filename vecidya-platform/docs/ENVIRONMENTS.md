@@ -1,3 +1,7 @@
+## PUBLIC-SLUG-01 / PUBLIC-BLOCKS-01 / PUBLIC-EDITOR-01 — checkpoint local MiniWeb V2 (2026-11-19)
+
+Branch `feat/app-mini-vecindario-v2-route-01` basada en `origin/main@3fab29da`; versión `0.9.2`. Migración `0046`, bloques opcionales y editor autosave/self-review se probaron solo con Worker/D1/R2 Wrangler locales; no se añadió otra migration ni se cambiaron bindings. El form usa `mailto:` local del visitante, sin CRM/POST. Tests PASS de retry manual ante error, CAS conflict/reload, review/confirm publish. Sin ledger/backup de datos remotos, sin deploy ni HTTP pública fechada; ledger/backfill `0046` en staging/prod **NO VERIFICADO**. Release conjunta sigue NO-GO.
+
 ## UX-CRYSTAL-R4 — laboratorio local ampliado (2026-11-20, pendiente de ejecución)
 
 El fixture de `dev:local-demo` se amplió de 4 a **10 organizaciones sintéticas** con descripciones, ciudades, servicios, preguntas frecuentes, galería, dos catálogos de muestra y tres cuentas QA con permisos distintos. La información histórica sobre cuatro organizaciones describe la ejecución del 2026-11-11, no el objetivo del nuevo checkpoint. Para inicializar, ejecutar `pnpm run dev:local-demo` en una terminal y `pnpm run seed:local-demo`, `pnpm run status:local-demo` y `pnpm run review:local-demo` en otra. El script Playwright abre Chromium visible, guarda capturas en `test-results/ux-crystal-r4-manual` y permite inspección humana. Más detalles, credenciales y advertencias: [UX-CRYSTAL-R4-LOCAL-REVIEW.md](./UX-CRYSTAL-R4-LOCAL-REVIEW.md).
