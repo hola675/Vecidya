@@ -1,3 +1,21 @@
+## UX-CRYSTAL-R3 — snapshot del contrato visual (candidato; no desplegado)
+
+**Fuente CODE/GIT:** PR #261 integra R1.5 (correspondencias del laboratorio con React); PR #262 implementa seis primitivos presentacionales; #263 retícula pública; #264 superficie Admin; #265 editor MiniWeb. No hubo cambio al renderer público de negocios, permisos, scoring, licencias, persistencia ni CRM.
+
+**R3 en revisión:** `app/lib/visual-rollout.ts` ofrece reversión independiente de cinco familias de rutas ya integradas y mantiene dos futuras apagadas. `scripts/ux-verify-http.mjs` aporta GET anónimo limitado a destinos explícitos. Es un mecanismo **versionado en código**, sin flag runtime externo, sin rollback en caliente, sin relación con derechos comerciales.
+
+**Pendiente:** CI sobre HEAD R3, R2 visual completo y gate de release autorizado. Sin comprobación pública HTTP de la versión actual: no inferir que estos commits estén desplegados por estar en `main`. No declarar fase cerrada solo con contrato o tests.
+
+---
+
+## UX-CRYSTAL-R1.7 — adopción focal pública de retícula (candidato de revisión)
+
+El checkpoint utiliza `v-section-heading` ya existente en `visual-system.css` sin importar CSS de Crystal Depth ni cambiar componentes de negocio: cuatro encabezados de Inicio, el encabezado de resultados de Vecindario y dos secciones informativas de Servicios. Conserva H2, atributos `id`, enlaces reales, etiquetas y datos publicados. La validación base es el contrato focal en `tests/unit/public-navigation.test.ts` y la CI general; no se declara revisión visual integral ni cambio de diseño de Aprende.
+
+**Dependencia:** compatibilidad R1.5 integrada en `main`. R1.6 (componentes tipados) está en PR distinto y no es dependencia del código de esta fase. No añadir un segundo catálogo de navegación ni elementos funcionales falsos.
+
+---
+
 ## UX-PREMIUM-SYSTEM-02 — sistema visual compartido (candidato local, 2026-11-11)
 
 La guía oficial en `docs/design-system/VECIDYA-UI-UX.md` consolida composición, retícula, espacio negativo, niveles de vidrio y relieve, paleta, tipografía, iconografía, usos de Vico, Vecindario/rutas, reglas por superficie, movimiento, prompts y QA. Incluye dos imágenes originales como referencias de acabado. En el código, `visual-system.css` aporta atmósferas, superficies reutilizables y escalas de composición; Card expone variantes de superficie y profundidad, y las tarjetas compartidas las consumen. El encabezado público usa una capa explícita para mantener navegación móvil y desplegables por encima del hero. Typecheck, build, prueba unitaria focal de experiencia (6/6) y navegación Playwright PASS (2026-11-12). El alcance es una fundación compartida, no una certificación página por página. No cambia contenido funcional, datos, permisos, rutas ni publicación.

@@ -577,14 +577,4 @@
     transition: none !important;
   }
 
-  .public-home .home-hero-visual__product,
-  .public-home .home-hero-visual__vico,
-  .public-home .home-hero-visual__brand {
-    animation: home-image-soften 180ms ease-out both !important;
-  }
-}
-
-@keyframes home-image-soften {
-  from { opacity: .9; }
-  to { opacity: 1; }
 }

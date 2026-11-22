@@ -10,10 +10,13 @@ import { cloudflareContext } from "../../server/cloudflare-context";
 import { ensureMiniWebV2Hero, miniWebV2EditorKey } from "../features/miniweb-v2/editor-state";
 import { ClientAreaShell } from "../components/client-area-shell";
 import { Button, Card } from "../components/ui";
+import { MiniWebV2DesignControls } from "../components/miniweb-v2-design-controls";
+import { MINIWEB_V2_DEFAULT_DESIGN, validateMiniWebV2Design, type MiniWebV2Design } from "../features/miniweb-v2/visual-design";
 import { MiniWebV2Renderer } from "../components/miniweb-v2-renderer";
 import { MiniWebV2SectionForm, MINIWEB_V2_SECTION_LABELS } from "../components/miniweb-v2-section-form";
 import { createEmptyMiniWebV2Document, MINIWEB_V2_SECTION_TYPES, validateMiniWebV2Document, validateMiniWebV2Section, type MiniWebV2Document, type MiniWebV2Section, type MiniWebV2SectionType } from "../features/miniweb-v2/sections";
 import { MINIWEB_V2_FAMILY_CATALOG, MINIWEB_V2_VARIANTS, type MiniWebV2Family, type MiniWebV2Variant } from "../features/miniweb-v2/visual-families";
+import { isVisualFeatureEnabled } from "../lib/visual-rollout";
 import type { Route } from "./+types/miniweb-v2-editor";
 
 const templateCategories = [
@@ -22,6 +25,21 @@ const templateCategories = [
   { label: "Gastronomía y experiencias", families: ["gastronomy-table"] },
 ] as const;
 const variantLabels = { base: "Clásico", pro: "Editorial", premium: "Impacto" } as const;
+
+const sectionGuidance: Record<MiniWebV2SectionType, string> = {
+  hero: "Explica en pocas palabras qué ofrece tu negocio. Es lo primero que verá quien entre al sitio.",
+  about: "Cuenta a qué te dedicas y qué debería saber alguien que todavía no te conoce.",
+  services: "Describe cada servicio con palabras que una persona pueda entender sin conocimientos técnicos.",
+  products: "Muestra los productos disponibles; evita prometer precios o existencias que no estén confirmados.",
+  gallery: "Selecciona imágenes propias de tu negocio y describe su contenido para accesibilidad.",
+  contact: "Comprueba los datos que podrán utilizar los visitantes para comunicarse contigo.",
+  location: "Indica dónde atiendes o qué zonas cubres, según tu forma real de trabajar.",
+  faq: "Responde preguntas frecuentes de forma breve, directa y verificable.",
+  team: "Presenta personas solo con su consentimiento para publicar información personal.",
+  certifications: "Añade únicamente acreditaciones reales cuya procedencia puedas demostrar.",
+  testimonials: "Publica reseñas auténticas con autorización de quien las compartió.",
+  hours: "Indica la zona horaria y los horarios verdaderos; añade excepciones para los días especiales.",
+};
 
 export function meta() {
   return [{ title: "Diseña tu sitio | Vecidya" }];
@@ -49,12 +67,15 @@ export default function MiniWebV2Editor() {
 }
 
 function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
+  const editorSurface = isVisualFeatureEnabled("miniWebEditorSolid") ? "solid" : "glass";
   const fetcher = useFetcher();
   const reloadFetcher = useFetcher<typeof loader>();
   const { revalidate } = useRevalidator();
   const initialDocument = () => ensureMiniWebV2Hero(data.state?.document);
   const [document, setDocument] = useState<MiniWebV2Document>(initialDocument);
   const [savedDocument, setSavedDocument] = useState<MiniWebV2Document>(initialDocument);
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(() => document.sections[0]?.id ?? null);
+  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
   const [revision, setRevision] = useState(data.state?.revision ?? 0);
   const [notice, setNotice] = useState("");
   const [serverErrors, setServerErrors] = useState<string[]>([]);
@@ -68,6 +89,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const [sectionToAdd, setSectionToAdd] = useState<MiniWebV2SectionType>("about");
   const [family, setFamily] = useState<MiniWebV2Family>((data.state?.site.familyKey as MiniWebV2Family | undefined) ?? "vecidya-default");
   const [variant, setVariant] = useState<MiniWebV2Variant>((data.state?.site.visualVariant as MiniWebV2Variant | undefined) ?? "base");
+  const [createDesign, setCreateDesign] = useState<MiniWebV2Design>({ ...MINIWEB_V2_DEFAULT_DESIGN });
   const pending = useRef<{ operation: string; document: MiniWebV2Document; automatic: boolean; previousData: unknown; started: boolean } | null>(null);
   const autoSaveTimer = useRef<number | null>(null);
   const reloadConflictPending = useRef(false);
@@ -76,6 +98,9 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   const editing = fetcher.state !== "idle";
   const validation = useMemo(() => validateMiniWebV2Document(document), [document]);
   const publicationValidation = useMemo(() => validateMiniWebV2Document(document, { publishable: true }), [document]);
+  const orderedSections = [...document.sections].sort((a, b) => a.order - b.order);
+  const activeSectionIndex = Math.max(0, orderedSections.findIndex((section) => section.id === activeSectionId));
+  const activeSection = orderedSections[activeSectionIndex];
   const blocker = useBlocker(({ currentLocation, nextLocation }) => isDirty &&
     (currentLocation.pathname !== nextLocation.pathname || currentLocation.search !== nextLocation.search));
 
@@ -156,6 +181,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       setDocument(next); setSavedDocument(next);
       setSaveError(null);
       setReviewOpen(false); setReviewAcknowledged(false); setReviewedRevision(null);
+      setActiveSectionId((current) => next.sections.some((section) => section.id === current) ? current : next.sections[0]?.id ?? null);
     }
   }, [data.state, revision, isDirty]);
 
@@ -303,7 +329,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   function importPublishedV1() {
     if (isDirty) { setNotice("Guarda o descarta tus cambios antes de crear otro sitio."); return; }
     if (!window.confirm("Se creará un sitio independiente desde la última publicación anterior. Horarios, estilos y datos privados no se importarán. No se publicará automáticamente. ¿Continuar?")) return;
-    submit("create-from-published-v1", { confirm: true, familyKey: family, visualVariant: variant });
+    submit("create-from-published-v1", { confirm: true, familyKey: family, visualVariant: variant, design: createDesign });
   }
   function updateSection(section: MiniWebV2Section) {
     setDocument((value) => ({ ...value, sections: value.sections.map((item) => item.id === section.id ? section : item) }));
@@ -313,6 +339,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
     const item = createEmptyMiniWebV2Document([sectionToAdd]).sections[0];
     if (!item || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))) return;
     setDocument((value) => ({ ...value, sections: [...value.sections, { ...item, order: value.sections.length }] }));
+    setActiveSectionId(item.id);
   }
   function moveSection(id: string, direction: -1 | 1) {
     setDocument((value) => {
@@ -325,6 +352,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
   }
   function removeSection(id: string) {
     setDocument((value) => ({ ...value, sections: value.sections.filter((item) => item.id !== id).map((item, order) => ({ ...item, order })) }));
+    if (activeSectionId === id) setActiveSectionId(orderedSections.find((item) => item.id !== id)?.id ?? null);
   }
   const mediaUrl = (id: string) => `/api/organizations/${encodeURIComponent(data.organization.id)}/business-media/${encodeURIComponent(id)}`;
   const saveStatusText = saveError === "conflict"
@@ -346,16 +374,21 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       {data.sites.length > 1 ? <nav aria-label="Elegir sitio web" className="miniweb-v2-editor__sites">
         <strong>Mis sitios</strong>{data.sites.map((site, index) => <Link key={site.id} to={`/app/miniweb-v2?site=${encodeURIComponent(site.id)}`} aria-current={data.state?.site.id === site.id ? "page" : undefined}>Sitio {index + 1} · {MINIWEB_V2_FAMILY_CATALOG[site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}</Link>)}
       </nav> : null}
-      {!data.canEdit ? <Card><p>Tienes permiso para consultar este sitio, pero no para cambiarlo.</p></Card> : null}
-      {!data.state ? <Card><h2>Elige un punto de partida</h2><p>Selecciona un diseño para tu actividad. Todos pueden adaptarse después.</p>
+      {data.state ? <nav className="miniweb-v2-editor__review-nav" aria-label="Accesos del editor"><a href="#miniweb-v2-sections" aria-current={mobileView === "edit" ? "true" : undefined} onClick={() => setMobileView("edit")}>Editar secciones</a><a href="#miniweb-v2-preview" aria-current={mobileView === "preview" ? "true" : undefined} onClick={() => setMobileView("preview")}>Ver vista previa actual</a><span>{isDirty ? "Cambios locales sin guardar" : "Borrador guardado"}</span></nav> : null}
+      <div className="miniweb-v2-editor__workspace" data-mobile-view={mobileView}>
+        <div className="miniweb-v2-editor__controls">
+      {!data.canEdit ? <Card surface={editorSurface}><p>Tienes permiso para consultar este sitio, pero no para cambiarlo.</p></Card> : null}
+      {!data.state ? <Card surface={editorSurface}><h2>Elige un punto de partida</h2><p>Selecciona un diseño para tu actividad. Todos pueden adaptarse después.</p>
         <div className="miniweb-v2-editor__template-grid">{templateCategories.map((group) => <fieldset key={group.label}><legend>{group.label}</legend>
           {group.families.map((key) => <label key={key} className={`miniweb-v2-editor__template${family === key ? " is-selected" : ""}`}><input type="radio" name="family" checked={family === key} disabled={!data.canEdit} onChange={() => setFamily(key)}/><strong>{MINIWEB_V2_FAMILY_CATALOG[key].label}</strong><small>{MINIWEB_V2_FAMILY_CATALOG[key].description}</small></label>)}
         </fieldset>)}</div>
         <label>Estilo visual<select value={variant} disabled={!data.canEdit} onChange={(event) => setVariant(event.currentTarget.value as MiniWebV2Variant)}>{MINIWEB_V2_VARIANTS.map((value) => <option key={value} value={value}>{variantLabels[value]}</option>)}</select></label>
-        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing} onClick={() => submit("create", { familyKey: family, visualVariant: variant })}>Crear mi sitio</Button>
-          <Button tone="secondary" disabled={!data.canEdit || editing} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
+        <MiniWebV2DesignControls value={createDesign} onChange={setCreateDesign} disabled={!data.canEdit}/>
+        <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setCreateDesign({ ...MINIWEB_V2_DEFAULT_DESIGN })}>Restaurar estilo inicial</Button>
+        <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={() => submit("create", { familyKey: family, visualVariant: variant, design: createDesign })}>Crear mi sitio</Button>
+          <Button tone="secondary" disabled={!data.canEdit || editing || !validateMiniWebV2Design(createDesign)} onClick={importPublishedV1}>Importar contenido de mi sitio anterior</Button></div>
       </Card> : <>
-        <Card><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{saveError === null && !isDirty ? "✓ " : "● "}{saveStatusText}</p>
+        <Card surface={editorSurface}><h2>Estado de tu sitio</h2><p aria-live="polite" className="miniweb-v2-editor__status">{saveError === null && !isDirty ? "✓ " : "● "}{saveStatusText}</p>
           <p>Diseño: {MINIWEB_V2_FAMILY_CATALOG[data.state.site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}. Estilo: {variantLabels[data.state.site.visualVariant as MiniWebV2Variant] ?? "Personalizado"}.</p>
           <p>Dirección pública: {data.state.site.publicSlug ? `/vecindario/${data.state.site.publicSlug}` : "Pendiente de asignación"}</p>
           <p>{data.state.site.activePublicationId && data.state.site.publicSlug
@@ -368,30 +401,58 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
         {reviewOpen && reviewedRevision !== null ? <section className="miniweb-v2-editor__review" aria-labelledby="miniweb-v2-review-heading">
           <h2 id="miniweb-v2-review-heading">Revisión previa · revisión {reviewedRevision}</h2>
           <p>Comprueba la vista previa privada y confirma los enlaces, datos de contacto, promociones y permisos de las reseñas. Esta confirmación la realiza la persona editora; no representa aprobación de un tercero.</p>
-          <a href="#miniweb-v2-review-preview">Ir a la vista previa privada</a>
+          <a href="#miniweb-v2-preview" onClick={() => setMobileView("preview")}>Ir a la vista previa privada</a>
           <label><input type="checkbox" checked={reviewAcknowledged} disabled={!data.canEdit || editing || saving || isDirty || saveError !== null} onChange={(event) => setReviewAcknowledged(event.currentTarget.checked)}/> Revisé la vista previa guardada y confirmo que está lista para publicar.</label>
           <div className="miniweb-v2-editor__actions">
             <Button disabled={!data.canEdit || editing || saving || isDirty || reviewedRevision !== revision || !reviewAcknowledged || !publicationValidation.valid || saveError !== null} onClick={publish}>Confirmar revisión y publicar revisión {reviewedRevision}</Button>
             <Button tone="secondary" disabled={editing || saving} onClick={() => { setReviewOpen(false); setReviewAcknowledged(false); setReviewedRevision(null); }}>Volver al editor</Button>
           </div>
         </section> : null}
-        {data.state.site.conversionReportJson ? <Card><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
-        <Card><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
+        <Card surface={editorSurface} className="miniweb-v2-editor__design-card"><details className="miniweb-v2-editor__design-details"><summary>Personalizar diseño y colores del negocio</summary>
+          <p>Ajusta la identidad visual de tu negocio. La vista previa se actualiza inmediatamente; guarda los cambios para conservarlos.</p>
+          <MiniWebV2DesignControls value={document.design ?? { ...MINIWEB_V2_DEFAULT_DESIGN }} disabled={!data.canEdit || editing}
+            onChange={(next) => { setDocument((current) => ({ ...current, design: next })); setServerErrors([]); }}/>
+          <div className="miniweb-v2-editor__actions">
+            <Button tone="secondary" disabled={!data.canEdit || editing} onClick={() => setDocument((current) => ({ ...current, design: { ...MINIWEB_V2_DEFAULT_DESIGN } }))}>Restaurar estilo inicial</Button>
+            <Button disabled={!data.canEdit || editing || saving || !isDirty || !validation.valid} onClick={() => save(false)}>Guardar estilo y contenido</Button>
+          </div>
+        </details></Card>
+        {data.state.site.conversionReportJson ? <Card surface={editorSurface}><h2>Contenido importado</h2><p>El sitio anterior sigue intacto. Se copiaron datos de la publicación {data.state.site.sourcePublicationVersion}; los horarios no se importaron.</p><details><summary>Ver detalles de la importación</summary><pre>{data.state.site.conversionReportJson}</pre></details></Card> : null}
+        <Card id="miniweb-v2-sections" surface={editorSurface}><h2>Secciones de tu sitio</h2><p>Añade lo que necesites, activa cada sección y define el orden de aparición.</p>
           <div className="miniweb-v2-editor__actions"><label>Nueva sección<select value={sectionToAdd} disabled={!data.canEdit} onChange={(event) => setSectionToAdd(event.currentTarget.value as MiniWebV2SectionType)}>
             {MINIWEB_V2_SECTION_TYPES.map((type) => <option key={type} value={type}>{MINIWEB_V2_SECTION_LABELS[type]}</option>)}
           </select></label><Button disabled={!data.canEdit || (sectionToAdd === "hero" && document.sections.some((s) => s.type === "hero"))} onClick={addSection}>Añadir sección</Button></div>
         </Card>
-        {document.sections.slice().sort((a,b) => a.order-b.order).map((section, index) => <Card key={section.id}>
-          <div className="miniweb-v2-editor__section-head"><h2>{index + 1}. {MINIWEB_V2_SECTION_LABELS[section.type]}</h2>
-            <label><input type="checkbox" checked={section.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...section, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
+        <nav aria-label="Pasos de edición del sitio" className="miniweb-v2-editor__steps">
+          <p className="miniweb-v2-editor__steps-caption">Edita una sección a la vez. El contenido de las demás permanece en el borrador.</p>
+          <div className="miniweb-v2-editor__steps-list">{orderedSections.map((item, index) =>
+            <button key={item.id} type="button" className="miniweb-v2-editor__step" aria-current={activeSection?.id === item.id ? "step" : undefined}
+              onClick={() => setActiveSectionId(item.id)}>
+              <span className="miniweb-v2-editor__step-number">{index + 1}</span>
+              <span>{MINIWEB_V2_SECTION_LABELS[item.type]}</span>
+              {!validateMiniWebV2Section(item).valid ? <span className="miniweb-v2-editor__step-note">Revisar</span> : null}
+            </button>)}
           </div>
-          <MiniWebV2SectionForm section={section} media={data.media} organizationId={data.organization.id} disabled={!data.canEdit} onChange={updateSection}/>
-          {!validateMiniWebV2Section(section).valid ? <p className="miniweb-v2-editor__validation">Completa o corrige los campos de esta sección antes de guardar.</p> : null}
-          <div className="miniweb-v2-editor__actions"><Button tone="secondary" disabled={!data.canEdit || index === 0} onClick={() => moveSection(section.id, -1)}>Subir</Button>
-            <Button tone="secondary" disabled={!data.canEdit || index === document.sections.length - 1} onClick={() => moveSection(section.id, 1)}>Bajar</Button>
-            <Button tone="secondary" disabled={!data.canEdit || section.type === "hero"} onClick={() => removeSection(section.id)}>Quitar sección</Button></div>
-        </Card>)}
-        <Card><h2>Revisar y publicar</h2><p>{isDirty ? "El autoguardado conserva este borrador; revisa y publica solo después de que se confirme como guardado." : "Abre la revisión de la última versión guardada antes de publicarla."}</p>
+        </nav>
+        {activeSection ? <Card key={activeSection.id} surface={editorSurface} className="miniweb-v2-editor__active-section">
+          <div className="miniweb-v2-editor__section-head"><h2>{activeSectionIndex + 1}. {MINIWEB_V2_SECTION_LABELS[activeSection.type]}</h2>
+            <label><input type="checkbox" checked={activeSection.visible} disabled={!data.canEdit} onChange={(event) => updateSection({ ...activeSection, visible: event.currentTarget.checked })}/> Mostrar en el sitio</label>
+          </div>
+          <p className="miniweb-v2-editor__step-guidance">{sectionGuidance[activeSection.type]}</p>
+          <MiniWebV2SectionForm section={activeSection} media={data.media} organizationId={data.organization.id} disabled={!data.canEdit} onChange={updateSection}/>
+          {!validateMiniWebV2Section(activeSection).valid ? <p className="miniweb-v2-editor__validation">Completa o corrige los campos de esta sección antes de guardar.</p> : null}
+          <div className="miniweb-v2-editor__actions miniweb-v2-editor__reorder-actions">
+            <Button tone="secondary" disabled={!data.canEdit || activeSectionIndex === 0} onClick={() => moveSection(activeSection.id, -1)}>Subir sección</Button>
+            <Button tone="secondary" disabled={!data.canEdit || activeSectionIndex === orderedSections.length - 1} onClick={() => moveSection(activeSection.id, 1)}>Bajar sección</Button>
+            <Button tone="secondary" disabled={!data.canEdit || activeSection.type === "hero"} onClick={() => removeSection(activeSection.id)}>Quitar sección</Button>
+          </div>
+          <div className="miniweb-v2-editor__step-footer">
+            <button type="button" disabled={activeSectionIndex === 0} onClick={() => setActiveSectionId(orderedSections[activeSectionIndex - 1]!.id)}>Anterior</button>
+            <span aria-live="polite">Sección {activeSectionIndex + 1} de {orderedSections.length}</span>
+            <button type="button" disabled={activeSectionIndex === orderedSections.length - 1} onClick={() => setActiveSectionId(orderedSections[activeSectionIndex + 1]!.id)}>Siguiente</button>
+          </div>
+        </Card> : null}
+         <Card surface={editorSurface}><h2>Revisar y publicar</h2><p>{isDirty ? "Primero guarda los cambios. Esta vista previa muestra tu trabajo local." : "Revisa el contenido guardado y publica esta revisión cuando esté lista."}</p>
           <div className="miniweb-v2-editor__actions"><Button disabled={!data.canEdit || editing || saving || !isDirty || !validation.valid || saveError === "conflict"} onClick={() => save(false)}>Guardar cambios</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing || saving || isDirty || !publicationValidation.valid || saveError !== null} onClick={startReview}>Revisar y publicar revisión {revision}</Button>
           <Button tone="secondary" disabled={!data.canEdit || editing || isDirty} onClick={importPublishedV1}>Crear otro sitio importando el anterior</Button></div>
@@ -404,9 +465,11 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       </Card>
       {serverErrors.length > 0 ? <div role="alert" className="miniweb-v2-editor__errors"><strong>Revisa lo siguiente:</strong><ul>{serverErrors.map((error,index) => <li key={`${index}-${error}`}>{error}</li>)}</ul></div> : null}
       <p role="status" aria-live="polite">{notice}</p>
-       <section id="miniweb-v2-review-preview" aria-label="Vista previa de tu sitio" className="miniweb-v2-editor__preview"><h2>Vista previa</h2><p>Esta es una previsualización privada; no modifica lo que ya está publicado.</p>
-        <MiniWebV2Renderer document={document} familyKey={data.state?.site.familyKey ?? family} variant={data.state?.site.visualVariant ?? variant} mediaUrl={mediaUrl} preview/>
-      </section>
+        </div>
+        <section id="miniweb-v2-preview" aria-label="Vista previa de tu sitio" className="miniweb-v2-editor__preview" tabIndex={-1}><div className="miniweb-v2-editor__preview-heading"><h2>Vista previa</h2><a href="#miniweb-v2-sections" onClick={() => setMobileView("edit")}>Volver a editar</a></div><p>{isDirty ? "Esta vista refleja los cambios locales aún sin guardar; no modifica la versión publicada." : "Previsualización privada del borrador; no modifica la versión publicada."}</p>
+        <MiniWebV2Renderer document={data.state ? document : { ...document, design: createDesign }} familyKey={data.state?.site.familyKey ?? family} variant={data.state?.site.visualVariant ?? variant} mediaUrl={mediaUrl} preview/>
+        </section>
+      </div>
     </main>
   </ClientAreaShell>;
 }

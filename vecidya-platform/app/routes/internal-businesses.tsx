@@ -9,6 +9,7 @@ import { Badge, Icon } from "../components/ui";
 import { publicAssets } from "../assets/public-assets";
 import { cloudflareContext } from "../../server/cloudflare-context";
 import { requirePlatformAdmin } from "../../server/platform-authorization.server";
+import { isVisualFeatureEnabled } from "../lib/visual-rollout";
 import type { Route } from "./+types/internal-businesses";
 
 export function meta({}: Route.MetaArgs) { return [{ title: "Negocios | Administración Vecidya" }]; }
@@ -25,6 +26,7 @@ export default function InternalBusinesses() {
   const { profiles, workspaceUser } = useLoaderData<typeof loader>();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const sharedSurfaces = isVisualFeatureEnabled("adminBusinessSurfaces");
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -43,7 +45,7 @@ export default function InternalBusinesses() {
 
       {profiles.length ? (
         <>
-          <div className="admin-toolbar">
+          <div className={sharedSurfaces ? "admin-toolbar v-surface" : "admin-toolbar"} data-surface={sharedSurfaces ? "glass" : undefined} data-depth={sharedSurfaces ? "quiet" : undefined}>
             <label className="admin-search">
               <Icon name="eye" />
               <input aria-label="Buscar negocios" onChange={(event) => setSearch(event.target.value)} placeholder="Buscar por nombre, slug, organización o categoría…" type="search" value={search} />
@@ -61,7 +63,7 @@ export default function InternalBusinesses() {
           </div>
 
           {filtered.length ? (
-            <div className="admin-table-wrap">
+            <div className={sharedSurfaces ? "admin-table-wrap v-surface" : "admin-table-wrap"} data-surface={sharedSurfaces ? "solid" : undefined} data-depth={sharedSurfaces ? "rest" : undefined}>
               <table className="admin-table">
                 <thead><tr><th>Negocio</th><th>Espacio de trabajo</th><th>Categoría / ubicación</th><th>Estado</th><th>Completitud</th><th>Servicios</th><th className="admin-table__action">Acción</th></tr></thead>
                 <tbody>
@@ -94,11 +96,11 @@ export default function InternalBusinesses() {
               </table>
             </div>
           ) : (
-            <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ningún negocio coincide</h2><p>Ajusta la búsqueda o el filtro de estado.</p></div></section>
+            <section className={sharedSurfaces ? "empty-state card v-surface" : "empty-state card"} data-surface={sharedSurfaces ? "solid" : undefined} data-depth={sharedSurfaces ? "rest" : undefined}><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN RESULTADOS</p><h2>Ningún negocio coincide</h2><p>Ajusta la búsqueda o el filtro de estado.</p></div></section>
           )}
         </>
       ) : (
-        <section className="empty-state card"><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN PERFILES</p><h2>No hay Business Profiles registrados</h2><p>Los perfiles aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
+        <section className={sharedSurfaces ? "empty-state card v-surface" : "empty-state card"} data-surface={sharedSurfaces ? "solid" : undefined} data-depth={sharedSurfaces ? "rest" : undefined}><img alt="" height="320" src={publicAssets.illustrations.adminEmptySearch} width="320" /><div><p className="eyebrow">SIN PERFILES</p><h2>No hay Business Profiles registrados</h2><p>Los perfiles aparecerán aquí cuando existan datos reales en la plataforma.</p></div></section>
       )}
     </main>
   </AdminShell>;

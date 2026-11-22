@@ -1,4 +1,5 @@
 /** Typed, versioned content contract for the independently designed MiniWeb V2. */
+import { validateMiniWebV2Design, type MiniWebV2Design } from "./visual-design";
 import { createEmptyV2HoursSection, validateV2HoursSection, type V2HoursSection } from "./hours";
 export const MINIWEB_V2_SCHEMA_VERSION = 1 as const;
 export const MINIWEB_V2_SECTION_TYPES = [
@@ -28,7 +29,7 @@ export type V2SectionContentMap = {
 export type MiniWebV2Section = { [T in MiniWebV2SectionType]: {
   id: string; type: T; schemaVersion: number; order: number; visible: boolean; content: V2SectionContentMap[T];
 } }[MiniWebV2SectionType];
-export type MiniWebV2Document = { schemaVersion: typeof MINIWEB_V2_SCHEMA_VERSION; sections: MiniWebV2Section[] };
+export type MiniWebV2Document = { schemaVersion: typeof MINIWEB_V2_SCHEMA_VERSION; sections: MiniWebV2Section[]; design?: MiniWebV2Design };
 export type SectionValidation = { valid: true; value: MiniWebV2Section } | { valid: false; errors: string[] };
 
 const isRecord = (x: unknown): x is Record<string, unknown> => !!x && typeof x === "object" && !Array.isArray(x);
@@ -108,6 +109,7 @@ export function validateMiniWebV2Document(value: unknown, options: { publishable
   if (!isRecord(value) || value.schemaVersion !== MINIWEB_V2_SCHEMA_VERSION || !Array.isArray(value.sections))
     return { valid: false, errors: ["Invalid document envelope"] };
   const errors: string[] = [];
+  if (value.design !== undefined && !validateMiniWebV2Design(value.design)) errors.push("La personalización visual no cumple el contrato o carece de contraste suficiente.");
   // Solo las publicaciones necesitan una portada visible y con título. Los borradores
   // incompletos continúan siendo válidos para no interrumpir la edición progresiva.
   if (options.publishable) {

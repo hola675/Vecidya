@@ -1,14 +1,28 @@
 <!doctype html>
-<html lang="es" data-theme="light">
+<html lang="es" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f0f8ff">
+  <meta name="theme-color" content="#06172F">
   <meta name="description" content="Biblioteca visual Vecidya Crystal Depth: superficies cristalinas, componentes reales, activos visuales y escenas con profundidad.">
   <title>Vecidya Crystal Depth · Biblioteca visual</title>
   <link rel="icon" href="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" type="image/webp">
   <link rel="stylesheet" href="styles/crystal-depth.css">
   <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/r1-guidance.css">
+  <link rel="stylesheet" href="styles/motion-system.css">
+  <link rel="stylesheet" href="styles/scene-composer.css">
+  <link rel="stylesheet" href="styles/vico-workbench.css">
+  <link rel="stylesheet" href="styles/miniweb-customizer.css">
+  <link rel="stylesheet" href="styles/interaction-flows.css">
+  <link rel="stylesheet" href="styles/platform-bridge.css">
+  <script defer src="assets/motion-system.js"></script>
+  <script defer src="assets/scene-composer.js"></script>
+  <script defer src="assets/vico-workbench.js"></script>
+  <script defer src="assets/miniweb-customizer.js"></script>
+  <script defer src="assets/interaction-flows.js"></script>
+  <script defer src="assets/agent-brief.js"></script>
+  <script defer src="assets/platform-bridge.js"></script>
 </head>
 <body class="vx-crystal-theme">
   <a class="skip-link" href="#contenido">Saltar al contenido principal</a>
@@ -21,7 +35,7 @@
         <span class="brand-name">Vecidya<span>Crystal Depth</span></span>
       </a>
 
-      <p class="sidebar-caption">Biblioteca visual · revisión local</p>
+      <p class="sidebar-caption">Laboratorio interno · dirección artística R1</p>
 
       <nav class="section-nav" aria-label="Navegación de la biblioteca">
         <a class="nav-link is-active" href="#inicio" aria-current="location"><span>01</span> Experiencia</a>
@@ -30,7 +44,13 @@
         <a class="nav-link" href="#formularios"><span>04</span> Formularios</a>
         <a class="nav-link" href="#datos"><span>05</span> Datos y estados</a>
         <a class="nav-link" href="#activos"><span>06</span> Activos e iconos</a>
+        <a class="nav-link" href="#vico"><span>06b</span> Vico · personaje e imágenes</a>
         <a class="nav-link" href="#escenas"><span>07</span> Escenas</a>
+        <a class="nav-link" href="#guia"><span>08</span> Guía de implementación</a>
+        <a class="nav-link" href="#movimiento"><span>09</span> Movimiento y efectos</a>
+        <a class="nav-link" href="#composiciones"><span>10</span> Páginas y composición</a>
+        <a class="nav-link" href="#flujos"><span>11</span> Estados y flujos</a>
+        <a class="nav-link" href="#idioma"><span>12</span> Lenguaje compartido</a>
       </nav>
 
       <div class="sidebar-foot">
@@ -46,8 +66,8 @@
       <header class="topbar">
         <div class="breadcrumb"><span>Vecidya</span><span aria-hidden="true">/</span><strong>Crystal Depth</strong></div>
         <div class="topbar-meta">
-          <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="false" aria-label="Modo oscuro"><span class="theme-track" aria-hidden="true"><span></span></span><span id="theme-label">Claro</span></button>
-          <span class="review-pill"><span class="review-dot" aria-hidden="true"></span>Biblioteca interactiva · 0.7</span>
+          <button class="theme-toggle" id="theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Modo oscuro"><span class="theme-track" aria-hidden="true"><span></span></span><span id="theme-label">Oscuro</span></button>
+          <span class="review-pill"><span class="review-dot" aria-hidden="true"></span>Candidato R1 · revisión</span>
           <a class="topbar-link" href="#activos">Ver activos e iconos <span aria-hidden="true">↗</span></a>
         </div>
       </header>
@@ -57,13 +77,13 @@
           <div class="hero-copy">
             <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>Material · luz · profundidad</p>
             <h1 id="hero-title">Una interfaz con <span>dimensión.</span></h1>
-            <p class="hero-lead">Un mismo material cristalino, seis tonos y componentes funcionales construidos por separado. La luz acompaña la lectura; el volumen se siente en cada superficie.</p>
+            <p class="hero-lead">Una identidad compartida con profundidad selectiva: escenas protagonistas, tarjetas de lectura tranquila y controles sólidos. Oscuro principal, claro alternativo y componentes reales.</p>
             <div class="hero-actions">
               <a class="crystal-button crystal-button--primary" href="#superficies">Explorar superficies <span aria-hidden="true">↓</span></a>
               <a class="crystal-button crystal-button--quiet" href="#componentes">Ver componentes</a>
             </div>
             <div class="hero-proof" aria-label="Características de la biblioteca">
-              <span><i aria-hidden="true">01</i> Un material compartido</span>
+              <span><i aria-hidden="true">01</i> Tres intensidades por función</span>
               <span><i aria-hidden="true">02</i> Seis variantes cromáticas</span>
               <span><i aria-hidden="true">03</i> Activos Vecidya verificados</span>
             </div>
@@ -349,6 +369,88 @@
           <p class="asset-source">Inventario completo de <code>public/assets/</code>, con fuentes originales separadas. Once iconos tienen una vista Crystal PNG propuesta; los originales permanecen intactos.</p>
         </section>
 
+        <section class="content-section section-anchor" id="vico" aria-labelledby="vico-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>06b / Vico · identidad y recursos oficiales</p>
+              <h2 id="vico-title">Un personaje. Diez imágenes para diez propósitos.</h2>
+              <p>Selecciona la imagen original de Vico y revisa su encuadre en fondo oscuro, claro o transparente. El visor no modifica las imágenes ni publica cambios en Vecidya.</p>
+            </div>
+            <span class="section-count">10 <small>imágenes Vico</small></span>
+          </div>
+          <div id="vico-workbench" class="vico-workbench" aria-label="Laboratorio de imágenes de Vico">
+            <div class="vico-workbench__heading">
+              <div>
+                <h3>Explorador de Vico</h3>
+                <p class="vico-workbench__intro">Las diez ilustraciones del personaje se enlazan al catálogo oficial. Compara fondo, tamaño, posición y escena complementaria antes de seleccionar el recurso para una página o enviar instrucciones a tus agentes.</p>
+              </div>
+              <span class="vico-workbench__mark">Originales intactos · sin guardado</span>
+            </div>
+            <div class="vico-workbench__body">
+              <div class="vico-workbench__viewer">
+                <div id="vico-workbench-stage" class="vico-workbench__stage" data-background="dark" data-position="center" data-scene="off" aria-label="Comparación visual del personaje">
+                  <img id="vico-workbench-image" src="../vecidya-platform/public/assets/selected/illustrations/vico-home.webp" width="1024" height="1536" alt="Vico, personaje de Vecidya, saluda en una pose de bienvenida">
+                </div>
+                <div class="vico-workbench__detail">
+                  <strong id="vico-workbench-name">Vico · inicio</strong>
+                  <p id="vico-workbench-detail">Presentación de Vecidya · Inicio · original WebP 1024 × 1536 px. Mantener su proporción y dejar espacio para título y botones.</p>
+                  <a id="vico-workbench-original" href="../vecidya-platform/public/assets/selected/illustrations/home-vecidya-companion-v4.webp" target="_blank" rel="noopener noreferrer">Abrir imagen original</a>
+                </div>
+              </div>
+              <div class="vico-workbench__controls" aria-label="Controles de comparación Vico">
+                <label for="vico-workbench-background">Fondo para evaluar la imagen
+                  <select id="vico-workbench-background">
+                    <option value="dark">Oscuro Vecidya</option>
+                    <option value="light">Claro Vecidya</option>
+                    <option value="checker">Cuadrícula de transparencia</option>
+                    <option value="split">Comparación mitad clara / mitad oscura</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-position">Posición de Vico
+                  <select id="vico-workbench-position">
+                    <option value="center">Centrado</option>
+                    <option value="left">Izquierda</option>
+                    <option value="right">Derecha</option>
+                  </select>
+                </label>
+                <label for="vico-workbench-size">Escala de previsualización <output id="vico-workbench-size-value" for="vico-workbench-size">100 %</output>
+                  <input id="vico-workbench-size" type="range" min="70" max="125" value="100" step="5">
+                </label>
+                <label for="vico-workbench-scene"><input id="vico-workbench-scene" type="checkbox"> Mostrar escena contextual detrás</label>
+                <label for="vico-workbench-threshold">Umbral de transparencia para comparar
+                  <select id="vico-workbench-threshold">
+                    <option value="8">Muy suave · alfa menor que 8</option>
+                    <option value="16" selected>Suave · alfa menor que 16</option>
+                    <option value="32">Moderado · alfa menor que 32</option>
+                    <option value="64">Alto · alfa menor que 64</option>
+                  </select>
+                </label>
+                <button type="button" id="vico-workbench-analyze">Analizar píxeles alfa</button>
+                <button type="button" id="vico-workbench-propose">Comparar ajuste alfa (borrador)</button>
+                <button type="button" id="vico-workbench-copy">Copiar ficha para mis agentes</button>
+                <p>La escena de fondo es una referencia de composición. El texto y los controles de la web siempre deben conservarse fuera de la imagen.</p>
+              </div>
+            </div>
+            <div id="vico-workbench-alpha-panel" class="vico-workbench__alpha" hidden aria-labelledby="vico-workbench-alpha-title">
+              <div><h4 id="vico-workbench-alpha-title">Mapa técnico de transparencia</h4>
+                <p id="vico-workbench-alpha-summary">Selecciona «Analizar píxeles alfa» para evaluar esta imagen.</p>
+                <p>Blanco: píxeles opacos. Gris: semitransparencias. Negro: transparencia total. La medición es orientativa y no elimina reflejos ni certifica la calidad artística.</p>
+              </div>
+              <canvas id="vico-workbench-alpha-canvas" width="320" height="320" role="img" aria-label="Máscara alfa de la ilustración seleccionada"></canvas>
+              <div id="vico-workbench-candidate-panel" class="vico-workbench__candidate" hidden>
+                <h5>Derivado de comparación · no aprobado</h5>
+                <canvas id="vico-workbench-candidate-canvas" width="320" height="320" role="img" aria-label="Imagen temporal con píxeles de alfa muy bajo eliminados"></canvas>
+                <p id="vico-workbench-candidate-summary">Este ajuste solo elimina píxeles casi transparentes. No repara bandas opacas ni reemplaza el original.</p>
+                <button type="button" id="vico-workbench-download" disabled>Guardar PNG de evaluación</button>
+              </div>
+            </div>
+            <p id="vico-workbench-status" class="vico-workbench__status" role="status" aria-live="polite"></p>
+            <p class="vico-workbench__fallback">Si los controles no se cargan, consulta las diez imágenes oficiales mediante la categoría <a href="#activos">Vico del catálogo completo</a>.</p>
+            <div id="vico-workbench-gallery" class="vico-workbench__gallery" aria-label="Elegir una de las diez imágenes oficiales de Vico" aria-busy="true"></div>
+          </div>
+          <p class="asset-source">Regla: Vico es el personaje de marca; conservar identidad, silueta y proporciones. No convertir fotografías del negocio, estados comerciales ni permisos en imágenes del personaje. Las piezas de Vico corresponden a Vecidya, no son recursos de marca predeterminados de MiniWeb de terceros.</p>
+        </section>
+
         <section class="content-section section-anchor" id="escenas" aria-labelledby="scenes-title">
           <div class="section-heading">
             <div>
@@ -380,9 +482,409 @@
           <div class="scene-disclaimer"><span class="note-symbol" aria-hidden="true">i</span><p><strong>Estado de la iteración.</strong> La biblioteca es local y de revisión visual. No migra estilos, rutas, formularios ni diagnósticos de la plataforma.</p></div>
         </section>
 
+
+        <section class="content-section section-anchor r1-guide" id="guia" aria-labelledby="r1-guide-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>08 / Manual de aplicación · R1</p>
+              <h2 id="r1-guide-title">De consulta a componente, sin improvisar.</h2>
+              <p>Esta sección explica cómo interpretar una necesidad, elegir un material y aplicar los patrones Crystal Depth sin alterar funcionalidad, permisos ni identidad de marca.</p>
+            </div>
+            <span class="section-count">R1 <small>lab</small></span>
+          </div>
+          <div class="r1-decision-strip" aria-label="Decisiones aprobadas para R1">
+            <span>● Oscuro principal</span><span>○ Claro alternativo</span>
+            <span>◇ Profundidad según contexto</span><span>✓ Calidad premium en todos los planes</span>
+          </div>
+
+          <h3 class="r1-subhead">Tres materiales. Una sola identidad.</h3>
+          <div class="r1-materials">
+            <article class="r1-material-card vx-r1-focal">
+              <span class="r1-kicker">01 / Escena y foco</span>
+              <div class="r1-demo r1-demo--focal" aria-hidden="true"><span></span><i></i></div>
+              <h4>Crystal Focal</h4>
+              <p><strong>Usar:</strong> portada, escena narrativa, CTA protagonista.</p>
+              <p><strong>Evitar:</strong> tablas, formularios o bloques extensos de lectura.</p>
+              <code>.vx-r1-focal</code>
+            </article>
+            <article class="r1-material-card vx-r1-quiet">
+              <span class="r1-kicker">02 / Estructura</span>
+              <div class="r1-demo r1-demo--quiet" aria-hidden="true"><span></span><i></i></div>
+              <h4>Crystal Quiet</h4>
+              <p><strong>Usar:</strong> tarjetas, navegación, paneles de contexto.</p>
+              <p><strong>Evitar:</strong> poner texto largo sobre imagen transparente.</p>
+              <code>.vx-r1-quiet</code>
+            </article>
+            <article class="r1-material-card vx-r1-solid">
+              <span class="r1-kicker">03 / Lectura y operación</span>
+              <div class="r1-demo r1-demo--solid" aria-hidden="true"><span></span><i></i></div>
+              <h4>Solid Readable</h4>
+              <p><strong>Usar:</strong> formularios, tablas, diagnóstico, editor y Admin.</p>
+              <p><strong>Evitar:</strong> brillo que compita con datos o acciones.</p>
+              <code>.vx-r1-solid</code>
+            </article>
+          </div>
+
+          <div class="r1-assistant vx-r1-solid">
+            <div>
+              <p class="r1-kicker">Enrutador de decisiones · orientación local</p>
+              <h3 id="r1-routing-title">¿Qué necesita implementar el agente?</h3>
+              <p>Selecciona el contexto. El resultado describe el patrón preferido, no genera código ni modifica la plataforma.</p>
+            </div>
+            <label for="r1-intent">Necesidad de interfaz</label>
+            <select id="r1-intent" class="crystal-input" aria-describedby="r1-routing-note">
+              <option value="portada-marketing" data-preview="publico" data-material="Crystal Focal + Quiet" data-scene="home-scene" data-rule="Mantén texto y acciones en superficies contrastadas; Vico es un elemento independiente.">Portada pública y servicios</option>
+              <option value="buscar-negocios" data-preview="vecindario" data-material="Crystal Quiet + Solid" data-scene="neighborhood-scene" data-rule="Filtros funcionales, categoría real y datos del negocio sin inventar.">Vecindario y búsqueda</option>
+              <option value="diagnosticar" data-material="Solid Readable" data-scene="diagnostic-scene" data-rule="No modifiques las preguntas, la puntuación ni los contratos del diagnóstico.">Diagnóstico y resultados</option>
+              <option value="contenido-editorial" data-preview="aprende" data-material="Solid Readable + Quiet" data-scene="learn-journey-scene" data-rule="Prioriza longitud de línea, legibilidad y navegación editorial.">Aprende y contenidos</option>
+              <option value="editar-miniweb" data-preview="miniweb" data-material="Solid Readable + Quiet" data-scene="Sin escena detrás del editor" data-rule="Distingue borrador, vista previa y publicación; conserva contenido al cambiar la plantilla.">Editor MiniWeb</option>
+              <option value="administrar-plataforma" data-material="Solid Readable" data-scene="Sin escena detrás de tablas" data-rule="Protege permisos, estados, densidad de información y trazabilidad.">Mi Vecidya y Admin</option>
+              <option value="comparar-licencias" data-material="Crystal Quiet + foco único" data-scene="licenses-scene" data-rule="Cuadra debe ser completo; no afirmes capacidades futuras como activas.">Cuadra, Barrio y Ciudad</option>
+              <option value="captacion-comercial" data-material="Solid Readable + foco en CTA" data-scene="Según página, sin fondo obligatorio" data-rule="CRM y automatización corresponden a GHL y requieren integración real.">Captación comercial / CRM</option>
+            </select>
+            <div class="r1-assistant-answer" role="status" aria-live="polite" aria-atomic="true">
+              <p><span>Material recomendado</span><strong id="r1-route-material">Crystal Focal + Quiet</strong></p>
+              <p><span>Escena</span><strong id="r1-route-scene">home-scene</strong></p>
+              <p><span>Regla crítica</span><strong id="r1-route-rule">Mantén texto y acciones en superficies contrastadas; Vico es un elemento independiente.</strong></p>
+            </div>
+            <div class="r1-preview-linking">
+              <a id="r1-preview-link" class="crystal-button crystal-button--secondary r1-preview-action" href="#composiciones" data-preview="publico">Ver composición recomendada</a>
+              <p id="r1-preview-note" class="r1-caption" role="status" aria-live="polite">Disponible: sitio público, escena y material de referencia.</p>
+            </div>
+            <p id="r1-routing-note" class="r1-caption">Contrato legible por máquinas: <a href="assets/pattern-registry.json">pattern-registry.json</a>. Guía de agentes: <a href="docs/INTEGRACION.md">INTEGRACION.md</a>.</p>
+            <div class="r1-brief-builder" aria-labelledby="r1-brief-heading">
+              <h4 id="r1-brief-heading">Instrucciones reutilizables para el equipo</h4>
+              <p>El agente líder asigna la tarea; cada colaborador recibe solo las reglas pertinentes. El borrador puede revisarse antes de copiarlo.</p>
+              <label for="r1-brief-role">Especialidad del subagente</label>
+              <select id="r1-brief-role" class="crystal-input" aria-controls="r1-brief-preview">
+                <option value="frontend">Implementación frontend</option>
+                <option value="editorial">Revisión editorial y claridad</option>
+                <option value="ux">Diseño UX/UI</option>
+                <option value="quality">Calidad y pruebas focales</option>
+              </select>
+              <label for="r1-brief-preview">Borrador de instrucciones para revisar y copiar</label>
+              <textarea id="r1-brief-preview" rows="11" readonly spellcheck="false" aria-describedby="r1-brief-status">Consulta primero los contratos reales de Vecidya, selecciona materiales y verifica accesibilidad. Este laboratorio no autoriza cambios productivos.</textarea>
+              <p id="r1-brief-status" class="r1-caption" role="status" aria-live="polite">Preparando el borrador de referencia…</p>
+            </div>
+            <button type="button" class="crystal-button crystal-button--secondary" id="r1-copy">Copiar borrador para el subagente</button>
+            <p class="r1-caption" id="r1-copy-status" aria-live="polite">La copia solo contiene reglas de diseño, nunca datos del cliente.</p>
+          </div>
+
+          <h3 class="r1-subhead">Tres licencias, un estándar de calidad.</h3>
+          <div class="r1-plans">
+            <article><span>CUADRA</span><h4>Presencia completa</h4><p>Plantillas profesionales, identidad del negocio y contenido editable. No es una web deliberadamente inferior.</p></article>
+            <article><span>BARRIO</span><h4>Captación contextual</h4><p>Hereda Cuadra. Composiciones y llamadas a la acción comerciales, sujetas al CRM efectivamente configurado.</p></article>
+            <article><span>CIUDAD</span><h4>Operación ampliada</h4><p>Hereda Barrio. Composiciones multiproceso cuando existan integraciones reales y permisos efectivos.</p></article>
+          </div>
+          <p class="r1-caption"><strong>Regla contractual:</strong> las diferencias visuales propuestas no modifican licencias actuales ni habilitan funciones nuevas por sí solas.</p>
+          <div class="r1-checklist vx-r1-solid">
+            <h3>Antes de aceptar una implementación</h3>
+            <p>Verificar 320–1920 px · contraste de texto 4,5:1 y texto grande 3:1 sobre fondos reales · foco visible · controles táctiles de 44 px cuando aplique · teclado · movimiento reducido · prueba sin blur · assets oficiales · permisos y comportamientos intactos.</p>
+            <p>R1 es una <strong>dirección artística implementada en este laboratorio</strong>, no una certificación WCAG ni autorización para migrar o desplegar el diseño en la aplicación real.</p>
+          </div>
+        </section>
+
+
+        <section class="content-section section-anchor motion-grammar" id="movimiento" aria-labelledby="motion-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>09 / Movimiento y transiciones · R1.1</p>
+              <h2 id="motion-heading">La profundidad también tiene un ritmo.</h2>
+              <p>Animaciones funcionales y ambientales para dar continuidad entre páginas, secciones y componentes. El movimiento aporta orientación, no sustituye el contenido.</p>
+            </div>
+            <span class="section-count">09 <small>motion</small></span>
+          </div>
+          <p class="motion-lead">Usa movimiento protagonista en escenas de portada, microinteracciones cortas en botones y tarjetas, y transiciones discretas cuando una persona cambia de sección. Las pantallas de datos y el editor MiniWeb permanecen estables. Todos los ejemplos respetan movimiento reducido y pueden pausarse.</p>
+          <div class="motion-preset-list" aria-label="Cuatro familias de movimiento">
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--entrance" aria-hidden="true"><span></span></div>
+              <h3>Aparición de sección</h3>
+              <p>La nueva sección entra una vez al hacerse visible. Sin ocultar contenido cuando no hay JavaScript.</p>
+              <code>section-reveal · 480 ms</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--feedback" aria-hidden="true"><span></span></div>
+              <h3>Respuesta de componente</h3>
+              <p>Botón, pestaña o tarjeta muestra una respuesta breve a hover, foco o selección, sin animar formularios.</p>
+              <code>ui-feedback · 150–260 ms</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--ambient" aria-hidden="true"><span></span></div>
+              <h3>Ambiente vivo</h3>
+              <p>Órbitas y luz respirando lentamente detrás de la escena; nunca detrás de tablas densas.</p>
+              <code>ambient-drift · 9–14 s</code>
+            </article>
+            <article class="motion-card">
+              <div class="motion-mini motion-mini--morph" aria-hidden="true"><span></span></div>
+              <h3>Continuidad de navegación</h3>
+              <p>Desplazamiento entre secciones con anclas y lectura continua. En React, transiciones de ruta solo opt-in.</p>
+              <code>section-navigation · nativa</code>
+            </article>
+          </div>
+          <div class="motion-stage" id="motion-stage" aria-label="Demostración de escena ambiental en capas">
+            <div class="motion-stage-content">
+              <p class="r1-kicker">Escena L0–L5 · demostración</p>
+              <h3>Una escena que acompaña, no distrae.</h3>
+              <p>Los planos de luz y cristal se mueven suavemente. El texto y los controles se mantienen inmóviles, con contraste y foco propios.</p>
+            </div>
+            <div class="motion-art" aria-hidden="true">
+              <div class="motion-orb"></div>
+              <div class="motion-panel-back"></div>
+              <div class="motion-panel"></div>
+            </div>
+          </div>
+          <div class="motion-controls" aria-label="Controles de movimiento del laboratorio">
+            <label for="motion-intensity">Intensidad
+              <select id="motion-intensity">
+                <option value="standard">Estándar · escenas narrativas</option>
+                <option value="subtle">Discreta · secciones de producto</option>
+              </select>
+            </label>
+            <button type="button" class="crystal-button crystal-button--quiet" id="motion-play" aria-pressed="false">Pausar animación</button>
+            <button type="button" class="crystal-button crystal-button--quiet" id="motion-replay">Repetir escena</button>
+          </div>
+          <p class="motion-message" id="motion-message" role="status" aria-live="polite">Los efectos son opcionales y nunca bloquean acciones.</p>
+          <div class="motion-timing" aria-label="Parámetros temporales para agentes">
+            <article>
+              <strong>Componentes</strong>
+              <p>Microinteracciones de 150–260 ms. Animar <code>transform</code> y <code>opacity</code>; conservar siempre el foco y los estados de carga.</p>
+            </article>
+            <article>
+              <strong>Páginas y secciones</strong>
+              <p>Entrada de 340–480 ms, una sola vez. Nunca ocultar respuestas ni navegación esperando un efecto.</p>
+            </article>
+            <article>
+              <strong>Escenas</strong>
+              <p>Movimiento lento entre 9–14 s con pausa disponible. En móvil, reduce capas y evita órbitas permanentes.</p>
+            </article>
+          </div>
+          <p class="r1-caption"><strong>Para los agentes:</strong> consulta <a href="assets/pattern-registry.json">pattern-registry.json</a> y <a href="docs/INTEGRACION.md">la guía de integración</a>. Las transiciones entre rutas de la plataforma son una especificación para adopción futura, no una migración realizada.</p>
+        </section>
+
+
+        <section class="content-section section-anchor scene-composer" id="composiciones" aria-labelledby="composer-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>10 / Composiciones · páginas y contexto</p>
+              <h2 id="composer-title">Un lenguaje, cuatro experiencias.</h2>
+              <p>Las mismas reglas de Vecidya resuelven portadas, descubrimiento, lectura y edición. Cambia de escena para comprobar cómo varía el material sin perder identidad.</p>
+            </div>
+            <span class="section-count">04 <small>contextos</small></span>
+          </div>
+          <p class="composer-intro">Una demostración de dirección artística, no cuatro rutas publicadas. Con JavaScript, los botones presentan la transición entre vistas; sin JavaScript, las cuatro composiciones siguen visibles para lectura y consulta.</p>
+          <div class="composer" id="composer">
+            <div class="composer-tablist" id="composer-tabs" role="tablist" aria-label="Cambiar composición visual" hidden>
+              <button type="button" class="composer-tab" id="composer-tab-publico" role="tab" aria-controls="composer-panel-publico" aria-selected="true" tabindex="0" data-description="Sitio público: material focal en el hero y material quiet en el resto.">Sitio público</button>
+              <button type="button" class="composer-tab" id="composer-tab-vecindario" role="tab" aria-controls="composer-panel-vecindario" aria-selected="false" tabindex="-1" data-description="Vecindario: tarjetas quiet y filtros solid para resultados verificables.">Vecindario</button>
+              <button type="button" class="composer-tab" id="composer-tab-aprende" role="tab" aria-controls="composer-panel-aprende" aria-selected="false" tabindex="-1" data-description="Aprende: contenido sólido, sin efectos continuos en párrafos.">Aprende</button>
+              <button type="button" class="composer-tab" id="composer-tab-miniweb" role="tab" aria-controls="composer-panel-miniweb" aria-selected="false" tabindex="-1" data-description="MiniWeb: edición sólida, vista previa contextual y capacidades reales por licencia.">MiniWeb V2</button>
+            </div>
+            <div class="composer-stage" id="composer-stage">
+            <article class="composer-panel" data-scene="publico" id="composer-panel-publico" role="tabpanel" aria-labelledby="composer-tab-publico" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">01 / Marketing · Crystal Focal</span>
+                <h3>Una presencia que se recuerda.</h3>
+                <p>Una portada con narrativa visual, identidad oficial y llamadas a la acción claras. La escena acompaña; el contenido conserva el protagonismo.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía del sitio público: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/home-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Foco de marca · Material Focal</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="vecindario" id="composer-panel-vecindario" role="tabpanel" aria-labelledby="composer-tab-vecindario" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">02 / Descubrimiento · Crystal Quiet</span>
+                <h3>Descubre lo que hay cerca.</h3>
+                <p>Composición para buscar y explorar negocios sin inventar resultados ni convertir las tarjetas en fondos decorativos.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía de Vecindario: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Filtros y resultados · Quiet + Solid</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="aprende" id="composer-panel-aprende" role="tabpanel" aria-labelledby="composer-tab-aprende" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">03 / Lectura · Solid Readable</span>
+                <h3>Aprender con claridad también es premium.</h3>
+                <p>Escena editorial en segundo plano, jerarquía de títulos y textos largos sobre superficies estables, sin reflejos que dificulten la lectura.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía editorial: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/learn-journey-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Lectura prolongada · Material Solid</span>
+              </div>
+            </article>
+            <article class="composer-panel" data-scene="miniweb" id="composer-panel-miniweb" role="tabpanel" aria-labelledby="composer-tab-miniweb" tabindex="0">
+              <div class="composer-copy">
+                <span class="composer-kicker">04 / Edición · Solid + Quiet</span>
+                <h3>Diseño profesional en todos los planes.</h3>
+                <p>Vista conceptual del sistema MiniWeb. Cuadra, Barrio y Ciudad comparten calidad; las composiciones y funciones avanzan solo cuando sus permisos e integraciones existen.</p>
+                <a class="composer-cta" href="#guia" aria-label="Guía de MiniWeb: consultar manual de implementación">Consultar patrón</a>
+              </div>
+              <div class="composer-visual">
+                <img class="composer-art" src="../vecidya-platform/public/assets/selected/illustrations/services-scene.webp" alt="" loading="lazy" decoding="async">
+                <span class="composer-surface">Editor · Borrador / Revisión / Publicación</span>
+              </div>
+            </article>
+            </div>
+          </div>
+          <div class="composer-note">
+            <strong id="composer-status" role="status" aria-live="polite">Sitio público: material focal en el hero y material quiet en el resto.</strong>
+            <span>Vista conceptual · no altera la navegación ni datos de producción</span>
+          </div>
+          <div class="composer-spec">
+            <article><strong>Capas con contexto</strong><p>Ambientación L0, escena L1, estructura L2, superficie L3 y contenido L4. Vico L5 solo cuando aporta significado.</p></article>
+            <article><strong>Movimiento por propósito</strong><p>Transición breve de página simulada; sin autoplay obligatorio ni bloqueo de interacción. Respeta movimiento reducido.</p></article>
+            <article><strong>Calidad consistente</strong><p>Una sola identidad para todos los niveles. El acceso a funciones depende del contrato de producto real, nunca del mockup.</p></article>
+          </div>
+
+          <section id="miniweb-customizer" class="mw-lab" aria-labelledby="miniweb-customizer-title">
+            <div class="mw-lab__heading">
+              <div>
+                <h3 id="miniweb-customizer-title">Personaliza una MiniWeb en tiempo real</h3>
+                <p>Explora colores, tipografías, tamaños, posición, estructura y márgenes con una página ficticia. La calidad básica es igual en Cuadra, Barrio y Ciudad; cada composición cambia el modo de presentar los contenidos.</p>
+              </div>
+              <span class="mw-lab__tag">Laboratorio visual · no publica</span>
+            </div>
+            <div class="mw-lab__layout">
+              <div class="mw-lab__controls">
+                <fieldset>
+                  <legend>Controles de diseño</legend>
+                <div class="mw-lab__field"><label for="miniweb-custom-tier">Experiencia visual</label><select id="miniweb-custom-tier" data-mw-field="tier"><option value="base">Cuadra · Base</option><option value="pro">Barrio · Pro</option><option value="premium">Ciudad · Premium</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-palette">Paleta de color</label><select id="miniweb-custom-palette" data-mw-field="palette"><option value="oceano">Océano azul</option><option value="bosque">Bosque verde</option><option value="coral">Coral cálido</option><option value="ciruela">Ciruela elegante</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-primaryColor">Color principal</label><input type="color" id="miniweb-custom-primaryColor" data-mw-field="primaryColor" value="#154B85"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-accentColor">Color de acento</label><input type="color" id="miniweb-custom-accentColor" data-mw-field="accentColor" value="#F6A344"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-canvasColor">Fondo de la web</label><input type="color" id="miniweb-custom-canvasColor" data-mw-field="canvasColor" value="#F2F7FC"></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-font">Tipografía</label><select id="miniweb-custom-font" data-mw-field="font"><option value="moderna">Moderna y clara</option><option value="editorial">Editorial serif</option><option value="cercana">Cercana y humanista</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-layout">Composición</label><select id="miniweb-custom-layout" data-mw-field="layout"><option value="split">Dos columnas</option><option value="stacked">En bloques apilados</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-align">Alineación del texto</label><select id="miniweb-custom-align" data-mw-field="align"><option value="left">Izquierda</option><option value="center">Centrado</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroPosition">Posición de la ilustración</label><select id="miniweb-custom-heroPosition" data-mw-field="heroPosition"><option value="right">A la derecha</option><option value="left">A la izquierda</option></select></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-titleSize">Tamaño del título</label><input id="miniweb-custom-titleSize" data-mw-field="titleSize" type="range" min="26" max="60" value="40" step="1"><output class="mw-lab__value" id="miniweb-custom-titleSize-value" for="miniweb-custom-titleSize">40 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-bodySize">Tamaño del texto</label><input id="miniweb-custom-bodySize" data-mw-field="bodySize" type="range" min="14" max="20" value="16" step="1"><output class="mw-lab__value" id="miniweb-custom-bodySize-value" for="miniweb-custom-bodySize">16 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-spacing">Espaciado</label><input id="miniweb-custom-spacing" data-mw-field="spacing" type="range" min="12" max="42" value="24" step="1"><output class="mw-lab__value" id="miniweb-custom-spacing-value" for="miniweb-custom-spacing">24 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-radius">Redondeo</label><input id="miniweb-custom-radius" data-mw-field="radius" type="range" min="0" max="34" value="20" step="1"><output class="mw-lab__value" id="miniweb-custom-radius-value" for="miniweb-custom-radius">20 px</output></div>
+                <div class="mw-lab__field"><label for="miniweb-custom-heroHeight">Altura de portada</label><input id="miniweb-custom-heroHeight" data-mw-field="heroHeight" type="range" min="260" max="480" value="330" step="1"><output class="mw-lab__value" id="miniweb-custom-heroHeight-value" for="miniweb-custom-heroHeight">330 px</output></div>
+                </fieldset>
+                <div class="mw-lab__actions">
+                  <button id="miniweb-custom-reset" type="button">Restaurar diseño</button>
+                  <button id="miniweb-custom-copy" type="button">Copiar propuesta para agentes</button>
+                </div>
+                <p id="miniweb-custom-status" class="mw-lab__status" role="status" aria-live="polite">Modifica un control para actualizar la vista; ningún cambio se guarda.</p>
+              </div>
+              <div class="mw-lab__stage">
+                <div class="mw-lab__stage-label"><strong>Vista previa · negocio de ejemplo</strong><span id="miniweb-custom-tier-note">Cuadra · Presencia profesional completa</span></div>
+                <div id="miniweb-custom-preview" class="mw-lab__preview" data-tier="base" data-layout="split" data-align="left" data-image-position="right">
+                  <div class="mw-lab__nav">
+                    <span class="mw-lab__brand"><span class="mw-lab__brand-mark" aria-hidden="true"></span> Estudio Aurora</span>
+                    <span class="mw-lab__nav-note">Servicios · Sobre nosotros · Contacto</span>
+                  </div>
+                  <div class="mw-lab__hero">
+                    <div class="mw-lab__copy">
+                      <span class="mw-lab__eyebrow">Diseño que acompaña a tu negocio</span>
+                      <h4>Tu espacio merece sentirse único.</h4>
+                      <p>Un estudio ficticio que transforma ideas en soluciones visuales. Cambia el diseño a tu gusto sin sacrificar lectura ni funcionalidad.</p>
+                      <a class="mw-lab__cta" href="#guia" aria-label="Consultar guía de diseño MiniWeb">Consultar guía</a>
+                    </div>
+                    <div class="mw-lab__picture" role="img" aria-label="Ilustración geométrica abstracta de muestra, no fotografía de un negocio real">
+                      <span class="mw-lab__picture-label">Espacio de imagen · demo</span>
+                    </div>
+                  </div>
+                  <div class="mw-lab__services">
+                    <h5>Lo que podemos crear juntos</h5>
+                    <div class="mw-lab__cards">
+                      <article class="mw-lab__card"><strong>Identidad</strong><p>Una imagen reconocible y coherente.</p></article>
+                      <article class="mw-lab__card"><strong>Contenido</strong><p>Mensajes fáciles de entender.</p></article>
+                      <article class="mw-lab__card"><strong>Experiencia</strong><p>Un recorrido simple para contactar.</p></article>
+                    </div>
+                  </div>
+                </div>
+                <p class="mw-lab__disclaimer">Ejemplo local del laboratorio. Base, Pro y Premium aquí son composiciones conceptuales, no derechos activos ni plantillas publicables. El archivo copiado es una orientación de diseño, no un formato de configuración del editor de Vecidya.</p>
+              </div>
+            </div>
+          </section>
+          <p class="r1-caption">Consulta <a href="assets/pattern-registry.json">el contrato de escenas</a> y <a href="docs/INTEGRACION.md">el protocolo para agentes</a> antes de trasladar un patrón a React. Esta biblioteca no implementa routing real ni edita un MiniWeb.</p>
+        </section>
+
+
+        <section class="content-section section-anchor flow-lab" id="flujos" aria-labelledby="flows-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>11 / Interacciones reales · guía R1.3</p>
+              <h2 id="flows-title">Cada estado tiene que explicar lo que ocurre.</h2>
+              <p>Mensajes comprensibles, superficies estables y un siguiente paso visible. Un efecto no puede reemplazar una operación comprobada.</p>
+            </div>
+            <span class="section-count">05 <small>estados</small></span>
+          </div>
+          <p class="flow-lead">Elige un estado para consultar el patrón visual y la regla de implementación que debe aplicar el agente. Esta simulación no ejecuta búsquedas, guarda formularios ni confirma cambios reales.</p>
+          <div class="flow-layout">
+            <div class="flow-panel">
+              <h3>Simulador de estados</h3>
+              <p>Selecciona la situación que necesitas representar en una pantalla de Vecidya.</p>
+              <label for="flow-state">Estado de la interfaz</label>
+              <select id="flow-state" aria-controls="flow-result">
+                <option value="idle">Inicial · listo para actuar</option>
+                <option value="loading">Procesando · espera controlada</option>
+                <option value="empty">Vacío · sin resultados</option>
+                <option value="error">Error · acción recuperable</option>
+                <option value="success">Confirmación · operación verificada</option>
+              </select>
+              <p class="flow-note">Demostración local de UI. Una confirmación real exige evidencia del backend o del servicio externo.</p>
+            </div>
+            <article class="flow-result" id="flow-result" data-state="idle" aria-labelledby="flow-title" role="status" aria-live="polite" aria-atomic="true">
+              <div class="flow-indicator" aria-hidden="true"><i id="flow-icon">○</i><b id="flow-name">IDLE</b></div>
+              <h3 id="flow-title">Listo para comenzar</h3>
+              <p id="flow-description">La acción está disponible. La persona sabe qué ocurrirá antes de continuar.</p>
+              <small id="flow-rule">Estado inicial: etiqueta precisa, acción identificable y texto de apoyo cuando sea necesario.</small>
+            </article>
+          </div>
+          <div class="flow-guidelines">
+            <article><h3>Acciones y formularios</h3><p>Confirmar solo después de respuesta real. Bloquear duplicados durante el envío; conservar la entrada al fallar.</p></article>
+            <article><h3>Listados y búsquedas</h3><p>Un estado vacío ofrece filtros o salida útil. No inventa negocios, consultas ni cifras.</p></article>
+            <article><h3>Movimiento y lectura</h3><p>Estados con texto permanente, contraste sólido y cambio breve; sin color como única señal ni animación obligatoria.</p></article>
+          </div>
+          <p class="r1-caption">Para los agentes: consultar <a href="assets/pattern-registry.json">interactionRecipes</a> y <a href="docs/INTEGRACION.md">guía de integración</a>. Este laboratorio no envía formularios ni modifica permisos, licencias o CRM.</p>
+        </section>
+
+
+        <section class="content-section section-anchor platform-bridge" id="idioma" aria-labelledby="bridge-heading">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>12 / Lenguaje compartido · R1.5</p>
+              <h2 id="bridge-heading">Un solo idioma para el diseño y el código.</h2>
+              <p>Crystal Depth propone la dirección visual, pero el frontend React de Vecidya tiene los tokens y componentes que deben gobernar su implementación.</p>
+            </div>
+            <span class="section-count">R1.5 <small>puente</small></span>
+          </div>
+          <p class="pb-lead">Antes de diseñar una nueva pantalla, el agente consulta la intención, determina el material y busca el componente existente. Nunca copia indiscriminadamente las clases de la biblioteca a la plataforma.</p>
+          <div class="pb-warning">
+            <strong>Diferencia importante de tema</strong>
+            La aplicación real utiliza actualmente tema claro como base. La biblioteca tiene oscuro predeterminado para explorar la dirección artística. El modo oscuro productivo requiere especificación, adopción voluntaria y revisión de sus pantallas, no un cambio global de CSS.
+          </div>
+          <p class="pb-status" id="platform-bridge-status" role="status" aria-live="polite">El mapa se genera a partir de <a href="assets/pattern-registry.json">pattern-registry.json</a>. Si no hay JavaScript, consulta la guía de integración.</p>
+          <div id="platform-bridge-content" hidden>
+            <h3 class="pb-heading">Material artístico → superficie real</h3>
+            <div class="pb-surfaces" id="platform-bridge-surfaces"></div>
+            <h3 class="pb-heading">Componentes ya existentes</h3>
+            <ul class="pb-inventory" id="platform-bridge-components"></ul>
+            <h3 class="pb-heading">Tokens canónicos: no duplicarlos</h3>
+            <div class="pb-table-wrap" role="region" tabindex="0" aria-label="Tabla de tokens del frontend con desplazamiento horizontal">
+              <table>
+                <thead><tr><th scope="col">Función</th><th scope="col">Token React</th><th scope="col">Valor actual</th><th scope="col">Regla de adopción</th></tr></thead>
+                <tbody id="platform-bridge-tokens"></tbody>
+              </table>
+            </div>
+            <p class="pb-warning" id="platform-bridge-state"></p>
+            <h3 class="pb-heading">Componentes R1.6 disponibles y propuestas por evaluar</h3>
+            <ul class="pb-inventory" id="platform-bridge-gaps"></ul>
+          </div>
+          <p class="pb-source-note">Fuentes: <a href="docs/INTEGRACION.md">guía de agentes</a>, <a href="assets/pattern-registry.json">contrato estructurado</a> y código real de <code>vecidya-platform/app/components/</code> y <code>vecidya-platform/app/styles/</code>. No modificar el tema, los permisos, los flujos de MiniWeb ni el CRM por interpretar una muestra.</p>
+        </section>
+
         <footer class="site-footer">
           <div class="footer-brand"><img src="../vecidya-platform/public/assets/selected/brand/brand-symbol-3d.webp" alt=""><span>Vecidya Crystal Depth</span></div>
-          <p>Biblioteca visual independiente · 13 nov 2026 · pendiente de aprobación visual para cualquier integración.</p>
+          <p>Laboratorio interno · R1.5 · diseño y plataforma sincronizados por contrato, no por importación CSS.</p>
           <a href="#inicio">Volver al inicio <span aria-hidden="true">↑</span></a>
         </footer>
       </main>
@@ -412,8 +914,45 @@
         document.documentElement.dataset.theme = theme;
         themeToggle.setAttribute("aria-checked", String(theme === "dark"));
         document.getElementById("theme-label").textContent = theme === "dark" ? "Oscuro" : "Claro";
+        document.querySelector('meta[name="theme-color"]').content = theme === "dark" ? "#06172F" : "#F1F7FE";
       };
       themeToggle.addEventListener("click", () => applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
+      const r1Intent = document.getElementById("r1-intent");
+      const r1Selection = () => r1Intent.options[r1Intent.selectedIndex];
+      const updateR1 = () => {
+        const data = r1Selection().dataset;
+        document.getElementById("r1-route-material").textContent = data.material;
+        document.getElementById("r1-route-scene").textContent = data.scene;
+        document.getElementById("r1-route-rule").textContent = data.rule;
+        const link = document.getElementById("r1-preview-link");
+        const note = document.getElementById("r1-preview-note");
+        const preview = data.preview || "";
+        link.hidden = !preview;
+        link.dataset.preview = preview;
+        note.textContent = preview
+          ? "Existe una composición demostrativa para este contexto. No implementa la ruta ni modifica datos."
+          : "Este contexto no tiene composición de página R1.2. Aplica el material y la regla indicados; no reutilices otra escena por suposición.";
+      };
+      r1Intent.addEventListener("change", updateR1);
+      updateR1();
+      document.getElementById("r1-copy").addEventListener("click", async () => {
+        const current = r1Selection();
+        const message = "Vecidya Crystal Depth R1 — " + current.textContent.trim() +
+          "\nMaterial: " + current.dataset.material +
+          "\nEscena: " + current.dataset.scene +
+          "\nRegla crítica: " + current.dataset.rule +
+          "\nComposición: " + (current.dataset.preview || "sin muestra específica; usar el material recomendado") +
+          "\nAntes de implementar: consultar assets/pattern-registry.json, docs/INTEGRACION.md y los contratos reales de la plataforma; verificar accesibilidad, permisos y pruebas focales. R1 no autoriza deploy.";
+        const status = document.getElementById("r1-copy-status");
+        const previewText = document.getElementById("r1-brief-preview")?.value?.trim();
+        const instructions = previewText || message;
+        if (!navigator.clipboard || !window.isSecureContext) {
+          status.textContent = "La copia requiere HTTPS o localhost. Selecciona las instrucciones visibles para copiarlas.";
+          return;
+        }
+        try { await navigator.clipboard.writeText(instructions); status.textContent = "Borrador de instrucciones copiado para este patrón."; }
+        catch { status.textContent = "El navegador bloqueó la copia; consulta las reglas visibles."; }
+      });
       const toast = document.getElementById("toast");
       let toastTimer;
       const showToast = (message) => {

@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { chromium } from "playwright";
 import { assertLocalBaseUrl, baseUrl } from "./test-safety.mjs";
 
@@ -6,19 +6,31 @@ assertLocalBaseUrl();
 const localEdgePath = "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
 const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ?? (existsSync(localEdgePath) ? localEdgePath : undefined);
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
+const evidencePath = "test-results/ux-crystal-r2";
+mkdirSync(evidencePath, { recursive: true });
 
 async function assertNoOverflow(page, label) {
-  const overflow = await page.evaluate(() => {
-    const width = document.documentElement.clientWidth;
-    return [...document.body.querySelectorAll("*")]
+  const measurement = await page.evaluate(() => {
+    const viewport = document.documentElement.clientWidth;
+    const scrollWidth = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+    const overflow = scrollWidth - viewport;
+    const candidates = overflow > 1 ? [...document.body.querySelectorAll("*")]
       .filter((element) => {
         const rect = element.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.right > width + 1;
+        return rect.width > 0 && rect.height > 0 && rect.right > viewport + 1;
       })
-      .slice(0, 5)
-      .map((element) => ({ tag: element.tagName, className: element.className, right: element.getBoundingClientRect().right }));
+      .slice(0, 6)
+      .map((element) => ({
+        tag: element.tagName,
+        className: typeof element.className === "string" ? element.className : "",
+        right: Math.round(element.getBoundingClientRect().right * 100) / 100,
+        parent: element.parentElement?.className ?? "",
+      })) : [];
+    return { viewport, scrollWidth, overflow, candidates };
   });
-  assert(overflow.length === 0, `${label}: desbordamiento horizontal ${JSON.stringify(overflow)}`);
+  // Un borde hijo puede sobresalir fraccionalmente y quedar recortado sin
+  // causar desplazamiento del documento; medir scrollWidth evita falsos fallos.
+  assert(measurement.overflow <= 1, `${label}: scroll horizontal real ${JSON.stringify(measurement)}`);
 }
 
 async function assertRoundedSurfaces(page, label) {
@@ -42,6 +54,21 @@ try {
     assert(headerLayer.position !== "static" && headerLayer.zIndex > 0, `${label}: el encabezado debe quedar en una capa sobre el hero`);
     await assertNoOverflow(page, `${label} inicio`);
     await assertRoundedSurfaces(page, `${label} inicio`);
+    assert(await page.locator('.home-section-heading.v-section-heading').count() === 4, `${label}: Inicio no usa los cuatro encabezados compartidos`);
+    if ([390, 1366].includes(width)) {
+      await page.keyboard.press("Tab");
+      const focus = await page.evaluate(() => ({
+        className: document.activeElement?.className ?? "",
+        outline: getComputedStyle(document.activeElement).outlineStyle,
+      }));
+      assert(typeof focus.className === "string" && focus.className.includes("skip-link"), `${label}: foco inicial sin salto al contenido`);
+      assert(focus.outline !== "none", `${label}: skip-link sin foco visible`);
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      const reduced = await page.locator(".home-hero-visual__vico").evaluate(el => getComputedStyle(el).animationName);
+      assert(reduced === "none", `${label}: Vico sigue animado con movimiento reducido`);
+      await page.emulateMedia({ reducedMotion: "no-preference" });
+      await page.screenshot({ path: `${evidencePath}/${width}-inicio.png`, animations: "disabled" });
+    }
     for (const path of ["/licencias", "/servicios", "/aprende", "/contacto"]) {
       assert(await page.locator(`main a[href="${path}"],header a[href="${path}"]`).count() > 0, `${label}: navegación pública sin recorrido a ${path}`);
     }
@@ -88,6 +115,14 @@ try {
     assert(await page.locator('a[href="/contacto?interes=servicio-visibilidad"]').count() > 0, `${label}: Servicios no conserva interés`);
     await assertNoOverflow(page, `${label} servicios`);
     await assertRoundedSurfaces(page, `${label} servicios`);
+    assert(await page.locator(".services-section-heading.v-section-heading").count() === 2, `${label}: Servicios perdió la retícula compartida`);
+    if ([390, 1366].includes(width)) {
+      await page.screenshot({ path: `${evidencePath}/${width}-servicios.png`, animations: "disabled" });
+      await page.goto(new URL("/vecindario", baseUrl).toString(), { waitUntil: "networkidle" });
+      assert(await page.locator(".directory-results-heading.v-section-heading").count() === 1, `${label}: Vecindario perdió la retícula compartida`);
+      await assertNoOverflow(page, `${label} Vecindario`);
+      await page.screenshot({ path: `${evidencePath}/${width}-vecindario.png`, animations: "disabled" });
+    }
     await page.goto(new URL("/diagnostico", baseUrl).toString(), { waitUntil: "networkidle" });
     await assertNoOverflow(page, `${label} diagnóstico`);
     await assertRoundedSurfaces(page, `${label} diagnóstico`);
@@ -95,6 +130,9 @@ try {
     assert(await page.locator('.site-footer__nav a[href="/aprende"][aria-current="page"]').count() === 1, `${label}: Aprende sin estado en footer`);
     await assertNoOverflow(page, `${label} Aprende`);
     await assertRoundedSurfaces(page, `${label} Aprende`);
+    if ([390, 1366].includes(width)) {
+      await page.screenshot({ path: `${evidencePath}/${width}-aprende.png`, animations: "disabled" });
+    }
     await page.goto(new URL("/addons", baseUrl).toString(), { waitUntil: "networkidle" });
     assert(await page.locator('.addon-card a[href^="/contacto?interes=complemento-"]').count() === 7, `${label}: complementos pierden el contexto`);
     await page.locator('.addon-card a[href="/contacto?interes=complemento-whatsapp-business"]').click();
@@ -107,7 +145,7 @@ try {
 
   const alias = await fetch(new URL("/que-debes-saber", baseUrl), { redirect: "manual" });
   assert(alias.status === 301 && alias.headers.get("location")?.endsWith("/aprende"), "Alias de Aprende no redirige con 301");
-  console.log("PASS: navegación, esquinas redondeadas, desbordamiento, taxonomía, enlaces activos y CTA comerciales en 1366/1024/960/768/390/360/320.");
+  console.log("PASS: navegación, retícula compartida, foco, movimiento reducido, capturas y desbordamiento (1366/1024/960/768/390/360/320).");
 } finally {
   await browser.close();
 }

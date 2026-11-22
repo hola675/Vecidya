@@ -1,0 +1,77 @@
+/* Crystal Depth R1.2 · Escenas aplicadas a páginas y secciones.
+   Lab only; no real routing, entitlement or production behavior. */
+.scene-composer{color:var(--r1-ink)}
+.scene-composer .composer-intro{max-width:72ch;color:var(--r1-muted);line-height:1.7;margin:0 0 22px}
+.composer-tablist[hidden]{display:none!important}
+.composer-tablist{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.composer-tab{
+  min-height:44px;padding:10px 15px;
+  border:1px solid var(--r1-line);border-radius:13px;
+  color:var(--r1-ink);background:rgba(33,96,152,.22);
+  font:inherit;font-size:13px;font-weight:750;cursor:pointer;
+  transition:background var(--vx-motion-fast) ease,border-color var(--vx-motion-fast) ease,transform var(--vx-motion-fast) ease;
+}
+.composer-tab[aria-selected=true]{color:#082351;background:linear-gradient(135deg,#d0f3ff,#71c8ff);border-color:#e4f9ff;box-shadow:0 6px 14px #04163d44}
+.composer-tab:focus-visible,.composer-stage a:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+.composer-stage{min-width:0;overflow:hidden;border:1px solid var(--r1-line);border-radius:30px;background:#081d42;box-shadow:0 22px 48px #00152e47}
+.composer-panel[hidden]{display:none!important}
+.composer-panel{
+  position:relative;isolation:isolate;display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,.85fr);
+  gap:18px;align-items:center;min-height:390px;padding:clamp(23px,4vw,42px);
+  overflow:hidden;
+}
+.composer-panel::before{position:absolute;inset:0;z-index:-2;content:"";pointer-events:none;
+ background:radial-gradient(ellipse at 72% 30%,#246edc5c,transparent 56%),linear-gradient(130deg,#061a3e,#123f7a);
+}
+.composer-panel[data-scene=vecindario]::before{background:radial-gradient(ellipse at 80% 20%,#109cb155,transparent 60%),linear-gradient(130deg,#08284e,#10587a)}
+.composer-panel[data-scene=aprende]::before{background:radial-gradient(ellipse at 82% 25%,#2264ab77,transparent 55%),linear-gradient(130deg,#071b39,#104064)}
+.composer-panel[data-scene=miniweb]::before{background:radial-gradient(ellipse at 78% 23%,#e58d3a35,transparent 58%),linear-gradient(130deg,#081d38,#234a70)}
+.composer-copy{position:relative;z-index:2;min-width:0;padding:22px;border-radius:21px;
+ background:linear-gradient(145deg,#061c3bef,#0b3159e8);border:1px solid #a4dbff70;
+ box-shadow:inset 0 1px #eefaff38,0 12px 38px #00112d38;
+}
+.composer-copy .composer-kicker{display:block;color:#9fe6ff;font-weight:850;font-size:11px;letter-spacing:.13em;text-transform:uppercase}
+.composer-copy h3{max-width:19ch;color:#fff;font-size:clamp(26px,3.1vw,43px);line-height:1.13;letter-spacing:-.05em;margin:13px 0}
+.composer-copy p{max-width:45ch;color:#d5e8ff;font-size:14px;line-height:1.7;margin:0 0 20px}
+.composer-copy .composer-cta{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 16px;border-radius:12px;
+ background:linear-gradient(135deg,#ffa83b,#f89c2f);color:#09244f;text-decoration:none;font-size:13px;font-weight:850;
+ box-shadow:inset 0 1px #fff7,0 5px 13px #0005;
+}
+.composer-visual{position:relative;z-index:1;min-width:0;display:grid;place-items:center;align-self:stretch}
+.composer-art{width:min(100%,390px);max-height:325px;object-fit:contain;filter:drop-shadow(0 22px 25px #00132c80)}
+.composer-visual::before{content:"";position:absolute;inset:21% 7%;border-radius:50%;background:#54bfff28;filter:blur(40px);z-index:-1}
+.composer-surface{position:absolute;bottom:12%;left:0;max-width:210px;padding:11px 14px;border-radius:14px;
+ border:1px solid #daf3ffbd;background:linear-gradient(145deg,#e6f8ffdf,#a5dcffbf);
+ box-shadow:0 9px 20px #001b3670;color:#0a376b;font-size:12px;line-height:1.5;font-weight:750;
+ -webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);
+}
+.composer-panel[data-scene=aprende] .composer-surface,.composer-panel[data-scene=miniweb] .composer-surface{background:#ecf6ff;box-shadow:0 9px 20px #001b3670}
+.composer-note{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin:14px 0 0;padding:14px 16px;border:1px solid var(--r1-line);border-radius:15px;background:rgba(29,89,148,.13)}
+.composer-note strong{color:var(--r1-ink);font-size:13px}
+.composer-note span{color:var(--r1-muted);font-size:12px;line-height:1.55}
+.composer-spec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:17px}
+.composer-spec article{padding:16px;border:1px solid var(--r1-line);border-radius:15px;background:rgba(26,87,143,.17)}
+.composer-spec strong{display:block;color:var(--r1-ink);font-size:13px;margin-bottom:6px}
+.composer-spec p{margin:0;color:var(--r1-muted);font-size:12px;line-height:1.6}
+.composer-panel[data-transition=enter]{animation:composer-enter 350ms var(--vx-motion-ease) both}
+@keyframes composer-enter{from{opacity:.28;transform:translate3d(0,9px,0)}to{opacity:1;transform:none}}
+@media (hover:hover) and (pointer:fine){.composer-tab:not([aria-selected=true]):hover{background:#2c6daa77;border-color:#addef5;transform:translateY(-1px)}}
+html[data-theme=light] .scene-composer .composer-tab:not([aria-selected=true]){background:#e7f3fc}
+html[data-theme=light] .composer-stage{background:#e9f5ff;box-shadow:0 17px 34px #315f8b24}
+html[data-theme=light] .composer-panel::before,
+html[data-theme=light] .composer-panel[data-scene=vecindario]::before,
+html[data-theme=light] .composer-panel[data-scene=aprende]::before,
+html[data-theme=light] .composer-panel[data-scene=miniweb]::before{
+  background:radial-gradient(ellipse at 75% 28%,#9ddfff88,transparent 58%),linear-gradient(135deg,#e6f4ff,#c4e6ff 85%);
+}
+html[data-theme=light] .composer-copy{background:linear-gradient(145deg,#ffffffed,#dbeeffed);border-color:#9bc4e5;box-shadow:0 15px 34px #315f8b24}
+html[data-theme=light] .composer-copy h3{color:#123766}
+html[data-theme=light] .composer-copy p{color:#315c86}
+html[data-theme=light] .composer-copy .composer-kicker{color:#146098}
+html[data-theme=light] .composer-art{filter:drop-shadow(0 20px 18px #2a68934f)}
+html[data-theme=light] .composer-visual::before{background:#67c4f14f}
+html[data-theme=light] .composer-note,html[data-theme=light] .composer-spec article{background:#eaf5ff}
+@media (max-width:800px){.composer-panel{grid-template-columns:1fr;gap:6px;padding:22px}.composer-copy h3{max-width:26ch}.composer-visual{min-height:225px}.composer-art{max-height:255px}.composer-surface{bottom:5%;left:12%}}
+@media (max-width:520px){.composer-stage{border-radius:21px}.composer-panel{padding:13px;min-height:0}.composer-copy{padding:18px}.composer-copy h3{font-size:28px}.composer-copy p{font-size:13px}.composer-visual{min-height:230px}.composer-art{max-height:250px}.composer-surface{left:3%;max-width:175px;font-size:11px}.composer-tablist{gap:7px}.composer-tab{flex:1 1 calc(50% - 8px);font-size:12px;padding:10px 8px}.composer-spec{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.composer-panel[data-transition=enter]{animation:none!important}.composer-tab{transition:none!important;transform:none!important}}

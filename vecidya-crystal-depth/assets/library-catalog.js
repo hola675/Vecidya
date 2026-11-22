@@ -780,8 +780,8 @@ window.vecidyaCrystalCatalog = [
     "previewHeight": 238
   },
   {
-    "name": "Vico · bienvenida Vecidya",
-    "category": "Vico",
+    "name": "Inicio · ecosistema digital Vecidya",
+    "category": "Ilustraciones",
     "format": "WEBP",
     "width": 1280,
     "height": 853,

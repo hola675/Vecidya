@@ -47,6 +47,40 @@ const lists: Partial<Record<MiniWebV2SectionType, { key: string; title: string; 
   contact: { key: "links", title: "Enlaces de contacto", fields: [{ path: ["label"], label: "Texto del enlace" }, { path: ["href"], label: "Dirección web, teléfono o correo" }], blank: { label: "", href: "" } },
   gallery: { key: "images", title: "Fotografías de la galería", fields: [], imageKey: "self", blank: { assetId: "", alt: "" } },
 };
+/** Ayuda editorial: explica cómo utilizar cada dato sin introducir reglas de negocio nuevas. */
+const fieldGuidance: Record<string, string> = {
+  "Título principal": "Di qué ofrece tu negocio en una frase breve y reconocible.",
+  "Descripción breve": "Explica a quién ayudas y cómo, sin prometer resultados no comprobados.",
+  "Título de la sección": "Usa una expresión clara que anticipe lo que va a leer la persona.",
+  "Presentación del negocio": "Cuenta qué haces, a quién atiendes y qué te diferencia con hechos.",
+  "Teléfono": "Incluye un número de contacto público que realmente atiendas.",
+  "Correo público": "Utiliza una dirección que revises; será visible para visitantes.",
+  "Dirección": "Escribe una dirección real solo si recibes personas en ese lugar.",
+  "Ciudad": "Ciudad principal desde la que atiendes.",
+  "Zona de atención": "Explica qué barrios, ciudades o regiones cubres.",
+  "Enlace al mapa": "Pega la dirección web completa de un mapa válido si la tienes.",
+  "Título": "Utiliza un título corto que explique este bloque.",
+  "Zona horaria IANA": "Ejemplo: America/Bogota. Determina cómo se interpretan los horarios.",
+  "Nota sobre el horario": "Aclara citas, festivos o condiciones que deban conocer antes de visitarte.",
+  "Texto": "Escribe una explicación sencilla, concreta y fácil de leer.",
+  "Servicio": "Nombra la actividad por la que te contactaría una persona.",
+  "Descripción": "Describe el alcance real de lo que ofreces.",
+  "Producto": "Escribe el nombre con el que reconocerían este producto.",
+  "Categoría del producto": "Agrupa productos similares para facilitar la búsqueda.",
+  "Pregunta": "Escribe una duda que te hagan habitualmente.",
+  "Respuesta": "Responde exactamente a la pregunta, sin tecnicismos innecesarios.",
+  "Nombre": "Usa el nombre autorizado de la persona que formará parte del sitio.",
+  "Función": "Explica qué hace esta persona dentro del negocio.",
+  "Presentación": "Incluye solo información aprobada por la persona.",
+  "Nombre de la acreditación": "Utiliza el título real de una acreditación vigente o verificable.",
+  "Entidad emisora": "Indica qué institución o entidad emitió la acreditación.",
+  "Fecha o año": "Escribe la fecha real de emisión si la conoces.",
+  "Autor": "Identifica a quien dio su permiso para publicar el comentario.",
+  "Testimonio": "Conserva el sentido original de la opinión recibida.",
+  "Contexto": "Explica a qué servicio o experiencia se refiere la opinión.",
+  "Texto del enlace": "Describe la acción del enlace, por ejemplo, «Escribir por WhatsApp».",
+  "Dirección web, teléfono o correo": "Comprueba el destino antes de ofrecerlo a visitantes.",
+};
 const weekLabels = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"] as const;
 
 export function MiniWebV2SectionForm({ section, media, organizationId, disabled, onChange }: {
@@ -62,12 +96,13 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
     const control = field.multiline
       ? <textarea value={value} rows={3} disabled={disabled} onChange={(e) => update(path, e.currentTarget.value || (old === null ? null : ""))}/>
       : <input value={value} type={field.type ?? "text"} disabled={disabled} onChange={(e) => update(path, e.currentTarget.value || (old === null ? null : ""))}/>;
-    return <label className="miniweb-v2-form__field" key={path.join(".")}><span>{field.label}</span>{control}{field.help ? <small>{field.help}</small> : null}</label>;
+    return <label className="miniweb-v2-form__field" key={path.join(".")}><span>{field.label}</span>{control}<small className="miniweb-v2-form__field-help">{field.help ?? fieldGuidance[field.label] ?? "Describe este dato con información real y comprensible."}</small></label>;
   }
   function renderImage(path: Path, title: string) {
     const image = read(path) as V2Image | null | undefined;
     const asset = image ? media.find((item) => item.id === image.assetId) : null;
     return <fieldset className="miniweb-v2-form__image" key={`${path.join(".")}-image`}><legend>{title}</legend>
+      <p className="miniweb-v2-form__field-help">Elige una imagen de la biblioteca de esta organización. No se tomarán archivos de otros negocios.</p>
       <label>Imagen disponible
         <select value={image?.assetId ?? ""} disabled={disabled} onChange={(e) => {
           const id = e.currentTarget.value;
@@ -75,7 +110,7 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
         }}><option value="">Sin imagen</option>{media.map((item) => <option key={item.id} value={item.id}>{item.altText || `Imagen ${item.id.slice(0, 8)}`} · {item.purpose}</option>)}</select>
       </label>
       {image ? <>{asset ? <img src={assetUrl(image.assetId)} loading="lazy" alt="Vista previa del medio seleccionado"/> : <p role="alert">El archivo seleccionado ya no está disponible. Elige uno válido.</p>}
-        <label>Texto alternativo<input value={image.alt} disabled={disabled} onChange={(e) => update(path, { ...image, alt: e.currentTarget.value })}/></label>
+        <label>Texto alternativo<input value={image.alt} disabled={disabled} onChange={(e) => update(path, { ...image, alt: e.currentTarget.value })}/><small className="miniweb-v2-form__field-help">Cuenta qué muestra la imagen para quienes no pueden verla.</small></label>
         <label>Pie de foto (opcional)<input value={image.caption ?? ""} disabled={disabled} onChange={(e) => update(path, { ...image, caption: e.currentTarget.value || undefined })}/></label>
       </> : null}
     </fieldset>;
@@ -83,6 +118,7 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
   function renderCta(path: Path, title = "Botón de acción") {
     const link = read(path) as V2Link | null | undefined;
     return <fieldset className="miniweb-v2-form__cta"><legend>{title}</legend>
+      <p className="miniweb-v2-form__field-help">Un botón dirige a la persona a un contacto o página real. Revisa que funcione antes de publicar.</p>
       <label><input type="checkbox" checked={Boolean(link)} disabled={disabled} onChange={(e) => update(path, e.currentTarget.checked ? { label: "Contactar", href: "/contacto" } : null)}/> Mostrar enlace</label>
       {link ? <div className="miniweb-v2-form__fields">
         <label>Texto del botón<input value={link.label} disabled={disabled} onChange={(e) => update(path, { ...link, label: e.currentTarget.value })}/></label>
@@ -146,6 +182,7 @@ export function MiniWebV2SectionForm({ section, media, organizationId, disabled,
     </fieldset> : null}
     {section.type === "products" ? renderPromotionList() : null}
     {section.type === "hours" ? <fieldset className="miniweb-v2-form__hours"><legend>Horario semanal</legend><p>Elige la zona horaria antes de publicar. Los horarios de MiniWeb anterior no se importan automáticamente.</p>
+      <p className="miniweb-v2-form__field-help">Para cada día indica si está cerrado. Si abre, define la hora de inicio y fin de cada tramo de atención.</p>
       {V2_WEEKDAYS.map((day, index) => { const entry = (read(["days", index]) as { day: string; closed: boolean; ranges: { start: string; end: string }[] });
         return <div className="miniweb-v2-form__day" key={day}><strong>{weekLabels[index]}</strong>
           <label><input type="checkbox" disabled={disabled} checked={entry.closed} onChange={(e) => update(["days", index], { ...entry, closed: e.currentTarget.checked, ranges: e.currentTarget.checked ? [] : [{ start: "09:00", end: "17:00" }] })}/> Cerrado</label>

@@ -1,3 +1,93 @@
+## MINIWEB EXPERIENCE — pauta de implementación visual (2026-11-20, propuesta sin deploy)
+
+**Fuente comercial:** `docs/business/VECIDYA_PRODUCT_CATALOG.md → MINIWEB EXPERIENCE`. El estándar de calidad visual y accesibilidad no cambia por licencia. La diferencia debe observarse en composición y recorrido, nunca en una degradación deliberada de Cuadra.
+
+| Variante de diseño tipada | Licencia mínima prevista | Escena de la MiniWeb | Relación con producto |
+| --- | --- | --- | --- |
+| `base` | Cuadra | Hero split, ofertas y galería uniformes; lectura directa, identidad, contacto y CTA claros | Presencia completa; sin CRM operativo |
+| `pro` | Barrio | Hero asymmetric, ofertas editorial-grid y galería mosaic; progresión hacia consulta | La gestión de la consulta pertenece al CRM estándar **si fue provisionado y probado** |
+| `premium` | Ciudad | Hero immersive, ofertas narrative, galería editorial-sequence y transiciones sutiles | Visión de varios procesos; flujos coordinados solo si existen en CRM y la organización tiene licencia válida |
+
+**No confundir propuesta y disponibilidad:** las composiciones están tipadas en `app/features/miniweb/visual-variants.ts`; `app/features/miniweb/registry.ts` mantiene solo la plantilla `vecidya-default` / layout `standard` en estado disponible. La política pura en `visual-entitlements.ts` no concede licencias y requiere licencia activa verificada y validación server-side. No anunciar Pro/Premium como selector funcional hasta comprobar el renderer, el editor, los permisos, el guardado y la publicación.
+
+### Cómo interpretarla en un diseño concreto
+- Construir la página a partir de una identidad empresarial, objetivo y datos reales; conservar los módulos base disponibles, el orden editable y contacto.
+- Mantener tokens y componentes ya existentes; usar Focal solo donde la narrativa gane claridad, Quiet para apoyo y Solid para información que se deba leer o editar.
+- Crear una escena contextual diferente por sector o necesidad: no repetir un mismo hero con un filtro de color y llamarlo otro tier. La diferencia visual debe ser perceptible en hero, ritmo editorial, relación de bloques, galería y transiciones.
+- El texto sigue siendo HTML, las imágenes ambientales decorativas y los controles reales. Todas las variantes deben ser usables sin animación, blur o imagen de fondo.
+- Priorizar en Cuadra primero una entrega comparable en calidad al mejor trabajo visual de la biblioteca. Barrio y Ciudad añaden decisiones compositivas y, cuando corresponda, operaciones disponibles, no calidad básica que se retira.
+- En MiniWeb pública la organización controla identidad y contenido: prohibido imponer el dark theme de la biblioteca Crystal a terceros.
+- Antes de implementar, lector del código actual, pruebas focales por variante, 320/390/768/1366/1920, zoom 200 %, teclado, roles/tenant, rollback y capturas comparativas **de la misma organización**. Un demo no acredita producción.
+
+**Estado:** documentación de dirección; no agrega plantillas, variantes activas, componentes nuevos ni entitlement efectivo. Los agentes deben consultar también `vecidya-crystal-depth/docs/INTEGRACION.md` y `assets/pattern-registry.json`, cuando se fusionen sus actualizaciones pendientes.
+
+---
+
+## APP-MINI-V2 — Personalización en el editor real (checkpoint en PR; 2026-11-20)
+
+**Objetivo:** incorporar los controles de estilo directamente a `/app/miniweb-v2` tanto en creación como edición, no solo en la biblioteca Crystal Depth. **Implementado en rama de PR, no desplegado ni certificado todavía.**
+
+**Arquitectura:** `app/features/miniweb-v2/visual-design.ts` define el contrato `MiniWebV2Design`: paleta Océano/Bosque/Coral/Ciruela o colores personalizados (acento, fondo, tinta), fuente (moderna/editorial/cercana), composición `split/stacked`, alineación, posición de imagen, título 26–60 px, texto 14–20 px, espacio 12–42 px, radio 0–34 px y hero 260–480 px. Los valores están restringidos y requieren contraste >=4,5:1 para fondo/texto, texto sobre tarjeta blanca y botón blanco sobre acento. No se aceptan CSS ni URL libres.
+
+**Persistencia sin migración:** `MiniWebV2Document.design?` es opcional para compatibilidad con publicaciones y borradores legacy. El endpoint `api-miniweb-v2.ts` valida el estilo antes de crear/importar y en `save` valida el documento entero; se conserva el control de revisión, las guardas por organización y la publicación explícita. El renderer React usa un mismo contrato para vista previa y publicación SSR. No modifica datos comerciales, CRM ni capacidad de licencias.
+
+**Interfaz:** `MiniWebV2DesignControls` se muestra en creación y edición dentro de Mi Vecidya. La vista previa privada refleja cambios no guardados, la salida avisa si hay cambios pendientes y el botón de guardar los persiste con el contenido. Los documentos sin personalización no reciben CSS inline nuevo y mantienen sus colores por familia.
+
+**Gates abiertos:** revisión del PR, typecheck/build, pruebas unitarias focales, Worker/D1 local de creación→edición→recarga→publicación, dos organizaciones aisladas, colores extremos, zoom 200 %, teclado, móvil 320/390 y inspección humana. No declarar completado el release ni emitir licencia por cambiar diseño. La biblioteca Crystal Depth permanece referencia didáctica y no CSS productivo.
+
+---
+
+## UX-CRYSTAL-R4.2 — MiniWeb V2 por pasos (candidato en PR)
+
+**Problema observado en laboratorio real:** con seis secciones de un negocio ficticio, el editor mostraba todas las tarjetas y formularios en una sola página de miles de píxeles. La vista previa quedaba al final, lejos de los controles. En el dashboard, la tarjeta «Tu siguiente paso» tenía contraste insuficiente en móvil.
+
+**Solución en este checkpoint:**
+- Navegación por **pasos de sección** con una única sección editable visible; el orden y el contenido total siguen en el documento y el renderer.
+- Selección directa de paso, anterior/siguiente, indicador de sección y aviso de revisión si faltan campos válidos; añadir una sección abre automáticamente su paso.
+- Ayuda contextual editorial **en cada campo generado** y orientación por tipo de sección, además de imagen/CTA y horarios. Las áreas de texto habituales reducen su altura mínima (de 16 rem a 7 rem) y siguen siendo redimensionables. Explicar propósito, dato verdadero y efecto; no inventar funciones ni prometer publicaciones.
+- Vista previa contextual en columna paralela a partir de 1100 px, acotada en altura y desplazable; en pantallas estrechas se alterna entre **Editar / Vista previa**, sin recorrer los formularios. Enlace de retorno y estado visual de la vista seleccionada.
+- Mantener control de cambios sin guardar, bloqueo de salida, revisión/revisionId, permisos y confirmación de publicación tal como están; el editor **no** activa autosave ni modifica MiniWeb pública de otras organizaciones.
+- En `/app`, el texto de la acción principal usa tokens de tinta verificables sobre superficie clara, no color heredado de un Card decorativo.
+
+**QA necesario antes del merge:** typecheck/build sobre SHA, test focal `tests/unit/ux/experience-system.test.ts`, capturas Playwright 320/390/768/1366/1920, lectura con teclado/foco, altas/bajas/reordenación de secciones, comprobar que cambiar entre pasos no pierde modificaciones, guardado y revalidación, reducido movimiento y visual de preview. No acreditar aceptación por haber cambiado solamente CSS.
+
+**Arte ambiental posterior:** `vecidya-crystal-depth/assets/pattern-registry.json → backgroundAssetBriefs` contiene ocho especificaciones de fondos por vista, todos con estado **no generados / no implementados**. Antes de crear assets, comprobar alternativas originales disponibles y derechos, contraste sobre la composición final, originales/derivados WebP, móvil/escritorio y fallback CSS. El marco del editor puede usar Crystal Quiet; los formularios siguen Solid y la MiniWeb pública usa la identidad del negocio.
+
+---
+
+## UX-CRYSTAL-R3 — activación reversible de los cambios visuales ya integrados
+
+`app/lib/visual-rollout.ts` contiene el catálogo **único** de flags visuales por familia de ruta. Sus cinco opciones activas corresponden a cambios ya integrados por R1.7–R1.9; las dos superficies futuras están **desactivadas por defecto**. No son flags de permisos ni de licencias y no deben usarse para modificar autorización del servidor.
+
+| Flag | Ruta | Mejora visible si está activo | Reversión en código |
+| --- | --- | --- | --- |
+| `publicHomeHeadings` | `/` | Cuatro encabezados `v-section-heading` | Recuperar solo `home-section-heading` |
+| `publicDirectoryResults` | `/vecindario` | Retícula de resultados compartida | Recuperar `directory-results-heading` |
+| `publicServicesHeadings` | `/servicios` | Dos encabezados compartidos | Mantener solo `services-section-heading` |
+| `adminBusinessSurfaces` | `/app/internal/businesses` | Contenedores `v-surface` discretos/sólidos | Volver a clases previas sin atributos `data-surface/depth` |
+| `miniWebEditorSolid` | `/app/miniweb-v2` | Superficie `Card solid` del editor | Volver a `Card glass` sin alterar el renderer del negocio |
+
+**Comportamiento:** los flags se evalúan de forma determinista en SSR e hidratación. No dependen de cookies, querystrings ni identidad; para revertir se cambia **solo** el booleano correspondiente, se ejecutan las pruebas del área afectada y se solicita el release habitual. No hay activación/desactivación remota ni despliegue instantáneo.
+
+**CSS legado:** `app.css` contiene reglas históricas para `.home-section-heading`, `.services-section-heading`, tarjetas y otros patrones; `home-premium.css` y `visual-system.css` también intervienen. No se eliminan por nombre coincidente: es necesario inventariar especificidad y capturas antes de retirar una regla, o una página podría perder jerarquía.
+
+**Cierre:** los controles de código ayudan a desplegar y revertir de manera controlada, pero no sustituyen revisión humana R2, pruebas de roles ni evidencia HTTP posterior a cada release.
+
+---
+## UX-CRYSTAL-R1.6 — componentes productivos del lenguaje compartido (candidato en PR)
+
+La fuente de verdad continúa siendo `app/components/ui.tsx` y `app/styles/premium-foundation.css` / `visual-system.css`. El checkpoint R1.6 añade `app/components/visual-contract.tsx`: `PageHeading`, `AdminFilterBar`, `ConsentStatus`, `SharedStatusPanel`, `DiagnosticMetricCard` y `DiagnosticTrend`. Los seis son composiciones presentacionales; no reemplazan `Card`, `Alert`, `EmptyState`, `MetricCard`, la autorización del servidor ni el motor de Diagnóstico.
+
+- **Componente de estado:** `idle/loading/empty/error/access-denied/success`; los errores y denegaciones se anuncian con `role="alert"`; el éxito solo se muestra si la ruta recibió evidencia real.
+- **Consentimiento:** `authorized/not-authorized/unknown` se recibe explícitamente de origen autorizado. No se infiere por estar registrado.
+- **Filtros Admin:** `GET` explícito, etiquetas, submit y reset mediante ruta; la ruta propietaria decide paginación, params y acceso.
+- **Métricas/series:** nulo distinto de cero, unidad, fuente, periodo y tabla legible; la gráfica no es una conversión de personas únicas.
+- **Encabezados:** niveles H1/H2, contexto, acción opcional y `v-page-heading` sin obligar a todas las rutas a adoptar el patrón al mismo tiempo.
+- **Estilos:** solo clases `v-*` aditivas; sin cambio de tema y con responsive. Crystal Depth sigue siendo laboratorio y no se importa su CSS.
+
+**Evidencia:** TypeScript, build y test focal `tests/unit/ux/experience-system.test.ts` deben aprobarse sobre el SHA del PR; el contrato visual completo por ruta queda en R1.7–R1.9 y R2.
+
+---
 # Vecidya — sistema visual y de experiencia compartido (v0.2, 2026-11-11)
 
 ## Referencias investigadas
@@ -168,3 +258,7 @@ Diseñar una composición vertical o adaptable al recorte disponible. Mantener d
 - [ ] MiniWeb pública conserva todas las decisiones de identidad de su negocio y el contenido real publicado.
 
 **Alcance del checkpoint:** la guía define la política oficial y la capa compartida de superficies, composición, interacción y tokens. Las rutas individuales mantienen su contenido y diseño propio; una guía o un build no certifican por sí solos cada viewport, lector de pantalla ni superficie privada.
+
+## UX-CRYSTAL-R1.8 — adopción de superficies en Admin (candidato)
+
+La vista `/app/internal/businesses` reutiliza `v-surface` con `data-surface="glass"` y `depth=quiet` en filtros, y `data-surface="solid"` y `depth=rest` en tablas y vacíos. Mantiene los datos reales, `requirePlatformAdmin` y la búsqueda local existente; **no** la convierte silenciosamente en GET ni modifica permisos. El componente `AdminFilterBar` de R1.6 queda disponible para una migración de filtros con contrato de URL independiente. Debe verificarse enfoque, lectura de tabla, zoom y contraste antes de certificar visualmente.

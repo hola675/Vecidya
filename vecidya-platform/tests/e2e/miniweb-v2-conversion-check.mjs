@@ -126,13 +126,21 @@ try {
   const unconfirmed = await owner.request(endpoint, "POST", { operation: "create-from-published-v1", confirm: false, familyKey: "vecidya-default", visualVariant: "base" });
   assert.equal(unconfirmed.status, 400);
 
-   const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro" });
-   assert.equal(empty.status, 201);
+  const design = { palette: "bosque", accentColor: "#226354", backgroundColor: "#f1f6ef", textColor: "#19392f",
+    font: "editorial", layout: "split", align: "center", imagePosition: "left",
+    titleSize: 52, bodySize: 16, spacing: 30, radius: 24, heroHeight: 360 };
+  const invalidStyle = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro",
+    design: { ...design, accentColor: "#ffffff" } });
+  assert.equal(invalidStyle.status, 400, "no se puede crear MiniWeb con CTA de contraste insuficiente");
+  const empty = await owner.request(endpoint, "POST", { operation: "create", familyKey: "catalog-store", visualVariant: "pro", design });
+  assert.equal(empty.status, 201);
    const emptySite = await empty.json(); const emptySiteId = emptySite.siteId; const emptySlug = emptySite.publicSlug;
    assert.match(emptySlug, /^v2-conversion-[a-f0-9-]+-site-[a-f0-9]{8}$/);
   const previousDraft = await owner.request(`${endpoint}?site=${encodeURIComponent(emptySiteId)}`);
   assert.equal(previousDraft.status, 200);
-  const previousDocument = JSON.stringify((await previousDraft.json()).state.draft.document);
+  const previousParsed = (await previousDraft.json()).state.draft.document;
+  assert.deepEqual(previousParsed.design, design, "la creación conserva la configuración visual de la organización");
+  const previousDocument = JSON.stringify(previousParsed);
   const untouchedCreate = await owner.request(endpoint, "POST", { operation: "create", familyKey: "professional-profile", visualVariant: "base" });
   assert.equal(untouchedCreate.status, 201);
   const untouchedSiteId = (await untouchedCreate.json()).siteId;
@@ -145,6 +153,10 @@ try {
   emptyDocument.sections = [];
   const emptySave = await owner.request(endpoint, "POST", { operation: "save", siteId: emptySiteId, expectedRevision: 1, document: emptyDocument });
   assert.equal(emptySave.status, 200);
+  const savedDesign = await owner.request(`${endpoint}?site=${encodeURIComponent(emptySiteId)}`);
+  assert.equal(savedDesign.status, 200);
+  assert.deepEqual((await savedDesign.json()).state.draft.document.design, design,
+    "guardar y recargar mantiene el diseño en la misma revisión");
   const emptyPublish = await owner.request(endpoint, "POST", { operation: "publish", siteId: emptySiteId, expectedRevision: 2 });
   assert.equal(emptyPublish.status, 400, "el Worker rechaza la publicación sin portada");
 
@@ -357,18 +369,27 @@ try {
     const editorResponse = await editorPage.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(convertedId)}`, base).toString(), { waitUntil: "networkidle" });
     assert.equal(editorResponse?.status(), 200, "owner can open the V2 editor for the converted site");
     assert.ok((await editorPage.locator("body").innerText()).includes("Secciones de tu sitio"), "the route rendered the authenticated editor, not the login page");
+    const sectionSteps = editorPage.getByRole("navigation", { name: "Pasos de edición del sitio" });
+    assert.ok((await sectionSteps.innerText()).includes("Productos") && (await sectionSteps.innerText()).includes("Contacto"));
+    await sectionSteps.getByRole("button", { name: /Productos/ }).click();
     assert.ok((await editorPage.locator("body").innerText()).includes("Promociones"));
+    await sectionSteps.getByRole("button", { name: /Contacto/ }).first().click();
     assert.ok((await editorPage.locator("body").innerText()).includes("WhatsApp"));
     assert.ok((await editorPage.locator("body").innerText()).includes("Formulario de contacto"));
+    await sectionSteps.getByRole("button", { name: /Reseñas autorizadas/ }).click();
     assert.ok((await editorPage.locator("body").innerText()).includes("Reseñas autorizadas"));
+    await sectionSteps.getByRole("button", { name: /Productos/ }).click();
     const autoSaveResponse = editorPage.waitForResponse((response) => {
       const request = response.request();
       return response.url().includes("/api/organizations/") && request.method() === "POST" && request.postDataJSON()?.operation === "save";
     });
     await editorPage.getByLabel("Título de la promoción").first().fill("Promoción editada desde el editor");
-    await editorPage.getByLabel("Instrucción breve").fill("Editado desde el editor en navegador.");
     assert.equal((await autoSaveResponse).status(), 200, "debounced autosave persists the latest nested content to the V2 draft");
     await editorPage.getByText(/Autoguardado completado · revisión/).waitFor();
+    await sectionSteps.getByRole("button", { name: /Contacto/ }).first().click();
+    const contactAutoSaveResponse = editorPage.waitForResponse((response) => response.url().includes("/api/organizations/") && response.request().method() === "POST" && response.request().postDataJSON()?.operation === "save");
+    await editorPage.getByLabel("Instrucción breve").fill("Editado desde el editor en navegador.");
+    assert.equal((await contactAutoSaveResponse).status(), 200, "autosave in another step uses the latest document snapshot");
     await editorPage.getByLabel("Título del formulario").fill("Formulario guardado por el botón");
     const explicitSaveResponse = editorPage.waitForResponse((response) => {
       const request = response.request();

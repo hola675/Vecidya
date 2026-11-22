@@ -1,0 +1,80 @@
+name: Vecidya UX R2 public browser QA
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/ux-crystal-r2.yml"
+      - "vecidya-platform/tests/e2e/public-navigation-a11y-check.mjs"
+      - "vecidya-platform/app/styles/**"
+      - "vecidya-platform/app/routes/home.tsx"
+      - "vecidya-platform/app/routes/directory.tsx"
+      - "vecidya-platform/app/routes/services.tsx"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ux-r2-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    name: Navegación pública, responsive y reduced-motion R2
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: vecidya-platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+          cache-dependency-path: vecidya-platform/pnpm-lock.yaml
+      - name: Instalar dependencias sin modificar lockfile
+        run: pnpm install --frozen-lockfile
+      - name: Instalar Chromium y librerías de runtime
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Probar solo contra Worker local-demo aislado
+        env:
+          BASE_URL: http://127.0.0.1:4173
+          EMAIL_PROVIDER: fake
+        run: |
+          set -euo pipefail
+          mkdir -p test-results/ux-crystal-r2
+          pnpm run dev:local-demo > test-results/ux-crystal-r2/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          ready=0
+          for attempt in $(seq 1 150); do
+            if curl --silent --show-error --fail "$BASE_URL/" >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            if ! kill -0 "$SERVER_PID" 2>/dev/null; then
+              echo "El Worker local-demo salió antes de inicializarse"
+              tail -n 80 test-results/ux-crystal-r2/server.log
+              exit 1
+            fi
+            sleep 2
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "Worker local-demo no disponible en loopback"
+            tail -n 80 test-results/ux-crystal-r2/server.log
+            exit 1
+          fi
+          node tests/e2e/public-navigation-a11y-check.mjs
+      - name: Conservar capturas y log local por siete días
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vecidya-r2-evidencia-publica
+          path: vecidya-platform/test-results/ux-crystal-r2/
+          retention-days: 7
+          if-no-files-found: warn

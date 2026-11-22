@@ -9,6 +9,8 @@ import { JourneyGuide } from "../components/experience-system";
 import { PublicLayout, publicMeta, whatsAppChannelUrl } from "../components/public-layout";
 import { PUBLIC_ACTION_LABELS } from "../content/public-copy";
 
+import { visualClassName } from "../lib/visual-rollout";
+
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
@@ -81,7 +83,7 @@ export default function Home() {
       />
 
       <section aria-labelledby="home-neighborhood-title" className="public-v2-section home-neighborhood-preview">
-        <div className="home-section-heading">
+        <div className={visualClassName("home-section-heading", "publicHomeHeadings", "v-section-heading")}>
           <div>
             <p className="eyebrow">VECINDARIO REAL</p>
             <h2 id="home-neighborhood-title">Descubre el Vecindario.</h2>
@@ -101,7 +103,7 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="home-diagnostic-title" className="public-v2-section home-diagnostic-feature">
-        <div className="home-section-heading">
+        <div className={visualClassName("home-section-heading", "publicHomeHeadings", "v-section-heading")}>
           <div>
             <p className="eyebrow">PUNTO DE PARTIDA</p>
             <h2 id="home-diagnostic-title">Empieza por tu diagnóstico.</h2>
@@ -114,7 +116,7 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="home-services-title" className="public-v2-section home-services-feature">
-        <div className="home-section-heading">
+        <div className={visualClassName("home-section-heading", "publicHomeHeadings", "v-section-heading")}>
           <div>
             <p className="eyebrow">SERVICIOS</p>
           <h2 id="home-services-title">Servicios para avanzar.</h2>
@@ -142,7 +144,7 @@ export default function Home() {
       </section>
 
       <section aria-labelledby="home-learn-contact-title" className="public-v2-section home-guidance-feature">
-        <div className="home-section-heading">
+        <div className={visualClassName("home-section-heading", "publicHomeHeadings", "v-section-heading")}>
           <div>
             <p className="eyebrow">GUÍAS Y AYUDA</p>
             <h2 id="home-learn-contact-title">Aprende a tu ritmo o consúltanos.</h2>

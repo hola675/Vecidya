@@ -2,6 +2,23 @@
 
 Branch `feat/app-mini-vecindario-v2-route-01` basada en `origin/main@3fab29da`; versión `0.9.2`. Migración `0046`, bloques opcionales y editor autosave/self-review se probaron solo con Worker/D1/R2 Wrangler locales; no se añadió otra migration ni se cambiaron bindings. El form usa `mailto:` local del visitante, sin CRM/POST. Tests PASS de retry manual ante error, CAS conflict/reload, review/confirm publish. Sin ledger/backup de datos remotos, sin deploy ni HTTP pública fechada; ledger/backfill `0046` en staging/prod **NO VERIFICADO**. Release conjunta sigue NO-GO.
 
+## UX-CRYSTAL-R4 — laboratorio local ampliado (2026-11-20, pendiente de ejecución)
+
+El fixture de `dev:local-demo` se amplió de 4 a **10 organizaciones sintéticas** con descripciones, ciudades, servicios, preguntas frecuentes, galería, dos catálogos de muestra y tres cuentas QA con permisos distintos. La información histórica sobre cuatro organizaciones describe la ejecución del 2026-11-11, no el objetivo del nuevo checkpoint. Para inicializar, ejecutar `pnpm run dev:local-demo` en una terminal y `pnpm run seed:local-demo`, `pnpm run status:local-demo` y `pnpm run review:local-demo` en otra. El script Playwright abre Chromium visible, guarda capturas en `test-results/ux-crystal-r4-manual` y permite inspección humana. Más detalles, credenciales y advertencias: [UX-CRYSTAL-R4-LOCAL-REVIEW.md](./UX-CRYSTAL-R4-LOCAL-REVIEW.md).
+
+**No hay evidencia de ejecución del seed de 10 organizaciones ni de Playwright en este checkpoint.** Sin D1 remota, licencias ficticias, publicaciones, despliegue ni acceso a organizaciones reales. Los resultados requerirán registro por SHA.
+
+---
+
+## UX-CRYSTAL-R3 — preflight HTTP y publicación separada
+
+El verificador `pnpm ux:verify-http` no tiene URL por defecto y rechaza destinos fuera de loopback, el Worker staging `vecidya-platform-staging.*.workers.dev` y `vecidya.com`/`www.vecidya.com`. Producción exige `UX_PRODUCTION_READONLY_APPROVED=1`, que autoriza **solo cuatro GET anónimos** y nunca modifica Cloudflare o D1. El resultado no confirma el SHA desplegado.
+
+La política de flags `app/lib/visual-rollout.ts` es estática e idéntica en SSR e hidratación. Cambiarla requiere PR, CI y release explícito. Ninguna variable `UX_*` activa una característica productiva: son parámetros del verificador local.
+
+**Preflight release:** confirmar destino, permisos de publicación, copia del Version ID anterior, esquema/migraciones actuales, rollback del Worker y evidencia del commit. El contrato visual no autoriza `wrangler deploy`, `d1 migrations apply --remote`, subida de medios ni edición de secretos. Staging y producción se mantienen como gates independientes.
+
+---
 ## Entorno QA local aislado (2026-11-11)
 
 `pnpm run dev:local-demo` ejecuta la aplicación en `http://127.0.0.1:4173`, con `wrangler.local-demo/wrangler.jsonc`, persistencia D1/R2 bajo `.wrangler/local-demo`, email falso y clave de autenticación aleatoria por inicio. Wrangler y Vite aíslan sus directorios de entorno en `wrangler.local-demo/`; el Worker local no carga secretos de `.dev.vars` ni `.env` desde la raíz de la plataforma. Logs, temporales y caché quedan bajo `.wrangler/local-demo`. No configura rutas públicas ni `workers.dev`; el servidor local se enlaza a loopback. Las cuatro organizaciones `qa-local-*`, sus perfiles, medios y borradores se crean con `pnpm run seed:local-demo`; consulta `docs/TESTING.md` para el recorrido y la cuenta QA.

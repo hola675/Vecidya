@@ -19,6 +19,18 @@
 - MiniWeb no queda completo ni certificado para release: workflow/revisión/autosave, bloques, roles, personalización de plantillas, límites de media, analytics, accesibilidad humana/WCAG, R2 remoto, migración sobre datos existentes, restore/rollback y cutover pendientes. Se conserva V1.
 - Versión `0.9.2`; sin D1/R2 remota, secrets, flags, merge, deploy ni HTTP pública fechada. Diagnóstico V9 y release conjunta permanecen pendientes.
 
+## 2026-11-20 — UX-CRYSTAL (R1.5–R3, conciliación)
+
+- R1.5 (PR #261): correspondencias verificables entre biblioteca Crystal Depth y componentes/tokens efectivos del frontend.
+- R1.6 (PR #262): componentes presentacionales para encabezados, estados, filtros GET, consentimiento, métricas y tendencias; sin cambios de permisos o persistencia.
+- R1.7 (PR #263): retícula compartida de encabezados en Inicio, Vecindario y Servicios, sin cambiar sus datos.
+- R1.8 (PR #264): superficies de filtros, tabla y vacíos de negocios en Admin, con autorización del servidor intacta.
+- R1.9 (PR #265): superficies sólidas del editor MiniWeb V2, sin modificación del renderer público ni derechos de licencia.
+- R2 (PR #266, candidato): QA en navegador local que descubrió y corrigió animación residual de Vico bajo movimiento reducido; sigue sujeto a CI y aceptación manual de accesibilidad.
+- R3 (PR #267, candidato): flags por ruta con fallback y verificador HTTP anónimo, sin despliegue ni activación remota. Los estados de PR se deben reconciliar tras los merges; no atribuir release publicado sin evidencia HTTP/Version ID.
+
+---
+
 # 2026-11-17 — DIAG-V9-PRIVACY-GATE-01 — integrado por PR #256 (V9 no activado)
 
 - Política vigente aclarada el 2026-11-16: ningún diagnóstico persiste en D1 respuestas, valores elegidos, transcript, identidad/run individual ni resultado, finalizado o no. Solo se permiten métricas agregadas/coarse-grained no reidentificables; replay/finalización son transitorios, el draft local TTL es 7 días y el resultado firmado se conserva localmente hasta 24 horas. Esta política supersede el criterio documental del 2026-11-14 sobre persistencia terminal consentida.

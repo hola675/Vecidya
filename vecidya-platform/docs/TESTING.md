@@ -6,6 +6,57 @@ Desde `feat/app-mini-vecindario-v2-route-01`, base `origin/main@3fab29da`. `pnpm
 
 El runner serializa `wrangler d1 execute --local` apagando y reiniciando el Worker local que comparte esa persistencia; aborta si el proceso no termina. Durante setup pueden fallar probes `/api/auth/ok` hasta que el Worker esté listo; el flujo funcional pasó sin reset de petición. El mailto depende de la app de correo del visitante; no se probó entrega real. El self-review no es aprobación de un revisor independiente ni se persiste como auditoría. No se probaron backfill `0046` sobre V2 preexistente, matriz owner/admin/lector, cambio de familia conservando contenido, límites/optimización/reemplazo R2, analytics, accesibilidad humana/axe/lector/zoom 200 %, R2 remoto, ledger staging/producción, backup/restore, deploy ni HTTP pública; no declara MiniWeb completo ni GO release.
 
+## APP-MINI-V2-VISUAL-PERSONALIZATION — pruebas del candidato (2026-11-20)
+
+La personalización visual ahora se incorpora al editor real `/app/miniweb-v2` y se valida en el contrato del documento MiniWeb. El checkpoint reutiliza sin crear harnesses nuevos:
+
+- `tests/unit/miniweb-v2-sections.test.ts`: documento legacy sin `design`, serialización de paleta/tamaño y rechazo de colores ilegibles/rangos inválidos.
+- `tests/unit/miniweb-visual-variants.test.ts`: recuento actualizado de superficies y presencia de controles en creación/edición.
+- `tests/e2e/miniweb-v2-conversion-check.mjs`: Worker/D1 local aislado; creación de sitio con estilo, rechazo de acento inválido, lectura del borrador, guardado y recarga de la configuración.
+
+**Estado:** cobertura agregada en rama de PR; ejecutar y revisar resultados del SHA final antes de declarar PASS. Pendiente además navegador real con controles de color/rango, zoom 200 %, lector de pantalla, permisos y aislamiento entre organizaciones y publicación con diseño persistido. No se han utilizado D1 ni R2 remotos.
+
+---
+
+## UX-CRYSTAL-R4 — laboratorio local ampliado (2026-11-20, pendiente de ejecución)
+
+El fixture de `dev:local-demo` se amplió de 4 a **10 organizaciones sintéticas** con descripciones, ciudades, servicios, preguntas frecuentes, galería, dos catálogos de muestra y tres cuentas QA con permisos distintos. La información histórica sobre cuatro organizaciones describe la ejecución del 2026-11-11, no el objetivo del nuevo checkpoint. Para inicializar, ejecutar `pnpm run dev:local-demo` en una terminal y `pnpm run seed:local-demo`, `pnpm run status:local-demo` y `pnpm run review:local-demo` en otra. El script Playwright abre Chromium visible, guarda capturas en `test-results/ux-crystal-r4-manual` y permite inspección humana. Más detalles, credenciales y advertencias: [UX-CRYSTAL-R4-LOCAL-REVIEW.md](./UX-CRYSTAL-R4-LOCAL-REVIEW.md).
+
+**No hay evidencia de ejecución del seed de 10 organizaciones ni de Playwright en este checkpoint.** Sin D1 remota, licencias ficticias, publicaciones, despliegue ni acceso a organizaciones reales. Los resultados requerirán registro por SHA.
+
+---
+
+## UX-CRYSTAL-R3 — regresión de flags y verificación HTTP anónima
+
+Se amplió **la suite existente**, sin añadir tests históricos, para comprobar `VISUAL_ROLLOUT`, composición de clases, fallbacks de Admin/MiniWeb y límites de la consulta remota.
+
+Comandos desde `vecidya-platform/`:
+- `pnpm typecheck`, `pnpm build`, `pnpm test:unit`: gates técnicos generales.
+- `UX_HTTP_CHECK_TARGET=https://vecidya-platform-staging.soporte-8a1.workers.dev/ pnpm ux:verify-http`: smoke **anónimo y de solo lectura** contra staging, solo si el entorno de destino está preparado.
+- Para producción, además `UX_PRODUCTION_READONLY_APPROVED=1` y `UX_HTTP_CHECK_TARGET=https://vecidya.com/`; consultar sin sesión no constituye autorización de deploy.
+
+`scripts/ux-verify-http.mjs` restringe el destino a loopback 4173/5173, staging `vecidya-platform-staging.*.workers.dev`, o dominio Vecidya con opt-in explícito de lectura. Solo ejecuta GET a `/`, `/vecindario`, `/servicios` y `/aprende`, sin seguir redirecciones, sin cookies, auth, mutaciones o bases de datos. Registra fecha UTC, estado HTTP y presencia de H1; **no demuestra que el SHA de GitHub coincida con el Worker desplegado**. Para eso se necesita evidencia de release o de versión publicada independiente.
+
+La reversión es un cambio por PR del flag de una ruta, no una operación en caliente. Después de revertir, repetir tipo/build/regresión, E2E visual de esa ruta y smoke HTTP post-deploy. La CI de contrato no prueba accesibilidad manual ni datos internos.
+
+---
+## UX-CRYSTAL-R2 — QA en navegador real, alcance y evidencia
+
+Se amplió **el test E2E existente** `tests/e2e/public-navigation-a11y-check.mjs` para comprobar las superficies públicas afectadas por R1.7 (Inicio, Servicios y Vecindario) y guardar capturas de 390/1366 px. La CI R2 inicia el Worker local-demo **solo en loopback**, con D1 local aislada, email falso y Playwright Chromium. No usa D1 remota ni ejecuta comandos de publicación.
+
+Abarca siete anchos de navegador (320, 360, 390, 768, 960, 1024, 1366), desbordamiento, navegación real, salto al contenido, foco visible básico y preferencia de movimiento reducido en una ilustración. `test-results/ux-crystal-r2` conserva capturas y log temporal (retención siete días). No se crea arnés por ejecución.
+
+**No equivale a certificación WCAG integral:** siguen pendientes zoom real de navegador al 200 %, lectura con NVDA/VoiceOver, contraste medido sobre superficies translúcidas y gradientes, revisión humana de las capturas y rendimiento en dispositivos lentos. La suite tampoco cubre sesiones autenticadas de Mi Vecidya/Admin o editor MiniWeb; esos recorridos requieren fixtures y pruebas autorizadas por superficie.
+
+**Criterio de reporte:** solo afirmar `RAN PASS` para pasos efectivamente ejecutados sobre SHA concreto; separar `TEST` (caso versionado), `RAN` (workflow completo y conclusión), `HTTP` (sitio público fechado) y `DOC` (pendiente). Un test redactado o una captura producida no autoriza despliegue.
+
+---
+
+## UX-CRYSTAL-R1.6 — QA focal del contrato visual compartido
+
+En `vecidya-platform/`, ejecutar `node --experimental-strip-types --import ./tests/unit/register-ts.mjs --test tests/unit/ux/experience-system.test.ts`. Cubre ausencia de métricas ficticias, exportaciones de estado, consentimiento explícito, GET/reset, series nulas/cero, CSS compartido, foco y responsive por inspección de código. Typecheck y build son gates adicionales. No se presenta esta prueba como verificación de lector de pantalla, zoom 200%, autorización server-side ni capturas de rutas reales.
+
+---
 ## Entorno QA local con cuatro organizaciones (2026-11-11)
 
 Desde `vecidya-platform/`, inicia `pnpm run dev:local-demo`; en otra terminal ejecuta `pnpm run seed:local-demo` y `pnpm run status:local-demo`. La aplicación escucha solo en `http://127.0.0.1:4173`. El entorno aplica migraciones únicamente a D1 local y usa el bucket R2 local `vecidya-local-demo-media`, persistido bajo `.wrangler/local-demo`. Wrangler usa configuración propia y Vite un `envDir` aislado en `wrangler.local-demo/`; el Worker demo no carga secretos de `.dev.vars` ni `.env` de la raíz. Los archivos runtime de Wrangler quedan bajo `.wrangler/local-demo`. El email usa el adaptador falso. Cada inicio genera una clave de sesión efímera, por lo que hay que volver a iniciar sesión después de reiniciar el Worker.
@@ -2526,3 +2577,7 @@ Integración local desde `origin/main@f6cad631` en `feat/app-mini-ux-premium-pla
 **Intento RAN en Worker/D1 local:** `pnpm run test:e2e:app-dashboard-redesign` recorre `/app`, crea un borrador MiniWeb V2 de prueba y abre `/app/internal`. App y MiniWeb V2 verifican overflow y capturan viewport completo a 320/390/768/1366/1920 px. Admin verifica esos cinco anchos y produce capturas, pero el runner **falla** al abrir el menú a 390 px: `aria-expanded=true` y el drawer tiene `data-open=true`, pero `document.activeElement` permanece en `BODY`, no en el primer enlace. El hook de navegación es compartido; no se modificó para evitar mezclar este comportamiento con la deuda React #418. La fixture local se eliminó y su ausencia se verificó (`PASS: D1 aislada eliminada y ausencia verificada`).
 
 Las capturas posteriores se conservaron como evidencia local fuera del repositorio; las capturas previas solo cubren App y MiniWeb en los cinco tamaños y Admin parcialmente. Por ello no se declara una comparación visual completa antes/después para las tres superficies ni certificación de teclado, lector de pantalla, axe o zoom 200 %. El intento llegó al check de foco antes de completar Admin Servicios. `prefers-reduced-motion` se comprueba en la vista MiniWeb del runner, pero el fallo posterior impide declarar el recorrido integral PASS. `pnpm run typecheck` y `pnpm run build` PASS; `git diff --check` PASS después de limpiar el espacio final de estas entradas documentales.
+
+## UX-CRYSTAL-R1.8 — regresión focal de superficies de Admin
+
+Test integrado en `tests/unit/ux/experience-system.test.ts` verifica `requirePlatformAdmin`, consulta de negocios real y las superficies compartidas para toolbar, tabla y estados vacíos, sin introducir arnés histórico. La CI general y pruebas visuales de la ruta con autenticación son gates distintos; no afirmar accesibilidad completa ni autorización real solo a partir de esta prueba textual.

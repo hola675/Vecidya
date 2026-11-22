@@ -1,3 +1,31 @@
+## UX-CRYSTAL-R4 — estado reconciliado al 2026-11-20
+
+**Git verificado:** R2-A está integrado en `main` mediante PR #266 (`79b851a0`) y R3 está integrado mediante PR #267 (`b069103b`). Los párrafos históricos R2/R3 de este documento describen el estado **en el momento de sus ramas**, no el estado actual de merge. El cierre de integración de código NO equivale a certificación visual integral ni a deploy. Las ejecuciones CI citadas en PR #267 corresponden al SHA `6984c300`; no se extienden automáticamente a modificaciones posteriores.
+
+**R4 ABIERTO:** inspección humana, zoom real 200 %, lector de pantalla, contraste efectivo de fondos compuestos, performance lenta, rutas autenticadas, rollback en staging y verificación de Cloudflare Version ID siguen pendientes. Sin autorización de producción, cambios remotos de D1 ni activación global del oscuro. Matriz y evidencia requerida: [UX-CRYSTAL-R4-ACCEPTANCE.md](./UX-CRYSTAL-R4-ACCEPTANCE.md).
+
+---
+
+## UX-CRYSTAL-R3 — preparación de rollout, no publicación
+
+R1.5–R1.9 están integrados en `main` (PR #261–#265). R2 aporta la QA de navegador pública y encontró una animación residual bajo `prefers-reduced-motion`, corregida en la rama R2 y pendiente de verificar/merge. R3 añade flags de reversión por ruta y un smoke HTTP anónimo de solo lectura, pero **no demuestra ni ejecuta release**.
+
+**Estado de R3:** `EN PROGRESO` hasta CI de su PR, gates R2 manuales, staging autorizado, rollout verificable por Version ID y aceptación. Los cinco pilotos reflejan clases que ya estaban integradas; los dos futuros están apagados. Sin cambios de D1/CRM/licencias ni activación del tema oscuro productivo.
+
+---
+## UX-CRYSTAL-R2 — certificación integral pendiente
+
+Tras merges R1.5–R1.9, el contrato de diseño y adopciones focales están en `main` (evidencia Git). La prueba R2-A añade comprobaciones de navegador contra un servidor local aislado y capturas públicas; hasta completar la CI y revisión, no atribuir `RAN PASS`.
+
+**Open Debt:** faltan lectura con lector de pantalla, zoom real 200 %, contraste de fondos compuestos, rendimiento en dispositivos lentos, inspección de capturas y certificación específica del shell autenticado y MiniWeb. No se afirma que el tema oscuro Crystal esté activado en la plataforma ni que haya deploy público.
+
+---
+
+## UX-CRYSTAL-R1.6 — componentes visuales (candidato de PR, sin publicación verificada)
+
+`visual-contract.tsx` y CSS `v-*` introducen encabezado, filtro GET, consentimiento explícito, estado con acceso denegado, métrica con dato nulo distinto de cero y tendencia tabular. Son componentes presentacionales; toda garantía sobre permisos, consentimientos, eventos o confirmaciones depende de la ruta/servidor. Estado **EN PROGRESO** hasta CI y adopción. R1.5 de la biblioteca está integrada como contrato de diseño, no como tema oscuro productivo.
+
+---
 ## UX-PREMIUM-SYSTEM-02 — sistema visual compartido (candidato local, 2026-11-11)
 
 La capa común define atmósfera azul/cyan con acentos naranja, superficies de cristal y sólidas, profundidad por nivel, retículas y microinteracciones con movimiento reducido. Se aplica a los shells Vecidya y a Card, MetricCard, JourneyGuide y ComparisonBars. El encabezado público mantiene los menús por encima del hero mediante una capa explícita. La guía canónica recoge composición, Vico, iconografía, MiniWeb, prompts, QA e imágenes originales. Typecheck, build, prueba unitaria focal (6/6), navegación Playwright en siete anchos y diff-check PASS (2026-11-12). No equivale a certificación integral; sin cambios de función, datos, rutas, permisos, D1 ni deploy.

@@ -1,0 +1,34 @@
+/* Vecidya Crystal Depth R1.3 | UI state patterns · lab, opt-in. */
+.flow-lab{color:var(--r1-ink)}
+.flow-lead{max-width:76ch;color:var(--r1-muted);font-size:14px;line-height:1.65;margin:0 0 18px}
+.flow-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:stretch}
+.flow-panel{min-width:0;padding:23px;border:1px solid var(--r1-line);border-radius:22px;background:linear-gradient(140deg,#0b2b53,#071c3d);box-shadow:inset 0 1px #d7f8ff21}
+.flow-panel h3{color:#f6fbff;font-size:20px;margin:0 0 10px}
+.flow-panel p{color:#cbdff5;font-size:13px;line-height:1.6;margin:0 0 14px}
+.flow-panel label{display:block;color:#e5f5ff;font-weight:700;font-size:13px;margin-bottom:7px}
+.flow-panel select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #9cbfe5;border-radius:11px;color:#092b55;background:#edf7ff;font:inherit}
+.flow-panel .flow-note{margin-top:16px;color:#b7d8f1;font-size:12px}
+.flow-result{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:25px;border:1px solid #9fceee73;border-radius:22px;background:linear-gradient(150deg,#eaf7ff,#d4eaff);color:#0c315f}
+.flow-indicator{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:15px}
+.flow-indicator i{display:grid;place-items:center;width:43px;height:43px;border-radius:12px;font-size:22px;font-style:normal;background:#c5e8ff;color:#0c315f}
+.flow-indicator b{color:#0c315f;font-size:12px;font-weight:850;letter-spacing:.08em;text-transform:uppercase}
+.flow-result h3{margin:0 0 10px;color:#0c315f;font-size:clamp(20px,2.5vw,28px);line-height:1.25}
+.flow-result p{margin:0;color:#23517b;font-size:14px;line-height:1.65}
+.flow-result small{display:block;margin-top:20px;color:#1e4b76;font-size:11px;line-height:1.6}
+.flow-result[data-state=loading] .flow-indicator i{background:#cbe9ff}
+.flow-result[data-state=empty] .flow-indicator i{background:#e0e9f2}
+.flow-result[data-state=error] .flow-indicator i{background:#ffe6dc;color:#932e13}
+.flow-result[data-state=success] .flow-indicator i{background:#daf5e6;color:#176445}
+.flow-guidelines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:17px}
+.flow-guidelines article{min-width:0;padding:17px;border-radius:15px;border:1px solid var(--r1-line);background:rgba(33,92,145,.2)}
+.flow-guidelines h3{color:var(--r1-ink);font-size:14px;margin:0 0 8px}
+.flow-guidelines p{color:var(--r1-muted);margin:0;font-size:12px;line-height:1.65}
+.flow-result[data-animate=true]{animation:flow-appear var(--vx-motion-standard,260ms) ease-out both}
+@keyframes flow-appear{from{opacity:.35;transform:translateY(6px)}to{opacity:1;transform:none}}
+html[data-theme=light] .flow-panel{background:linear-gradient(140deg,#f6fbff,#d9eeff);border-color:#a5c9e7}
+html[data-theme=light] .flow-panel h3,html[data-theme=light] .flow-panel label{color:#123c67}
+html[data-theme=light] .flow-panel p,html[data-theme=light] .flow-panel .flow-note{color:#315c81}
+.flow-lab select:focus-visible{outline:3px solid var(--r1-focus);outline-offset:3px}
+@media(max-width:850px){.flow-layout{grid-template-columns:1fr}.flow-guidelines{grid-template-columns:1fr}}
+@media(max-width:520px){.flow-panel,.flow-result{padding:18px}.flow-indicator i{width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){.flow-result[data-animate=true]{animation:none!important;opacity:1!important;transform:none!important}}

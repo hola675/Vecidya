@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
+import { VISUAL_ROLLOUT, visualClassName } from "../../app/lib/visual-rollout.ts";
 
 import {
   PUBLIC_FOOTER_GROUPS,
@@ -50,4 +52,33 @@ test("las familias visuales del footer y Soluciones preservan la clasificación 
     ["/vecindario", "/aprende", "/diagnostico"],
   );
   assert.equal(PUBLIC_NAVIGATION_LINKS.complementos.label, "Complementos");
+});
+
+test("R1.7 reutiliza retícula v-section-heading sin cambiar datos, enlaces ni encabezados", () => {
+  const read = (path: string) => readFileSync(new URL("../../" + path, import.meta.url), "utf8");
+  const home = read("app/routes/home.tsx");
+  const directory = read("app/routes/directory.tsx");
+  const services = read("app/routes/services.tsx");
+  const css = read("app/styles/visual-system.css");
+  assert.equal((home.match(/visualClassName\("home-section-heading", "publicHomeHeadings", "v-section-heading"\)/g) ?? []).length, 4);
+  assert.equal((directory.match(/visualClassName\("directory-results-heading", "publicDirectoryResults", "v-section-heading"\)/g) ?? []).length, 1);
+  assert.equal((services.match(/visualClassName\("services-section-heading", "publicServicesHeadings", "v-section-heading"\)/g) ?? []).length, 2);
+  for (const id of ["home-neighborhood-title", "home-diagnostic-title", "home-services-title", "home-learn-contact-title"])
+    assert.ok(home.includes('id="' + id + '"'));
+  assert.ok(directory.includes('id="directory-title"'));
+  assert.ok(services.includes('id="services-process-title"'));
+  assert.match(css, /\.v-section-heading\s*\{/);
+  assert.match(css, /@media \(max-width: 760px\)/);
+  assert.match(home, /PUBLIC_ACTION_LABELS/);
+});
+
+test("R3: pilotos existentes activados y nuevas superficies apagadas por defecto", () => {
+  const enabled = ["publicHomeHeadings", "publicDirectoryResults", "publicServicesHeadings", "adminBusinessSurfaces", "miniWebEditorSolid"];
+  assert.deepEqual(Object.keys(VISUAL_ROLLOUT).sort(),
+    [...enabled, "futureLearnLayout", "futureClientShell"].sort());
+  for (const key of enabled) assert.equal(VISUAL_ROLLOUT[key], true, key);
+  assert.equal(VISUAL_ROLLOUT.futureLearnLayout, false);
+  assert.equal(VISUAL_ROLLOUT.futureClientShell, false);
+  assert.equal(visualClassName("base", "futureLearnLayout", "v-section-heading"), "base");
+  assert.equal(visualClassName("base", "publicHomeHeadings", "v-section-heading"), "base v-section-heading");
 });

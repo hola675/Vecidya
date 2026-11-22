@@ -4,6 +4,82 @@ Implementado en branch aislada `feat/app-mini-vecindario-v2-route-01` sobre `ori
 
 No cierra MiniWeb ni habilita release: matriz owner/admin/lector, aprobación independiente/auditoría de review no decidida, cambio de familia preservando contenido, límites/optimización/reemplazo R2, analytics, navegación-unsaved en E2E, WCAG/axe/lector/zoom 200 % y aceptación humana, backfill `0046` sobre datos preexistentes, R2/ledger remotos y backup/restore/rollback. Mailto requiere app de correo del visitante; no hay evidencia de entrega real. Se conserva V1; sin deploy ni HTTP pública nueva.
 
+## UX-CRYSTAL-R4.2 — editor MiniWeb por pasos y puente de arte (2026-11-21)
+
+**Estado:** implementado como candidato en [PR #276](https://github.com/hola675/Vecidya/pull/276), **sin merge ni despliegue**. Base actual `main` en esta rama; integrar solo después de certificar y reconciliar los cambios paralelos. El contrato de Crystal Depth permanece en [PR #271](https://github.com/hola675/Vecidya/pull/271) (CI de contrato e integración PASS) y el laboratorio sintético de diez organizaciones en [PR #270](https://github.com/hola675/Vecidya/pull/270) (CI de integración PASS); ambos siguen siendo líneas de trabajo separadas.
+
+### Evidencia y correcciones
+
+- Laboratorio R4 sobre Windows: diez organizaciones, diez perfiles, veinte assets geométricos, diez borradores de MiniWeb V2, cero publicados. Selección explícita de una organización activa resuelve los HTTP 403 iniciales: las tres rutas privadas devuelven HTTP 200 en 320/390/768/1366/1920 px con `overflow=false`. Esta evidencia no certifica permisos admin ni aislamiento entre usuarios.
+- Auditoría de capturas: contraste insuficiente en «Tu siguiente paso» del dashboard y exceso de desplazamiento vertical en MiniWeb V2 (seis formularios consecutivos, vista previa muy distante). No asumir que 200/overflow=false certifique el diseño.
+- PR #276: contraste con tokens reales; editor de **una sección visible** con pasos, estado/validación, anterior/siguiente, añadir/ordenar/quitar, ayuda por tipo y por campo; alternancia `Editar/Vista previa` en móvil y preview paralelo en escritorio amplio. No cambia el esquema de documento, el renderer, la autorización, los derechos de publicación, el autosave ni D1.
+- **CI inicial del PR #276:** typecheck PASS, build PASS, Crystal Depth PASS, Aprende PASS, QA público browser PASS; regresión unitaria 2115/2116, único fallo por aserción heredada de seis tarjetas estáticas. Se ajustó ese mismo test para comprobar cinco tarjetas estáticas y una dinámica de paso activo, sin reducir los controles de acceso, renderer o `expectedRevision`. **CI del commit correctivo todavía por verificar.**
+
+### Roadmap y dependencias de entrega
+
+| Paso | Entrega verificable | Estado / puerta |
+| --- | --- | --- |
+| R4.2-A | Corregir contraste y navegación MiniWeb, documentar ayudas y pruebas focales | **Implementado en PR #276**, no integrado |
+| R4.2-B | CI sobre HEAD: test focal MiniWeb, 2116 regresiones, typecheck, build y browser público | **En revalidación**; sin cierre hasta PASS |
+| R4.2-C | QA autenticada en Windows: 10 negocios, guardar/recargar sin pérdida, pasos, teclado, focos, errores, zoom 200%, preview de móvil y escritorio | **Pendiente**; usar worktree local aislado y screenshots por viewport |
+| R4.2-D | Revisión visual y editorial humana sobre 320/390/768/1366/1920, con registro de defectos reales y regresiones | **Pendiente**; no simular aceptación |
+| R4.3-A | Preparar ocho fondos por vista: Inicio, Servicios, Vecindario, Aprende, Diagnóstico, Mi Vecidya, MiniWeb marco y Admin | **Briefs estructurados**, `vecidya-crystal-depth/assets/pattern-registry.json → backgroundAssetBriefs`; imágenes todavía **no creadas** |
+| R4.3-B | Generar/revisar originales, confirmar derechos, entregar desktop/mobile, optimizar WebP, medir contraste, rendimiento, fallback CSS y reducción de movimiento | **Pendiente**; solo después de aceptación artística y técnica |
+| R4.4 | Adopción gradual por ruta con componentes y tokens canónicos, sin duplicar design system ni imponer marca Vecidya a MiniWeb del negocio | **Pendiente**; PR pequeño por área |
+| R4.5 | Reconciliar PR #271/#270/#276, revisión, merge autorizado, smoke staging, rollback y eventual producción | **Bloqueado por gates**; merge y deploy requieren autorizaciones independientes |
+
+**Política antiacumulación:** usar las baterías existentes de QA focal, CI y Playwright. No crear suites históricas repetidas por cada ajuste. Cada defecto corregido debe conservar evidencia breve de antes/después; si el resultado cambia, actualizar el contrato del test afectado, no rebajar arbitrariamente la calidad.
+
+**No incluidos en R4:** activación del tema oscuro global, manipulación de licencias, bypass de permisos, publicación de MiniWeb, CRM GHL, cambios en D1 remota, tenencia de fotografías reales de clientes o atribución de derechos de nuevas imágenes.
+
+---
+
+## UX-CRYSTAL-R3 — rollout por ruta y rollback (candidato técnico)
+
+**Implementado en rama:** `app/lib/visual-rollout.ts` centraliza cinco adopciones previamente integradas en R1.7–R1.9. No habilita nuevas pantallas automáticamente. La reversión se realiza bajando un booleano por ruta en un PR pequeño y ejecutando CI; es una **reversión de código** que aún requiere deploy autorizado, no un interruptor en Cloudflare. Dos posibles superficies posteriores (Aprende y Mi Vecidya) quedan desactivadas por defecto.
+
+**Verificador HTTP R3:** `scripts/ux-verify-http.mjs` consulta únicamente las cuatro rutas públicas permitidas mediante GET, sin autenticación y con allowlist de origen. No verifica SHA desplegado, estado de D1, APIs privadas ni funciones de negocio.
+
+### Gates restantes para declarar R3 cerrada
+1. **R2**: cumplir la revisión humana de capturas y las pruebas manuales (zoom 200 %, lector de pantalla, contrastes sobre gradientes, hardware lento y rutas autenticadas).
+2. **CSS heredado**: inventariar colisiones de especificidad entre `app.css`, `home-premium.css`, `visual-system.css` y estilos de MiniWeb; retirar solo reglas redundantes demostradas por evidencia visual de antes/después.
+3. **Staging**: desplegar un candidato **solo con autorización independiente**, verificar bindings y entorno seguro, guardar versión/SHA de Worker y completar smoke HTTP fechado.
+4. **Rollback simulado**: en un PR o entorno local, apagar un flag, comprobar el fallback exacto de su ruta y restaurarlo antes de promoción.
+5. **Producción**: aprobación explícita de release; deploy controlado y `HTTP` fechado, vinculado al SHA/Version ID. Un merge en `main` no demuestra publicación.
+6. **Gobierno**: reconciliar `STATUS.md`, `PROJECT_STATE.md`, `ENVIRONMENTS.md` y `CHANGELOG.md` con evidencia real. Cierre únicamente tras aceptación.
+
+**Límites invariantes:** ningún flag concede derechos de MiniWeb, GHL, permisos internos, licencia, publicación o historial de Diagnóstico. La marca de cada negocio continúa independiente de Vecidya.
+
+---
+## UX-CRYSTAL-R2 — puertas de certificación (candidato de PR)
+
+| Gate | Entrega y fuente | Estado |
+| --- | --- | --- |
+| R2-A: QA automatizada pública | Chromium contra localhost, siete viewports, foco básico, `prefers-reduced-motion`, CTA y capturas, **test existente ampliado** | Implementada; CI por confirmar |
+| R2-B: revisión visual humana | Inspección manual de capturas a tamaños móvil/escritorio, jerarquía, truncamientos, foco, contraste sobre vidrio/gradientes | Pendiente |
+| R2-C: accesibilidad manual | Zoom real 200 %, lector de pantalla, orden de lectura, formularios y diálogos en superficies públicas e internas | Pendiente |
+| R2-D: superficies autenticadas | Mi Vecidya/Admin/MiniWeb en fixtures locales autorizados, roles y `access-denied` reales | Pendiente |
+| R2-E: calidad en hardware lento | Rendimiento, transiciones y ausencia de bloqueos con opciones de movimiento reducido | Pendiente |
+
+**Cierre R2:** requiere evidencia `RAN` por ruta y aceptación humana; la automatización R2-A por sí sola **no** permite marcar la fase cerrada.
+
+**Dependencia R3:** puede prepararse la política de activación y rollback de forma inactiva antes del cierre R2, pero no activar nuevas superficies en producción ni declarar `HTTP` publicado sin comprobar su entorno real.
+
+---
+
+## UX-CRYSTAL-R1.6 → R3 — adopción controlada del lenguaje compartido
+
+- **R1.5**: biblioteca de patrones cruzada con componentes y tokens reales de Vecidya; PR #261 integrado en main (evidencia Git).
+- **R1.6**: seis componentes compartidos tipados y CSS aditivo productivo, sin cambios de negocio. QA focal + typecheck + build antes de fusionar. Contratos de frontend en `docs/design-system/VECIDYA-UI-UX.md`.
+- **R1.7**: adopción limitada en web pública (inicio/servicios/Vecindario/Aprende), manteniendo tono, tokens y rutas canónicas sin reescritura masiva.
+- **R1.8**: consolidación de encabezados, filtros, denegaciones y estados en Mi Vecidya/Admin; cada estado se alimenta de la autorización y consultas reales.
+- **R1.9**: armonizar editor MiniWeb y vista previa sin imponer marca Vecidya a los sitios de los negocios; verificar planes reales y no crear CRM GHL paralelo.
+- **R2**: QA visual/accesibilidad y rendimiento por superficie y por ruta, con zoom 200%, lector de pantalla, reducción de movimiento, teclado y evidencia reproducible. La CI por sí sola no equivale a WCAG completa.
+- **R3**: adopción opt-in con rollback por ruta, conciliación de CSS duplicado y validación HTTP fechada de entornos. Cualquier despliegue y cambio D1 remoto requieren autorización independiente y no se deducen de un merge.
+
+No declarar R1.6–R3 cerrados solo por disponer de componentes o un PR. No fusionar nuevos tokens con valores hex de la biblioteca: la autoridad es `--v-*`.
+
+---
 ## DIAG-V9-F07-L4/L5 — política de datos y legado histórico (pendiente)
 
 **Política vigente del responsable (2026-11-16):** D1 no almacena respuestas, valores elegidos, transcript, identidad/run individual ni resultado de diagnóstico, incompleto o finalizado. Únicamente se permiten métricas agregadas/coarse-grained no reidentificables. La entrevista y su replay/finalización permanecen locales/transitorios; el resultado firmado usa TTL local de 24 horas y el borrador TTL local de siete días. Esta regla supersede el criterio documental previo que permitía almacenamiento terminal consentido.
