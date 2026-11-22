@@ -11,3 +11,4 @@ b5bf2e54cb654f7b/
 /Assets-Generados/
 /.worktrees/
 /.pnpm-store/
+*.patch
