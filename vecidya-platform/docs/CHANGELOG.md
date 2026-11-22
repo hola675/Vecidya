@@ -3,7 +3,7 @@
 - `/app/miniweb` ahora monta el editor MiniWeb V2. El alias `/app/miniweb-v2` redirige a la ruta canónica conservando la selección del sitio; los enlaces del editor y la recuperación de conflictos usan `/app/miniweb`.
 - Se actualizan las regresiones de conversión y dashboard para comprobar la ruta canónica, alias, selección de organización y preview V2. La prueba del flujo MiniWeb anterior se actualiza para verificar la entrada V2 y preservar checks públicos/administrativos que siguen activos.
 - Suite unitaria 2122/2122, typecheck/build, `test:e2e:miniweb-v2-conversion` y `test:e2e:app-dashboard-redesign` PASS sobre Worker/D1/R2 locales; la conversión cubrió 75 capturas en cinco viewports. `miniweb-core-check.mjs` no alcanzó aserciones por ausencia de schema en la D1 local predeterminada; no registró fixtures.
-- V1 sigue como fallback para perfiles aún no convertidos; no se declara cutover completo. Sin merge, CI del nuevo SHA, deploy, D1/R2 remotos ni HTTP pública fechada. Versión de aplicación sin cambio.
+- V1 sigue como fallback para perfiles aún no convertidos; no se declara cutover completo. PR #278 abierto, CI del head final pendiente; sin merge, deploy, D1/R2 remotos ni HTTP pública fechada. Versión de aplicación sin cambio.
 
 # 2026-11-19 — MiniWeb V2 PUBLIC-EDITOR-01 — autosave CAS y self-review local
 

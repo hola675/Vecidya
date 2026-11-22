@@ -4,7 +4,7 @@ Sobre `feat/app-mini-vecindario-v2-route-01`, sincronizada con `main@ed44ede5` a
 
 `pnpm run test:unit`: **2122/2122 PASS**. `pnpm run typecheck`, `pnpm run build` y `git diff --check`: **PASS**. `pnpm run test:e2e:miniweb-v2-conversion`: **PASS** en Wrangler Worker y D1/R2 local aislada, migraciones `0000–0046`; pasó conversión, edición/conflicto/recarga, aserción de `/app/miniweb`, alias anterior y 75 capturas en 320/390/768/1366/1920. `pnpm run test:e2e:app-dashboard-redesign`: **PASS**, incluida ruta autenticada canónica a cinco anchos y movimiento reducido. Se usó Edge local; no hubo D1/R2 remota ni deploy.
 
-`node tests/e2e/miniweb-core-check.mjs` se detuvo antes de las aserciones: la D1 local predeterminada no contenía la tabla `user`; el arnés no llegó a crear fixtures (`fixturesCleaned: false`). No se atribuye como fallo del código ni como PASS; repetir con D1 local aislada y migrada. No se probó `0046` sobre sitios V2 preexistentes, roles admin/lector, corte V1 total, R2 remoto, restore/rollback ni aceptación manual. No hay CI para el nuevo SHA ni PR abierto al registrar esta evidencia.
+`node tests/e2e/miniweb-core-check.mjs` se detuvo antes de las aserciones: la D1 local predeterminada no contenía la tabla `user`; el arnés no llegó a crear fixtures (`fixturesCleaned: false`). No se atribuye como fallo del código ni como PASS; repetir con D1 local aislada y migrada. No se probó `0046` sobre sitios V2 preexistentes, roles admin/lector, corte V1 total, R2 remoto, restore/rollback ni aceptación manual. PR #278 está abierto; el CI del head final debe completar antes de considerar la certificación de este checkpoint.
 
 ## MiniWeb V2 PUBLIC-SLUG-01 / PUBLIC-BLOCKS-01 — RAN local previo (2026-11-19)
 
