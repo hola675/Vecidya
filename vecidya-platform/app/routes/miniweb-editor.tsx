@@ -23,7 +23,7 @@ import { getMiniWebPublicationState, toMiniWebPublicProfile } from "../features/
 import { getRenderableMiniWebModules, hasMiniWebModuleContent } from "../features/miniweb/render";
 import { MAX_BUSINESS_FAQ_ITEMS, MAX_BUSINESS_OFFERINGS, type BusinessFaqItem, type BusinessOffering } from "../features/miniweb/content";
 
-import type { Route } from "./+types/miniweb-editor";
+import type { LoaderFunctionArgs } from "react-router";
 
 type ModuleEditingDestination = "business" | "content" | null;
 
@@ -44,14 +44,14 @@ const moduleEditingGuide: Record<MiniWebModuleType, { source: string; missing: s
 };
 
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: "Mi MiniWeb | Vecidya" },
     { name: "description", content: "Organiza las secciones y la publicación de tu MiniWeb." },
   ];
 }
 
-export async function loader({ context, request }: Route.LoaderArgs) {
+export async function loader({ context, request }: LoaderFunctionArgs) {
   const { env } = context.get(cloudflareContext);
   const organization = await requireOrganization(env, request);
   const [membership, shell] = await Promise.all([
@@ -397,7 +397,7 @@ function MiniWebEditor({ data }: { data: Awaited<ReturnType<typeof loader>> }) {
           </div>
           <div className="miniweb-editor__header-actions">
             <Link className="button button--secondary" to="/app/business-profile">Editar Mi negocio</Link>
-            <Link className="button button--secondary" to="/app/miniweb-v2">Explorar nuevos diseños y editor visual</Link>
+            <Link className="button button--secondary" to="/app/miniweb">Abrir el editor MiniWeb actual</Link>
             {data.profileStatus === "published" && data.profile?.slug ? (
               <Link className="button button--secondary" to={`/vecindario/${data.profile.slug}`}>Ver MiniWeb pública</Link>
             ) : null}

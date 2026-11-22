@@ -366,9 +366,15 @@ try {
     const ownerContext = await browser.newContext({ viewport: { width: 1366, height: 900 } });
     await ownerContext.addCookies([...owner.cookies].map(([name, value]) => ({ name, value, url: base, httpOnly: true, sameSite: "Lax" })));
     const editorPage = await ownerContext.newPage();
-    const editorResponse = await editorPage.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(convertedId)}`, base).toString(), { waitUntil: "networkidle" });
+    const editorResponse = await editorPage.goto(new URL(`/app/miniweb?site=${encodeURIComponent(convertedId)}`, base).toString(), { waitUntil: "networkidle" });
     assert.equal(editorResponse?.status(), 200, "owner can open the V2 editor for the converted site");
+    assert.ok(editorPage.url().includes("/app/miniweb?site="), "the canonical editor route is /app/miniweb");
     assert.ok((await editorPage.locator("body").innerText()).includes("Secciones de tu sitio"), "the route rendered the authenticated editor, not the login page");
+
+    const compatibilityPage = await ownerContext.newPage();
+    await compatibilityPage.goto(new URL(`/app/miniweb-v2?site=${encodeURIComponent(convertedId)}`, base).toString(), { waitUntil: "networkidle" });
+    assert.ok(compatibilityPage.url().includes("/app/miniweb?site="), "the former V2 editor route preserves its site selection while redirecting");
+    await compatibilityPage.close();
     const sectionSteps = editorPage.getByRole("navigation", { name: "Pasos de edición del sitio" });
     assert.ok((await sectionSteps.innerText()).includes("Productos") && (await sectionSteps.innerText()).includes("Contacto"));
     await sectionSteps.getByRole("button", { name: /Productos/ }).click();
@@ -522,10 +528,19 @@ try {
     const conflictReload = editorPage.getByRole("button", { name: /Cargar la revisión más reciente/ });
     editorPage.once("dialog", (dialog) => { assert.equal(dialog.type(), "confirm"); void dialog.accept(); });
     await conflictReload.click();
-    await editorPage.waitForFunction((expected) => {
-      const label = [...document.querySelectorAll("label")].find((element) => element.textContent?.includes("Instrucción breve"));
-      return label?.querySelector("textarea")?.value === expected;
-    }, "Edición remota de otro cliente.");
+    try {
+      await editorPage.waitForFunction((expected) => {
+        const label = [...document.querySelectorAll("label")].find((element) => element.textContent?.includes("Instrucción breve"));
+        return label?.querySelector("textarea")?.value === expected;
+      }, "Edición remota de otro cliente.", { timeout: 10_000 });
+    } catch (error) {
+      const state = await editorPage.evaluate(() => ({
+        href: location.href,
+        notice: document.querySelector('[role="status"]')?.textContent,
+        labels: [...document.querySelectorAll("label")].map((label) => ({ text: label.textContent, textarea: label.querySelector("textarea")?.value })),
+      }));
+      throw new Error(`La recarga de conflicto no actualizó la revisión: ${JSON.stringify(state)}`, { cause: error });
+    }
     const conflictStateResponse = await owner.request(`${endpoint}?site=${encodeURIComponent(convertedId)}`);
     assert.equal((await conflictStateResponse.json()).state.draft.document.sections.find((section) => section.type === "contact").content.form.introduction, "Edición remota de otro cliente.");
     await editorPage.unroute(routePattern, holdOneSave);

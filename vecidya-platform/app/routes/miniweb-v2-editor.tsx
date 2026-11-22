@@ -132,11 +132,11 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
       return;
     }
     if (response.siteId && response.imported) {
-      window.location.assign(`/app/miniweb-v2?site=${encodeURIComponent(response.siteId)}`);
+      window.location.assign(`/app/miniweb?site=${encodeURIComponent(response.siteId)}`);
       return;
     }
     if (response.ok && response.siteId && pendingOperation.operation === "create") {
-      window.location.assign(`/app/miniweb-v2?site=${encodeURIComponent(response.siteId)}`);
+      window.location.assign(`/app/miniweb?site=${encodeURIComponent(response.siteId)}`);
       return;
     }
     if (response.ok && typeof response.revision === "number") {
@@ -324,7 +324,7 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
     if (!data.state || saveError !== "conflict") return;
     if (!window.confirm("Se descartarán los cambios locales no guardados y se cargará el borrador más reciente. ¿Continuar?")) return;
     reloadConflictPending.current = true;
-    reloadFetcher.load(`/app/miniweb-v2?site=${encodeURIComponent(data.state.site.id)}`);
+    reloadFetcher.load(`/app/miniweb?site=${encodeURIComponent(data.state.site.id)}`);
   }, [data.state, reloadFetcher, saveError]);
   function importPublishedV1() {
     if (isDirty) { setNotice("Guarda o descarta tus cambios antes de crear otro sitio."); return; }
@@ -369,10 +369,10 @@ function MiniWebV2EditorState({ data }: { data: MiniWebV2EditorData }) {
     <main className="app-page miniweb-v2-editor miniweb-v2-editor--guided" id="client-page-content">
       <header className="miniweb-v2-editor__heading"><p className="eyebrow">MI VECIDYA · MI SITIO WEB</p><h1>Diseña tu sitio</h1>
         <p>Organiza tu contenido, comprueba cómo se ve y publícalo cuando esté preparado.</p>
-        <p><Link to="/app/miniweb">Volver a Mi sitio web</Link></p>
+        <p><Link to="/app">Volver a Mi Vecidya</Link></p>
       </header>
       {data.sites.length > 1 ? <nav aria-label="Elegir sitio web" className="miniweb-v2-editor__sites">
-        <strong>Mis sitios</strong>{data.sites.map((site, index) => <Link key={site.id} to={`/app/miniweb-v2?site=${encodeURIComponent(site.id)}`} aria-current={data.state?.site.id === site.id ? "page" : undefined}>Sitio {index + 1} · {MINIWEB_V2_FAMILY_CATALOG[site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}</Link>)}
+        <strong>Mis sitios</strong>{data.sites.map((site, index) => <Link key={site.id} to={`/app/miniweb?site=${encodeURIComponent(site.id)}`} aria-current={data.state?.site.id === site.id ? "page" : undefined}>Sitio {index + 1} · {MINIWEB_V2_FAMILY_CATALOG[site.familyKey as MiniWebV2Family]?.label ?? "Personalizado"}</Link>)}
       </nav> : null}
       {data.state ? <nav className="miniweb-v2-editor__review-nav" aria-label="Accesos del editor"><a href="#miniweb-v2-sections" aria-current={mobileView === "edit" ? "true" : undefined} onClick={() => setMobileView("edit")}>Editar secciones</a><a href="#miniweb-v2-preview" aria-current={mobileView === "preview" ? "true" : undefined} onClick={() => setMobileView("preview")}>Ver vista previa actual</a><span>{isDirty ? "Cambios locales sin guardar" : "Borrador guardado"}</span></nav> : null}
       <div className="miniweb-v2-editor__workspace" data-mobile-view={mobileView}>
