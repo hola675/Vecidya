@@ -280,3 +280,7 @@ La aprobación final del usuario sigue pendiente para la fuerza del vidrio en am
 ### Regla de autonomía de recursos — 2026-11-23
 
 Los recursos visuales que formen parte de Crystal Depth deben existir dentro de `vecidya-crystal-depth/assets/library-assets/` antes de ser referenciados por la biblioteca. La plataforma puede conservar el original canónico, pero la biblioteca no debe depender de su ruta para renderizar, revisar o publicar.
+
+## Aprobación Crystal World — 2026-11-23
+
+El responsable aprobó la dirección artística de las seis referencias aportadas y el principio de **sustituir primero los assets existentes antes de generar assets nuevos**. La especificación detallada y los criterios de no alterar Vico/marca están en [CRYSTAL-WORLD-ART-DIRECTION.md](CRYSTAL-WORLD-ART-DIRECTION.md); la planificación por olas S0–S10, gates y política de purga están en [ROADMAP-SUSTITUCION-ASSETS.md](ROADMAP-SUSTITUCION-ASSETS.md). Esta aprobación no significa que las versiones anteriores estén ya sustituidas ni autoriza despliegue de la plataforma.
