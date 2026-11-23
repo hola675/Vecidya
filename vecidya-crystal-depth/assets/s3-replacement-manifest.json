@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "lastUpdated": "2026-11-23",
   "phase": "S3",
-  "status": "INVENTARIO-12-12-ABIERTO-SIN-SUSTITUCIONES",
+  "status": "S3-LOTE-A-AUDITORIA-CODIGO-9SVG-LOTE-B-PILOTO-1-DE-3-SIN-INTEGRACION",
   "scope": "iconografía operativa e ilustrativa",
   "summary": {
     "total": 12,
@@ -10,7 +10,9 @@
     "largeIllustrations": 3,
     "visualReviewed": 0,
     "approved": 0,
-    "integrated": 0
+    "integrated": 0,
+    "sourceSvgReviewed": 9,
+    "largeIllustrationCandidatesProduced": 1
   },
   "rules": [
     "No convertir iconos funcionales SVG a WebP; priorizar legibilidad, accesibilidad y trazos consistentes",
@@ -48,9 +50,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -66,9 +68,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -84,9 +86,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -102,9 +104,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -120,9 +122,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -138,9 +140,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -156,9 +158,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -174,9 +176,9 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     },
@@ -194,9 +196,22 @@
       "kind": "ilustracion-iconografica-3d",
       "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "CANDIDATO-3D-LOCAL-PENDIENTE-APROBACION",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": {
+        "path": "assets/candidates/crystal-world/s3/s3-09-search-crystal-world-v1.webp",
+        "deliveryFile": "Vecidya-S3-Lotes-Revision.zip",
+        "mode": "RGBA",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "bytes": 261000,
+        "sha256": "945ac68406f872bf77a961a1f1a308715f2a694d759dd3c79317d31d31614269",
+        "inRepository": false,
+        "qa": "RGBA, esquina alfa 0, export WebP comprobado; pendiente QA visual"
+      }
     },
     {
       "id": "S3-10",
@@ -212,7 +227,7 @@
       "kind": "ilustracion-iconografica-3d",
       "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "PENDIENTE-PRODUCCION-INDIVIDUAL",
       "approved": false,
       "integrated": false
     },
@@ -230,7 +245,7 @@
       "kind": "ilustracion-iconografica-3d",
       "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "PENDIENTE-PRODUCCION-INDIVIDUAL",
       "approved": false,
       "integrated": false
     },
@@ -246,11 +261,23 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "decision": "mantener-svg-original-comprobar-render-responsive",
       "preserveOriginal": true,
-      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
       "approved": false,
       "integrated": false
     }
-  ]
+  ],
+  "codeAudit": {
+    "source": "9 SVG originales leídos en GitHub",
+    "result": "Ocho recursos 48x48 con trazo currentColor y un símbolo de WhatsApp de 24x24 en color de marca",
+    "decision": "CONSERVAR-COMO-VECTOR-CANDIDATO",
+    "limits": "No se realizó comprobación real en navegador ni auditó accesibilidad según WCAG; no inventar aprobación estética."
+  },
+  "packaging": {
+    "name": "Vecidya-S3-Lotes-Revision.zip",
+    "contains": "1 WebP 3D transparente S3-09, manifiesto y galería clara/oscura",
+    "inRepository": false,
+    "published": false
+  }
 }
