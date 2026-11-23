@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "lastUpdated": "2026-11-23",
   "phase": "S2",
   "title": "Escenas narrativas Crystal World",
@@ -41,9 +41,10 @@
     "sizeBytes": 384600,
     "sha256": "b5f69dcfdf66c36df3edfe20e41598b63559c4cae14105f0f76e52bc962f416b",
     "alphaTransparentPixelFraction": 0.366,
-    "state": "boceto-local-pendiente-evaluacion-artística",
+    "state": "aprobado-por-usuario",
     "inRepository": false,
-    "assetsReplaced": 0
+    "assetsReplaced": 0,
+    "approved": true
   },
   "items": [
     {
@@ -63,10 +64,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/home-scene-v1.webp",
-      "state": "piloto-generado-local-no-integrado",
-      "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "state": "aprobado-por-usuario-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": true,
+      "deliveryFilename": "s2-01-home-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 376646,
+      "sha256Prefix": "a1c00c8f2b62",
+      "inRepository": false
     },
     {
       "id": "S2-02",
@@ -85,10 +96,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/neighborhood-scene-v1.webp",
-      "state": "pendiente-produccion",
-      "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "state": "aprobado-por-usuario-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": true,
+      "deliveryFilename": "s2-02-neighborhood-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 382766,
+      "sha256Prefix": "d2b4affedc6b",
+      "inRepository": false
     },
     {
       "id": "S2-03",
@@ -107,10 +128,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/services-scene-v1.webp",
-      "state": "pendiente-produccion",
-      "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "state": "aprobado-por-usuario-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": true,
+      "deliveryFilename": "s2-03-services-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 289590,
+      "sha256Prefix": "cf6b2b8228cf",
+      "inRepository": false
     },
     {
       "id": "S2-04",
@@ -129,10 +160,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/learn-journey-scene-v1.webp",
-      "state": "pendiente-produccion",
-      "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "state": "aprobado-por-usuario-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": true,
+      "deliveryFilename": "s2-04-learn-journey-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 306334,
+      "sha256Prefix": "a8f01a6423bc",
+      "inRepository": false
     },
     {
       "id": "S2-05",
@@ -151,10 +192,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/diagnostic-scene-v1.webp",
-      "state": "pendiente-produccion",
-      "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "state": "aprobado-por-usuario-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": true,
+      "deliveryFilename": "s2-05-diagnostic-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 262194,
+      "sha256Prefix": "0ca18fa21752",
+      "inRepository": false
     },
     {
       "id": "S2-06",
@@ -173,10 +224,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/about-scene-v1.webp",
-      "state": "pendiente-produccion",
+      "state": "candidato-generado-pendiente-aprobacion",
       "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": false,
+      "deliveryFilename": "s2-06-about-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 296172,
+      "sha256Prefix": "033d5fde209c",
+      "inRepository": false
     },
     {
       "id": "S2-07",
@@ -195,10 +256,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/contact-scene-v1.webp",
-      "state": "pendiente-produccion",
+      "state": "candidato-generado-pendiente-aprobacion",
       "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": false,
+      "deliveryFilename": "s2-07-contact-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 283296,
+      "sha256Prefix": "29dba33d3333",
+      "inRepository": false
     },
     {
       "id": "S2-08",
@@ -217,10 +288,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/join-scene-v1.webp",
-      "state": "pendiente-produccion",
+      "state": "candidato-generado-pendiente-aprobacion",
       "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": false,
+      "deliveryFilename": "s2-08-join-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 302510,
+      "sha256Prefix": "234fe75feae8",
+      "inRepository": false
     },
     {
       "id": "S2-09",
@@ -239,10 +320,20 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/licenses-scene-v1.webp",
-      "state": "pendiente-produccion",
+      "state": "candidato-generado-pendiente-aprobacion",
       "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": false,
+      "deliveryFilename": "s2-09-licenses-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 279900,
+      "sha256Prefix": "4b06c2f1ee6b",
+      "inRepository": false
     },
     {
       "id": "S2-10",
@@ -261,17 +352,37 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/addons-scene-v1.webp",
-      "state": "pendiente-produccion",
+      "state": "candidato-generado-pendiente-aprobacion",
       "visualQA": "PENDIENTE",
-      "functionalQA": "PENDIENTE",
-      "keepOriginal": true
+      "functionalQA": "NO-VERIFICADO",
+      "keepOriginal": true,
+      "approved": false,
+      "deliveryFilename": "s2-10-addons-scene-v1.webp",
+      "dimension": {
+        "width": 1536,
+        "height": 1024
+      },
+      "mode": "RGBA",
+      "bytes": 324146,
+      "sha256Prefix": "3ebe1b4ca0f0",
+      "inRepository": false
     }
   ],
   "counts": {
     "inventoried": 10,
-    "candidatesProducedLocally": 1,
-    "approved": 0,
+    "candidatesProducedLocally": 10,
+    "alphaVerifiedLocally": 10,
+    "approved": 5,
+    "pendingApproval": 5,
     "integrated": 0,
     "published": 0
+  },
+  "status": "S2-10-CANDIDATOS-LOCALES-5-APROBADOS-5-PENDIENTES-INTEGRACION",
+  "delivery": {
+    "zip": "Vecidya-CrystalWorld-S2-LoteCompleto.zip",
+    "gallery": "galeria-s2.html",
+    "installScript": "Instalar-S2-Lote.ps1",
+    "inRepository": false,
+    "contents": "10 WebP RGBA 1536x1024, 10 thumbnails, SHA256, vista previa e instalador; catálogo no modificado"
   }
 }
