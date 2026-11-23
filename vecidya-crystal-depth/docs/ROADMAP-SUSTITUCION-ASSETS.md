@@ -1,7 +1,7 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.4.0 · **Última actualización:** 2026-11-23  
-**Estado:** S1 (5/5) y S2 (10/10) integradas en GitHub y visibles en la biblioteca Cloudflare Pages; S3 bloqueada tras rechazo artístico (0/12). CI y conformidad WCAG no certificados.  
+**Versión:** 1.5.0 · **Última actualización:** 2026-11-23  
+**Estado:** S1 (5/5) y S2 (10/10) integradas y visibles en Cloudflare; S3 reiniciada a cero sin candidatos activos.
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
 ## 1. Decisión y secuencia obligatoria
@@ -238,46 +238,13 @@ Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-
 
 **Definición de fase terminada:** 10/10 aprobadas, 10/10 activas en catálogo en `main`, 10/10 nuevos binarios en la biblioteca y previews disponibles, build y revisión integrada PASS. El estado de despliegue se registra de forma independiente.
 
-## Checkpoint S2 cerrado / S3 iniciada — 2026-11-23
+## Estado vigente tras limpieza S3 — 2026-11-23
 
-- **S2:** confirmado en `main` el commit `39ccd0bf8ab83237f25ee64bede487b96a66f470`: diez WebP activos y diez miniaturas presentes, catálogo y clasificación de 140 entradas. Usuario aprobó 10/10; originales conservados. Manifiesto actualizado a estado integrado. Despliegue público/CI no comprobados.
-- **S3:** `assets/s3-replacement-manifest.json` creado con 12 recursos exactos: nueve SVG operativos (cuatro de diagnóstico, cuatro de servicios y uno WhatsApp) y tres ilustraciones grandes (búsqueda PNG, negocio verificado WebP, pin Vecidya WebP).
-- **Dos lotes con puertas de aprobación:** lote SVG funcional (auditoría, calidad a tamaños reales, accesibilidad, marca de tercero); lote 3D (rediseño solo si es necesario, alfa real, fondos S1 claro/oscuro, tamaños de uso y consistencia Crystal World). No sustituir imágenes vectoriales con renders voluminosos en controles pequeños.
-- **Estado:** S3 0/12 revisados y 0/12 integrados; el manifiesto es un inventario verificable, no una certificación visual.
+- **S1:** 5/5 recursos integrados y verificados en Cloudflare Pages.
+- **S2:** 10/10 escenas integradas y verificadas en Cloudflare Pages.
+- **S3:** **reiniciada a cero**, 12 originales preservados, 0 candidatos vigentes, 0 aprobaciones, 0 integraciones. Inventario limpio: `assets/s3-replacement-manifest.json`.
+- **Carpetas de candidatos en main:** únicamente `assets/candidates/crystal-world/s1/` y `s2/`; no existe una carpeta S3 de candidatos.
+- **Material S3 descartado:** paquetes ZIP/galerías/infografías v1/v2 y borradores de SVG no son candidatos válidos. Se retiraron las herramientas y la documentación S3 obsoletas de `main`. Git conserva historial de los commits anteriores, sin necesidad de mantener estos archivos activos.
+- **Biblioteca:** https://vecidya-biblioteca.pages.dev/biblioteca, catálogo de 140 registros y recursos S1/S2 observados en navegador. Los doce originales de S3 aún representan la fase pendiente; no se retiran.
 
-## S3 — evaluación inicial de lotes (2026-11-23)
-
-- **Lote A (9 SVG):** se leyeron los nueve archivos originales exactos de GitHub: ocho iconos de 48×48 con trazos `currentColor` y el símbolo WhatsApp de 24×24 en verde. Se propone **conservar el SVG vectorial** como candidato, sin sustituirlo por renders 3D, sujeto a contraste, accesibilidad y revisión de render a escala. Ningún SVG modificado ni aprobado por el usuario aún.
-- **Lote B (3 ilustraciones):** se generó un piloto independiente para S3-09 Búsqueda en PNG RGBA, exportado a WebP 1254×1254, transparencia real comprobada y revisión en claro/oscuro; está incluido en el paquete local `Vecidya-S3-Lotes-Revision.zip`. El usuario todavía debe evaluar el candidato. S3-10 Negocio verificado y S3-11 Ubicación Vecidya siguen pendientes de producción específica.
-- **Control editorial:** los paneles/infografías de muestra generados durante exploración no equivalen a los SVG originales ni a assets independientes; se descartan como sustituciones. No confundir arte de presentación con archivo utilizable en el catálogo.
-- **Integración:** cero cambios de S3 en catálogo, cero binarios S3 subidos a GitHub. Mantener las doce fuentes antiguas sin mutación.
-- **Regla:** nueve SVG funcionales se mantienen vectoriales; los tres objetos grandes requieren alfa real y QA L5, mientras L4 conserva funcionalidad accesible.
-
-## S3 — cambio de criterio: regeneración total (2026-11-23)
-
-El responsable decidió explícitamente **regenerar desde cero todos los doce assets de S3** y sustituirlos, revocando la propuesta previa de conservar los nueve SVG existentes. Esto aplica a los 9 operativos y a los 3 iconos/ilustraciones grandes, sin pérdida de identidad de WhatsApp.
-
-- **Producción local:** 12 SVG nuevos con alfa vectorial; nueve símbolos compactos 64×64 y tres ilustraciones escalables 256×256. Cada icono tiene su propio archivo, no es una lámina recortada.
-- **Paquete:** `Vecidya-CrystalWorld-S3-12-Assets-Nuevos.zip` disponible en el chat. Incluye 12 SVG, manifiesto SHA-256, galería `galeria-s3.html`, `Instalar-y-Activar-S3.ps1` y `activar_s3.mjs`.
-- **QA local:** parseo XML y render CairoSVG 12/12; preflight y activación en un repositorio de simulación con 140 entradas: PASS. QA visual contextual de la biblioteca en Windows pendiente, sin aprobación artística individual inferida.
-- **Integración:** el script preserva originales, valida hashes, crea respaldo, activa 12 referencias y ejecuta el build desde el equipo del usuario. No se han subido aún los binarios ni cambiado las 12 referencias en `main`.
-- **Uso:** extraer paquete; desde su carpeta ejecutar en PowerShell `./Instalar-y-Activar-S3.ps1 -Repositorio "D:\\Proyectos\\Vecidya" -Publicar`, solo con el catálogo en estado original. Publicación y despliegue Cloudflare son estados diferentes.
-- **Nota de diseño:** SVG compacto con volumen por gradientes para L4 funcional y escenas vectoriales más detalladas para L5. La funcionalidad real permanece HTML/CSS; no incrustar contenido o botones interactivos en una ilustración.
-
-**No declarar S3 cerrada en GitHub hasta confirmar 12/12 referencias activas, 12/12 SVG presentes en destino y miniaturas/referencias válidas y build.**
-
-## Incidencia S3 — QA artístico rechazado y política de ahorro (2026-11-23)
-
-**Decisión correctiva:** los doce SVG creados en el paquete `Vecidya-CrystalWorld-S3-12-Assets-Nuevos.zip` se RECHAZAN. Su validación XML, rasterización y hashes no acreditaban fidelidad visual. No usar `Instalar-y-Activar-S3.ps1`, no sustituir catálogo ni eliminar originales. Se documentó en `assets/s3-replacement-manifest.json`.
-
-**Protocolo obligatorio antes de gastar generaciones de imágenes:** (1) revisar fuentes exactas, seis referencias aprobadas y tamaños/roles reales; (2) redactar matriz de correspondencia del inventario canónico con criterios visuales medibles; (3) utilizar un único piloto solo cuando sea indispensable, evitar láminas ambiguas con etiquetas/activos inventados; (4) revisar cada imagen generada antes de mostrarla o convertirla en asset, descartando automáticamente cualquier fallo de estilo/semántica; (5) no repetir generaciones sin un diagnóstico específico del error; (6) procesar por lote únicamente los candidatos que superen el gate y pedir aprobación artística antes de integración. El objetivo es minimizar usos innecesarios de generación.
-
-**Criterio por capa:** SVG L4 funcional puede seguir siendo vectorial pero requiere una gramática pulida y coherente sin sustituir indebidamente un control por una ilustración pesada; L5 necesita volumen y materiales Crystal World genuinos, alfa real, QA sobre fondo claro/oscuro. No confundir la lámina de presentación con doce assets independientes.
-
-## Verificación de Cloudflare Pages y continuación S3 — 2026-11-23
-
-**Origen público comprobado:** https://vecidya-biblioteca.pages.dev/biblioteca. Una auditoría de navegador en modo solo lectura confirmó carga final de la biblioteca y catálogo visible `140 de 140`, sin miniaturas rotas observadas, alternancia tema claro/oscuro, búsqueda `Vico` (10 resultados), filtros por categorías y presencia visual de los recursos S1 (5) y S2 (10). No equivale a un rastreo exhaustivo de cada recurso ni certificación WCAG/performance.
-
-**Hallazgos menores:** algunas copias editoriales siguen describiendo 140 assets como inventario original y 11 variantes Crystal propuestas, pese a existir sustituciones; un formulario de muestra emite ocasionalmente el aviso «No se completó la operación de muestra». Aislar correcciones de UI de la producción de assets.
-
-**S3:** permanecen 0/12 sustituciones, porque el primer lote fue rechazado artísticamente. La prioridad es fijar contrato visual S3 usando las seis referencias aprobadas y las imágenes realmente publicadas de S1/S2. Evitar nuevas generaciones hasta completar análisis, matriz de correspondencia exacta 12/12 y estándares visuales y funcionales por tamaño.
+**Condición de reinicio:** antes de generar nuevas ilustraciones, revisar semántica y seis referencias de arte aprobadas; producir archivos individuales con transparencia real, profundidad 3D y validación en fondos claro/oscuro. Ninguna generación ni activación nueva forma parte de esta limpieza.
