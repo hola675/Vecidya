@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
+  "version": "2.0.0",
   "lastUpdated": "2026-11-23",
   "phase": "S3",
-  "status": "S3-LOTE-A-AUDITORIA-CODIGO-9SVG-LOTE-B-PILOTO-1-DE-3-SIN-INTEGRACION",
+  "status": "S3-REGENERACION-TOTAL-12-CANDIDATOS-LOCALES-REEMPLAZO-REMOTO-PENDIENTE",
   "scope": "iconografía operativa e ilustrativa",
   "summary": {
     "total": 12,
@@ -12,7 +12,10 @@
     "approved": 0,
     "integrated": 0,
     "sourceSvgReviewed": 9,
-    "largeIllustrationCandidatesProduced": 1
+    "largeIllustrationCandidatesProduced": 3,
+    "newAssetsProduced": 12,
+    "svgRegenerated": 9,
+    "technicalSmokeTest": "PASS 12/12 en repositorio simulado"
   },
   "rules": [
     "No convertir iconos funcionales SVG a WebP; priorizar legibilidad, accesibilidad y trazos consistentes",
@@ -50,11 +53,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-01-diagnostic-business-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-02",
@@ -68,11 +73,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-02-diagnostic-creator-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-03",
@@ -86,11 +93,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-03-diagnostic-professional-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-04",
@@ -104,11 +113,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-04-diagnostic-project-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-05",
@@ -122,11 +133,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-05-service-digital-presence-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-06",
@@ -140,11 +153,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-06-service-formalization-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-07",
@@ -158,11 +173,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-07-service-structure-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-08",
@@ -176,11 +193,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-08-service-visibility-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-09",
@@ -194,24 +213,13 @@
         "aspectRatio": 1
       },
       "kind": "ilustracion-iconografica-3d",
-      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "CANDIDATO-3D-LOCAL-PENDIENTE-APROBACION",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
       "integrated": false,
-      "candidate": {
-        "path": "assets/candidates/crystal-world/s3/s3-09-search-crystal-world-v1.webp",
-        "deliveryFile": "Vecidya-S3-Lotes-Revision.zip",
-        "mode": "RGBA",
-        "dimensions": [
-          1254,
-          1254
-        ],
-        "bytes": 261232,
-        "sha256": "945ac68406f872bf77a961a1f1a308715f2a694d759dd3c79317d31d31614269",
-        "inRepository": false,
-        "qa": "RGBA, esquina alfa 0, export WebP comprobado; pendiente QA visual"
-      }
+      "candidate": "assets/candidates/crystal-world/s3/s3-09-ui-icon-search-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-10",
@@ -225,11 +233,13 @@
         "aspectRatio": 1
       },
       "kind": "ilustracion-iconografica-3d",
-      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "PENDIENTE-PRODUCCION-INDIVIDUAL",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-10-ui-icon-storefront-verified-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-11",
@@ -243,11 +253,13 @@
         "aspectRatio": 1
       },
       "kind": "ilustracion-iconografica-3d",
-      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "PENDIENTE-PRODUCCION-INDIVIDUAL",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-11-ui-icon-vecidya-pin-crystal-v1.svg",
+      "formatCandidate": "svg"
     },
     {
       "id": "S3-12",
@@ -261,11 +273,13 @@
         "aspectRatio": 1
       },
       "kind": "vector-operativo",
-      "decision": "mantener-svg-original-comprobar-render-responsive",
+      "decision": "sustituir-por-nuevo-asset-creado-desde-cero",
       "preserveOriginal": true,
-      "state": "AUDITADO-CODIGO-CANDIDATO-MANTENER",
+      "state": "CANDIDATO-REGENERADO-EN-PAQUETE-SIN-INTEGRAR",
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "candidate": "assets/candidates/crystal-world/s3/s3-12-ui-icon-whatsapp-crystal-v1.svg",
+      "formatCandidate": "svg"
     }
   ],
   "codeAudit": {
@@ -279,5 +293,24 @@
     "contains": "1 WebP 3D transparente S3-09, manifiesto y galería clara/oscura",
     "inRepository": false,
     "published": false
-  }
+  },
+  "userDecision": {
+    "date": "2026-11-23",
+    "instruction": "Regenerar desde cero los 12 recursos S3 y reemplazar los anteriores, incluidos los nueve SVG operativos.",
+    "supersedes": "La propuesta previa de conservar los nueve SVG originales",
+    "guardrails": "Conservar original como respaldo, mantener iconos operativos vectoriales, respeto de marca WhatsApp; mantener L4 funcional y L5 decorativo."
+  },
+  "package": {
+    "name": "Vecidya-CrystalWorld-S3-12-Assets-Nuevos.zip",
+    "files": 12,
+    "format": "12 SVG independientes con transparencias y gradientes",
+    "viewBoxes": "9 de 64x64 y 3 de 256x256",
+    "sha256Manifest": "manifest.json",
+    "gallery": "galeria-s3.html",
+    "install": "Instalar-y-Activar-S3.ps1",
+    "activation": "activar_s3.mjs",
+    "tests": "XML parse y render CairoSVG; hashes 12; preflight y apply en repo simulado PASS; frontend real PENDIENTE",
+    "uploadedToMain": false
+  },
+  "warning": "No afirmar sustitución S3 en main hasta verificar el commit con los doce SVG y las doce referencias activas. La generación no certifica el aspecto final del frontend."
 }
