@@ -284,3 +284,8 @@ Los recursos visuales que formen parte de Crystal Depth deben existir dentro de 
 ## Aprobación Crystal World — 2026-11-23
 
 El responsable aprobó la dirección artística de las seis referencias aportadas y el principio de **sustituir primero los assets existentes antes de generar assets nuevos**. La especificación detallada y los criterios de no alterar Vico/marca están en [CRYSTAL-WORLD-ART-DIRECTION.md](CRYSTAL-WORLD-ART-DIRECTION.md); la planificación por olas S0–S10, gates y política de purga están en [ROADMAP-SUSTITUCION-ASSETS.md](ROADMAP-SUSTITUCION-ASSETS.md). Esta aprobación no significa que las versiones anteriores estén ya sustituidas ni autoriza despliegue de la plataforma.
+
+
+## Regla aprobada de canal alfa y seis capas (2026-11-23)
+
+Todo asset NO clasificado como fondo debe estar aislado sobre transparencia real y ser apto para superponerlo en el sistema de seis niveles L0–L5; evitar sombras o fondos cuadrados de baja calidad y halos residuales. Fondos L0 pueden ser opacos. El negocio y las tarjetas 3D de reseñas son ilustraciones decorativas L5, mientras las puntuaciones reales y los controles pertenecen a L4 y deben representarse desde datos y HTML. Contrato: [CRYSTAL-WORLD-ART-DIRECTION.md](CRYSTAL-WORLD-ART-DIRECTION.md). Esta regla prevalece sobre interpretaciones previas que permitían fondos rasterizados para elementos reutilizables.
