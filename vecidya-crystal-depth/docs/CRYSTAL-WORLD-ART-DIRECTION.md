@@ -33,3 +33,17 @@ El responsable aprobó seis imágenes de referencia entregadas en la conversaci�
 ## Historial de cambios
 
 - **1.0.0 — 2026-11-23:** nueva gramática común aprobada y frontera entre dirección artística y producción.
+
+
+## Política aprobada: transparencia y capas L0–L5 — 2026-11-23
+
+**Decisión explícita del responsable:** todo asset que NO sea un fondo debe producirse como un objeto/escena aislado sobre transparencia real (canal alfa), sin rectángulo de fondo opaco ni resplandor incrustado que simule transparencia. Los fondos sí pueden ser opacos (oscuro/claro). La aprobación artística de la última imagen de tienda y reseñas es aprobación de la dirección visual, no del archivo WebP optimizado hasta verificar alfa/contornos.
+
+**Separación técnica:** L0 fondo/atmósfera estacionaria (opaco permitido); L1 contexto de escena (preferentemente transparente si reutilizable); L2 perspectiva/rutas/arcos (transparente); L3 materiales/superficies (CSS/HTML; imágenes solo si son decorativas y transparentes); L4 contenido real e interactivo siempre HTML/CSS/JS accesible, NO texto o botones rasterizados; L5 protagonistas (Vico, tiendas, iconos 3D, elementos de reseñas) transparentes. El asset compuesto puede incluir múltiples motivos L1/L2/L5 solo cuando sea una ilustración decorativa no interactiva y conserve alfa genuina. El brillo debe conservar bordes suaves sin halos negros/blancos.
+
+**QA obligatorio por recurso:** verificar alfa 0 en esquinas y regiones exteriores, bordes sobre fondo claro/oscuro, dimensión, WebP en modo RGBA, peso, encuadre responsive, legibilidad y correspondencia con las seis referencias; nunca equiparar extensión .webp con transparencia real. Un componente decorativo de reseñas no representa calificaciones reales; evaluaciones verdaderas deben usar datos reales en L4.
+
+**Prioridad:** sustituir recursos actuales por lotes verificados antes de ampliar la biblioteca. Originales protegidos y reversión disponible.
+
+### Historial
+- **v1.1.0 — 2026-11-23:** regla de transparencia por tipo y responsabilidades por L0–L5, aprobadas por el responsable.
