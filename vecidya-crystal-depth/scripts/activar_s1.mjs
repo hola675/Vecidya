@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Crystal World S1 — v1.0.0, 2026-11-23
+// Crystal World S1 — v1.1.0, 2026-11-23
 // Check mode by default; --apply replaces only five catalogue entries after verification.
 import { readFile, writeFile, copyFile, mkdir, stat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -7,6 +7,13 @@ import { dirname, resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const project=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const checkOnly=!process.argv.includes('--apply');
+// QA ARTISTICO ES OBLIGATORIO: ni checksum ni build equivalen a aprobacion.
+const reviewManifest=JSON.parse(await readFile(join(project,'assets/s1-replacement-manifest.json'),'utf8'));
+const unapproved=(reviewManifest.items||[]).filter(x=>x.visualQa!=='ACEPTADO');
+if(unapproved.length || reviewManifest.checks?.releaseAllowed!==true){
+  throw new Error('S1 BLOQUEADA por QA visual: '+unapproved.map(x=>x.id+':'+(x.visualQa||'sin revision')).join(', ')+'. No aplicar --apply hasta aprobar TODOS los assets.');
+}
+
 const old=[
   ['selected/backgrounds/bg-section-map-wave-dark.webp','bg-crystal-world-master-dark-v1.webp','s1-01','027-bg-section-map-wave-dark.webp'],
   ['selected/backgrounds/bg-soft-map-orange-blue.webp','bg-crystal-world-master-light-v1.webp','s1-02','028-bg-soft-map-orange-blue.webp'],
