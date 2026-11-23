@@ -1,6 +1,6 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.2.0 · **Última actualización:** 2026-11-23  
+**Versión:** 1.3.0 · **Última actualización:** 2026-11-23  
 **Estado:** S1 integrada (5/5) y S2 integrada (10/10) en GitHub; S3 iniciada con inventario 12/12. Despliegue público y CI no certificados.  
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
@@ -252,3 +252,16 @@ Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-
 - **Control editorial:** los paneles/infografías de muestra generados durante exploración no equivalen a los SVG originales ni a assets independientes; se descartan como sustituciones. No confundir arte de presentación con archivo utilizable en el catálogo.
 - **Integración:** cero cambios de S3 en catálogo, cero binarios S3 subidos a GitHub. Mantener las doce fuentes antiguas sin mutación.
 - **Regla:** nueve SVG funcionales se mantienen vectoriales; los tres objetos grandes requieren alfa real y QA L5, mientras L4 conserva funcionalidad accesible.
+
+## S3 — cambio de criterio: regeneración total (2026-11-23)
+
+El responsable decidió explícitamente **regenerar desde cero todos los doce assets de S3** y sustituirlos, revocando la propuesta previa de conservar los nueve SVG existentes. Esto aplica a los 9 operativos y a los 3 iconos/ilustraciones grandes, sin pérdida de identidad de WhatsApp.
+
+- **Producción local:** 12 SVG nuevos con alfa vectorial; nueve símbolos compactos 64×64 y tres ilustraciones escalables 256×256. Cada icono tiene su propio archivo, no es una lámina recortada.
+- **Paquete:** `Vecidya-CrystalWorld-S3-12-Assets-Nuevos.zip` disponible en el chat. Incluye 12 SVG, manifiesto SHA-256, galería `galeria-s3.html`, `Instalar-y-Activar-S3.ps1` y `activar_s3.mjs`.
+- **QA local:** parseo XML y render CairoSVG 12/12; preflight y activación en un repositorio de simulación con 140 entradas: PASS. QA visual contextual de la biblioteca en Windows pendiente, sin aprobación artística individual inferida.
+- **Integración:** el script preserva originales, valida hashes, crea respaldo, activa 12 referencias y ejecuta el build desde el equipo del usuario. No se han subido aún los binarios ni cambiado las 12 referencias en `main`.
+- **Uso:** extraer paquete; desde su carpeta ejecutar en PowerShell `./Instalar-y-Activar-S3.ps1 -Repositorio "D:\\Proyectos\\Vecidya" -Publicar`, solo con el catálogo en estado original. Publicación y despliegue Cloudflare son estados diferentes.
+- **Nota de diseño:** SVG compacto con volumen por gradientes para L4 funcional y escenas vectoriales más detalladas para L5. La funcionalidad real permanece HTML/CSS; no incrustar contenido o botones interactivos en una ilustración.
+
+**No declarar S3 cerrada en GitHub hasta confirmar 12/12 referencias activas, 12/12 SVG presentes en destino y miniaturas/referencias válidas y build.**
