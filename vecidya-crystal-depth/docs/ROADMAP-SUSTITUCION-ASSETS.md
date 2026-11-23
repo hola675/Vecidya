@@ -1,7 +1,7 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.3.0 · **Última actualización:** 2026-11-23  
-**Estado:** S1 integrada (5/5) y S2 integrada (10/10) en GitHub; S3 iniciada con inventario 12/12. Despliegue público y CI no certificados.  
+**Versión:** 1.4.0 · **Última actualización:** 2026-11-23  
+**Estado:** S1 (5/5) y S2 (10/10) integradas en GitHub y visibles en la biblioteca Cloudflare Pages; S3 bloqueada tras rechazo artístico (0/12). CI y conformidad WCAG no certificados.  
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
 ## 1. Decisión y secuencia obligatoria
@@ -273,3 +273,11 @@ El responsable decidió explícitamente **regenerar desde cero todos los doce as
 **Protocolo obligatorio antes de gastar generaciones de imágenes:** (1) revisar fuentes exactas, seis referencias aprobadas y tamaños/roles reales; (2) redactar matriz de correspondencia del inventario canónico con criterios visuales medibles; (3) utilizar un único piloto solo cuando sea indispensable, evitar láminas ambiguas con etiquetas/activos inventados; (4) revisar cada imagen generada antes de mostrarla o convertirla en asset, descartando automáticamente cualquier fallo de estilo/semántica; (5) no repetir generaciones sin un diagnóstico específico del error; (6) procesar por lote únicamente los candidatos que superen el gate y pedir aprobación artística antes de integración. El objetivo es minimizar usos innecesarios de generación.
 
 **Criterio por capa:** SVG L4 funcional puede seguir siendo vectorial pero requiere una gramática pulida y coherente sin sustituir indebidamente un control por una ilustración pesada; L5 necesita volumen y materiales Crystal World genuinos, alfa real, QA sobre fondo claro/oscuro. No confundir la lámina de presentación con doce assets independientes.
+
+## Verificación de Cloudflare Pages y continuación S3 — 2026-11-23
+
+**Origen público comprobado:** https://vecidya-biblioteca.pages.dev/biblioteca. Una auditoría de navegador en modo solo lectura confirmó carga final de la biblioteca y catálogo visible `140 de 140`, sin miniaturas rotas observadas, alternancia tema claro/oscuro, búsqueda `Vico` (10 resultados), filtros por categorías y presencia visual de los recursos S1 (5) y S2 (10). No equivale a un rastreo exhaustivo de cada recurso ni certificación WCAG/performance.
+
+**Hallazgos menores:** algunas copias editoriales siguen describiendo 140 assets como inventario original y 11 variantes Crystal propuestas, pese a existir sustituciones; un formulario de muestra emite ocasionalmente el aviso «No se completó la operación de muestra». Aislar correcciones de UI de la producción de assets.
+
+**S3:** permanecen 0/12 sustituciones, porque el primer lote fue rechazado artísticamente. La prioridad es fijar contrato visual S3 usando las seis referencias aprobadas y las imágenes realmente publicadas de S1/S2. Evitar nuevas generaciones hasta completar análisis, matriz de correspondencia exacta 12/12 y estándares visuales y funcionales por tamaño.
