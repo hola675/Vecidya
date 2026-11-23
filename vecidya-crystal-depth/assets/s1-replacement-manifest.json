@@ -1,8 +1,8 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "S1-v3-APROBADA-VISUALMENTE-PENDIENTE-DE-INTEGRACION-DE-BINARIOS",
+  "status": "S1-v3-INTEGRADA-EN-MAIN-CATALOGADA-5-DE-5-DEPLOY-NO-VERIFICADO",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -156,9 +156,9 @@
     "candidateMobileProduced": 2,
     "localIntegrityTest": "PASS",
     "approvedReplacementMasters": 5,
-    "referencesReplaced": 0,
+    "referencesReplaced": 5,
     "originalsDeleted": 0,
-    "repositoryBinaryUpload": "V3 PENDIENTE",
+    "repositoryBinaryUpload": "7 WEBP V3 PRESENTES EN MAIN",
     "visualReview": "APROBADA GALERIA S1 V3 POR USUARIO",
     "visualApproved": 7,
     "visualRejected": 0,
@@ -167,9 +167,13 @@
     "locallyActivatedNotApproved": 5,
     "remoteReferencesReplaced": 0,
     "releaseAllowed": false,
-    "refsReplacedOnMain": 0,
+    "refsReplacedOnMain": 5,
     "package3TechnicalQA": "PASS 7/7 confirmado por usuario",
-    "package3RepoUpload": "PENDIENTE"
+    "package3RepoUpload": "CONFIRMADO",
+    "catalogEntries": 140,
+    "classificationEntries": 140,
+    "previewLinksVerified": 5,
+    "catalogWebpFormatCorrected": true
   },
   "prototypes": [
     {
@@ -391,7 +395,13 @@
     "explicitApply": "node scripts/activar_s1_v3.mjs --apply",
     "requires": "7 archivos v3 instalados, SHA256 exactos, previews y catálogo original; aprobación S1 v3",
     "backup": "qa/s1-v3/backup-before-activation",
-    "state": "PENDIENTE-DE-INTEGRACION-LOCAL",
+    "state": "INTEGRADA-EN-MAIN",
     "automaticDeploy": false
+  },
+  "gitVerification": {
+    "date": "2026-11-23",
+    "sourceCommit": "0539a46e9f8766e08290b363a0ad688b87e9ac78",
+    "validated": "5 fuentes catalogadas, 5 thumbnails existentes, 7 archivos v3 en library-assets y candidates, clasificación 140/140, originales preservados",
+    "knownLimitations": "No se ejecutó build en CI ni se inspeccionó web de producción en esta verificación. Scripts existentes y catálogo consistentes."
   }
 }
