@@ -1,8 +1,8 @@
 {
-  "version": "1.6.0",
+  "version": "1.7.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "S1-v3-PAQUETE-VERIFICADO-GALERIA-QA-DISPONIBLE-NO-ACTIVADO",
+  "status": "S1-v3-APROBADA-VISUALMENTE-PENDIENTE-DE-INTEGRACION-DE-BINARIOS",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -155,14 +155,14 @@
     "candidateDesktopProduced": 5,
     "candidateMobileProduced": 2,
     "localIntegrityTest": "PASS",
-    "approvedReplacementMasters": 0,
+    "approvedReplacementMasters": 5,
     "referencesReplaced": 0,
     "originalsDeleted": 0,
-    "repositoryBinaryUpload": "PENDIENTE",
-    "visualReview": "inspección preliminar de siete archivos, falta montaje responsive",
-    "visualApproved": 0,
-    "visualRejected": 1,
-    "visualNeedsRevision": 3,
+    "repositoryBinaryUpload": "V3 PENDIENTE",
+    "visualReview": "APROBADA GALERIA S1 V3 POR USUARIO",
+    "visualApproved": 7,
+    "visualRejected": 0,
+    "visualNeedsRevision": 0,
     "locallyActivatedByUser": 5,
     "locallyActivatedNotApproved": 5,
     "remoteReferencesReplaced": 0,
@@ -367,5 +367,31 @@
     "stage": "qa/s1-v3/index.html",
     "mode": "solo-lectura-catalogo",
     "published": false
+  },
+  "approvals": {
+    "s1v3": {
+      "status": "APROBADO-POR-USUARIO",
+      "date": "2026-11-23",
+      "evidence": "Captura aportada por el usuario de qa/s1-v3/index.html con las siete piezas visibles; mensaje explícito: 'aprobado'",
+      "assets": [
+        "S1-01",
+        "S1-02",
+        "S1-03",
+        "S1-04",
+        "S1-05",
+        "S1-01-mobile",
+        "S1-02-mobile"
+      ],
+      "scope": "Aprobación artística de galería; no implica despliegue ni certificación real de frontend"
+    }
+  },
+  "activation": {
+    "script": "scripts/activar_s1_v3.mjs",
+    "safeCheck": "node scripts/activar_s1_v3.mjs",
+    "explicitApply": "node scripts/activar_s1_v3.mjs --apply",
+    "requires": "7 archivos v3 instalados, SHA256 exactos, previews y catálogo original; aprobación S1 v3",
+    "backup": "qa/s1-v3/backup-before-activation",
+    "state": "PENDIENTE-DE-INTEGRACION-LOCAL",
+    "automaticDeploy": false
   }
 }
