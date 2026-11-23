@@ -398,12 +398,12 @@ window.vecidyaCrystalCatalog = [
   {
     "name": "Reseñas · ubicación",
     "category": "Decoración",
-    "format": "PNG",
+    "format": "WEBP",
     "width": 1672,
     "height": 941,
     "source": "assets/library-assets/crystal-world/s1/decor-crystal-world-reviews-v3.webp",
     "preview": "assets/catalog-previews/s1-05-decor-crystal-world-reviews-v3.webp",
-    "treatment": "Activo Vecidya · PNG",
+    "treatment": "Activo Vecidya · WEBP",
     "previewWidth": 360,
     "previewHeight": 203
   },
