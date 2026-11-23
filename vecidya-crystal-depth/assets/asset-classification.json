@@ -692,11 +692,11 @@
       }
     },
     {
-      "id": "selected/backgrounds/bg-hero-soft-map-wave.webp",
+      "id": "crystal-world/s1/bg-crystal-world-hero-light-v1.webp",
       "name": "Fondo · mapa ondulado",
       "category": "Fondos",
-      "source": "assets/library-assets/selected/backgrounds/bg-hero-soft-map-wave.webp",
-      "preview": "assets/catalog-previews/025-bg-hero-soft-map-wave.webp",
+      "source": "assets/library-assets/crystal-world/s1/bg-crystal-world-hero-light-v1.webp",
+      "preview": "assets/catalog-previews/s1-03-bg-crystal-world-hero-light-v1.webp",
       "format": "webp",
       "dimensions": {
         "width": 1672,
@@ -714,16 +714,17 @@
         "purpose": "background"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
+        "status": "candidato-activado-local-pendiente-qa-visual-publicacion",
         "flags": []
-      }
+      },
+      "originalSource": "assets/library-assets/selected/backgrounds/bg-hero-soft-map-wave.webp"
     },
     {
-      "id": "selected/backgrounds/bg-network-route-pins.webp",
+      "id": "crystal-world/s1/bg-crystal-world-network-v1.webp",
       "name": "Fondo · rutas del vecindario",
       "category": "Fondos",
-      "source": "assets/library-assets/selected/backgrounds/bg-network-route-pins.webp",
-      "preview": "assets/catalog-previews/026-bg-network-route-pins.webp",
+      "source": "assets/library-assets/crystal-world/s1/bg-crystal-world-network-v1.webp",
+      "preview": "assets/catalog-previews/s1-04-bg-crystal-world-network-v1.webp",
       "format": "webp",
       "dimensions": {
         "width": 1672,
@@ -741,16 +742,17 @@
         "purpose": "background"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
+        "status": "candidato-activado-local-pendiente-qa-visual-publicacion",
         "flags": []
-      }
+      },
+      "originalSource": "assets/library-assets/selected/backgrounds/bg-network-route-pins.webp"
     },
     {
-      "id": "selected/backgrounds/bg-section-map-wave-dark.webp",
+      "id": "crystal-world/s1/bg-crystal-world-master-dark-v1.webp",
       "name": "Fondo · mapa nocturno",
       "category": "Fondos",
-      "source": "assets/library-assets/selected/backgrounds/bg-section-map-wave-dark.webp",
-      "preview": "assets/catalog-previews/027-bg-section-map-wave-dark.webp",
+      "source": "assets/library-assets/crystal-world/s1/bg-crystal-world-master-dark-v1.webp",
+      "preview": "assets/catalog-previews/s1-01-bg-crystal-world-master-dark-v1.webp",
       "format": "webp",
       "dimensions": {
         "width": 1672,
@@ -768,16 +770,17 @@
         "purpose": "background"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
+        "status": "candidato-activado-local-pendiente-qa-visual-publicacion",
         "flags": []
-      }
+      },
+      "originalSource": "assets/library-assets/selected/backgrounds/bg-section-map-wave-dark.webp"
     },
     {
-      "id": "selected/backgrounds/bg-soft-map-orange-blue.webp",
+      "id": "crystal-world/s1/bg-crystal-world-master-light-v1.webp",
       "name": "Fondo · mapa azul y naranja",
       "category": "Fondos",
-      "source": "assets/library-assets/selected/backgrounds/bg-soft-map-orange-blue.webp",
-      "preview": "assets/catalog-previews/028-bg-soft-map-orange-blue.webp",
+      "source": "assets/library-assets/crystal-world/s1/bg-crystal-world-master-light-v1.webp",
+      "preview": "assets/catalog-previews/s1-02-bg-crystal-world-master-light-v1.webp",
       "format": "webp",
       "dimensions": {
         "width": 1672,
@@ -795,9 +798,10 @@
         "purpose": "background"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
+        "status": "candidato-activado-local-pendiente-qa-visual-publicacion",
         "flags": []
-      }
+      },
+      "originalSource": "assets/library-assets/selected/backgrounds/bg-soft-map-orange-blue.webp"
     },
     {
       "id": "selected/brand/brand-lockup-tagline.webp",
@@ -935,12 +939,12 @@
       }
     },
     {
-      "id": "selected/decorative/decor-reviews-location-card.png",
+      "id": "crystal-world/s1/decor-crystal-world-reviews-v1.webp",
       "name": "Reseñas · ubicación",
       "category": "Decoración",
-      "source": "assets/library-assets/selected/decorative/decor-reviews-location-card.png",
-      "preview": "assets/catalog-previews/034-decor-reviews-location-card.webp",
-      "format": "png",
+      "source": "assets/library-assets/crystal-world/s1/decor-crystal-world-reviews-v1.webp",
+      "preview": "assets/catalog-previews/s1-05-decor-crystal-world-reviews-v1.webp",
+      "format": "webp",
       "dimensions": {
         "width": 1672,
         "height": 941,
@@ -957,9 +961,10 @@
         "purpose": "decoracion-contextual"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
+        "status": "candidato-activado-local-pendiente-qa-visual-publicacion",
         "flags": []
-      }
+      },
+      "originalSource": "assets/library-assets/selected/decorative/decor-reviews-location-card.png"
     },
     {
       "id": "selected/icons/diagnostic-business.svg",
