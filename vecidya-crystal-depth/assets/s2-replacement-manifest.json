@@ -1,0 +1,277 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-11-23",
+  "phase": "S2",
+  "title": "Escenas narrativas Crystal World",
+  "total": 10,
+  "scope": "10 escenas existentes, primero cinco prioritarias",
+  "dependsOn": "S1 integrada en main; Cloudflare público no verificado",
+  "source": "Inventario assets/asset-classification.json y docs/ROADMAP-SUSTITUCION-ASSETS.md",
+  "rules": {
+    "transparent": true,
+    "backgrounds": "S1 (L0), no integrar fondo opaco a los protagonistas",
+    "layers": {
+      "L0": "fondos S1 existentes",
+      "L1": "escena contextual",
+      "L2": "profundidad y caminos",
+      "L3": "contenedores CSS",
+      "L4": "HTML real: texto, botones, datos",
+      "L5": "ilustración de foco con alfa"
+    },
+    "vico": "No regenerar ni reinterpretar Vico; si aparece en una escena requiere composición con asset canónico",
+    "qa": [
+      "inspección de archivo original y candidato individual",
+      "alfa real y bordes en fondos claro y oscuro",
+      "composición responsive y escala útil",
+      "consistencia con seis referencias Crystal World",
+      "sin texto ni funcionalidad ficticia incrustada",
+      "hash y build",
+      "aprobación antes de modificar catálogo"
+    ],
+    "rollback": "mantener originales y no activar sin aprobación"
+  },
+  "pilot": {
+    "id": "S2-01",
+    "candidateFile": "s2-01-home-scene-candidato-v1.webp",
+    "format": "WEBP RGBA",
+    "dimensions": {
+      "width": 1536,
+      "height": 1024
+    },
+    "sizeBytes": 384600,
+    "sha256": "b5f69dcfdf66c36df3edfe20e41598b63559c4cae14105f0f76e52bc962f416b",
+    "alphaTransparentPixelFraction": 0.366,
+    "state": "boceto-local-pendiente-evaluacion-artística",
+    "inRepository": false,
+    "assetsReplaced": 0
+  },
+  "items": [
+    {
+      "id": "S2-01",
+      "key": "home",
+      "original": "assets/library-assets/selected/illustrations/home-scene.webp",
+      "originalPreview": "assets/catalog-previews/065-home-scene.webp",
+      "originalResolution": {
+        "width": 402,
+        "height": 266
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/home-scene-v1.webp",
+      "state": "piloto-generado-local-no-integrado",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-02",
+      "key": "neighborhood",
+      "original": "assets/library-assets/selected/illustrations/neighborhood-scene.webp",
+      "originalPreview": "assets/catalog-previews/128-neighborhood-scene.webp",
+      "originalResolution": {
+        "width": 399,
+        "height": 309
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/neighborhood-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-03",
+      "key": "services",
+      "original": "assets/library-assets/selected/illustrations/services-scene.webp",
+      "originalPreview": "assets/catalog-previews/129-services-scene.webp",
+      "originalResolution": {
+        "width": 406,
+        "height": 259
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/services-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-04",
+      "key": "learn-journey",
+      "original": "assets/library-assets/selected/illustrations/learn-journey-scene.webp",
+      "originalPreview": "assets/catalog-previews/126-learn-journey-scene.webp",
+      "originalResolution": {
+        "width": 436,
+        "height": 307
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/learn-journey-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-05",
+      "key": "diagnostic",
+      "original": "assets/library-assets/selected/illustrations/diagnostic-scene.webp",
+      "originalPreview": "assets/catalog-previews/053-diagnostic-scene.webp",
+      "originalResolution": {
+        "width": 433,
+        "height": 314
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/diagnostic-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-06",
+      "key": "about",
+      "original": "assets/library-assets/selected/illustrations/about-scene.webp",
+      "originalPreview": "assets/catalog-previews/050-about-scene.webp",
+      "originalResolution": {
+        "width": 423,
+        "height": 361
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/about-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-07",
+      "key": "contact",
+      "original": "assets/library-assets/selected/illustrations/contact-scene.webp",
+      "originalPreview": "assets/catalog-previews/052-contact-scene.webp",
+      "originalResolution": {
+        "width": 384,
+        "height": 287
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/contact-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-08",
+      "key": "join",
+      "original": "assets/library-assets/selected/illustrations/join-scene.webp",
+      "originalPreview": "assets/catalog-previews/077-join-scene.webp",
+      "originalResolution": {
+        "width": 318,
+        "height": 303
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/join-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-09",
+      "key": "licenses",
+      "original": "assets/library-assets/selected/illustrations/licenses-scene.webp",
+      "originalPreview": "assets/catalog-previews/127-licenses-scene.webp",
+      "originalResolution": {
+        "width": 357,
+        "height": 337
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/licenses-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    },
+    {
+      "id": "S2-10",
+      "key": "addons",
+      "original": "assets/library-assets/selected/illustrations/addons-scene.webp",
+      "originalPreview": "assets/catalog-previews/051-addons-scene.webp",
+      "originalResolution": {
+        "width": 437,
+        "height": 271
+      },
+      "type": "ilustracion-3d-aislada",
+      "layers": [
+        "L1",
+        "L2",
+        "L5"
+      ],
+      "background": "transparente-canal-alfa-obligatorio",
+      "proposedAsset": "assets/candidates/crystal-world/s2/addons-scene-v1.webp",
+      "state": "pendiente-produccion",
+      "visualQA": "PENDIENTE",
+      "functionalQA": "PENDIENTE",
+      "keepOriginal": true
+    }
+  ],
+  "counts": {
+    "inventoried": 10,
+    "candidatesProducedLocally": 1,
+    "approved": 0,
+    "integrated": 0,
+    "published": 0
+  }
+}
