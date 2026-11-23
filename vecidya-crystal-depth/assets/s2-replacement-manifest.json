@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "lastUpdated": "2026-11-23",
   "phase": "S2",
   "title": "Escenas narrativas Crystal World",
@@ -64,7 +64,7 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/home-scene-v1.webp",
-      "state": "aprobado-por-usuario-pendiente-integracion",
+      "state": "aprobado-pendiente-integracion",
       "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
@@ -77,7 +77,8 @@
       "mode": "RGBA",
       "bytes": 376646,
       "sha256Prefix": "a1c00c8f2b62",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "a1c00c8f2b6235e54593d79f48a77bf3b47ad42d9ac84502fc07f1f7c2532439"
     },
     {
       "id": "S2-02",
@@ -96,7 +97,7 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/neighborhood-scene-v1.webp",
-      "state": "aprobado-por-usuario-pendiente-integracion",
+      "state": "aprobado-pendiente-integracion",
       "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
@@ -109,7 +110,8 @@
       "mode": "RGBA",
       "bytes": 382766,
       "sha256Prefix": "d2b4affedc6b",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "d2b4affedc6b849768736bb2165cfeb1e9d239acb14b0234c24316ef932ff37f"
     },
     {
       "id": "S2-03",
@@ -128,7 +130,7 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/services-scene-v1.webp",
-      "state": "aprobado-por-usuario-pendiente-integracion",
+      "state": "aprobado-pendiente-integracion",
       "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
@@ -141,7 +143,8 @@
       "mode": "RGBA",
       "bytes": 289590,
       "sha256Prefix": "cf6b2b8228cf",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "cf6b2b8228cfec78050c6de6337db77ec7dfd70f22668f382c0202e2351ff59e"
     },
     {
       "id": "S2-04",
@@ -160,7 +163,7 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/learn-journey-scene-v1.webp",
-      "state": "aprobado-por-usuario-pendiente-integracion",
+      "state": "aprobado-pendiente-integracion",
       "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
@@ -173,7 +176,8 @@
       "mode": "RGBA",
       "bytes": 306334,
       "sha256Prefix": "a8f01a6423bc",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "a8f01a6423bc03a000afc13fac19cf0d2b55fb8b3b265f8476c6eaaa7cc1c45d"
     },
     {
       "id": "S2-05",
@@ -192,7 +196,7 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/diagnostic-scene-v1.webp",
-      "state": "aprobado-por-usuario-pendiente-integracion",
+      "state": "aprobado-pendiente-integracion",
       "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
@@ -205,7 +209,8 @@
       "mode": "RGBA",
       "bytes": 262194,
       "sha256Prefix": "0ca18fa21752",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "0ca18fa2175275f0aa42bc91411398b9e9dbcfb65c96a765d2e7fa910542b2bb"
     },
     {
       "id": "S2-06",
@@ -224,11 +229,11 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/about-scene-v1.webp",
-      "state": "candidato-generado-pendiente-aprobacion",
-      "visualQA": "PENDIENTE",
+      "state": "aprobado-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
-      "approved": false,
+      "approved": true,
       "deliveryFilename": "s2-06-about-scene-v1.webp",
       "dimension": {
         "width": 1536,
@@ -237,7 +242,8 @@
       "mode": "RGBA",
       "bytes": 296172,
       "sha256Prefix": "033d5fde209c",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "033d5fde209cb7228fb7af30979705472669ead72b208c333eea52c3af8c80c1"
     },
     {
       "id": "S2-07",
@@ -256,11 +262,11 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/contact-scene-v1.webp",
-      "state": "candidato-generado-pendiente-aprobacion",
-      "visualQA": "PENDIENTE",
+      "state": "aprobado-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
-      "approved": false,
+      "approved": true,
       "deliveryFilename": "s2-07-contact-scene-v1.webp",
       "dimension": {
         "width": 1536,
@@ -269,7 +275,8 @@
       "mode": "RGBA",
       "bytes": 283296,
       "sha256Prefix": "29dba33d3333",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "29dba33d33334180ab242f51fad2d16d18f973e7fefe402938a13f8d0d87a102"
     },
     {
       "id": "S2-08",
@@ -288,11 +295,11 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/join-scene-v1.webp",
-      "state": "candidato-generado-pendiente-aprobacion",
-      "visualQA": "PENDIENTE",
+      "state": "aprobado-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
-      "approved": false,
+      "approved": true,
       "deliveryFilename": "s2-08-join-scene-v1.webp",
       "dimension": {
         "width": 1536,
@@ -301,7 +308,8 @@
       "mode": "RGBA",
       "bytes": 302510,
       "sha256Prefix": "234fe75feae8",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "234fe75feae8b6c118fddaa4a32554fa2f85796d3e0cb9e67d646f70cba3c1b8"
     },
     {
       "id": "S2-09",
@@ -320,11 +328,11 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/licenses-scene-v1.webp",
-      "state": "candidato-generado-pendiente-aprobacion",
-      "visualQA": "PENDIENTE",
+      "state": "aprobado-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
-      "approved": false,
+      "approved": true,
       "deliveryFilename": "s2-09-licenses-scene-v1.webp",
       "dimension": {
         "width": 1536,
@@ -333,7 +341,8 @@
       "mode": "RGBA",
       "bytes": 279900,
       "sha256Prefix": "4b06c2f1ee6b",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "4b06c2f1ee6b426e1122d646dd30f5558dd99b7c9cc71159d85b4a2150ed9e09"
     },
     {
       "id": "S2-10",
@@ -352,11 +361,11 @@
       ],
       "background": "transparente-canal-alfa-obligatorio",
       "proposedAsset": "assets/candidates/crystal-world/s2/addons-scene-v1.webp",
-      "state": "candidato-generado-pendiente-aprobacion",
-      "visualQA": "PENDIENTE",
+      "state": "aprobado-pendiente-integracion",
+      "visualQA": "APROBADO-USUARIO",
       "functionalQA": "NO-VERIFICADO",
       "keepOriginal": true,
-      "approved": false,
+      "approved": true,
       "deliveryFilename": "s2-10-addons-scene-v1.webp",
       "dimension": {
         "width": 1536,
@@ -365,24 +374,46 @@
       "mode": "RGBA",
       "bytes": 324146,
       "sha256Prefix": "3ebe1b4ca0f0",
-      "inRepository": false
+      "inRepository": false,
+      "sha256": "3ebe1b4ca0f05862b7827e32db94dbe4c2427c54f846319fac3beed42e69b366"
     }
   ],
   "counts": {
     "inventoried": 10,
     "candidatesProducedLocally": 10,
     "alphaVerifiedLocally": 10,
-    "approved": 5,
-    "pendingApproval": 5,
+    "approved": 10,
+    "pendingApproval": 0,
     "integrated": 0,
     "published": 0
   },
-  "status": "S2-10-CANDIDATOS-LOCALES-5-APROBADOS-5-PENDIENTES-INTEGRACION",
+  "status": "S2-10-DE-10-APROBADAS-PENDIENTE-INTEGRACION-EN-MAIN",
   "delivery": {
     "zip": "Vecidya-CrystalWorld-S2-LoteCompleto.zip",
     "gallery": "galeria-s2.html",
     "installScript": "Instalar-S2-Lote.ps1",
     "inRepository": false,
     "contents": "10 WebP RGBA 1536x1024, 10 thumbnails, SHA256, vista previa e instalador; catálogo no modificado"
+  },
+  "approval": {
+    "status": "APROBADO-USUARIO",
+    "date": "2026-11-23",
+    "scope": "10 de 10 escenas",
+    "evidence": "El usuario aprobó expresamente Inicio, Vecindario, Servicios, Aprende y Diagnóstico, y posteriormente el lote B completo: Nosotros, Contacto, Únete, Licencias y Herramientas"
+  },
+  "sourceIntegrity": {
+    "status": "PASS-PAQUETE",
+    "verifiedAt": "2026-11-23",
+    "method": "SHA-256 recomputado contra ZIP por cada uno de diez candidatos",
+    "previewCount": 10,
+    "bytesVerified": 10,
+    "approvalDoesNotCertifyDeployment": true
+  },
+  "activation": {
+    "state": "PENDIENTE-EJECUCION",
+    "script": "scripts/activar_s2.mjs",
+    "requires": "20 archivos y SHA256 de 10 candidatos; 10 aprobaciones explícitas",
+    "preserveOriginals": true,
+    "autoDeploy": false
   }
 }
