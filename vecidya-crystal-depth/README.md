@@ -188,3 +188,11 @@ Revisar `/` y `/biblioteca`, todos los iconos, la galería y sus enlaces. Tras e
 Desde el 23 de noviembre de 2026, la biblioteca mantiene una copia propia de los 140 recursos visuales catalogados en `assets/library-assets/`. El HTML, el catálogo y las recetas visuales consumen exclusivamente esas rutas locales; el build ya no copia recursos desde `vecidya-platform`.
 
 La plataforma conserva la fuente histórica/original de esos recursos, pero Crystal Depth no depende de su árbol de assets para ejecutarse o publicarse.
+
+## Dirección artística aprobada · Vecidya Crystal World (2026-11-23)
+
+El responsable aprobó la gramática visual de seis imágenes de referencia: azul profundo, cian y naranja luminosos, cristal tridimensional, horizonte de vecindario y escenas por capas. **Prioridad: sustituir/optimizar los 140 assets existentes por lotes antes de generar el pack nuevo de 24 assets.** Las fotos reales y la identidad oficial se preservan; la purga solo procede tras revisión de referencias y rollback. El estado actual es de planificación, no de sustitución ni de despliegue.
+
+- [Contrato artístico aprobado](docs/CRYSTAL-WORLD-ART-DIRECTION.md)
+- [Roadmap de sustitución de assets](docs/ROADMAP-SUSTITUCION-ASSETS.md)
+- [Clasificación actual de los 140 assets](docs/CLASIFICACION-ASSETS.md)
