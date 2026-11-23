@@ -1,0 +1,256 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-11-23",
+  "phase": "S3",
+  "status": "INVENTARIO-12-12-ABIERTO-SIN-SUSTITUCIONES",
+  "scope": "iconografía operativa e ilustrativa",
+  "summary": {
+    "total": 12,
+    "svgFunctional": 9,
+    "largeIllustrations": 3,
+    "visualReviewed": 0,
+    "approved": 0,
+    "integrated": 0
+  },
+  "rules": [
+    "No convertir iconos funcionales SVG a WebP; priorizar legibilidad, accesibilidad y trazos consistentes",
+    "Ilustraciones grandes no son controles pequeños; producir como WebP alfa genuina si se sustituyen",
+    "Marcas de terceros (WhatsApp) deben conservar identidad correcta",
+    "No modificar catálogo hasta aprobación por lote y checks de integración",
+    "Los recursos de L4 funcionales permanecen en SVG o interfaz accesible, ilustraciones L5 separadas de fondos L0"
+  ],
+  "batchA": [
+    "S3-01",
+    "S3-02",
+    "S3-03",
+    "S3-04",
+    "S3-05",
+    "S3-06",
+    "S3-07",
+    "S3-08",
+    "S3-12"
+  ],
+  "batchB": [
+    "S3-09",
+    "S3-10",
+    "S3-11"
+  ],
+  "items": [
+    {
+      "id": "S3-01",
+      "original": "assets/library-assets/selected/icons/diagnostic-business.svg",
+      "originalPreview": "assets/icons/diagnostic-business.png",
+      "name": "Diagnóstico · negocio",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-02",
+      "original": "assets/library-assets/selected/icons/diagnostic-creator.svg",
+      "originalPreview": "assets/icons/diagnostic-creator.png",
+      "name": "Diagnóstico · creador",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-03",
+      "original": "assets/library-assets/selected/icons/diagnostic-professional.svg",
+      "originalPreview": "assets/icons/diagnostic-professional.png",
+      "name": "Diagnóstico · profesional",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-04",
+      "original": "assets/library-assets/selected/icons/diagnostic-project.svg",
+      "originalPreview": "assets/icons/diagnostic-project.png",
+      "name": "Diagnóstico · proyecto",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-05",
+      "original": "assets/library-assets/selected/icons/service-digital-presence.svg",
+      "originalPreview": "assets/icons/service-digital-presence.png",
+      "name": "Servicio · presencia digital",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-06",
+      "original": "assets/library-assets/selected/icons/service-formalization.svg",
+      "originalPreview": "assets/icons/service-formalization.png",
+      "name": "Servicio · formalización",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-07",
+      "original": "assets/library-assets/selected/icons/service-structure.svg",
+      "originalPreview": "assets/icons/service-structure.png",
+      "name": "Servicio · estructura",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-08",
+      "original": "assets/library-assets/selected/icons/service-visibility.svg",
+      "originalPreview": "assets/icons/service-visibility.png",
+      "name": "Servicio · visibilidad",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-09",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-search.png",
+      "originalPreview": "assets/catalog-previews/046-ui-icon-search.webp",
+      "name": "Interfaz · búsqueda",
+      "format": "png",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-10",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-storefront-verified.webp",
+      "originalPreview": "assets/catalog-previews/047-ui-icon-storefront-verified.webp",
+      "name": "Interfaz · negocio verificado",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-11",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-vecidya-pin.webp",
+      "originalPreview": "assets/catalog-previews/048-ui-icon-vecidya-pin.webp",
+      "name": "Interfaz · ubicación Vecidya",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "decision": "revisar-y-sustituir-si-no-cumple-crystal-world",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-12",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-whatsapp.svg",
+      "originalPreview": "assets/icons/ui-icon-whatsapp.png",
+      "name": "Interfaz · WhatsApp",
+      "format": "svg",
+      "dimensions": {
+        "width": 24,
+        "height": 24,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "decision": "auditar-y-mantener-o-optimizar-sin-rasterizar",
+      "preserveOriginal": true,
+      "state": "PENDIENTE-INSPECCION-VISUAL",
+      "approved": false,
+      "integrated": false
+    }
+  ]
+}
