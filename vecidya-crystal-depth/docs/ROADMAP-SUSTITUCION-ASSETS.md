@@ -1,7 +1,7 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.1.0 · **Última actualización:** 2026-11-23  
-**Estado:** S1 integrada en GitHub (5/5); S2 iniciada con inventario de diez escenas y un piloto local no aprobado. Despliegue público de S1 sin certificar.  
+**Versión:** 1.2.0 · **Última actualización:** 2026-11-23  
+**Estado:** S1 integrada (5/5) y S2 integrada (10/10) en GitHub; S3 iniciada con inventario 12/12. Despliegue público y CI no certificados.  
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
 ## 1. Decisión y secuencia obligatoria
@@ -237,3 +237,10 @@ Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-
 - **Política de acabado:** no purgar los originales sin comprobar consumidores; no agregar las escenas al HTML real sin revisión de uso. Los assets no-fondo permanecen con alfa; L0 independiente, L1/L2/L5 ilustrativos, L4 contenido real accesible.
 
 **Definición de fase terminada:** 10/10 aprobadas, 10/10 activas en catálogo en `main`, 10/10 nuevos binarios en la biblioteca y previews disponibles, build y revisión integrada PASS. El estado de despliegue se registra de forma independiente.
+
+## Checkpoint S2 cerrado / S3 iniciada — 2026-11-23
+
+- **S2:** confirmado en `main` el commit `39ccd0bf8ab83237f25ee64bede487b96a66f470`: diez WebP activos y diez miniaturas presentes, catálogo y clasificación de 140 entradas. Usuario aprobó 10/10; originales conservados. Manifiesto actualizado a estado integrado. Despliegue público/CI no comprobados.
+- **S3:** `assets/s3-replacement-manifest.json` creado con 12 recursos exactos: nueve SVG operativos (cuatro de diagnóstico, cuatro de servicios y uno WhatsApp) y tres ilustraciones grandes (búsqueda PNG, negocio verificado WebP, pin Vecidya WebP).
+- **Dos lotes con puertas de aprobación:** lote SVG funcional (auditoría, calidad a tamaños reales, accesibilidad, marca de tercero); lote 3D (rediseño solo si es necesario, alfa real, fondos S1 claro/oscuro, tamaños de uso y consistencia Crystal World). No sustituir imágenes vectoriales con renders voluminosos en controles pequeños.
+- **Estado:** S3 0/12 revisados y 0/12 integrados; el manifiesto es un inventario verificable, no una certificación visual.
