@@ -147,3 +147,12 @@ Este rollback no borra los candidatos sin seguimiento, ni los originales y no af
 **Nueva puerta QA obligatoria por cada asset:** 1) abrir WebP original y candidato; 2) contraste lado a lado contra las seis referencias; 3) evaluar volumen 3D, iluminación, bisel cristal, perspectiva, composición y función; 4) reportar `ACEPTADO`/`REVISAR`/`RECHAZADO` individualmente; 5) solo `ACEPTADO` permite modificar catálogo, sin implicar deploy. Los tests automáticos validan bytes/rutas, no calidad artística.
 
 **Prioridad correctiva:** regenerar S1-05 como escena 3D integrada con negocio local y tarjetas de opiniones de cristal (sin reseñas ficticias presentadas como reales); rehacer encuadres móviles en vez de blur; diferenciar S1-03; volver a validar los siete recursos.
+
+
+## Puerta obligatoria S1: transparencia + semántica de L0–L5
+
+Decisión aprobada el 2026-11-23: **no-fondos = WebP RGBA/PNG alfa genuino**, fondos opacos permitidos. Para S1-05 (decoración reseñas/ubicación), producir protagonista aislado transparente con tienda, pin y paneles decorativos 3D: corresponde a L5 junto a elementos L1/L2 reutilizables. Las tarjetas de estrellas nunca sustituyen reseñas reales ni la capa funcional L4.
+
+S1-01/02 y fondos S1-03/04 pueden ser opacos L0/L1. Las variantes móviles deben ser composiciones/reencuadres funcionales sin desenfoque artificial. Exigir inspección visual individual, incluso si las pruebas de presencia, integridad y build pasan. S1 queda sin certificación de producción hasta integración y QA verificables.
+
+**Versionado:** política de calidad v1.1.0 — 2026-11-23; revisar manifest por ruta real antes de afirmar assets sustituidos.
