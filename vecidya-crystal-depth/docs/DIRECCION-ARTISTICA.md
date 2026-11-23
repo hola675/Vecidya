@@ -181,7 +181,7 @@ Usar la familia existente (Inter → Segoe UI → system-ui) sin introducir una 
 
 ### 6. Assets y Vico
 
-Solo fuentes oficiales de `vecidya-platform/public/assets/` y sus derivados controlados: no generar un Vico alternativo, no inventar fotografías de clientes, no descargar iconos de terceros sin derechos. Las 11 vistas Crystal de iconos son *propuestas*, no sustituciones oficiales. Las 140 entradas de catálogo son inventario de consulta, no autorización para usarlas todas en producción. Preservar originales, verificar resolución, formato, texto alternativo, licencia y peso de los derivados.
+Solo fuentes oficiales de `vecidya-crystal-depth/assets/library-assets/` y sus derivados controlados: no generar un Vico alternativo, no inventar fotografías de clientes, no descargar iconos de terceros sin derechos. Las 11 vistas Crystal de iconos son *propuestas*, no sustituciones oficiales. Las 140 entradas de catálogo son inventario de consulta, no autorización para usarlas todas en producción. Preservar originales, verificar resolución, formato, texto alternativo, licencia y peso de los derivados.
 
 ### 7. Matriz mínima de aceptación R1→R2
 
@@ -275,3 +275,8 @@ La aprobación final del usuario sigue pendiente para la fuerza del vidrio en am
 - v0.2: dirección artística, capas, materiales, revisión crítica y criterios de aprobación.
 
 - R1.0 (2026-11-19): decisiones aprobadas, gramática de materiales, tokens, escena, contraste, reglas de licencias y gates de aceptación para agentes. Biblioteca aún no integrada.
+
+
+### Regla de autonomía de recursos — 2026-11-23
+
+Los recursos visuales que formen parte de Crystal Depth deben existir dentro de `vecidya-crystal-depth/assets/library-assets/` antes de ser referenciados por la biblioteca. La plataforma puede conservar el original canónico, pero la biblioteca no debe depender de su ruta para renderizar, revisar o publicar.
