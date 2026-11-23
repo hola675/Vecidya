@@ -265,3 +265,11 @@ El responsable decidió explícitamente **regenerar desde cero todos los doce as
 - **Nota de diseño:** SVG compacto con volumen por gradientes para L4 funcional y escenas vectoriales más detalladas para L5. La funcionalidad real permanece HTML/CSS; no incrustar contenido o botones interactivos en una ilustración.
 
 **No declarar S3 cerrada en GitHub hasta confirmar 12/12 referencias activas, 12/12 SVG presentes en destino y miniaturas/referencias válidas y build.**
+
+## Incidencia S3 — QA artístico rechazado y política de ahorro (2026-11-23)
+
+**Decisión correctiva:** los doce SVG creados en el paquete `Vecidya-CrystalWorld-S3-12-Assets-Nuevos.zip` se RECHAZAN. Su validación XML, rasterización y hashes no acreditaban fidelidad visual. No usar `Instalar-y-Activar-S3.ps1`, no sustituir catálogo ni eliminar originales. Se documentó en `assets/s3-replacement-manifest.json`.
+
+**Protocolo obligatorio antes de gastar generaciones de imágenes:** (1) revisar fuentes exactas, seis referencias aprobadas y tamaños/roles reales; (2) redactar matriz de correspondencia del inventario canónico con criterios visuales medibles; (3) utilizar un único piloto solo cuando sea indispensable, evitar láminas ambiguas con etiquetas/activos inventados; (4) revisar cada imagen generada antes de mostrarla o convertirla en asset, descartando automáticamente cualquier fallo de estilo/semántica; (5) no repetir generaciones sin un diagnóstico específico del error; (6) procesar por lote únicamente los candidatos que superen el gate y pedir aprobación artística antes de integración. El objetivo es minimizar usos innecesarios de generación.
+
+**Criterio por capa:** SVG L4 funcional puede seguir siendo vectorial pero requiere una gramática pulida y coherente sin sustituir indebidamente un control por una ilustración pesada; L5 necesita volumen y materiales Crystal World genuinos, alfa real, QA sobre fondo claro/oscuro. No confundir la lámina de presentación con doce assets independientes.
