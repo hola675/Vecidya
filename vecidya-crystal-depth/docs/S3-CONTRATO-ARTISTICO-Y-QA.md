@@ -1,6 +1,6 @@
 # S3 · Contrato artístico y QA previo — Crystal World
 
-**Versión individual:** 1.0.0 · **Última modificación:** 2026-11-23  
+**Versión individual:** 1.1.0 · **Última modificación:** 2026-11-23  
 **Estado:** especificación de control; **no** certifica ningún nuevo recurso.  
 **Fuentes:** seis referencias Crystal World aprobadas por el responsable, S1/S2 aprobadas y visibles en Cloudflare Pages, inventario `assets/s3-replacement-manifest.json`.
 
@@ -57,3 +57,22 @@ Comparar **contra los seis referentes aprobados** y al menos dos escenas S1/S2 y
 ## Historial resumido
 
 - **1.0.0 — 2026-11-23:** contrato de calidad, mapa semántico 12/12 y política de gasto mínimo antes de producir S3.
+
+## 6. Auditoría reproducible antes de generar
+
+El nuevo script `scripts/auditar_s3_originales.mjs` inspecciona las doce rutas S3 del catálogo, las doce vistas previas y los tamaños relevantes. Genera una galería local (sin tocar imágenes ni catálogo):
+
+```powershell
+cd D:\Proyectos\Vecidya
+git pull --ff-only origin main
+cd .\vecidya-crystal-depth
+node scripts/auditar_s3_originales.mjs
+Start-Process .\qa\s3\originales\index.html
+```
+
+La prueba aún **no ha sido ejecutada en el equipo del usuario**. No marcar como PASS antes de obtener la salida. Los ocho iconos de diagnóstico y servicios son SVG 48×48, WhatsApp SVG 24×24, y las tres ilustraciones principales tienen 1254×1254.
+
+**Hallazgo de arquitectura:** `vecidya-platform/app/assets/public-assets.ts` mapea estos mismos recursos originales. Una activación en `vecidya-crystal-depth/assets/library-catalog.js` cambia la biblioteca únicamente, no el consumo de la plataforma. La migración a la aplicación real debe constituir una fase separada con regresión y rollback, y los símbolos funcionales y externos deben retener su semántica. Verificar el uso exacto de cada recurso antes de reemplazar llamadas de producción.
+
+## Historial
+- **1.1.0 — 2026-11-23:** auditoría previa reproducible y dependencia con el mapeo de assets de la plataforma.
