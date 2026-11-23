@@ -174,3 +174,26 @@ Start-Process ".\qa\s1-v3\index.html"
 El modo por defecto verifica 7 candidatos v3, cabecera RIFF/WEBP, dimensiones cuando el formato VP8X las declara, indicador alfa VP8X para S1-05 y presencia de las cinco miniaturas y rutas originales en catálogo. `--stage` crea una galería de QA independiente con comprobaciones visuales de contraste sobre claro/oscuro y texto HTML, sin activar nada. El argumento `--apply` está expresamente bloqueado; el script viejo `activar_s1.mjs` permanece bloqueado hasta aceptación artística. La galería es inspección manual, no certificación automática de accesibilidad ni de contenido real.
 
 **Estado**: cinco sustituciones finales **pendientes** de montaje visual aprobado y registro de conformidad, aunque el usuario haya confirmado `verify_s1.py PASS 7/7`. Mantener intactas las referencias anteriores en `main`; conservar candidatos v1 como material de rollback/historia hasta completar migración y limpieza coordinada.
+
+## S1 v3 — aprobación visual e integración segura (2026-11-23)
+
+**Aprobación visual:** el usuario compartió captura de la galería de siete recursos y respondió «aprobado». Se registra aprobación artística de los siete candidatos v3, pero NO publicación ni certificado E2E. Los siete hashes del paquete ZIP fueron verificados, igual que la verificación técnica 7/7 comunicada por el usuario.
+
+**Estado remoto:** en la última comprobación, main conservaba los binarios v1 y carecía de los nuevos v2/v3. No activar referencias a rutas faltantes.
+
+### Activación local, tras sincronizar main
+
+```powershell
+cd D:\Proyectos\Vecidya
+git pull --ff-only origin main
+cd .\vecidya-crystal-depth
+node scripts/activar_s1_v3.mjs
+node scripts/activar_s1_v3.mjs --apply
+node scripts/build-cloudflare.mjs
+git status --short
+git diff --check
+```
+
+El nuevo script comprueba la aprobación del manifiesto, 7 SHA-256, formatos y miniaturas; conserva los originales, copia una salvaguarda del catálogo y clasificación en `qa/s1-v3/backup-before-activation`, instala los siete activos de biblioteca y actualiza cinco referencias. **No hace commit, push ni deploy**. La revisión real en navegador y el test final de producción quedan pendientes.
+
+No usar `scripts/activar_s1.mjs` de v1. S1 solo se marca como integrada cuando los binarios y el catálogo actualizado existan realmente en main y las comprobaciones posteriores estén documentadas.
