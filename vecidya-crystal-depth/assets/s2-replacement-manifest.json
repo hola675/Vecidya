@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "lastUpdated": "2026-11-23",
   "phase": "S2",
   "title": "Escenas narrativas Crystal World",
@@ -32,19 +32,17 @@
   },
   "pilot": {
     "id": "S2-01",
-    "candidateFile": "s2-01-home-scene-candidato-v1.webp",
-    "format": "WEBP RGBA",
+    "candidateFile": "s2-01-home-scene-v1.webp",
+    "format": "WebP RGBA",
     "dimensions": {
       "width": 1536,
       "height": 1024
     },
-    "sizeBytes": 384600,
-    "sha256": "b5f69dcfdf66c36df3edfe20e41598b63559c4cae14105f0f76e52bc962f416b",
-    "alphaTransparentPixelFraction": 0.366,
-    "state": "aprobado-por-usuario",
-    "inRepository": false,
-    "assetsReplaced": 0,
-    "approved": true
+    "sizeBytes": 376646,
+    "sha256": "a1c00c8f2b6235e54593d79f48a77bf3b47ad42d9ac84502fc07f1f7c2532439",
+    "approved": true,
+    "state": "aprobado-en-paquete-S2-fase-1",
+    "inRepository": false
   },
   "items": [
     {
@@ -393,7 +391,14 @@
     "gallery": "galeria-s2.html",
     "installScript": "Instalar-S2-Lote.ps1",
     "inRepository": false,
-    "contents": "10 WebP RGBA 1536x1024, 10 thumbnails, SHA256, vista previa e instalador; catálogo no modificado"
+    "contents": "10 WebP RGBA 1536x1024, 10 thumbnails, SHA256, vista previa e instalador; catálogo no modificado",
+    "finalZip": "Vecidya-CrystalWorld-S2-Integracion-Final.zip",
+    "scripts": [
+      "Instalar-S2-Lote.ps1",
+      "Finalizar-S2.ps1",
+      "scripts/activar_s2.mjs"
+    ],
+    "technicalCheck": "PASS-10-WEBP-RGBA-10-PREVIEWS-10-SHA256"
   },
   "approval": {
     "status": "APROBADO-USUARIO",
@@ -415,5 +420,11 @@
     "requires": "20 archivos y SHA256 de 10 candidatos; 10 aprobaciones explícitas",
     "preserveOriginals": true,
     "autoDeploy": false
+  },
+  "integration": {
+    "status": "PENDIENTE-COMMIT-CON-BINARIOS",
+    "nextStep": "Ejecutar Finalizar-S2.ps1 -Repositorio ... -Publicar en equipo Windows y verificar refs en GitHub",
+    "lastRemoteVerification": "main conserva referencias originales; sólo manifiesto+script+docs actualizados",
+    "doNotClaimCompleteUntil": "10 activos en main, build y previews verificados"
   }
 }
