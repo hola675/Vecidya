@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "inventario-preliminar-sin-reemplazos",
+  "status": "dos-bocetos-locales-generados-no-integrados-ni-aprobados",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -94,8 +94,27 @@
   ],
   "checks": {
     "existing": 5,
-    "candidatesProduced": 0,
+    "conceptPrototypesProduced": 2,
+    "approvedReplacementMasters": 0,
     "referencesReplaced": 0,
     "originalsDeleted": 0
-  }
+  },
+  "prototypes": [
+    {
+      "id": "S1-01",
+      "name": "crystal-world-master-dark-CANDIDATO-v1.webp",
+      "state": "boceto-local-no-integrado",
+      "size": "1672x467",
+      "acceptance": "pendiente composicion master 16:9, QA y aprobacion",
+      "inRepository": false
+    },
+    {
+      "id": "S1-02",
+      "name": "crystal-world-master-light-CANDIDATO-v1.webp",
+      "state": "boceto-local-no-integrado",
+      "size": "1672x468",
+      "acceptance": "pendiente composicion master 16:9, QA y aprobacion",
+      "inRepository": false
+    }
+  ]
 }
