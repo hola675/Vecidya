@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0",
+  "version": "1.4.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "QA-VISUAL-S1-REABIERTO-REEMPLAZOS-NO-CERTIFICADOS",
+  "status": "S1-candidatos-v3-cotejados-localmente-integracion-visual-pendiente",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -119,7 +119,7 @@
       "original": "assets/library-assets/selected/decorative/decor-reviews-location-card.png",
       "intendedCandidate": "assets/candidates/crystal-world/s1/decor-crystal-world-reviews-v1.webp",
       "purpose": "Decoración local de reseñas/ubicación",
-      "state": "rechazado-no-publicar",
+      "state": "v1-rechazado-v3-transparente-candidato-no-subido",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -139,7 +139,14 @@
       "sha256": "219af47271fda9ec64a401a784e064623aacf3474f2dece7c537cc9e4dadd327",
       "inRepository": false,
       "visualQa": "RECHAZADO",
-      "visualQaReason": "Tarjeta/icono plano con brillo artificial; incumple volumen 3D, vidrio y relación espacial Crystal World"
+      "visualQaReason": "Tarjeta/icono plano con brillo artificial; incumple volumen 3D, vidrio y relación espacial Crystal World",
+      "v3": {
+        "file": "decor-crystal-world-reviews-v3.webp",
+        "mode": "RGBA",
+        "alphaTest": "PASS",
+        "artReview": "dirección visual aprobada; export candidato pendiente revisión contextual",
+        "inRepository": false
+      }
     }
   ],
   "checks": {
@@ -152,14 +159,17 @@
     "referencesReplaced": 0,
     "originalsDeleted": 0,
     "repositoryBinaryUpload": "PENDIENTE",
-    "visualReview": "FAIL",
+    "visualReview": "revisión visual de integración pendiente",
     "visualApproved": 0,
     "visualRejected": 1,
     "visualNeedsRevision": 3,
     "locallyActivatedByUser": 5,
     "locallyActivatedNotApproved": 5,
     "remoteReferencesReplaced": 0,
-    "releaseAllowed": false
+    "releaseAllowed": false,
+    "refsReplacedOnMain": 0,
+    "package3TechnicalQA": "7/7 PASS",
+    "package3RepoUpload": "PENDIENTE"
   },
   "prototypes": [
     {
@@ -239,5 +249,31 @@
     ],
     "explicitRule": "CHECK PASS del instalador es solo integridad/presencia, nunca aprobación artística. Rechazar cualquier variante sin inspección directa individual."
   },
-  "warning": "La activación local por el usuario se produjo antes del QA artístico; revertir al menos S1-05 y verificar los demás antes de realizar commit/despliegue."
+  "warning": "La activación local por el usuario se produjo antes del QA artístico; revertir al menos S1-05 y verificar los demás antes de realizar commit/despliegue.",
+  "policy": {
+    "nonBackgroundAssets": "transparencia WebP RGBA con alfa real",
+    "backgroundAssets": "WebP RGB opaco permitido",
+    "layers": "L0 fondo; L1 escena; L2 geometría; L3 superficies; L4 HTML interactivo; L5 protagonistas aislados"
+  },
+  "v3ReviewPackage": {
+    "name": "Vecidya-CrystalWorld-S1-Revision-v3.zip",
+    "files": 7,
+    "QA": "PASS-tecnico-local",
+    "distribution": "archivo de conversación; no está en el repositorio",
+    "masterAssetIds": [
+      "S1-01",
+      "S1-02",
+      "S1-03",
+      "S1-04",
+      "S1-05"
+    ],
+    "mobileAssetIds": [
+      "S1-01-mobile",
+      "S1-02-mobile"
+    ],
+    "s103": "Fondo 1.png aprobado como referencia, nuevo candidato panorámico diferenciado v2",
+    "s105": "Ilustración transparente de tienda+reseñas aprobada como dirección artística por usuario; export WebP RGBA v3 necesita QA de render real",
+    "s105TransparentPercent": 45.83,
+    "releaseAllowed": false
+  }
 }
