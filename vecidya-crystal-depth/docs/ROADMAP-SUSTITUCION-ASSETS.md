@@ -156,3 +156,21 @@ Decisión aprobada el 2026-11-23: **no-fondos = WebP RGBA/PNG alfa genuino**, fo
 S1-01/02 y fondos S1-03/04 pueden ser opacos L0/L1. Las variantes móviles deben ser composiciones/reencuadres funcionales sin desenfoque artificial. Exigir inspección visual individual, incluso si las pruebas de presencia, integridad y build pasan. S1 queda sin certificación de producción hasta integración y QA verificables.
 
 **Versionado:** política de calidad v1.1.0 — 2026-11-23; revisar manifest por ruta real antes de afirmar assets sustituidos.
+
+
+## S1 v3: galería QA aislada (2026-11-23)
+
+Se añadió `scripts/revisar_s1_v3.mjs` para inspección **sin activar** ni modificar el catálogo:
+
+```powershell
+cd D:\Proyectos\Vecidya
+git pull --ff-only origin main
+cd vecidya-crystal-depth
+node scripts/revisar_s1_v3.mjs
+node scripts/revisar_s1_v3.mjs --stage
+Start-Process ".\qa\s1-v3\index.html"
+```
+
+El modo por defecto verifica 7 candidatos v3, cabecera RIFF/WEBP, dimensiones cuando el formato VP8X las declara, indicador alfa VP8X para S1-05 y presencia de las cinco miniaturas y rutas originales en catálogo. `--stage` crea una galería de QA independiente con comprobaciones visuales de contraste sobre claro/oscuro y texto HTML, sin activar nada. El argumento `--apply` está expresamente bloqueado; el script viejo `activar_s1.mjs` permanece bloqueado hasta aceptación artística. La galería es inspección manual, no certificación automática de accesibilidad ni de contenido real.
+
+**Estado**: cinco sustituciones finales **pendientes** de montaje visual aprobado y registro de conformidad, aunque el usuario haya confirmado `verify_s1.py PASS 7/7`. Mantener intactas las referencias anteriores en `main`; conservar candidatos v1 como material de rollback/historia hasta completar migración y limpieza coordinada.
