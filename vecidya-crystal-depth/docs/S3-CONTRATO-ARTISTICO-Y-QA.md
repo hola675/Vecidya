@@ -1,6 +1,6 @@
 # S3 · Contrato artístico y QA previo — Crystal World
 
-**Versión individual:** 1.1.0 · **Última modificación:** 2026-11-23  
+**Versión individual:** 1.2.0 · **Última modificación:** 2026-11-23  
 **Estado:** especificación de control; **no** certifica ningún nuevo recurso.  
 **Fuentes:** seis referencias Crystal World aprobadas por el responsable, S1/S2 aprobadas y visibles en Cloudflare Pages, inventario `assets/s3-replacement-manifest.json`.
 
@@ -76,3 +76,15 @@ La prueba aún **no ha sido ejecutada en el equipo del usuario**. No marcar como
 
 ## Historial
 - **1.1.0 — 2026-11-23:** auditoría previa reproducible y dependencia con el mapeo de assets de la plataforma.
+
+## 7. Evaluación del lote v2 (2026-11-23)
+
+Se preparó un lote local de **12 archivos independientes** con alpha real (9 SVG + 3 WebP), una galería clara/oscura, SHA-256 por recurso y reporte de QA. El paquete se llama `Vecidya-CrystalWorld-S3-Lote-v2-QA.zip` y **no se subió ni activó** en el repositorio.
+
+**Control técnico:** 12/12 válidos. **Control artístico independiente:** S3-09 Búsqueda y S3-10 Negocio verificado son CGI individuales prometedores, pendientes de aprobación visual; los nueve SVG pequeños todavía se ven demasiado planos respecto a S1/S2, y S3-11 Ubicación requiere un objeto con más volumen y contraste con el signo oficial. Por tanto **S3 0/12 aprobados, 0/12 activados**. No publicar el lote como acabado.
+
+### Recomendación de producción
+
+Abordar S3-01–08 y S3-12 como **iconos 3D específicos por semántica**, con un sistema dual: master volumétrico con alfa en tamaño suficiente y una versión simplificada y accesible de control L4 a 24–48 px; no usar una sola geometría SVG plana para pretender calidad de ilustración 3D. S3-11 debe preservar identidad sin inventar logo. Sólo generar recursos que no puedan aprovechar material ya producido y aprobado. Comparar cada uno sobre fondos oscuro y claro antes de integración.
+
+- **1.2.0 — 2026-11-23:** evaluación artística de candidatos v2, 10 bloqueados y 2 CGI por revisar, sin integraciones.
