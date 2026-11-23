@@ -207,3 +207,21 @@ No usar `scripts/activar_s1.mjs` de v1. S1 solo se marca como integrada cuando l
 - **Secuencia operativa:** validar piloto con las seis referencias; componer con fondos S1 y HTML L4; corregir alfa/encuadre si procede; producir los otros cuatro del lote prioritario; aprobar uno por uno; continuar con los cinco restantes; integrar con pruebas de build y Cloudflare.
 - **Política invariable:** ilustraciones L1/L2/L5 transparentes; L0 usa fondos S1; L4 permanece HTML/CSS accesible; no generar Vico alternativo.
 - **S1:** cinco recursos activos en main y siete binarios v3 presentes; pendiente la verificación del despliegue público en Cloudflare.
+
+## S2 — producción por lotes 10/10 (2026-11-23)
+
+- **Generación/optimización local:** diez escenas WebP **RGBA 1536×1024** creadas y verificadas tras la conversión, 10 miniaturas, manifiesto con SHA-256, galería HTML sobre damero/claro/oscuro e instalador PowerShell sin activación de catálogo.
+- **Lote A (5/5):** Inicio, Vecindario, Servicios, Aprende y Diagnóstico — **aprobación artística expresada por el usuario**. 
+- **Lote B (5/5 producidos, 0/5 aprobados):** Nosotros, Contacto, Únete, Licencias y Herramientas — deben recibir aprobación o rechazo explícito del usuario.
+- **Integración:** 0/10 sustituciones S2 en catálogo a la fecha de este registro. Los WebP se distribuyen en `Vecidya-CrystalWorld-S2-LoteCompleto.zip` desde el chat; aún no constan subidos al repositorio.
+- **Puerta de seguridad:** no activar S2 completo ni retirar los originales hasta aprobar el lote B, verificar ambas variantes de fondo, accesibilidad y build. El hecho de generar todos los archivos **no equivale** a cerrar su integración.
+- **Política vigente:** transparencias para no-fondos, fondos L0 por separado, escenas en L1/L2/L5, interfaz y datos en HTML L4; imágenes de naturaleza ilustrativa no representan resultados reales.
+
+### Instalación del lote de candidatos
+
+```powershell
+cd "$HOME\Downloads\Vecidya-CrystalWorld-S2-LoteCompleto"
+.\Instalar-S2-Lote.ps1 -Repositorio "D:\Proyectos\Vecidya"
+```
+
+Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-256; deja intactas las referencias del catálogo. Consultar el manifiesto S2 para seguimiento y aprobación selectiva.
