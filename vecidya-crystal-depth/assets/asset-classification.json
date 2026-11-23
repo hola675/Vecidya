@@ -1412,120 +1412,124 @@
       }
     },
     {
-      "id": "selected/illustrations/about-scene.webp",
+      "id": "crystal-world/s2/s2-06-about-scene-v1.webp",
       "name": "Escena · nosotros",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/about-scene.webp",
-      "preview": "assets/catalog-previews/050-about-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-06-about-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-06-about-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 423,
-        "height": 361,
-        "aspectRatio": 1.172
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/about-scene.webp"
     },
     {
-      "id": "selected/illustrations/addons-scene.webp",
+      "id": "crystal-world/s2/s2-10-addons-scene-v1.webp",
       "name": "Escena · herramientas digitales",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/addons-scene.webp",
-      "preview": "assets/catalog-previews/051-addons-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-10-addons-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-10-addons-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 437,
-        "height": 271,
-        "aspectRatio": 1.613
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/addons-scene.webp"
     },
     {
-      "id": "selected/illustrations/contact-scene.webp",
+      "id": "crystal-world/s2/s2-07-contact-scene-v1.webp",
       "name": "Escena · contacto",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/contact-scene.webp",
-      "preview": "assets/catalog-previews/052-contact-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-07-contact-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-07-contact-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 384,
-        "height": 287,
-        "aspectRatio": 1.338
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/contact-scene.webp"
     },
     {
-      "id": "selected/illustrations/diagnostic-scene.webp",
+      "id": "crystal-world/s2/s2-05-diagnostic-scene-v1.webp",
       "name": "Escena · diagnóstico",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/diagnostic-scene.webp",
-      "preview": "assets/catalog-previews/053-diagnostic-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-05-diagnostic-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-05-diagnostic-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 433,
-        "height": 314,
-        "aspectRatio": 1.379
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/diagnostic-scene.webp"
     },
     {
       "id": "selected/illustrations/diagnostic-status-developing.webp",
@@ -1831,33 +1835,34 @@
       }
     },
     {
-      "id": "selected/illustrations/home-scene.webp",
+      "id": "crystal-world/s2/s2-01-home-scene-v1.webp",
       "name": "Escena · inicio",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/home-scene.webp",
-      "preview": "assets/catalog-previews/065-home-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-01-home-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-01-home-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 402,
-        "height": 266,
-        "aspectRatio": 1.511
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/home-scene.webp"
     },
     {
       "id": "selected/illustrations/home-vecidya-companion-v4.webp",
@@ -2157,33 +2162,34 @@
       }
     },
     {
-      "id": "selected/illustrations/join-scene.webp",
+      "id": "crystal-world/s2/s2-08-join-scene-v1.webp",
       "name": "Escena · comunidad",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/join-scene.webp",
-      "preview": "assets/catalog-previews/077-join-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-08-join-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-08-join-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 318,
-        "height": 303,
-        "aspectRatio": 1.05
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "cuadrado-o-casi",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/join-scene.webp"
     },
     {
       "id": "selected/illustrations/learn-guides/analitica-web-que-medir-en-tu-negocio.webp",
@@ -3506,120 +3512,124 @@
       }
     },
     {
-      "id": "selected/illustrations/learn-journey-scene.webp",
+      "id": "crystal-world/s2/s2-04-learn-journey-scene-v1.webp",
       "name": "Escena · aprendizaje",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/learn-journey-scene.webp",
-      "preview": "assets/catalog-previews/126-learn-journey-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-04-learn-journey-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-04-learn-journey-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 436,
-        "height": 307,
-        "aspectRatio": 1.42
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/learn-journey-scene.webp"
     },
     {
-      "id": "selected/illustrations/licenses-scene.webp",
+      "id": "crystal-world/s2/s2-09-licenses-scene-v1.webp",
       "name": "Escena · licencias",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/licenses-scene.webp",
-      "preview": "assets/catalog-previews/127-licenses-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-09-licenses-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-09-licenses-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 357,
-        "height": 337,
-        "aspectRatio": 1.059
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "cuadrado-o-casi",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/licenses-scene.webp"
     },
     {
-      "id": "selected/illustrations/neighborhood-scene.webp",
+      "id": "crystal-world/s2/s2-02-neighborhood-scene-v1.webp",
       "name": "Escena · vecindario",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/neighborhood-scene.webp",
-      "preview": "assets/catalog-previews/128-neighborhood-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-02-neighborhood-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-02-neighborhood-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 399,
-        "height": 309,
-        "aspectRatio": 1.291
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/neighborhood-scene.webp"
     },
     {
-      "id": "selected/illustrations/services-scene.webp",
+      "id": "crystal-world/s2/s2-03-services-scene-v1.webp",
       "name": "Escena · servicios",
       "category": "Escenas",
-      "source": "assets/library-assets/selected/illustrations/services-scene.webp",
-      "preview": "assets/catalog-previews/129-services-scene.webp",
+      "source": "assets/library-assets/crystal-world/s2/s2-03-services-scene-v1.webp",
+      "preview": "assets/catalog-previews/s2-03-services-scene-preview.webp",
       "format": "webp",
       "dimensions": {
-        "width": 406,
-        "height": 259,
-        "aspectRatio": 1.568
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
       },
       "design": {
         "family": "escenas-narrativas",
         "visualRole": "ilustracion",
         "aspect": "horizontal",
-        "material": "focal"
+        "material": "crystal-world-3d-rgba",
+        "layer": "L1-L2-L5"
       },
       "function": {
         "context": "marketing",
         "purpose": "escena-seccion"
       },
       "review": {
-        "status": "pendiente-inspeccion-visual-individual",
-        "flags": [
-          "escena-baja-resolucion-no-ampliar-como-hero"
-        ]
-      }
+        "status": "aprobacion-visual-usuario-s2",
+        "flags": [],
+        "date": "2026-11-23"
+      },
+      "originalSource": "assets/library-assets/selected/illustrations/services-scene.webp"
     },
     {
       "id": "selected/illustrations/vico-addons.webp",
