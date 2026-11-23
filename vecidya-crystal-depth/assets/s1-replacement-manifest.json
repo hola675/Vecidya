@@ -1,0 +1,101 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-11-23",
+  "scope": "S0-S1 primeros fondos Crystal World",
+  "status": "inventario-preliminar-sin-reemplazos",
+  "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
+  "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
+  "items": [
+    {
+      "id": "S1-03",
+      "original": "assets/library-assets/selected/backgrounds/bg-hero-soft-map-wave.webp",
+      "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-hero-light-v1.webp",
+      "purpose": "Referencia de fondo ambiental de portada",
+      "state": "pendiente-generacion",
+      "currentReference": "catalogado; verificar consumidores antes de sustitucion",
+      "keepOriginal": true,
+      "replaceOnlyAfter": [
+        "qa-visual",
+        "qa-responsive",
+        "qa-accessibility",
+        "qa-performance",
+        "qa-links",
+        "approval"
+      ]
+    },
+    {
+      "id": "S1-04",
+      "original": "assets/library-assets/selected/backgrounds/bg-network-route-pins.webp",
+      "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-network-v1.webp",
+      "purpose": "Red de caminos y descubrimiento local",
+      "state": "pendiente-generacion",
+      "currentReference": "catalogado; verificar consumidores antes de sustitucion",
+      "keepOriginal": true,
+      "replaceOnlyAfter": [
+        "qa-visual",
+        "qa-responsive",
+        "qa-accessibility",
+        "qa-performance",
+        "qa-links",
+        "approval"
+      ]
+    },
+    {
+      "id": "S1-01",
+      "original": "assets/library-assets/selected/backgrounds/bg-section-map-wave-dark.webp",
+      "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-master-dark-v1.webp",
+      "purpose": "Fondo panorámico oscuro, prioridad maestra",
+      "state": "pendiente-generacion",
+      "currentReference": "catalogado; verificar consumidores antes de sustitucion",
+      "keepOriginal": true,
+      "replaceOnlyAfter": [
+        "qa-visual",
+        "qa-responsive",
+        "qa-accessibility",
+        "qa-performance",
+        "qa-links",
+        "approval"
+      ]
+    },
+    {
+      "id": "S1-02",
+      "original": "assets/library-assets/selected/backgrounds/bg-soft-map-orange-blue.webp",
+      "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-master-light-v1.webp",
+      "purpose": "Fondo panorámico claro, prioridad maestra",
+      "state": "pendiente-generacion",
+      "currentReference": "catalogado; verificar consumidores antes de sustitucion",
+      "keepOriginal": true,
+      "replaceOnlyAfter": [
+        "qa-visual",
+        "qa-responsive",
+        "qa-accessibility",
+        "qa-performance",
+        "qa-links",
+        "approval"
+      ]
+    },
+    {
+      "id": "S1-05",
+      "original": "assets/library-assets/selected/decorative/decor-reviews-location-card.png",
+      "intendedCandidate": "assets/candidates/crystal-world/s1/decor-crystal-world-reviews-v1.webp",
+      "purpose": "Decoración local de reseñas/ubicación",
+      "state": "pendiente-generacion",
+      "currentReference": "catalogado; verificar consumidores antes de sustitucion",
+      "keepOriginal": true,
+      "replaceOnlyAfter": [
+        "qa-visual",
+        "qa-responsive",
+        "qa-accessibility",
+        "qa-performance",
+        "qa-links",
+        "approval"
+      ]
+    }
+  ],
+  "checks": {
+    "existing": 5,
+    "candidatesProduced": 0,
+    "referencesReplaced": 0,
+    "originalsDeleted": 0
+  }
+}
