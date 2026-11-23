@@ -225,3 +225,15 @@ cd "$HOME\Downloads\Vecidya-CrystalWorld-S2-LoteCompleto"
 ```
 
 Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-256; deja intactas las referencias del catálogo. Consultar el manifiesto S2 para seguimiento y aprobación selectiva.
+
+## S2 — Aprobación total y proceso final de integración (2026-11-23)
+
+- **Decisión del usuario:** aprobación explícita de las diez escenas del lote A y lote B; el manifiesto S2 v1.2.0 recoge 10/10 aprobaciones individuales.
+- **QA de los bytes del ZIP:** diez SHA-256 recalculados y comparados con `manifest.json`, diez WebP RGBA 1536×1024 decodificados con Pillow, esquinas transparentes y diez miniaturas disponibles: PASS. La aprobación visual de la persona no implica certificación del despliegue.
+- **Estado de GitHub al iniciar la integración:** el catálogo aún referenciaba las diez escenas antiguas; las diez nuevas imágenes aún estaban en un ZIP externo, no en `main`. Prohibido declarar S2 integrada hasta la sincronización comprobada.
+- **Herramienta nueva:** `scripts/activar_s2.mjs`, con modo de comprobación predeterminado, `--apply` explícito, 10 hashes SHA-256, validación de 140 elementos, backups, preservación de originales, cambio de diez referencias y copia a `assets/library-assets/crystal-world/s2/`.
+- **Paquete final para Windows:** `Vecidya-CrystalWorld-S2-Integracion-Final.zip`. Contiene los veinte WebP, manifiesto de distribución, script `Instalar-S2-Lote.ps1`, orquestador `Finalizar-S2.ps1`, galería HTML y documentación. El orquestador comprueba, activa localmente, genera el build, y opcionalmente con `-Publicar` hace commit/push limitado a rutas S2. No ejecuta despliegue Cloudflare.
+- **Pasos:** actualizar `main` en el equipo → descomprimir ZIP → `./Finalizar-S2.ps1 -Repositorio D:\Proyectos\Vecidya` → inspeccionar la biblioteca → repetir con `-Publicar` → verificar 10 nuevas rutas en GitHub y la publicación por separado.
+- **Política de acabado:** no purgar los originales sin comprobar consumidores; no agregar las escenas al HTML real sin revisión de uso. Los assets no-fondo permanecen con alfa; L0 independiente, L1/L2/L5 ilustrativos, L4 contenido real accesible.
+
+**Definición de fase terminada:** 10/10 aprobadas, 10/10 activas en catálogo en `main`, 10/10 nuevos binarios en la biblioteca y previews disponibles, build y revisión integrada PASS. El estado de despliegue se registra de forma independiente.
