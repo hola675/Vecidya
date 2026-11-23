@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Vecidya Crystal World · activar S2 · v1.0.0 · 2026-11-23
+// Vecidya Crystal World · activar S2 · v1.0.1 · 2026-11-23
 // --check (por defecto): validación sin cambios. --apply: integra diez escenas ya aprobadas con backup.
 import {readFile,writeFile,copyFile,stat,mkdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -42,7 +42,7 @@ for(const item of mf.items){
  cls.dimensions={width:1536,height:1024,aspectRatio:1.5};
  cls.design={...cls.design,material:'crystal-world-3d-rgba',layer:'L1-L2-L5'};
  cls.review={status:'aprobacion-visual-usuario-s2',flags:[],date:'2026-11-23'};
- validated.push({id:item.id,src,dest:activePrefix+newFile});
+ validated.push({id:item.id,src:source,dest:activePrefix+newFile});
  console.log('PASS '+item.id+' '+newFile);
 }
 if(new Set(validated.map(x=>x.dest)).size!==10)throw Error('Rutas duplicadas');
