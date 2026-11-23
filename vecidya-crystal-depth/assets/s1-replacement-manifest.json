@@ -1,8 +1,8 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "S1-produccion-local-terminada-integracion-pendiente",
+  "status": "QA-VISUAL-S1-REABIERTO-REEMPLAZOS-NO-CERTIFICADOS",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -11,7 +11,7 @@
       "original": "assets/library-assets/selected/backgrounds/bg-hero-soft-map-wave.webp",
       "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-hero-light-v1.webp",
       "purpose": "Referencia de fondo ambiental de portada",
-      "state": "candidato-generado-local-pendiente-instalacion-revision",
+      "state": "candidato-no-certificado",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -29,14 +29,16 @@
       },
       "bytes": 66064,
       "sha256": "e8972965af327fb258b22c1bcdf58c57c334243533b1177d6d371170fcc396a7",
-      "inRepository": false
+      "inRepository": false,
+      "visualQa": "REVISAR",
+      "visualQaReason": "Muy cercano al maestro claro; debe diferenciarse semántica y visualmente para no duplicar assets"
     },
     {
       "id": "S1-04",
       "original": "assets/library-assets/selected/backgrounds/bg-network-route-pins.webp",
       "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-network-v1.webp",
       "purpose": "Red de caminos y descubrimiento local",
-      "state": "candidato-generado-local-pendiente-instalacion-revision",
+      "state": "candidato-no-certificado",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -54,14 +56,16 @@
       },
       "bytes": 143998,
       "sha256": "4bcdd976cd225742e0984a9aef882e9fb0a2b95279c20c37622d5b8c61354b35",
-      "inRepository": false
+      "inRepository": false,
+      "visualQa": "CANDIDATO",
+      "visualQaReason": "Vecindario y nodos espaciales coherentes; pendiente examen a diferentes escalas"
     },
     {
       "id": "S1-01",
       "original": "assets/library-assets/selected/backgrounds/bg-section-map-wave-dark.webp",
       "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-master-dark-v1.webp",
       "purpose": "Fondo panorámico oscuro, prioridad maestra",
-      "state": "candidato-generado-local-pendiente-instalacion-revision",
+      "state": "candidato-no-certificado",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -79,14 +83,16 @@
       },
       "bytes": 130334,
       "sha256": "4818be1f7e0981236f1b99bb9fcf72659b9256bba84cad659566f87b68e264fb",
-      "inRepository": false
+      "inRepository": false,
+      "visualQa": "CANDIDATO",
+      "visualQaReason": "Composición nocturna 3D coherente con paleta, vidrio, rutas y profundidad; falta prueba de contraste responsive"
     },
     {
       "id": "S1-02",
       "original": "assets/library-assets/selected/backgrounds/bg-soft-map-orange-blue.webp",
       "intendedCandidate": "assets/candidates/crystal-world/s1/bg-crystal-world-master-light-v1.webp",
       "purpose": "Fondo panorámico claro, prioridad maestra",
-      "state": "candidato-generado-local-pendiente-instalacion-revision",
+      "state": "candidato-no-certificado",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -104,14 +110,16 @@
       },
       "bytes": 105350,
       "sha256": "4fad34695d3dfa0018c2b4963e79ba201097dc6f892eb871d441c399bdd70380",
-      "inRepository": false
+      "inRepository": false,
+      "visualQa": "CANDIDATO",
+      "visualQaReason": "Composición clara 3D coherente; falta verificar contraste de texto en uso real"
     },
     {
       "id": "S1-05",
       "original": "assets/library-assets/selected/decorative/decor-reviews-location-card.png",
       "intendedCandidate": "assets/candidates/crystal-world/s1/decor-crystal-world-reviews-v1.webp",
       "purpose": "Decoración local de reseñas/ubicación",
-      "state": "candidato-generado-local-pendiente-instalacion-revision",
+      "state": "rechazado-no-publicar",
       "currentReference": "catalogado; verificar consumidores antes de sustitucion",
       "keepOriginal": true,
       "replaceOnlyAfter": [
@@ -129,7 +137,9 @@
       },
       "bytes": 92862,
       "sha256": "219af47271fda9ec64a401a784e064623aacf3474f2dece7c537cc9e4dadd327",
-      "inRepository": false
+      "inRepository": false,
+      "visualQa": "RECHAZADO",
+      "visualQaReason": "Tarjeta/icono plano con brillo artificial; incumple volumen 3D, vidrio y relación espacial Crystal World"
     }
   ],
   "checks": {
@@ -141,7 +151,15 @@
     "approvedReplacementMasters": 0,
     "referencesReplaced": 0,
     "originalsDeleted": 0,
-    "repositoryBinaryUpload": "PENDIENTE"
+    "repositoryBinaryUpload": "PENDIENTE",
+    "visualReview": "FAIL",
+    "visualApproved": 0,
+    "visualRejected": 1,
+    "visualNeedsRevision": 3,
+    "locallyActivatedByUser": 5,
+    "locallyActivatedNotApproved": 5,
+    "remoteReferencesReplaced": 0,
+    "releaseAllowed": false
   },
   "prototypes": [
     {
@@ -177,5 +195,49 @@
       "inRepository": false
     }
   ],
-  "distribution": "Paquete descargable: Vecidya-CrystalWorld-S1-Candidatos.zip, generado como artefacto de conversacion; GitHub solo contiene manifiesto y documentacion hasta integrar binarios."
+  "distribution": "Paquete descargable: Vecidya-CrystalWorld-S1-Candidatos.zip, generado como artefacto de conversacion; GitHub solo contiene manifiesto y documentacion hasta integrar binarios.",
+  "visualReview": {
+    "basis": "Inspección directa de 7 archivos WebP del paquete de conversación frente a las 6 referencias aprobadas del usuario",
+    "reviewedAt": "2026-11-23",
+    "reviewedAssets": 7,
+    "decisions": [
+      {
+        "id": "S1-01",
+        "result": "CANDIDATO",
+        "reason": "Composición nocturna 3D coherente con paleta, vidrio, rutas y profundidad; falta prueba de contraste responsive"
+      },
+      {
+        "id": "S1-02",
+        "result": "CANDIDATO",
+        "reason": "Composición clara 3D coherente; falta verificar contraste de texto en uso real"
+      },
+      {
+        "id": "S1-03",
+        "result": "REVISAR",
+        "reason": "Muy cercano al maestro claro; debe diferenciarse semántica y visualmente para no duplicar assets"
+      },
+      {
+        "id": "S1-04",
+        "result": "CANDIDATO",
+        "reason": "Vecindario y nodos espaciales coherentes; pendiente examen a diferentes escalas"
+      },
+      {
+        "id": "S1-05",
+        "result": "RECHAZADO",
+        "reason": "Tarjeta/icono plano con brillo artificial; incumple volumen 3D, vidrio y relación espacial Crystal World"
+      },
+      {
+        "id": "S1-01-mobile",
+        "result": "CORREGIR",
+        "reason": "Reencuadre con desenfoque excesivo en región superior; requiere composición móvil propia"
+      },
+      {
+        "id": "S1-02-mobile",
+        "result": "CORREGIR",
+        "reason": "Desenfoque excesivo en región superior; requiere composición móvil propia"
+      }
+    ],
+    "explicitRule": "CHECK PASS del instalador es solo integridad/presencia, nunca aprobación artística. Rechazar cualquier variante sin inspección directa individual."
+  },
+  "warning": "La activación local por el usuario se produjo antes del QA artístico; revertir al menos S1-05 y verificar los demás antes de realizar commit/despliegue."
 }
