@@ -1,0 +1,3930 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-11-23",
+  "scope": "catalogo-autocontenido-crystal-depth",
+  "classificationMethod": "metadatos-y-rutas-del-catalogo; no certifica analisis visual de pixeles",
+  "originalCount": 140,
+  "families": {
+    "identidad-y-equipo": 9,
+    "diagnostico-y-estados": 14,
+    "funciones-y-planes": 17,
+    "fondos-y-decoracion": 5,
+    "iconografia": 12,
+    "escenas-narrativas": 10,
+    "ilustraciones-producto": 14,
+    "contenido-educativo": 48,
+    "vico": 10,
+    "redes-sociales": 1
+  },
+  "assets": [
+    {
+      "id": "about/edgar-profile.webp",
+      "name": "Equipo Vecidya · Edgar",
+      "category": "Equipo Vecidya",
+      "source": "assets/library-assets/about/edgar-profile.webp",
+      "preview": "assets/catalog-previews/001-edgar-profile.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1122,
+        "height": 1402,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "fotografia",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "presentacion-equipo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "fotografia-institucional-proteger-identidad-y-consentimiento"
+        ]
+      }
+    },
+    {
+      "id": "about/team-yoan-edgar-mobile.webp",
+      "name": "Equipo Vecidya · retrato móvil",
+      "category": "Equipo Vecidya",
+      "source": "assets/library-assets/about/team-yoan-edgar-mobile.webp",
+      "preview": "assets/catalog-previews/002-team-yoan-edgar-mobile.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 768,
+        "height": 576,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "fotografia",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "presentacion-equipo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "fotografia-institucional-proteger-identidad-y-consentimiento"
+        ]
+      }
+    },
+    {
+      "id": "about/team-yoan-edgar.webp",
+      "name": "Equipo Vecidya · equipo",
+      "category": "Equipo Vecidya",
+      "source": "assets/library-assets/about/team-yoan-edgar.webp",
+      "preview": "assets/catalog-previews/003-team-yoan-edgar.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1440,
+        "height": 1080,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "fotografia",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "presentacion-equipo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "fotografia-institucional-proteger-identidad-y-consentimiento"
+        ]
+      }
+    },
+    {
+      "id": "about/yoan-profile.webp",
+      "name": "Equipo Vecidya · Yoan",
+      "category": "Equipo Vecidya",
+      "source": "assets/library-assets/about/yoan-profile.webp",
+      "preview": "assets/catalog-previews/004-yoan-profile.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1122,
+        "height": 1402,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "fotografia",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "presentacion-equipo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "fotografia-institucional-proteger-identidad-y-consentimiento"
+        ]
+      }
+    },
+    {
+      "id": "catalog/diagnostic/presencia-en-desarrollo-regular.png",
+      "name": "Diagnóstico · presencia en desarrollo",
+      "category": "Diagnóstico",
+      "source": "assets/library-assets/catalog/diagnostic/presencia-en-desarrollo-regular.png",
+      "preview": "assets/catalog-previews/005-presencia-en-desarrollo-regular.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 600,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "resultado-general"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "catalog/diagnostic/presencia-por-fortalecer-mal.png",
+      "name": "Diagnóstico · presencia por fortalecer",
+      "category": "Diagnóstico",
+      "source": "assets/library-assets/catalog/diagnostic/presencia-por-fortalecer-mal.png",
+      "preview": "assets/catalog-previews/006-presencia-por-fortalecer-mal.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 600,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "resultado-general"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "catalog/diagnostic/presencia-solida-bien.png",
+      "name": "Diagnóstico · presencia sólida",
+      "category": "Diagnóstico",
+      "source": "assets/library-assets/catalog/diagnostic/presencia-solida-bien.png",
+      "preview": "assets/catalog-previews/007-presencia-solida-bien.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 600,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "resultado-general"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "catalog/features/communication/ia-agente-de-voz-01.png",
+      "name": "Función · agente de voz con IA",
+      "category": "Funciones · Comunicación",
+      "source": "assets/library-assets/catalog/features/communication/ia-agente-de-voz-01.png",
+      "preview": "assets/catalog-previews/008-ia-agente-de-voz-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comunicacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/communication/ia-chatbot.png",
+      "name": "Función · chatbot con IA",
+      "category": "Funciones · Comunicación",
+      "source": "assets/library-assets/catalog/features/communication/ia-chatbot.png",
+      "preview": "assets/catalog-previews/009-ia-chatbot.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comunicacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/communication/llamadas-01.png",
+      "name": "Función · llamadas",
+      "category": "Funciones · Comunicación",
+      "source": "assets/library-assets/catalog/features/communication/llamadas-01.png",
+      "preview": "assets/catalog-previews/010-llamadas-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comunicacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/communication/sms-01.png",
+      "name": "Función · mensajes SMS",
+      "category": "Funciones · Comunicación",
+      "source": "assets/library-assets/catalog/features/communication/sms-01.png",
+      "preview": "assets/catalog-previews/011-sms-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comunicacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/communication/whatsapp-01.png",
+      "name": "Función · WhatsApp",
+      "category": "Funciones · Comunicación",
+      "source": "assets/library-assets/catalog/features/communication/whatsapp-01.png",
+      "preview": "assets/catalog-previews/012-whatsapp-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comunicacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/marketing/ia-contenido-01.png",
+      "name": "Función · contenido con IA",
+      "category": "Funciones · Marketing",
+      "source": "assets/library-assets/catalog/features/marketing/ia-contenido-01.png",
+      "preview": "assets/catalog-previews/013-ia-contenido-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "marketing"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/marketing/redes-sociales-01.png",
+      "name": "Función · redes sociales",
+      "category": "Funciones · Marketing",
+      "source": "assets/library-assets/catalog/features/marketing/redes-sociales-01.png",
+      "preview": "assets/catalog-previews/014-redes-sociales-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "marketing"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/operations/api-e-integraciones.png",
+      "name": "Función · API e integraciones",
+      "category": "Funciones · Operación",
+      "source": "assets/library-assets/catalog/features/operations/api-e-integraciones.png",
+      "preview": "assets/catalog-previews/015-api-e-integraciones.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "operacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/operations/automatizaciones-01.png",
+      "name": "Función · automatizaciones",
+      "category": "Funciones · Operación",
+      "source": "assets/library-assets/catalog/features/operations/automatizaciones-01.png",
+      "preview": "assets/catalog-previews/016-automatizaciones-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "operacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/operations/crm-avanzado.png",
+      "name": "Función · CRM avanzado",
+      "category": "Funciones · Operación",
+      "source": "assets/library-assets/catalog/features/operations/crm-avanzado.png",
+      "preview": "assets/catalog-previews/017-crm-avanzado.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "operacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/features/operations/sitio-web-01.png",
+      "name": "Función · sitio web",
+      "category": "Funciones · Operación",
+      "source": "assets/library-assets/catalog/features/operations/sitio-web-01.png",
+      "preview": "assets/catalog-previews/018-sitio-web-01.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 400,
+        "height": 350,
+        "aspectRatio": 1.143
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "operacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "catalog/plans/plan-barrio.png",
+      "name": "Plan · Barrio · PNG",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-barrio.png",
+      "preview": "assets/catalog-previews/019-plan-barrio.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "catalog/plans/plan-barrio.webp",
+      "name": "Plan · Barrio · WebP",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-barrio.webp",
+      "preview": "assets/catalog-previews/020-plan-barrio.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "catalog/plans/plan-ciudad.png",
+      "name": "Plan · Ciudad · PNG",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-ciudad.png",
+      "preview": "assets/catalog-previews/021-plan-ciudad.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "catalog/plans/plan-ciudad.webp",
+      "name": "Plan · Ciudad · WebP",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-ciudad.webp",
+      "preview": "assets/catalog-previews/022-plan-ciudad.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "catalog/plans/plan-cuadra.png",
+      "name": "Plan · Cuadra · PNG",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-cuadra.png",
+      "preview": "assets/catalog-previews/023-plan-cuadra.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "catalog/plans/plan-cuadra.webp",
+      "name": "Plan · Cuadra · WebP",
+      "category": "Planes",
+      "source": "assets/library-assets/catalog/plans/plan-cuadra.webp",
+      "preview": "assets/catalog-previews/024-plan-cuadra.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 600,
+        "height": 750,
+        "aspectRatio": 0.8
+      },
+      "design": {
+        "family": "funciones-y-planes",
+        "visualRole": "ilustracion",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "comercial",
+        "purpose": "comparativa-planes"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "variante-png-webp-revisar-paridad-visual-y-peso"
+        ]
+      }
+    },
+    {
+      "id": "selected/backgrounds/bg-hero-soft-map-wave.webp",
+      "name": "Fondo · mapa ondulado",
+      "category": "Fondos",
+      "source": "assets/library-assets/selected/backgrounds/bg-hero-soft-map-wave.webp",
+      "preview": "assets/catalog-previews/025-bg-hero-soft-map-wave.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1672,
+        "height": 941,
+        "aspectRatio": 1.777
+      },
+      "design": {
+        "family": "fondos-y-decoracion",
+        "visualRole": "fondo",
+        "aspect": "panoramico",
+        "material": "ambiental"
+      },
+      "function": {
+        "context": "ambiental",
+        "purpose": "background"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/backgrounds/bg-network-route-pins.webp",
+      "name": "Fondo · rutas del vecindario",
+      "category": "Fondos",
+      "source": "assets/library-assets/selected/backgrounds/bg-network-route-pins.webp",
+      "preview": "assets/catalog-previews/026-bg-network-route-pins.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1672,
+        "height": 941,
+        "aspectRatio": 1.777
+      },
+      "design": {
+        "family": "fondos-y-decoracion",
+        "visualRole": "fondo",
+        "aspect": "panoramico",
+        "material": "ambiental"
+      },
+      "function": {
+        "context": "ambiental",
+        "purpose": "background"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/backgrounds/bg-section-map-wave-dark.webp",
+      "name": "Fondo · mapa nocturno",
+      "category": "Fondos",
+      "source": "assets/library-assets/selected/backgrounds/bg-section-map-wave-dark.webp",
+      "preview": "assets/catalog-previews/027-bg-section-map-wave-dark.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1672,
+        "height": 941,
+        "aspectRatio": 1.777
+      },
+      "design": {
+        "family": "fondos-y-decoracion",
+        "visualRole": "fondo",
+        "aspect": "panoramico",
+        "material": "ambiental"
+      },
+      "function": {
+        "context": "ambiental",
+        "purpose": "background"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/backgrounds/bg-soft-map-orange-blue.webp",
+      "name": "Fondo · mapa azul y naranja",
+      "category": "Fondos",
+      "source": "assets/library-assets/selected/backgrounds/bg-soft-map-orange-blue.webp",
+      "preview": "assets/catalog-previews/028-bg-soft-map-orange-blue.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1672,
+        "height": 941,
+        "aspectRatio": 1.777
+      },
+      "design": {
+        "family": "fondos-y-decoracion",
+        "visualRole": "fondo",
+        "aspect": "panoramico",
+        "material": "ambiental"
+      },
+      "function": {
+        "context": "ambiental",
+        "purpose": "background"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/brand/brand-lockup-tagline.webp",
+      "name": "Firma Vecidya con lema",
+      "category": "Marca",
+      "source": "assets/library-assets/selected/brand/brand-lockup-tagline.webp",
+      "preview": "assets/catalog-previews/029-brand-lockup-tagline.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "logotipo",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "marca"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/brand/brand-symbol-3d.webp",
+      "name": "Símbolo Vecidya · cristal 3D",
+      "category": "Marca",
+      "source": "assets/library-assets/selected/brand/brand-symbol-3d.webp",
+      "preview": "assets/catalog-previews/030-brand-symbol-3d.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "logotipo",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "marca"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/brand/brand-symbol-primary.webp",
+      "name": "Símbolo Vecidya",
+      "category": "Marca",
+      "source": "assets/library-assets/selected/brand/brand-symbol-primary.webp",
+      "preview": "assets/catalog-previews/031-brand-symbol-primary.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "logotipo",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "marca"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/brand/brand-symbol-report.webp",
+      "name": "Símbolo Vecidya · informe",
+      "category": "Marca",
+      "source": "assets/library-assets/selected/brand/brand-symbol-report.webp",
+      "preview": "assets/catalog-previews/032-brand-symbol-report.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 96,
+        "height": 96,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "logotipo",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "marca"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/brand/brand-wordmark.webp",
+      "name": "Nombre Vecidya",
+      "category": "Marca",
+      "source": "assets/library-assets/selected/brand/brand-wordmark.webp",
+      "preview": "assets/catalog-previews/033-brand-wordmark.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 2172,
+        "height": 724,
+        "aspectRatio": 3
+      },
+      "design": {
+        "family": "identidad-y-equipo",
+        "visualRole": "logotipo",
+        "aspect": "panoramico",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "marca"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/decorative/decor-reviews-location-card.png",
+      "name": "Reseñas · ubicación",
+      "category": "Decoración",
+      "source": "assets/library-assets/selected/decorative/decor-reviews-location-card.png",
+      "preview": "assets/catalog-previews/034-decor-reviews-location-card.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 1672,
+        "height": 941,
+        "aspectRatio": 1.777
+      },
+      "design": {
+        "family": "fondos-y-decoracion",
+        "visualRole": "decoracion",
+        "aspect": "panoramico",
+        "material": "ambiental"
+      },
+      "function": {
+        "context": "ambiental",
+        "purpose": "decoracion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/icons/diagnostic-business.svg",
+      "name": "Diagnóstico · negocio",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/diagnostic-business.svg",
+      "preview": "assets/icons/diagnostic-business.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/diagnostic-creator.svg",
+      "name": "Diagnóstico · creador",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/diagnostic-creator.svg",
+      "preview": "assets/icons/diagnostic-creator.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/diagnostic-professional.svg",
+      "name": "Diagnóstico · profesional",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/diagnostic-professional.svg",
+      "preview": "assets/icons/diagnostic-professional.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/diagnostic-project.svg",
+      "name": "Diagnóstico · proyecto",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/diagnostic-project.svg",
+      "preview": "assets/icons/diagnostic-project.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/service-digital-presence.svg",
+      "name": "Servicio · presencia digital",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/service-digital-presence.svg",
+      "preview": "assets/icons/service-digital-presence.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/service-formalization.svg",
+      "name": "Servicio · formalización",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/service-formalization.svg",
+      "preview": "assets/icons/service-formalization.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/service-structure.svg",
+      "name": "Servicio · estructura",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/service-structure.svg",
+      "preview": "assets/icons/service-structure.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/service-visibility.svg",
+      "name": "Servicio · visibilidad",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/service-visibility.svg",
+      "preview": "assets/icons/service-visibility.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/status/diagnostic-status-developing.webp",
+      "name": "Estado · en desarrollo",
+      "category": "Estados",
+      "source": "assets/library-assets/selected/icons/status/diagnostic-status-developing.webp",
+      "preview": "assets/icons/status-developing-crystal.png",
+      "format": "webp",
+      "dimensions": {
+        "width": 192,
+        "height": 192,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "estado-resumido"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/status/diagnostic-status-healthy.webp",
+      "name": "Estado · saludable",
+      "category": "Estados",
+      "source": "assets/library-assets/selected/icons/status/diagnostic-status-healthy.webp",
+      "preview": "assets/icons/status-healthy-crystal.png",
+      "format": "webp",
+      "dimensions": {
+        "width": 192,
+        "height": 192,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "estado-resumido"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/status/diagnostic-status-priority.webp",
+      "name": "Estado · prioridad",
+      "category": "Estados",
+      "source": "assets/library-assets/selected/icons/status/diagnostic-status-priority.webp",
+      "preview": "assets/icons/status-priority-crystal.png",
+      "format": "webp",
+      "dimensions": {
+        "width": 192,
+        "height": 192,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "estado-resumido"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "no-confundir-ilustracion-con-resultado-calculado"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/ui/ui-icon-search.png",
+      "name": "Interfaz · búsqueda",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/ui/ui-icon-search.png",
+      "preview": "assets/catalog-previews/046-ui-icon-search.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "icono-ilustrativo-no-utilizar-como-control-pequeno"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/ui/ui-icon-storefront-verified.webp",
+      "name": "Interfaz · negocio verificado",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/ui/ui-icon-storefront-verified.webp",
+      "preview": "assets/catalog-previews/047-ui-icon-storefront-verified.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "icono-ilustrativo-no-utilizar-como-control-pequeno"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/ui/ui-icon-vecidya-pin.webp",
+      "name": "Interfaz · ubicación Vecidya",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/ui/ui-icon-vecidya-pin.webp",
+      "preview": "assets/catalog-previews/048-ui-icon-vecidya-pin.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "icono-ilustrativo-no-utilizar-como-control-pequeno"
+        ]
+      }
+    },
+    {
+      "id": "selected/icons/ui/ui-icon-whatsapp.svg",
+      "name": "Interfaz · WhatsApp",
+      "category": "Iconos",
+      "source": "assets/library-assets/selected/icons/ui/ui-icon-whatsapp.svg",
+      "preview": "assets/icons/ui-icon-whatsapp.png",
+      "format": "svg",
+      "dimensions": {
+        "width": 24,
+        "height": 24,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "iconografia",
+        "visualRole": "icono",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-icon"
+      },
+      "function": {
+        "context": "interfaz",
+        "purpose": "senalizacion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/about-scene.webp",
+      "name": "Escena · nosotros",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/about-scene.webp",
+      "preview": "assets/catalog-previews/050-about-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 423,
+        "height": 361,
+        "aspectRatio": 1.172
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/addons-scene.webp",
+      "name": "Escena · herramientas digitales",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/addons-scene.webp",
+      "preview": "assets/catalog-previews/051-addons-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 437,
+        "height": 271,
+        "aspectRatio": 1.613
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/contact-scene.webp",
+      "name": "Escena · contacto",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/contact-scene.webp",
+      "preview": "assets/catalog-previews/052-contact-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 384,
+        "height": 287,
+        "aspectRatio": 1.338
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/diagnostic-scene.webp",
+      "name": "Escena · diagnóstico",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/diagnostic-scene.webp",
+      "preview": "assets/catalog-previews/053-diagnostic-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 433,
+        "height": 314,
+        "aspectRatio": 1.379
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/diagnostic-status-developing.webp",
+      "name": "Diagnostic status developing",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/diagnostic-status-developing.webp",
+      "preview": "assets/catalog-previews/054-diagnostic-status-developing.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 600,
+        "height": 490,
+        "aspectRatio": 1.224
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "estado-extendido-no-confundir-con-icono-de-estado"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/diagnostic-status-low.webp",
+      "name": "Diagnostic status low",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/diagnostic-status-low.webp",
+      "preview": "assets/catalog-previews/055-diagnostic-status-low.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 720,
+        "height": 490,
+        "aspectRatio": 1.469
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "estado-extendido-no-confundir-con-icono-de-estado"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/diagnostic-status-solid.webp",
+      "name": "Diagnostic status solid",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/diagnostic-status-solid.webp",
+      "preview": "assets/catalog-previews/056-diagnostic-status-solid.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 730,
+        "height": 490,
+        "aspectRatio": 1.49
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "estado-extendido-no-confundir-con-icono-de-estado"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/clarity.webp",
+      "name": "Dimensión · claridad",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/clarity.webp",
+      "preview": "assets/catalog-previews/057-clarity.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/conversion.webp",
+      "name": "Dimensión · conversión",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/conversion.webp",
+      "preview": "assets/catalog-previews/058-conversion.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/discovery.webp",
+      "name": "Dimensión · descubrimiento",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/discovery.webp",
+      "preview": "assets/catalog-previews/059-discovery.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/foundation.webp",
+      "name": "Dimensión · base",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/foundation.webp",
+      "preview": "assets/catalog-previews/060-foundation.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/measurement.webp",
+      "name": "Dimensión · medición",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/measurement.webp",
+      "preview": "assets/catalog-previews/061-measurement.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/operations.webp",
+      "name": "Dimensión · operaciones",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/operations.webp",
+      "preview": "assets/catalog-previews/062-operations.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/relationship.webp",
+      "name": "Dimensión · relación",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/relationship.webp",
+      "preview": "assets/catalog-previews/063-relationship.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/dimensions/trust.webp",
+      "name": "Dimensión · confianza",
+      "category": "Dimensiones",
+      "source": "assets/library-assets/selected/illustrations/dimensions/trust.webp",
+      "preview": "assets/catalog-previews/064-trust.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 512,
+        "height": 512,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "diagnostico-y-estados",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "diagnostico",
+        "purpose": "dimension"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/home-scene.webp",
+      "name": "Escena · inicio",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/home-scene.webp",
+      "preview": "assets/catalog-previews/065-home-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 402,
+        "height": 266,
+        "aspectRatio": 1.511
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/home-vecidya-companion-v4.webp",
+      "name": "Inicio · ecosistema digital Vecidya",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/home-vecidya-companion-v4.webp",
+      "preview": "assets/catalog-previews/066-home-vecidya-companion-v4.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1280,
+        "height": 853,
+        "aspectRatio": 1.501
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-admin-empty-search.webp",
+      "name": "Panel interno · búsqueda sin resultados",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-admin-empty-search.webp",
+      "preview": "assets/catalog-previews/067-illus-admin-empty-search.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 320,
+        "height": 320,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-business-onboarding-form.webp",
+      "name": "Negocio · formulario de inicio",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-business-onboarding-form.webp",
+      "preview": "assets/catalog-previews/068-illus-business-onboarding-form.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-mobile-customer-chat.webp",
+      "name": "Móvil · conversación con cliente",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-mobile-customer-chat.webp",
+      "preview": "assets/catalog-previews/069-illus-mobile-customer-chat.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-mobile-local-discovery.webp",
+      "name": "Móvil · descubrimiento local",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-mobile-local-discovery.webp",
+      "preview": "assets/catalog-previews/070-illus-mobile-local-discovery.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-neighborhood-map-pins.webp",
+      "name": "Vecindario · ubicaciones en el mapa",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-neighborhood-map-pins.webp",
+      "preview": "assets/catalog-previews/071-illus-neighborhood-map-pins.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-platform-growth-dashboard.webp",
+      "name": "Panel · métricas de crecimiento",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-platform-growth-dashboard.webp",
+      "preview": "assets/catalog-previews/072-illus-platform-growth-dashboard.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-reviews-and-ratings-mobile.png",
+      "name": "Móvil · reseñas y calificaciones",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-reviews-and-ratings-mobile.png",
+      "preview": "assets/catalog-previews/073-illus-reviews-and-ratings-mobile.webp",
+      "format": "png",
+      "dimensions": {
+        "width": 1448,
+        "height": 1086,
+        "aspectRatio": 1.333
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-services-empty-connection.webp",
+      "name": "Servicios · estado sin conexión",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-services-empty-connection.webp",
+      "preview": "assets/catalog-previews/074-illus-services-empty-connection.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 384,
+        "height": 384,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-storefront-digital-profile.webp",
+      "name": "Negocio · perfil digital",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-storefront-digital-profile.webp",
+      "preview": "assets/catalog-previews/075-illus-storefront-digital-profile.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/illus-task-schedule-panel.webp",
+      "name": "Panel · agenda de tareas",
+      "category": "Ilustraciones",
+      "source": "assets/library-assets/selected/illustrations/illus-task-schedule-panel.webp",
+      "preview": "assets/catalog-previews/076-illus-task-schedule-panel.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "ilustraciones-producto",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "producto",
+        "purpose": "explicacion-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/join-scene.webp",
+      "name": "Escena · comunidad",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/join-scene.webp",
+      "preview": "assets/catalog-previews/077-join-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 318,
+        "height": 303,
+        "aspectRatio": 1.05
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/analitica-web-que-medir-en-tu-negocio.webp",
+      "name": "Analitica web que medir en tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/analitica-web-que-medir-en-tu-negocio.webp",
+      "preview": "assets/catalog-previews/078-analitica-web-que-medir-en-tu-negocio.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/antes-de-hacer-publicidad-organiza-tu-presencia-digital.webp",
+      "name": "Antes de hacer publicidad organiza tu presencia digital",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/antes-de-hacer-publicidad-organiza-tu-presencia-digital.webp",
+      "preview": "assets/catalog-previews/079-antes-de-hacer-publicidad-organiza-tu-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio.webp",
+      "name": "Automatizaciones ahorrar tiempo sin complicar tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/automatizaciones-ahorrar-tiempo-sin-complicar-tu-negocio.webp",
+      "preview": "assets/catalog-previews/080-automatizaciones-ahorrar-tiempo-sin-co.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo.webp",
+      "name": "Como cambiar proveedor dominio hosting sin perder web correo",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-cambiar-proveedor-dominio-hosting-sin-perder-web-correo.webp",
+      "preview": "assets/catalog-previews/081-como-cambiar-proveedor-dominio-hosting.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-capacitar-al-equipo-en-herramientas-digitales.webp",
+      "name": "Como capacitar al equipo en herramientas digitales",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-capacitar-al-equipo-en-herramientas-digitales.webp",
+      "preview": "assets/catalog-previews/082-como-capacitar-al-equipo-en-herramient.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-comparar-resultados-de-sedes-sin-mezclar-las-cifras.webp",
+      "name": "Como comparar resultados de sedes sin mezclar las cifras",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-comparar-resultados-de-sedes-sin-mezclar-las-cifras.webp",
+      "preview": "assets/catalog-previews/083-como-comparar-resultados-de-sedes-sin-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-controlar-inventario-sin-perder-productos-ni-datos.webp",
+      "name": "Como controlar inventario sin perder productos ni datos",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-controlar-inventario-sin-perder-productos-ni-datos.webp",
+      "preview": "assets/catalog-previews/084-como-controlar-inventario-sin-perder-p.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 640,
+        "aspectRatio": 2.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo.webp",
+      "name": "Como coordinar varias sedes o negocios sin duplicar trabajo",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-coordinar-varias-sedes-o-negocios-sin-duplicar-trabajo.webp",
+      "preview": "assets/catalog-previews/085-como-coordinar-varias-sedes-o-negocios.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones.webp",
+      "name": "Como elegir herramientas digitales sin llenar la empresa de aplicaciones",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-elegir-herramientas-digitales-sin-llenar-la-empresa-de-aplicaciones.webp",
+      "preview": "assets/catalog-previews/086-como-elegir-herramientas-digitales-sin.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-elegir-y-cambiar-proveedor-de-dominio-y-hosting.webp",
+      "name": "Como elegir y cambiar proveedor de dominio y hosting",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-elegir-y-cambiar-proveedor-de-dominio-y-hosting.webp",
+      "preview": "assets/catalog-previews/087-como-elegir-y-cambiar-proveedor-de-dom.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-empezar-a-digitalizar-un-negocio-desde-cero.webp",
+      "name": "Como empezar a digitalizar un negocio desde cero",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-empezar-a-digitalizar-un-negocio-desde-cero.webp",
+      "preview": "assets/catalog-previews/088-como-empezar-a-digitalizar-un-negocio-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-empezar-proyecto-digital-sin-detener-negocio.webp",
+      "name": "Como empezar proyecto digital sin detener negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-empezar-proyecto-digital-sin-detener-negocio.webp",
+      "preview": "assets/catalog-previews/089-como-empezar-proyecto-digital-sin-dete.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-explicar-lo-que-vendes-para-que-te-entiendan.webp",
+      "name": "Como explicar lo que vendes para que te entiendan",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-explicar-lo-que-vendes-para-que-te-entiendan.webp",
+      "preview": "assets/catalog-previews/090-como-explicar-lo-que-vendes-para-que-t.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-hacer-copias-de-seguridad-de-tu-negocio.webp",
+      "name": "Como hacer copias de seguridad de tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-hacer-copias-de-seguridad-de-tu-negocio.webp",
+      "preview": "assets/catalog-previews/091-como-hacer-copias-de-seguridad-de-tu-n.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-mantener-actualizada-y-confiable-tu-presencia-digital.webp",
+      "name": "Como mantener actualizada y confiable tu presencia digital",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-mantener-actualizada-y-confiable-tu-presencia-digital.webp",
+      "preview": "assets/catalog-previews/092-como-mantener-actualizada-y-confiable-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa.webp",
+      "name": "Como ordenar compras proveedores y aprobaciones en una empresa",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-ordenar-compras-proveedores-y-aprobaciones-en-una-empresa.webp",
+      "preview": "assets/catalog-previews/093-como-ordenar-compras-proveedores-y-apr.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 533,
+        "aspectRatio": 3.002
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-organizar-tareas-y-responsables-en-tu-equipo.webp",
+      "name": "Como organizar tareas y responsables en tu equipo",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-organizar-tareas-y-responsables-en-tu-equipo.webp",
+      "preview": "assets/catalog-previews/094-como-organizar-tareas-y-responsables-e.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 533,
+        "aspectRatio": 3.002
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-pedir-resenas-reales-y-responder-criticas.webp",
+      "name": "Como pedir resenas reales y responder criticas",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-pedir-resenas-reales-y-responder-criticas.webp",
+      "preview": "assets/catalog-previews/095-como-pedir-resenas-reales-y-responder-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-preparar-presupuesto-para-herramientas-digitales.webp",
+      "name": "Como preparar presupuesto para herramientas digitales",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-preparar-presupuesto-para-herramientas-digitales.webp",
+      "preview": "assets/catalog-previews/096-como-preparar-presupuesto-para-herrami.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-probar-un-asistente-de-ia-con-supervision-humana.webp",
+      "name": "Como probar un asistente de ia con supervision humana",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-probar-un-asistente-de-ia-con-supervision-humana.webp",
+      "preview": "assets/catalog-previews/097-como-probar-un-asistente-de-ia-con-sup.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 686,
+        "aspectRatio": 2.332
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-probar-y-supervisar-automatizaciones-sin-perder-datos.webp",
+      "name": "Como probar y supervisar automatizaciones sin perder datos",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-probar-y-supervisar-automatizaciones-sin-perder-datos.webp",
+      "preview": "assets/catalog-previews/098-como-probar-y-supervisar-automatizacio.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 686,
+        "aspectRatio": 2.332
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-proteger-cuentas-contrasenas-estafas-negocio.webp",
+      "name": "Como proteger cuentas contrasenas estafas negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-proteger-cuentas-contrasenas-estafas-negocio.webp",
+      "preview": "assets/catalog-previews/099-como-proteger-cuentas-contrasenas-esta.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-responder-la-primera-consulta-de-un-cliente.webp",
+      "name": "Como responder la primera consulta de un cliente",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-responder-la-primera-consulta-de-un-cliente.webp",
+      "preview": "assets/catalog-previews/100-como-responder-la-primera-consulta-de-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 667,
+        "aspectRatio": 2.399
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa.webp",
+      "name": "Como saber si una mejora tecnologica funciona en tu empresa",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-saber-si-una-mejora-tecnologica-funciona-en-tu-empresa.webp",
+      "preview": "assets/catalog-previews/101-como-saber-si-una-mejora-tecnologica-f.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-usar-inteligencia-artificial-en-una-empresa-con-supervision.webp",
+      "name": "Como usar inteligencia artificial en una empresa con supervision",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-usar-inteligencia-artificial-en-una-empresa-con-supervision.webp",
+      "preview": "assets/catalog-previews/102-como-usar-inteligencia-artificial-en-u.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/como-vender-por-internet-sin-perder-el-control-pedidos-pagos.webp",
+      "name": "Como vender por internet sin perder el control pedidos pagos",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/como-vender-por-internet-sin-perder-el-control-pedidos-pagos.webp",
+      "preview": "assets/catalog-previews/103-como-vender-por-internet-sin-perder-el.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/conectar-herramientas-digitales-sin-complicar-tu-negocio.webp",
+      "name": "Conectar herramientas digitales sin complicar tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/conectar-herramientas-digitales-sin-complicar-tu-negocio.webp",
+      "preview": "assets/catalog-previews/104-conectar-herramientas-digitales-sin-co.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/correo-para-mi-negocio-como-usarlo-sin-perder-mensajes.webp",
+      "name": "Correo para mi negocio como usarlo sin perder mensajes",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/correo-para-mi-negocio-como-usarlo-sin-perder-mensajes.webp",
+      "preview": "assets/catalog-previews/105-correo-para-mi-negocio-como-usarlo-sin.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/correo-profesional-dominio-registros-mx-txt.webp",
+      "name": "Correo profesional dominio registros mx txt",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/correo-profesional-dominio-registros-mx-txt.webp",
+      "preview": "assets/catalog-previews/106-correo-profesional-dominio-registros-m.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/cuando-necesita-tu-empresa-un-sistema-erp.webp",
+      "name": "Cuando necesita tu empresa un sistema erp",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/cuando-necesita-tu-empresa-un-sistema-erp.webp",
+      "preview": "assets/catalog-previews/107-cuando-necesita-tu-empresa-un-sistema-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/datos-de-clientes-que-puedes-pedir-y-como-protegerlos.webp",
+      "name": "Datos de clientes que puedes pedir y como protegerlos",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/datos-de-clientes-que-puedes-pedir-y-como-protegerlos.webp",
+      "preview": "assets/catalog-previews/108-datos-de-clientes-que-puedes-pedir-y-c.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/dns-https-y-correo-como-se-conecta-tu-dominio.webp",
+      "name": "Dns https y correo como se conecta tu dominio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/dns-https-y-correo-como-se-conecta-tu-dominio.webp",
+      "preview": "assets/catalog-previews/109-dns-https-y-correo-como-se-conecta-tu-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 667,
+        "aspectRatio": 2.399
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/domina-la-tecnologia-sin-que-te-domine.webp",
+      "name": "Domina la tecnologia sin que te domine",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/domina-la-tecnologia-sin-que-te-domine.webp",
+      "preview": "assets/catalog-previews/110-domina-la-tecnologia-sin-que-te-domine.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 595,
+        "aspectRatio": 2.689
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/dominio-hosting-sitio-web-como-funcionan.webp",
+      "name": "Dominio hosting sitio web como funcionan",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/dominio-hosting-sitio-web-como-funcionan.webp",
+      "preview": "assets/catalog-previews/111-dominio-hosting-sitio-web-como-funcion.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/el-que-mucho-abarca-poco-aprieta-prioridades-digitales.webp",
+      "name": "El que mucho abarca poco aprieta prioridades digitales",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/el-que-mucho-abarca-poco-aprieta-prioridades-digitales.webp",
+      "preview": "assets/catalog-previews/112-el-que-mucho-abarca-poco-aprieta-prior.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/fotos-y-publicaciones-utiles-sin-ser-disenador.webp",
+      "name": "Fotos y publicaciones utiles sin ser disenador",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/fotos-y-publicaciones-utiles-sin-ser-disenador.webp",
+      "preview": "assets/catalog-previews/113-fotos-y-publicaciones-utiles-sin-ser-d.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/hojas-de-calculo-para-organizar-un-negocio-pequeno.webp",
+      "name": "Hojas de calculo para organizar un negocio pequeno",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/hojas-de-calculo-para-organizar-un-negocio-pequeno.webp",
+      "preview": "assets/catalog-previews/114-hojas-de-calculo-para-organizar-un-neg.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/https-certificados-tls-que-protegen-y-que-no.webp",
+      "name": "Https certificados tls que protegen y que no",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/https-certificados-tls-que-protegen-y-que-no.webp",
+      "preview": "assets/catalog-previews/115-https-certificados-tls-que-protegen-y-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 645,
+        "aspectRatio": 2.481
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/organizar-consultas-mensajes-llamadas-formularios.webp",
+      "name": "Organizar consultas mensajes llamadas formularios",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/organizar-consultas-mensajes-llamadas-formularios.webp",
+      "preview": "assets/catalog-previews/116-organizar-consultas-mensajes-llamadas-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/perfil-empresa-google-completar-y-mantener-actualizado.webp",
+      "name": "Perfil empresa google completar y mantener actualizado",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/perfil-empresa-google-completar-y-mantener-actualizado.webp",
+      "preview": "assets/catalog-previews/117-perfil-empresa-google-completar-y-mant.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/preparar-respuestas-publicaciones-ia-sin-perder-control.webp",
+      "name": "Preparar respuestas publicaciones ia sin perder control",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/preparar-respuestas-publicaciones-ia-sin-perder-control.webp",
+      "preview": "assets/catalog-previews/118-preparar-respuestas-publicaciones-ia-s.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/publicidad-digital-como-preparar-una-primera-campana.webp",
+      "name": "Publicidad digital como preparar una primera campana",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/publicidad-digital-como-preparar-una-primera-campana.webp",
+      "preview": "assets/catalog-previews/119-publicidad-digital-como-preparar-una-p.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 714,
+        "aspectRatio": 2.241
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo.webp",
+      "name": "Que es un crm y por que un negocio pequeno puede necesitarlo",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/que-es-un-crm-y-por-que-un-negocio-pequeno-puede-necesitarlo.webp",
+      "preview": "assets/catalog-previews/120-que-es-un-crm-y-por-que-un-negocio-peq.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 716,
+        "aspectRatio": 2.235
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio.webp",
+      "name": "Que hacer si falla internet o el sistema de tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/que-hacer-si-falla-internet-o-el-sistema-de-tu-negocio.webp",
+      "preview": "assets/catalog-previews/121-que-hacer-si-falla-internet-o-el-siste.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/que-necesita-un-negocio-para-usar-internet-y-herramientas.webp",
+      "name": "Que necesita un negocio para usar internet y herramientas",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/que-necesita-un-negocio-para-usar-internet-y-herramientas.webp",
+      "preview": "assets/catalog-previews/122-que-necesita-un-negocio-para-usar-inte.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/que-puede-hacer-una-inteligencia-artificial-por-un-negocio.webp",
+      "name": "Que puede hacer una inteligencia artificial por un negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/que-puede-hacer-una-inteligencia-artificial-por-un-negocio.webp",
+      "preview": "assets/catalog-previews/123-que-puede-hacer-una-inteligencia-artif.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 686,
+        "aspectRatio": 2.332
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "portada-muy-panoramica-verificar-recorte-movil"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/quien-puede-ver-cambiar-y-publicar-en-tu-empresa.webp",
+      "name": "Quien puede ver cambiar y publicar en tu empresa",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/quien-puede-ver-cambiar-y-publicar-en-tu-empresa.webp",
+      "preview": "assets/catalog-previews/124-quien-puede-ver-cambiar-y-publicar-en-.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1536,
+        "height": 1024,
+        "aspectRatio": 1.5
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "horizontal",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-guides/redes-sociales-o-pagina-web-que-necesita-tu-negocio.webp",
+      "name": "Redes sociales o pagina web que necesita tu negocio",
+      "category": "Guías visuales",
+      "source": "assets/library-assets/selected/illustrations/learn-guides/redes-sociales-o-pagina-web-que-necesita-tu-negocio.webp",
+      "preview": "assets/catalog-previews/125-redes-sociales-o-pagina-web-que-necesi.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1600,
+        "height": 800,
+        "aspectRatio": 2
+      },
+      "design": {
+        "family": "contenido-educativo",
+        "visualRole": "editorial",
+        "aspect": "panoramico",
+        "material": "solid-editorial"
+      },
+      "function": {
+        "context": "aprende",
+        "purpose": "portada-articulo"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": []
+      }
+    },
+    {
+      "id": "selected/illustrations/learn-journey-scene.webp",
+      "name": "Escena · aprendizaje",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/learn-journey-scene.webp",
+      "preview": "assets/catalog-previews/126-learn-journey-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 436,
+        "height": 307,
+        "aspectRatio": 1.42
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/licenses-scene.webp",
+      "name": "Escena · licencias",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/licenses-scene.webp",
+      "preview": "assets/catalog-previews/127-licenses-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 357,
+        "height": 337,
+        "aspectRatio": 1.059
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "cuadrado-o-casi",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/neighborhood-scene.webp",
+      "name": "Escena · vecindario",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/neighborhood-scene.webp",
+      "preview": "assets/catalog-previews/128-neighborhood-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 399,
+        "height": 309,
+        "aspectRatio": 1.291
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/services-scene.webp",
+      "name": "Escena · servicios",
+      "category": "Escenas",
+      "source": "assets/library-assets/selected/illustrations/services-scene.webp",
+      "preview": "assets/catalog-previews/129-services-scene.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 406,
+        "height": 259,
+        "aspectRatio": 1.568
+      },
+      "design": {
+        "family": "escenas-narrativas",
+        "visualRole": "ilustracion",
+        "aspect": "horizontal",
+        "material": "focal"
+      },
+      "function": {
+        "context": "marketing",
+        "purpose": "escena-seccion"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "escena-baja-resolucion-no-ampliar-como-hero"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-addons.webp",
+      "name": "Vico · herramientas digitales",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-addons.webp",
+      "preview": "assets/catalog-previews/130-vico-addons.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1246,
+        "height": 1262,
+        "aspectRatio": 0.987
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-aprende.webp",
+      "name": "Vico aprende",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-aprende.webp",
+      "preview": "assets/catalog-previews/131-vico-aprende.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1312,
+        "height": 1199,
+        "aspectRatio": 1.094
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-contacto.webp",
+      "name": "Vico · contacto",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-contacto.webp",
+      "preview": "assets/catalog-previews/132-vico-contacto.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1150,
+        "height": 1368,
+        "aspectRatio": 0.841
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-diagnostico.webp",
+      "name": "Vico · diagnóstico",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-diagnostico.webp",
+      "preview": "assets/catalog-previews/133-vico-diagnostico.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536,
+        "aspectRatio": 0.667
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-home.webp",
+      "name": "Vico · inicio",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-home.webp",
+      "preview": "assets/catalog-previews/134-vico-home.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1024,
+        "height": 1536,
+        "aspectRatio": 0.667
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-licencias.webp",
+      "name": "Vico · licencias",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-licencias.webp",
+      "preview": "assets/catalog-previews/135-vico-licencias.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1312,
+        "height": 1199,
+        "aspectRatio": 1.094
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-nosotros.webp",
+      "name": "Vico · equipo",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-nosotros.webp",
+      "preview": "assets/catalog-previews/136-vico-nosotros.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1086,
+        "height": 1448,
+        "aspectRatio": 0.75
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "vertical",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-servicios.webp",
+      "name": "Vico · servicios",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-servicios.webp",
+      "preview": "assets/catalog-previews/137-vico-servicios.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-unete.webp",
+      "name": "Vico · comunidad",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-unete.webp",
+      "preview": "assets/catalog-previews/138-vico-unete.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1145,
+        "height": 1374,
+        "aspectRatio": 0.833
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/illustrations/vico-vecindario.webp",
+      "name": "Vico · vecindario",
+      "category": "Vico",
+      "source": "assets/library-assets/selected/illustrations/vico-vecindario.webp",
+      "preview": "assets/catalog-previews/139-vico-vecindario.webp",
+      "format": "webp",
+      "dimensions": {
+        "width": 1312,
+        "height": 1199,
+        "aspectRatio": 1.094
+      },
+      "design": {
+        "family": "vico",
+        "visualRole": "personaje",
+        "aspect": "cuadrado-o-casi",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "institucional",
+        "purpose": "personaje-contextual"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "personaje-identidad-no-usar-como-marca-de-terceros"
+        ]
+      }
+    },
+    {
+      "id": "selected/og/og-vecidya-public.svg",
+      "name": "Redes · vista previa Vecidya",
+      "category": "Redes",
+      "source": "assets/library-assets/selected/og/og-vecidya-public.svg",
+      "preview": "assets/catalog-previews/140-og-vecidya-public.webp",
+      "format": "svg",
+      "dimensions": {
+        "width": 1200,
+        "height": 630,
+        "aspectRatio": 1.905
+      },
+      "design": {
+        "family": "redes-sociales",
+        "visualRole": "metadato",
+        "aspect": "panoramico",
+        "material": "solid-o-quiet"
+      },
+      "function": {
+        "context": "distribucion",
+        "purpose": "social-preview"
+      },
+      "review": {
+        "status": "pendiente-inspeccion-visual-individual",
+        "flags": [
+          "asset-para-metadatos-no-elemento-de-interfaz",
+          "verificar-svg-sanitizado-y-viewbox"
+        ]
+      }
+    }
+  ]
+}
