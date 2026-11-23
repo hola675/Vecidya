@@ -119,3 +119,31 @@ No aprobado automáticamente: despliegue, integración productiva, reinterpretac
 - **Flujo de integración:** extraer paquete → ejecutar `verify_s1.py` → `instalar_s1.py <ruta-del-repo>` → `node scripts/activar_s1.mjs` (verifica) → `node scripts/activar_s1.mjs --apply` (activa local) → tests/build/capturas → commit/PR → desplegar con aprobación.
 
 **Esta evidencia se aplica a la producción y empaquetado local, no a un despliegue de producción ni al estado del repositorio principal.**
+
+## Incidencia QA S1 — 2026-11-23 · RECHAZO ARTÍSTICO
+
+El usuario detectó que `decor-crystal-world-reviews-v1.webp` no se parece a las referencias Crystal World. Inspección posterior de las **7 imágenes reales** del paquete S1:
+
+| Recurso | Decisión artística | Justificación |
+|---|---|---|
+| S1-01 maestro oscuro | Candidato condicionado | 3D, brillo, vecindario y profundidad coherentes; falta visual responsive y contraste |
+| S1-02 maestro claro | Candidato condicionado | Coherente; falta contraste con UI |
+| S1-03 portada | Revisar | Poco diferenciado respecto al maestro claro |
+| S1-04 conexiones | Candidato condicionado | Mundo 3D correcto; verificar iconografía y recorte |
+| S1-05 reseñas | **RECHAZADO** | Gráfico plano sin materiales, volumen ni riqueza Crystal World |
+| S1-01 mobile | Corregir | Zona superior artificialmente difuminada |
+| S1-02 mobile | Corregir | Zona superior artificialmente difuminada |
+
+**Estado:** S1 **NO** está certificada visualmente, aunque el script local informara `S1 CHECK PASS` y `build OK`. El usuario activó localmente cinco referencias; eso no constituye aprobación ni publicación. No autorizar commit/push/deploy de esas sustituciones sin corregir lo rechazado y finalizar revisiones.
+
+**Rollback de la activación local (si las únicas modificaciones de estos archivos son de `activar_s1.mjs --apply`):**
+```powershell
+cd D:\Proyectos\Vecidya
+git diff -- vecidya-crystal-depth/assets/library-catalog.js vecidya-crystal-depth/assets/asset-classification.json
+git restore -- vecidya-crystal-depth/assets/library-catalog.js vecidya-crystal-depth/assets/asset-classification.json
+```
+Este rollback no borra los candidatos sin seguimiento, ni los originales y no afecta el resto del repositorio. Si esos dos archivos contienen otros cambios deseados, guardarlos y revertir solo la sustitución S1.
+
+**Nueva puerta QA obligatoria por cada asset:** 1) abrir WebP original y candidato; 2) contraste lado a lado contra las seis referencias; 3) evaluar volumen 3D, iluminación, bisel cristal, perspectiva, composición y función; 4) reportar `ACEPTADO`/`REVISAR`/`RECHAZADO` individualmente; 5) solo `ACEPTADO` permite modificar catálogo, sin implicar deploy. Los tests automáticos validan bytes/rutas, no calidad artística.
+
+**Prioridad correctiva:** regenerar S1-05 como escena 3D integrada con negocio local y tarjetas de opiniones de cristal (sin reseñas ficticias presentadas como reales); rehacer encuadres móviles en vez de blur; diferenciar S1-03; volver a validar los siete recursos.
