@@ -1,0 +1,289 @@
+{
+  "version": "1.1.0",
+  "lastUpdated": "2026-11-23",
+  "phase": "S3",
+  "status": "S3-REGENERACION-INDIVIDUAL-S3-01-CANDIDATO-PENDIENTE",
+  "objective": "Regeneración futura desde cero de doce recursos originales, tras análisis y aprobación artística; sin generación autorizada en esta operación de limpieza.",
+  "summary": {
+    "total": 12,
+    "originalsPreserved": 12,
+    "newCandidates": 0,
+    "approved": 0,
+    "integrated": 0,
+    "generatedCandidates": 1
+  },
+  "rules": [
+    "S1 y S2 permanecen intactas; no modificarlas",
+    "Conservar los 12 originales S3 funcionales hasta sustituirlos con candidatos aprobados",
+    "No generar láminas multiicono ni etiquetas ficticias como assets",
+    "Alfa genuina para recursos no-fondo; profundidad Crystal World según seis capas L0-L5",
+    "Validar cada imagen visualmente sobre fondos claro y oscuro antes de su aprobación y publicación",
+    "La biblioteca visual y vecidya-platform son consumidores distintos; no modificar la plataforma sin pruebas independientes",
+    "No usar los paquetes anteriores de S3; se han descartado"
+  ],
+  "batchA": [
+    "S3-01",
+    "S3-02",
+    "S3-03",
+    "S3-04",
+    "S3-05",
+    "S3-06",
+    "S3-07",
+    "S3-08",
+    "S3-12"
+  ],
+  "batchB": [
+    "S3-09",
+    "S3-10",
+    "S3-11"
+  ],
+  "items": [
+    {
+      "id": "S3-01",
+      "name": "Diagnóstico · negocio",
+      "original": "assets/library-assets/selected/icons/diagnostic-business.svg",
+      "originalPreview": "assets/icons/diagnostic-business.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "CANDIDATO-ILUSTRATIVO-NO-APROBADO-NO-INTEGRAR",
+      "candidate": {
+        "name": "s3-01-diagnostico-negocio-crystal-world-v1.webp",
+        "inRepository": false,
+        "source": "generación individual en conversación",
+        "dimensions": {
+          "width": 1254,
+          "height": 1254
+        },
+        "format": "WebP RGBA",
+        "bytes": 226026,
+        "sha256": "9249e2d737d5e360e7679627b9790e0ed5f2bcdb27ee2152347001c63dd2d787",
+        "transparentCorners": true,
+        "zeroAlphaRatio": 0.4912
+      },
+      "approved": false,
+      "integrated": false,
+      "qualityReview": {
+        "cgi3D": "PASS-PRELIMINAR",
+        "trueTransparency": "PASS",
+        "darkBackground": "PASS-PRELIMINAR",
+        "lightBackground": "PASS-PRELIMINAR",
+        "display160px": "PASS-PRELIMINAR",
+        "functional48px": "FAIL-DETALLE-ILEGIBLE",
+        "edgeHalo": "vigilar cyan/naranja en contorno",
+        "decision": "REQUIERE-VARIANTE-COMPACTA-ANTES-DE-SUSTITUCION",
+        "approval": "PENDIENTE"
+      }
+    },
+    {
+      "id": "S3-02",
+      "name": "Diagnóstico · creador",
+      "original": "assets/library-assets/selected/icons/diagnostic-creator.svg",
+      "originalPreview": "assets/icons/diagnostic-creator.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-03",
+      "name": "Diagnóstico · profesional",
+      "original": "assets/library-assets/selected/icons/diagnostic-professional.svg",
+      "originalPreview": "assets/icons/diagnostic-professional.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-04",
+      "name": "Diagnóstico · proyecto",
+      "original": "assets/library-assets/selected/icons/diagnostic-project.svg",
+      "originalPreview": "assets/icons/diagnostic-project.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-05",
+      "name": "Servicio · presencia digital",
+      "original": "assets/library-assets/selected/icons/service-digital-presence.svg",
+      "originalPreview": "assets/icons/service-digital-presence.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-06",
+      "name": "Servicio · formalización",
+      "original": "assets/library-assets/selected/icons/service-formalization.svg",
+      "originalPreview": "assets/icons/service-formalization.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-07",
+      "name": "Servicio · estructura",
+      "original": "assets/library-assets/selected/icons/service-structure.svg",
+      "originalPreview": "assets/icons/service-structure.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-08",
+      "name": "Servicio · visibilidad",
+      "original": "assets/library-assets/selected/icons/service-visibility.svg",
+      "originalPreview": "assets/icons/service-visibility.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 48,
+        "height": 48,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-09",
+      "name": "Interfaz · búsqueda",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-search.png",
+      "originalPreview": "assets/catalog-previews/046-ui-icon-search.webp",
+      "originalFormat": "png",
+      "originalDimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-10",
+      "name": "Interfaz · negocio verificado",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-storefront-verified.webp",
+      "originalPreview": "assets/catalog-previews/047-ui-icon-storefront-verified.webp",
+      "originalFormat": "webp",
+      "originalDimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-11",
+      "name": "Interfaz · ubicación Vecidya",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-vecidya-pin.webp",
+      "originalPreview": "assets/catalog-previews/048-ui-icon-vecidya-pin.webp",
+      "originalFormat": "webp",
+      "originalDimensions": {
+        "width": 1254,
+        "height": 1254,
+        "aspectRatio": 1
+      },
+      "kind": "ilustracion-iconografica-3d",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    },
+    {
+      "id": "S3-12",
+      "name": "Interfaz · WhatsApp",
+      "original": "assets/library-assets/selected/icons/ui/ui-icon-whatsapp.svg",
+      "originalPreview": "assets/icons/ui-icon-whatsapp.png",
+      "originalFormat": "svg",
+      "originalDimensions": {
+        "width": 24,
+        "height": 24,
+        "aspectRatio": 1
+      },
+      "kind": "vector-operativo",
+      "originalPreserved": true,
+      "status": "PENDIENTE-DESDE-CERO",
+      "candidate": null,
+      "approved": false,
+      "integrated": false
+    }
+  ],
+  "releaseAllowed": false,
+  "workflow": {
+    "production": "uno-a-uno",
+    "artisticRule": "no pasar a siguiente hasta abrir y evaluar original, candidato, WebP RGBA y previews claro/oscuro y tamaños reales",
+    "noBatchGeneration": true,
+    "approvalRequired": true
+  }
+}

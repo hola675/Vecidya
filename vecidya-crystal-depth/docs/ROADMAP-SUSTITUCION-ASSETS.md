@@ -1,7 +1,7 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.1.0 · **Última actualización:** 2026-11-23  
-**Estado:** S1 integrada en GitHub (5/5); S2 iniciada con inventario de diez escenas y un piloto local no aprobado. Despliegue público de S1 sin certificar.  
+**Versión:** 1.5.0 · **Última actualización:** 2026-11-23  
+**Estado:** S1 (5/5) y S2 (10/10) integradas y visibles en Cloudflare; S3 reiniciada a cero sin candidatos activos.
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
 ## 1. Decisión y secuencia obligatoria
@@ -237,3 +237,14 @@ Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-
 - **Política de acabado:** no purgar los originales sin comprobar consumidores; no agregar las escenas al HTML real sin revisión de uso. Los assets no-fondo permanecen con alfa; L0 independiente, L1/L2/L5 ilustrativos, L4 contenido real accesible.
 
 **Definición de fase terminada:** 10/10 aprobadas, 10/10 activas en catálogo en `main`, 10/10 nuevos binarios en la biblioteca y previews disponibles, build y revisión integrada PASS. El estado de despliegue se registra de forma independiente.
+
+## Estado vigente tras limpieza S3 — 2026-11-23
+
+- **S1:** 5/5 recursos integrados y verificados en Cloudflare Pages.
+- **S2:** 10/10 escenas integradas y verificadas en Cloudflare Pages.
+- **S3:** **reiniciada a cero**, 12 originales preservados, 0 candidatos vigentes, 0 aprobaciones, 0 integraciones. Inventario limpio: `assets/s3-replacement-manifest.json`.
+- **Carpetas de candidatos en main:** únicamente `assets/candidates/crystal-world/s1/` y `s2/`; no existe una carpeta S3 de candidatos.
+- **Material S3 descartado:** paquetes ZIP/galerías/infografías v1/v2 y borradores de SVG no son candidatos válidos. Se retiraron las herramientas y la documentación S3 obsoletas de `main`. Git conserva historial de los commits anteriores, sin necesidad de mantener estos archivos activos.
+- **Biblioteca:** https://vecidya-biblioteca.pages.dev/biblioteca, catálogo de 140 registros y recursos S1/S2 observados en navegador. Los doce originales de S3 aún representan la fase pendiente; no se retiran.
+
+**Condición de reinicio:** antes de generar nuevas ilustraciones, revisar semántica y seis referencias de arte aprobadas; producir archivos individuales con transparencia real, profundidad 3D y validación en fondos claro/oscuro. Ninguna generación ni activación nueva forma parte de esta limpieza.
