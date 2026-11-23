@@ -1,8 +1,8 @@
 {
-  "version": "1.5.0",
+  "version": "1.6.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "S1-v3-QA-TECNICO-7-7-PASS-VISUAL-NO-CERTIFICADA",
+  "status": "S1-v3-PAQUETE-VERIFICADO-GALERIA-QA-DISPONIBLE-NO-ACTIVADO",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -296,5 +296,76 @@
     "method": "contact sheet de los siete WebP suministrados",
     "observation": "S1-05 ya es objeto aislado sobre transparencia; resto mantiene lenguaje azul/cian/naranja, vidrios y vecindario 3D. S1-03 es ambiente más abstracto y puede servir como portada, pendiente probar con contenido HTML. Faltan capturas reales y comportamiento responsive.",
     "releaseApproved": false
+  },
+  "v3VerifiedCandidates": [
+    {
+      "id": "S1-01",
+      "name": "bg-crystal-world-master-dark-v1.webp",
+      "bytes": 130986,
+      "sha256": "2fdc877a9ce160b76af35314f77736ed8046cd8b0671beaf1e309409f0e12c28",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-02",
+      "name": "bg-crystal-world-master-light-v1.webp",
+      "bytes": 106404,
+      "sha256": "3887211de2d50a2e95ed65fa34c6d969635b00c8e59512ac37f877bfd2e9791b",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-03",
+      "name": "bg-crystal-world-hero-light-v2.webp",
+      "bytes": 74266,
+      "sha256": "398b7a92b6d2d07734283f76d4ba0bd0f0f49b4df35282cdef40eafff22b47d6",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-04",
+      "name": "bg-crystal-world-network-v1.webp",
+      "bytes": 143862,
+      "sha256": "87f2686bbd3ab09bc4bf13f0573725f162e657eb680da497a2ae12c7adaf0474",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-05",
+      "name": "decor-crystal-world-reviews-v3.webp",
+      "bytes": 264272,
+      "sha256": "e79312348c722090556627c2b38635030b8e21df661337451d838b7a619e13d7",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-01-mobile",
+      "name": "bg-crystal-world-master-dark-mobile-v2.webp",
+      "bytes": 124050,
+      "sha256": "cb05a3d7854e83230d6d7e9ec369b82b604a944bab9f95afbd5692e159a44dea",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    },
+    {
+      "id": "S1-02-mobile",
+      "name": "bg-crystal-world-master-light-mobile-v2.webp",
+      "bytes": 95104,
+      "sha256": "555ed68a1b272d4541561a157f143c5a935ee726aba613cee23cdbc8a3aa832f",
+      "source": "paquete v3 comprobado en contenedor",
+      "releaseApproved": false,
+      "copyToLibraryAfterVisualApproval": true
+    }
+  ],
+  "v3Preflight": {
+    "script": "scripts/revisar_s1_v3.mjs",
+    "stage": "qa/s1-v3/index.html",
+    "mode": "solo-lectura-catalogo",
+    "published": false
   }
 }
