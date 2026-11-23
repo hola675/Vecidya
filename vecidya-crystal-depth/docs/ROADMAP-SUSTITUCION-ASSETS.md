@@ -108,3 +108,14 @@ No aprobado automáticamente: despliegue, integración productiva, reinterpretac
 ## Historial de cambios
 
 - **1.0.0 — 2026-11-23:** aprobación artística registrada; roadmap por olas, 140 activos con preservación y 24 nuevas piezas subordinadas a sustitución.
+
+## Checkpoint S1 — 2026-11-23 (producción local)
+
+- **S0:** inventario focalizado de cinco recursos y correspondencia de sustitución completados.
+- **S1 / archivos:** cinco candidatos panorámicos WebP (1672×941), dos variantes móviles (960×1280) y cinco miniaturas de catálogo preparados en un paquete de conversación.
+- **QA técnico local:** comprobación de decodificación y dimensiones + hashes SHA-256 de los cinco principales: PASS; prueba sintáctica del activador Node: PASS; check y sustitución del catálogo probados en repositorio *simulado*: PASS.
+- **Pendiente:** instalar binarios en el repositorio real, inspección artística de todas las piezas, pruebas del frontend/build y despliegue. No declarar S1 integrada ni publicada; 0 referencias sustituidas y 0 originales purgados en GitHub.
+- **Paquete local:** `Vecidya-CrystalWorld-S1-Candidatos.zip` (5 originales candidatos, 2 móviles, 5 miniaturas, manifiesto y scripts `instalar_s1.py`/`activar_s1.mjs`). Los binarios de este archivo aún no están en el repositorio.
+- **Flujo de integración:** extraer paquete → ejecutar `verify_s1.py` → `instalar_s1.py <ruta-del-repo>` → `node scripts/activar_s1.mjs` (verifica) → `node scripts/activar_s1.mjs --apply` (activa local) → tests/build/capturas → commit/PR → desplegar con aprobación.
+
+**Esta evidencia se aplica a la producción y empaquetado local, no a un despliegue de producción ni al estado del repositorio principal.**
