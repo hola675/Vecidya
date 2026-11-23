@@ -1,0 +1,102 @@
+{
+  "version": "1.0.0",
+  "status": "PREVIEW_ONLY_NOT_APPROVED",
+  "entries": [
+    {
+      "id": "S1-01",
+      "name": "bg-crystal-world-master-dark-v1.webp",
+      "preview": "s1-01-bg-crystal-world-master-dark-v1.webp",
+      "mode": "RGB",
+      "level": "L0",
+      "title": "Maestro oscuro",
+      "status": "PASS",
+      "sha256": "2fdc877a9ce160b76af35314f77736ed8046cd8b0671beaf1e309409f0e12c28",
+      "bytes": 130986,
+      "alpha": false,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "S1-02",
+      "name": "bg-crystal-world-master-light-v1.webp",
+      "preview": "s1-02-bg-crystal-world-master-light-v1.webp",
+      "mode": "RGB",
+      "level": "L0",
+      "title": "Maestro claro",
+      "status": "PASS",
+      "sha256": "3887211de2d50a2e95ed65fa34c6d969635b00c8e59512ac37f877bfd2e9791b",
+      "bytes": 106404,
+      "alpha": false,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "S1-03",
+      "name": "bg-crystal-world-hero-light-v2.webp",
+      "preview": "s1-03-bg-crystal-world-hero-light-v2.webp",
+      "mode": "RGB",
+      "level": "L0",
+      "title": "Portada clara",
+      "status": "PASS",
+      "sha256": "398b7a92b6d2d07734283f76d4ba0bd0f0f49b4df35282cdef40eafff22b47d6",
+      "bytes": 74266,
+      "alpha": false,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "S1-04",
+      "name": "bg-crystal-world-network-v1.webp",
+      "preview": "s1-04-bg-crystal-world-network-v1.webp",
+      "mode": "RGB",
+      "level": "L0–L1",
+      "title": "Conexiones del Vecindario",
+      "status": "PASS",
+      "sha256": "87f2686bbd3ab09bc4bf13f0573725f162e657eb680da497a2ae12c7adaf0474",
+      "bytes": 143862,
+      "alpha": false,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "S1-05",
+      "name": "decor-crystal-world-reviews-v3.webp",
+      "preview": "s1-05-decor-crystal-world-reviews-v3.webp",
+      "mode": "RGBA",
+      "level": "L5",
+      "title": "Reseñas (transparente)",
+      "status": "PASS",
+      "sha256": "e79312348c722090556627c2b38635030b8e21df661337451d838b7a619e13d7",
+      "bytes": 264272,
+      "alpha": true,
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "id": "S1-01-mobile",
+      "name": "bg-crystal-world-master-dark-mobile-v2.webp",
+      "mode": "RGB",
+      "level": "L0",
+      "title": "Maestro oscuro móvil",
+      "status": "PASS",
+      "sha256": "cb05a3d7854e83230d6d7e9ec369b82b604a944bab9f95afbd5692e159a44dea",
+      "bytes": 124050,
+      "alpha": false,
+      "width": null,
+      "height": null
+    },
+    {
+      "id": "S1-02-mobile",
+      "name": "bg-crystal-world-master-light-mobile-v2.webp",
+      "mode": "RGB",
+      "level": "L0",
+      "title": "Maestro claro móvil",
+      "status": "PASS",
+      "sha256": "555ed68a1b272d4541561a157f143c5a935ee726aba613cee23cdbc8a3aa832f",
+      "bytes": 95104,
+      "alpha": false,
+      "width": null,
+      "height": null
+    }
+  ]
+}
