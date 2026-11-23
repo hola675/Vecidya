@@ -1,7 +1,7 @@
 # Roadmap de sustitución de assets — Vecidya Crystal World
 
-**Versión:** 1.0.0 · **Última actualización:** 2026-11-23  
-**Estado:** Dirección artística aprobada por el responsable; producción de nuevos assets pendiente.  
+**Versión:** 1.1.0 · **Última actualización:** 2026-11-23  
+**Estado:** S1 integrada en GitHub (5/5); S2 iniciada con inventario de diez escenas y un piloto local no aprobado. Despliegue público de S1 sin certificar.  
 **Proyecto:** `vecidya-crystal-depth/` — laboratorio y biblioteca independiente.
 
 ## 1. Decisión y secuencia obligatoria
@@ -10,7 +10,7 @@
 
 Aprobación del 2026-11-23: usar las **seis imágenes de referencia aportadas en la conversación** como familia artística aprobada: identidad vertical, iconos de servicios flotantes, vecindario vertical, fondo panorámico oscuro, Vico en ecosistema horizontal y fondo panorámico claro. Las imágenes de referencia deben custodiarse como fuentes de comparación; esta aprobación **no equivale** a autorización para reemplazar el logotipo oficial por una reinterpretación automática, ni certifica exportaciones o producción.
 
-**Regla antialucinación:** ningún recurso se marca sustituido, publicado, eliminado u optimizado sin archivo real, comparación y evidencia. Estado actual del roadmap: planificado, sin generaciones ni purgas.
+**Regla antialucinación:** ningún recurso se marca sustituido, publicado, eliminado u optimizado sin archivo real, comparación y evidencia. Estado actual verificado: 5 referencias S1 sustituidas en main; 10 escenas S2 inventariadas; no se ha purgado ningún original.
 
 ## 2. Lenguaje visual aprobado — Vecidya Crystal World
 
@@ -197,3 +197,13 @@ git diff --check
 El nuevo script comprueba la aprobación del manifiesto, 7 SHA-256, formatos y miniaturas; conserva los originales, copia una salvaguarda del catálogo y clasificación en `qa/s1-v3/backup-before-activation`, instala los siete activos de biblioteca y actualiza cinco referencias. **No hace commit, push ni deploy**. La revisión real en navegador y el test final de producción quedan pendientes.
 
 No usar `scripts/activar_s1.mjs` de v1. S1 solo se marca como integrada cuando los binarios y el catálogo actualizado existan realmente en main y las comprobaciones posteriores estén documentadas.
+
+
+## S2 — Inicio real de producción (2026-11-23)
+
+- **Inventario S2:** diez escenas confirmadas por `assets/asset-classification.json`, originales entre 318 y 437 píxeles de ancho.
+- **Nuevo manifiesto:** `assets/s2-replacement-manifest.json`, con las diez rutas, orden por lotes y QA por recurso.
+- **Piloto S2-01 Inicio:** creado localmente en formato WebP RGBA 1536×1024; su hash y tamaño están registrados en el manifiesto. **No integrado ni aprobado**, y por ello no modifica catálogo ni despliegue.
+- **Secuencia operativa:** validar piloto con las seis referencias; componer con fondos S1 y HTML L4; corregir alfa/encuadre si procede; producir los otros cuatro del lote prioritario; aprobar uno por uno; continuar con los cinco restantes; integrar con pruebas de build y Cloudflare.
+- **Política invariable:** ilustraciones L1/L2/L5 transparentes; L0 usa fondos S1; L4 permanece HTML/CSS accesible; no generar Vico alternativo.
+- **S1:** cinco recursos activos en main y siete binarios v3 presentes; pendiente la verificación del despliegue público en Cloudflare.
