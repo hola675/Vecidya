@@ -207,7 +207,7 @@
           1254,
           1254
         ],
-        "bytes": 261000,
+        "bytes": 261232,
         "sha256": "945ac68406f872bf77a961a1f1a308715f2a694d759dd3c79317d31d31614269",
         "inRepository": false,
         "qa": "RGBA, esquina alfa 0, export WebP comprobado; pendiente QA visual"
