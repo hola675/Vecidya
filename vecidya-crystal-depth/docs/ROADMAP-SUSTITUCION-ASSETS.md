@@ -244,3 +244,11 @@ Este instalador solo copia los diez candidatos y diez miniaturas, validando SHA-
 - **S3:** `assets/s3-replacement-manifest.json` creado con 12 recursos exactos: nueve SVG operativos (cuatro de diagnóstico, cuatro de servicios y uno WhatsApp) y tres ilustraciones grandes (búsqueda PNG, negocio verificado WebP, pin Vecidya WebP).
 - **Dos lotes con puertas de aprobación:** lote SVG funcional (auditoría, calidad a tamaños reales, accesibilidad, marca de tercero); lote 3D (rediseño solo si es necesario, alfa real, fondos S1 claro/oscuro, tamaños de uso y consistencia Crystal World). No sustituir imágenes vectoriales con renders voluminosos en controles pequeños.
 - **Estado:** S3 0/12 revisados y 0/12 integrados; el manifiesto es un inventario verificable, no una certificación visual.
+
+## S3 — evaluación inicial de lotes (2026-11-23)
+
+- **Lote A (9 SVG):** se leyeron los nueve archivos originales exactos de GitHub: ocho iconos de 48×48 con trazos `currentColor` y el símbolo WhatsApp de 24×24 en verde. Se propone **conservar el SVG vectorial** como candidato, sin sustituirlo por renders 3D, sujeto a contraste, accesibilidad y revisión de render a escala. Ningún SVG modificado ni aprobado por el usuario aún.
+- **Lote B (3 ilustraciones):** se generó un piloto independiente para S3-09 Búsqueda en PNG RGBA, exportado a WebP 1254×1254, transparencia real comprobada y revisión en claro/oscuro; está incluido en el paquete local `Vecidya-S3-Lotes-Revision.zip`. El usuario todavía debe evaluar el candidato. S3-10 Negocio verificado y S3-11 Ubicación Vecidya siguen pendientes de producción específica.
+- **Control editorial:** los paneles/infografías de muestra generados durante exploración no equivalen a los SVG originales ni a assets independientes; se descartan como sustituciones. No confundir arte de presentación con archivo utilizable en el catálogo.
+- **Integración:** cero cambios de S3 en catálogo, cero binarios S3 subidos a GitHub. Mantener las doce fuentes antiguas sin mutación.
+- **Regla:** nueve SVG funcionales se mantienen vectoriales; los tres objetos grandes requieren alfa real y QA L5, mientras L4 conserva funcionalidad accesible.
