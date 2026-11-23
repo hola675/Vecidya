@@ -1,15 +1,16 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "lastUpdated": "2026-11-23",
   "phase": "S3",
-  "status": "REINICIO-LIMPIO-SIN-CANDIDATOS",
+  "status": "S3-REGENERACION-INDIVIDUAL-S3-01-CANDIDATO-PENDIENTE",
   "objective": "Regeneración futura desde cero de doce recursos originales, tras análisis y aprobación artística; sin generación autorizada en esta operación de limpieza.",
   "summary": {
     "total": 12,
     "originalsPreserved": 12,
     "newCandidates": 0,
     "approved": 0,
-    "integrated": 0
+    "integrated": 0,
+    "generatedCandidates": 1
   },
   "rules": [
     "S1 y S2 permanecen intactas; no modificarlas",
@@ -50,10 +51,34 @@
       },
       "kind": "vector-operativo",
       "originalPreserved": true,
-      "status": "PENDIENTE-DESDE-CERO",
-      "candidate": null,
+      "status": "CANDIDATO-ILUSTRATIVO-NO-APROBADO-NO-INTEGRAR",
+      "candidate": {
+        "name": "s3-01-diagnostico-negocio-crystal-world-v1.webp",
+        "inRepository": false,
+        "source": "generación individual en conversación",
+        "dimensions": {
+          "width": 1254,
+          "height": 1254
+        },
+        "format": "WebP RGBA",
+        "bytes": 226026,
+        "sha256": "9249e2d737d5e360e7679627b9790e0ed5f2bcdb27ee2152347001c63dd2d787",
+        "transparentCorners": true,
+        "zeroAlphaRatio": 0.4912
+      },
       "approved": false,
-      "integrated": false
+      "integrated": false,
+      "qualityReview": {
+        "cgi3D": "PASS-PRELIMINAR",
+        "trueTransparency": "PASS",
+        "darkBackground": "PASS-PRELIMINAR",
+        "lightBackground": "PASS-PRELIMINAR",
+        "display160px": "PASS-PRELIMINAR",
+        "functional48px": "FAIL-DETALLE-ILEGIBLE",
+        "edgeHalo": "vigilar cyan/naranja en contorno",
+        "decision": "REQUIERE-VARIANTE-COMPACTA-ANTES-DE-SUSTITUCION",
+        "approval": "PENDIENTE"
+      }
     },
     {
       "id": "S3-02",
@@ -254,5 +279,11 @@
       "integrated": false
     }
   ],
-  "releaseAllowed": false
+  "releaseAllowed": false,
+  "workflow": {
+    "production": "uno-a-uno",
+    "artisticRule": "no pasar a siguiente hasta abrir y evaluar original, candidato, WebP RGBA y previews claro/oscuro y tamaños reales",
+    "noBatchGeneration": true,
+    "approvalRequired": true
+  }
 }
