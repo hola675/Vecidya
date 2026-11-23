@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "lastUpdated": "2026-11-23",
   "phase": "S3",
   "status": "S3-12-CANDIDATOS-RECHAZADOS-POR-QA-ARTISTICO-NO-INTEGRAR",
@@ -350,5 +350,24 @@
       "aprobación expresa del usuario del nuevo lote antes de cualquier activación"
     ],
     "note": "No se autorizan scripts anteriores de sustitución S3."
+  },
+  "auditPreparation": {
+    "script": "scripts/auditar_s3_originales.mjs",
+    "output": "qa/s3/originales/index.html",
+    "status": "IMPLEMENTADO-NO-EJECUTADO-EN-REPO-LOCAL",
+    "checks": [
+      "12 fuentes originales",
+      "12 miniaturas",
+      "140 referencias",
+      "uso citado en vecidya-platform/app/assets/public-assets.ts",
+      "vista claro/oscuro",
+      "tamaños 24/32/48 para L4 y 96/160/320 para L5"
+    ],
+    "writesToCatalog": false
+  },
+  "platformDependency": {
+    "file": "vecidya-platform/app/assets/public-assets.ts",
+    "finding": "Mapeo de iconos apuntando a seleccionados originales; comprobado mediante búsqueda de código GitHub",
+    "impact": "Sustituir catálogo de biblioteca no reemplaza automáticamente referencias de la plataforma; migración de aplicación requiere cambio diferenciado y pruebas"
   }
 }
