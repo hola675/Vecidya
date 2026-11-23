@@ -1,8 +1,8 @@
 {
-  "version": "1.4.0",
+  "version": "1.5.0",
   "lastUpdated": "2026-11-23",
   "scope": "S0-S1 primeros fondos Crystal World",
-  "status": "S1-candidatos-v3-cotejados-localmente-integracion-visual-pendiente",
+  "status": "S1-v3-QA-TECNICO-7-7-PASS-VISUAL-NO-CERTIFICADA",
   "references": "seis referencias visuales aprobadas; fondos oscuros y claros panorámicos",
   "priority": "sustituir-viejos-antes-de-generar-nuevas-familias",
   "items": [
@@ -159,7 +159,7 @@
     "referencesReplaced": 0,
     "originalsDeleted": 0,
     "repositoryBinaryUpload": "PENDIENTE",
-    "visualReview": "revisión visual de integración pendiente",
+    "visualReview": "inspección preliminar de siete archivos, falta montaje responsive",
     "visualApproved": 0,
     "visualRejected": 1,
     "visualNeedsRevision": 3,
@@ -168,7 +168,7 @@
     "remoteReferencesReplaced": 0,
     "releaseAllowed": false,
     "refsReplacedOnMain": 0,
-    "package3TechnicalQA": "7/7 PASS",
+    "package3TechnicalQA": "PASS 7/7 confirmado por usuario",
     "package3RepoUpload": "PENDIENTE"
   },
   "prototypes": [
@@ -275,5 +275,26 @@
     "s105": "Ilustración transparente de tienda+reseñas aprobada como dirección artística por usuario; export WebP RGBA v3 necesita QA de render real",
     "s105TransparentPercent": 45.83,
     "releaseAllowed": false
+  },
+  "userVerification": {
+    "date": "2026-11-23",
+    "command": "python verify_s1.py",
+    "result": "PASS 7/7",
+    "details": {
+      "S1-01": "1672x941 RGB",
+      "S1-02": "1672x941 RGB",
+      "S1-03": "1672x941 RGB",
+      "S1-04": "1672x941 RGB",
+      "S1-05": "1672x941 RGBA",
+      "S1-01-mobile": "960x1280 RGB",
+      "S1-02-mobile": "960x1280 RGB"
+    },
+    "source": "salida PowerShell compartida por el usuario",
+    "scope": "archivo y color; no aprobación visual"
+  },
+  "visualInspectionV3": {
+    "method": "contact sheet de los siete WebP suministrados",
+    "observation": "S1-05 ya es objeto aislado sobre transparencia; resto mantiene lenguaje azul/cian/naranja, vidrios y vecindario 3D. S1-03 es ambiente más abstracto y puede servir como portada, pendiente probar con contenido HTML. Faltan capturas reales y comportamiento responsive.",
+    "releaseApproved": false
   }
 }
