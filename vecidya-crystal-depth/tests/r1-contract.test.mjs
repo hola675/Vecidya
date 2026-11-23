@@ -89,6 +89,12 @@ test('catálogo oficial de activos y estado no productivo',()=>{
   assert.equal(window.vecidyaCrystalCatalog.length,140);
   assert.equal(new Set(window.vecidyaCrystalCatalog.map(x=>x.category)).size,17);
   assert.ok(window.vecidyaCrystalCatalog.every(x=>x.source&&x.preview));
+  assert.ok(window.vecidyaCrystalCatalog.every(x=>x.source.startsWith('assets/library-assets/')));
+  for (const entry of window.vecidyaCrystalCatalog) {
+    assert.ok(fs.existsSync(path.join(root, entry.source)), 'Asset local ausente: '+entry.source);
+  }
+  assert.doesNotMatch(html,/vecidya-platform\/public\/assets/);
+  assert.doesNotMatch(read('assets/library-catalog.js'),/vecidya-platform\/public\/assets/);
   assert.equal(registry.decisions.libraryRole,'internal-review-laboratory');
   assert.match(registry.implementation.doNot,/producci[oó]n/i);
 });
@@ -134,7 +140,7 @@ test('composición de páginas R1.2: cuatro escenas oficiales y alternativa sin 
     assert.ok(html.includes('id="composer-tab-'+scene.id+'"'));
     assert.ok(html.includes('id="composer-panel-'+scene.id+'"'));
     assert.ok(html.includes('data-scene="'+scene.id+'"'));
-    assert.ok(html.includes(scene.asset.replace('vecidya-platform/public/assets','../vecidya-platform/public/assets')));
+    assert.ok(html.includes(scene.asset));
     assert.equal(scene.status,'demo-only-not-route');
     assert.ok(scene.primaryMaterial&&scene.secondaryMaterial&&scene.motion.length&&scene.contentRule);
   }
@@ -340,7 +346,7 @@ test('Vico: diez personajes catalogados y una infografía separada y un único p
   assert.equal(companion?.category,'Ilustraciones');
   assert.doesNotMatch(companion?.name??'',/Vico/i);
   for(const asset of vico){
-    assert.match(asset.source,/^\.\.\/vecidya-platform\/public\/assets\/selected\/illustrations\/.*\.webp$/);
+    assert.match(asset.source,/^assets\/library-assets\/selected\/illustrations\/.*\.webp$/);
     assert.ok(asset.width>0 && asset.height>0 && asset.preview);
   }
   const script=read('assets/vico-workbench.js');

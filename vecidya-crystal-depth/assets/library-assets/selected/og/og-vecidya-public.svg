@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Vecidya — presencia clara para ser encontrado</title>
+  <desc id="desc">Vecidya conecta negocios locales con una presencia digital clara y fácil de explorar.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4f8ff"/>
+      <stop offset="0.62" stop-color="#fff"/>
+      <stop offset="1" stop-color="#fff7f1"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#155fc5"/>
+      <stop offset="1" stop-color="#104c9d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1010" cy="110" r="240" fill="#155fc5" opacity=".08"/>
+  <circle cx="1080" cy="530" r="220" fill="#bf4700" opacity=".08"/>
+  <path d="M760 492c84-126 167-199 288-250M770 493c122 7 208-8 316-66" fill="none" stroke="#155fc5" stroke-dasharray="8 14" stroke-linecap="round" stroke-width="4" opacity=".25"/>
+  <image x="782" y="180" width="128" height="128" preserveAspectRatio="xMidYMid meet" xlink:href="/brand/vecidya-app-icon.png"/>
+  <path d="M1000 360c0-43 35-78 78-78s78 35 78 78c0 57-78 130-78 130s-78-73-78-130Z" fill="url(#blue)"/>
+  <circle cx="1078" cy="360" r="25" fill="#fff"/>
+  <text x="88" y="145" fill="#bf4700" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="5">VECINDARIO DIGITAL</text>
+  <text x="88" y="245" fill="#142b4a" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="800" letter-spacing="-2">Tu presencia</text>
+  <text x="88" y="320" fill="#142b4a" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="800" letter-spacing="-2">puede encontrarse.</text>
+  <text x="88" y="390" fill="#617188" font-family="Arial, Helvetica, sans-serif" font-size="27">Explora negocios, entiende tu punto de partida</text>
+  <text x="88" y="428" fill="#617188" font-family="Arial, Helvetica, sans-serif" font-size="27">y ordena lo que quieres mostrar.</text>
+  <text x="88" y="545" fill="#155fc5" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800">Vecidya</text>
+</svg>

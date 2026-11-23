@@ -107,7 +107,7 @@ La CI focal contrasta el registro con archivos reales de la plataforma. Las prue
 
 No requiere dependencias. Marca, Vico y las ilustraciones originales se conservan. Once iconos usan propuestas PNG Crystal en la vista de biblioteca; WhatsApp se rasteriza a PNG. Los dos fondos ambientales generados optimizados residen en `assets/`.
 
-Para revisar en un navegador Chromium con todos los assets relativos disponibles, inicia un servidor estático desde la raíz del repositorio y abre `/vecidya-crystal-depth/biblioteca.html`. También se puede abrir el HTML directamente; el servidor facilita la resolución de los activos oficiales en `vecidya-platform/public/assets/`.
+Para revisar en un navegador Chromium con todos los assets relativos disponibles, inicia un servidor estático desde la raíz del repositorio y abre `/vecidya-crystal-depth/biblioteca.html`. También se puede abrir el HTML directamente; el servidor facilita la resolución de los activos oficiales en `vecidya-crystal-depth/assets/library-assets/`.
 
 ## Archivos
 
@@ -166,9 +166,9 @@ En Cloudflare > Workers & Pages > `vecidya-desig` > Settings > Builds > Connect:
 | Deploy command | `npx wrangler deploy` |
 | Preview command | `npx wrangler preview` |
 
-En **Build watch paths**, incluir `vecidya-crystal-depth/*` y `vecidya-platform/public/assets/*`. Esto limita los builds a los cambios de la biblioteca y de los recursos compartidos que utiliza.
+En **Build watch paths**, incluir `vecidya-crystal-depth/*` y `vecidya-crystal-depth/assets/library-assets/*`. Esto limita los builds a los cambios de la biblioteca y de los recursos compartidos que utiliza.
 
-`scripts/build-cloudflare.mjs` genera `dist/` desde cero, copia solo los archivos web de Crystal Depth y las referencias utilizadas de `vecidya-platform/public/assets/`, y reescribe las rutas relativas para que funcionen en la raíz del dominio. Las imágenes siguen almacenadas una sola vez en el código fuente del monorepositorio. Si falta una imagen oficial referida, el build falla. `wrangler.jsonc` configura solamente los activos estáticos del Worker `vecidya-desig`; no declara rutas ni modifica DNS.
+`scripts/build-cloudflare.mjs` genera `dist/` desde cero, copia solo los archivos web de Crystal Depth y las referencias utilizadas de `vecidya-crystal-depth/assets/library-assets/`, y reescribe las rutas relativas para que funcionen en la raíz del dominio. Las imágenes siguen almacenadas una sola vez en el código fuente del monorepositorio. Si falta una imagen oficial referida, el build falla. `wrangler.jsonc` configura solamente los activos estáticos del Worker `vecidya-desig`; no declara rutas ni modifica DNS.
 
 Verificación local (desde `vecidya-crystal-depth/`):
 
@@ -181,3 +181,10 @@ npx wrangler dev
 Revisar `/` y `/biblioteca`, todos los iconos, la galería y sus enlaces. Tras el primer despliegue, verificar Cloudflare **Deployments**, el dominio existente y una comprobación HTTP pública fechada; guardar una versión anterior para reversión. Ningún push a `main` despliega automáticamente mientras la conexión Git no esté activada.
 
 **Changelog de la preparación:** 2026-11-19 — build estático aislado y configuración Wrangler para GitHub → Cloudflare; sin deploy, sin integración en la plataforma, sin cambios DNS.
+
+
+## Assets autocontenidos
+
+Desde el 23 de noviembre de 2026, la biblioteca mantiene una copia propia de los 140 recursos visuales catalogados en `assets/library-assets/`. El HTML, el catálogo y las recetas visuales consumen exclusivamente esas rutas locales; el build ya no copia recursos desde `vecidya-platform`.
+
+La plataforma conserva la fuente histórica/original de esos recursos, pero Crystal Depth no depende de su árbol de assets para ejecutarse o publicarse.

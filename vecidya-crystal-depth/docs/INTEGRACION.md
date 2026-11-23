@@ -171,7 +171,7 @@ Cuando una consulta abarque varias áreas, **dividir en checkpoints por ruta y r
 
 ### Selección de assets
 
-`assets/library-catalog.js` enumera 140 fuentes catalogadas de `vecidya-platform/public/assets/` con vistas previas. No confundir vista previa con original; un link `Abrir original` puede requerir el árbol del repositorio para resolver. `assets/pattern-registry.json` orienta por intención, pero la ruta concreta del asset se valida contra archivos existentes, su variante original y la página destino. Las 11 propuestas Crystal PNG no constituyen una sustitución automática de iconos.
+`assets/library-catalog.js` enumera 140 fuentes catalogadas de `vecidya-crystal-depth/assets/library-assets/` con vistas previas. No confundir vista previa con original; un link `Abrir original` puede requerir el árbol del repositorio para resolver. `assets/pattern-registry.json` orienta por intención, pero la ruta concreta del asset se valida contra archivos existentes, su variante original y la página destino. Las 11 propuestas Crystal PNG no constituyen una sustitución automática de iconos.
 
 ## 4.1. Movimiento R1.1: interpretación de solicitudes de animación
 
@@ -302,3 +302,8 @@ Cuando la tarea requiera Vico o una de sus escenas, el subagente deberá:
 
 **Separación de marca:** Vico identifica a Vecidya; no se inserta como marca del sitio de los negocios ni se ofrece por defecto como personaje de las MiniWeb. Las diez imágenes del personaje se mantienen originales, y ninguna modificación del visor constituye una migración a React.
 
+
+
+### Independencia de assets — 2026-11-23
+
+La biblioteca conserva localmente los 140 recursos catalogados en `assets/library-assets/`. Las entradas de `assets/library-catalog.js`, las escenas de `assets/pattern-registry.json` y `biblioteca.html` deben apuntar a esa copia. No se deben introducir nuevas rutas runtime hacia `vecidya-platform/public/assets/`.

@@ -284,7 +284,7 @@
     "vico": "no-sustituir-mascota-ni-alterar-proporciones",
     "images": "conservar-originales; optimizar-derivados; registrar-origen/licencia",
     "catalog": "140-activos-indexados-no-todos-deben-publicarse",
-    "source": "vecidya-platform/public/assets",
+    "source": "assets/library-assets",
     "registry": "assets/library-catalog.js"
   },
   "acceptance": [
@@ -431,7 +431,7 @@
       "urlExample": "/ o /servicios",
       "primaryMaterial": "focal",
       "secondaryMaterial": "quiet",
-      "asset": "vecidya-platform/public/assets/selected/illustrations/home-scene.webp",
+      "asset": "assets/library-assets/selected/illustrations/home-scene.webp",
       "motion": [
         "page-enter",
         "section-reveal",
@@ -451,7 +451,7 @@
       "urlExample": "/vecindario",
       "primaryMaterial": "quiet",
       "secondaryMaterial": "solid",
-      "asset": "vecidya-platform/public/assets/selected/illustrations/neighborhood-scene.webp",
+      "asset": "assets/library-assets/selected/illustrations/neighborhood-scene.webp",
       "motion": [
         "section-reveal",
         "ui-feedback"
@@ -470,7 +470,7 @@
       "urlExample": "/aprende",
       "primaryMaterial": "solid",
       "secondaryMaterial": "quiet",
-      "asset": "vecidya-platform/public/assets/selected/illustrations/learn-journey-scene.webp",
+      "asset": "assets/library-assets/selected/illustrations/learn-journey-scene.webp",
       "motion": [
         "section-reveal"
       ],
@@ -488,7 +488,7 @@
       "urlExample": "editor y vista previa",
       "primaryMaterial": "solid",
       "secondaryMaterial": "quiet",
-      "asset": "vecidya-platform/public/assets/selected/illustrations/services-scene.webp",
+      "asset": "assets/library-assets/selected/illustrations/services-scene.webp",
       "motion": [
         "ui-feedback"
       ],
