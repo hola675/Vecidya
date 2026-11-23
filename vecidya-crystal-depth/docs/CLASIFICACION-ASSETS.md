@@ -52,3 +52,10 @@ La clasificación es ortogonal a las 17 categorías editoriales: **categoría** 
 ### Historial de cambios
 
 - **1.0.0 (2026-11-23):** inventario completo de 140 fichas, diez familias, taxonomía doble y alertas deterministas iniciales.
+
+## Prioridad artística aprobada — 2026-11-23
+
+Se incorpora Vecidya Crystal World como criterio de aprobación visual y sustitución progresiva. Las 140 entradas siguen siendo inventario de originales; **no** se reclasifican como sustituidas por aprobar la dirección artística. El orden de sustitución y eliminación controlada se rige por [ROADMAP-SUSTITUCION-ASSETS.md](ROADMAP-SUSTITUCION-ASSETS.md). Los nuevos 24 assets quedan bloqueados hasta completar los reemplazos prioritarios.
+
+### Historial adicional
+- **1.1.0 — 2026-11-23:** dirección artística aprobada y roadmap enlazado, sin regeneración de recursos.
